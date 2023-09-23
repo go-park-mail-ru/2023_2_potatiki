@@ -1,6 +1,15 @@
 package models
 
+import "github.com/google/uuid"
+
 type User struct {
-	Login        string
-	PasswordHash string
+	Login        string `json:login`
+	PasswordHash string `json:password`
+}
+
+type Profile struct {
+	Id uuid.UUID `json:id`
+	Login string `json:login`
+	Description string `json:description`
+	ImgSrc string `json:img`
 }
