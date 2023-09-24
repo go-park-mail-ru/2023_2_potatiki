@@ -11,7 +11,7 @@ import (
 
 type AuthUsecase interface {
 	Login(context.Context, models.User) (models.Profile, error)
-	Singup(context.Context, models.User) (models.Profile, error)
+	SingUp(context.Context, models.User) (models.Profile, error)
 	GetProfile(context.Context, uuid.UUID) (models.Profile, error)
 }
 
