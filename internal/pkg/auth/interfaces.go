@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
 )
