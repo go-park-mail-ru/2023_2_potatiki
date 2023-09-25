@@ -1,0 +1,33 @@
+#
+# Builder
+#
+
+FROM golang:1.21.0-alpine AS builder
+
+COPY . /github.com/go-park-mail-ru/2023_2_potatiki/ 
+WORKDIR /github.com/go-park-mail-ru/2023_2_potatiki/
+
+RUN go mod download
+RUN go clean --modcache
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w -extldflags '-static'" -mod=readonly -o ./.bin cmd/main.go
+
+#
+# Runner
+#
+
+FROM scratch AS runner
+
+WORKDIR /docker-rfid-automat-web/
+
+COPY --from=builder /github.com/MrDjeb/rfid-automat/.bin .
+COPY --from=builder /github.com/MrDjeb/rfid-automat/configs configs/
+COPY --from=builder /github.com/MrDjeb/rfid-automat/static static/
+COPY --from=builder /github.com/MrDjeb/rfid-automat/templates templates/
+
+COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
+
+ENV TZ="Europe/Moscow"
+ENV ZONEINFO=/zoneinfo.zip
+EXPOSE 80 443
+
+ENTRYPOINT ["./.bin"]

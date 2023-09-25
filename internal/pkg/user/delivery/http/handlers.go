@@ -2,20 +2,19 @@ package http
 
 import (
 	"encoding/json"
-	"io"
-	"net/http"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"io"
+	"net/http"
 )
 
 type AuthHandler struct {
-	usecase *auth.AuthUsecase
+	useCase auth.AuthUsecase
 }
 
-func New(usecase auth.AuthUsecase) *AuthHandler {
-	return &AuthHandler{
-		usecase: &usecase,
+func NewAuthHandler(newUseCase auth.AuthUsecase) AuthHandler {
+	return AuthHandler{
+		useCase: newUseCase,
 	}
 }
 

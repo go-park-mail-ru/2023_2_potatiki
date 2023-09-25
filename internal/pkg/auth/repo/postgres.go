@@ -2,27 +2,29 @@ package repo
 
 import (
 	"context"
+	"database/sql"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
 )
 
 type AuthRepo struct {
-	db string
+	db *sql.DB
 }
 
-func NewAuthRepo(NewDb string) AuthRepo {
-	return AuthRepo{
-		db: NewDb,
+func New(db *sql.DB) *AuthRepo {
+	return &AuthRepo{
+		db: db,
 	}
 }
 
 func (r *AuthRepo) CreateUser(context.Context, models.User) (models.Profile, error) {
-	return models.Profile{}, nil
+	panic("unimplemented")
 }
 
 func (r *AuthRepo) CheckUser(context.Context, models.User) (models.Profile, error) {
-	return models.Profile{}, nil
+	panic("unimplemented")
 }
 func (r *AuthRepo) ReadProfile(context.Context, uuid.UUID) (models.Profile, error) {
-	return models.Profile{}, nil
+	panic("unimplemented")
 }
