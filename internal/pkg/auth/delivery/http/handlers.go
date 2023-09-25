@@ -19,7 +19,7 @@ func New(usecase auth.AuthUsecase) *AuthHandler {
 	}
 }
 
-func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) LogIn(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return
