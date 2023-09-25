@@ -12,13 +12,13 @@ type AuthHandler struct {
 	useCase auth.AuthUsecase
 }
 
-func NewAuthHandler(newUseCase auth.AuthUsecase) AuthHandler {
-	return AuthHandler{
+func NewAuthHandler(newUseCase auth.AuthUsecase) *AuthHandler {
+	return &AuthHandler{
 		useCase: newUseCase,
 	}
 }
 
-func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
+func (h *AuthHandler) LogIn(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		return

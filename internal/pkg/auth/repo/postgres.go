@@ -2,16 +2,17 @@ package repo
 
 import (
 	"context"
+	"database/sql"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
 )
 
 type AuthRepo struct {
-	db string
+	db *sql.DB
 }
 
-func NewAuthRepo(NewDb string) AuthRepo {
-	return AuthRepo{
+func NewAuthRepo(NewDb *sql.DB) *AuthRepo {
+	return &AuthRepo{
 		db: NewDb,
 	}
 }

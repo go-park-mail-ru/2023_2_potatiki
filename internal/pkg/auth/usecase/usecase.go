@@ -11,13 +11,14 @@ type AuthUsecase struct {
 	repo auth.AuthRepo
 }
 
-func NewAuthUsecase(NewRepo auth.AuthRepo) AuthUsecase {
-	return AuthUsecase{
+func NewAuthUsecase(NewRepo auth.AuthRepo) *AuthUsecase {
+	return &AuthUsecase{
 		repo: NewRepo,
 	}
 }
 
 func (uc *AuthUsecase) Login(context.Context, models.User) (models.Profile, error) {
+
 	return models.Profile{}, nil
 }
 
