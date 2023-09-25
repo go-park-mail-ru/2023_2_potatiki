@@ -22,7 +22,7 @@ func (uc *AuthUsecase) SignIn(context.Context, models.User) (models.Profile, err
 	panic("unimplemented")
 }
 
-func (uc *AuthUsecase) SignUp(context.Context, models.User) (models.Profile, error) {
+func (uc *AuthUsecase) SignUp(context.Context, *models.User) (models.Profile, error) {
 	panic("unimplemented")
 }
 

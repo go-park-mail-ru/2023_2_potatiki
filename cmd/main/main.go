@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/lib/pq"
+
 	"log/slog"
 
 	"github.com/gorilla/mux"
@@ -13,6 +15,7 @@ import (
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/handlers/slogpretty"
 )
 
 const (
@@ -22,7 +25,10 @@ const (
 )
 
 func main() {
-
+	if err := run(); err != nil {
+		slog.Error("main error:", err)
+		os.Exit(1)
+	}
 }
 
 func run() error {
@@ -39,7 +45,7 @@ func run() error {
 
 	db, err := sql.Open("postgres", cfg.Database.URL)
 	if err != nil {
-		slog.Error("sdsd", err)
+		slog.Error("fail open postgres", err)
 		return err
 	}
 	defer db.Close()
@@ -50,9 +56,9 @@ func run() error {
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 	auth := r.PathPrefix("/auth").Subrouter()
-	{
-		auth.HandleFunc("/signUp", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
-	}
+
+	auth.HandleFunc("/signUp", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
+	auth.HandleFunc("/kek", authHandler.Kek).Methods(http.MethodGet)
 
 	http.Handle("/", r)
 	srv := http.Server{Handler: r, Addr: ":8000"}
@@ -64,7 +70,7 @@ func setupLogger(env string) *slog.Logger {
 
 	switch env {
 	case envLocal:
-		log = slog.New(slog.NewTextHandler(os.Stderr, nil))
+		log = setupPrettySlog()
 	case envDev:
 		log = slog.New(
 			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug}),
@@ -80,4 +86,16 @@ func setupLogger(env string) *slog.Logger {
 	}
 
 	return log
+}
+
+func setupPrettySlog() *slog.Logger {
+	opts := slogpretty.PrettyHandlerOptions{
+		SlogOpts: &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		},
+	}
+
+	handler := opts.NewPrettyHandler(os.Stdout)
+
+	return slog.New(handler)
 }
