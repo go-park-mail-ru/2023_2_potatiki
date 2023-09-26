@@ -8,7 +8,8 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 )
 
 type AuthHandler struct {
@@ -24,49 +25,49 @@ func New(usecase auth.AuthUsecase) *AuthHandler {
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		response.Status(w, http.StatusBadRequest, "failed to io.ReadAll(r.Body)")
+		resp.Status(w, http.StatusBadRequest, resp.Err("failed to io.ReadAll(r.Body)"))
 		return
 	}
 
 	u := &models.User{}
 	err = json.Unmarshal(body, u)
 	if err != nil {
-		response.Status(w, http.StatusBadRequest, "failed to json.Unmarshal(body, u)")
+		resp.Status(w, http.StatusBadRequest, resp.Err("failed to json.Unmarshal(body, u)"))
 		return
 	}
 
 	profile, err := h.usecase.SignIn(r.Context(), *u)
 	if err != nil {
-		response.Status(w, http.StatusBadRequest, "failed in SignUp")
+		resp.Status(w, http.StatusBadRequest, resp.Err("failed in SignUp"))
 		return
 	}
 	fmt.Println(profile)
 
-	response.Status(w, http.StatusOK, nil)
+	resp.Status(w, http.StatusOK, resp.OK())
 }
 
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		response.Status(w, http.StatusBadRequest, "failed to io.ReadAll(r.Body)")
+		resp.Status(w, http.StatusBadRequest, resp.Err("failed to io.ReadAll(r.Body)"))
 		return
 	}
 	u := &models.User{}
 	err = json.Unmarshal(body, u)
 	if err != nil {
-		response.Status(w, http.StatusBadRequest, "failed to json.Unmarshal(body, u)")
+		resp.Status(w, http.StatusBadRequest, resp.Err("failed to json.Unmarshal(body, u)"))
 		return
 	}
 
 	profile, err := h.usecase.SignUp(r.Context(), *u)
 	if err != nil {
-		response.Status(w, http.StatusBadRequest, "failed in SignUp")
+		resp.Status(w, http.StatusBadRequest, resp.Err("failed in SignUp"))
 		return
 	}
 	fmt.Println(profile)
-	response.Status(w, http.StatusOK, nil)
+	resp.Status(w, http.StatusOK, resp.OK())
 }
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-	response.Status(w, http.StatusOK, nil)
+	resp.Status(w, http.StatusOK, resp.OK())
 }

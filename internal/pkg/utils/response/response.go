@@ -2,6 +2,7 @@ package response
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 )
 
@@ -15,22 +16,30 @@ const (
 	StatusError = "Error"
 )
 
-func Status(w http.ResponseWriter, status int, errorResponse interface{}) {
-	response := Response{
+func OK() Response {
+	return Response{
 		Status: StatusOK,
 	}
-	if errorResponse != nil {
-		response.Status = StatusError
-		response.Error = errorResponse
+}
+
+func Err(msg string) Response {
+	return Response{
+		Status: StatusError,
+		Error:  msg,
+	}
+}
+
+func Status(w http.ResponseWriter, status int, response any) {
+	if response == nil {
+		log.Println("error in response.Status: response is nil")
+		return
 	}
 	responseJson, err := json.Marshal(response)
 	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(status)
-	_, err = w.Write(responseJson)
-	if err != nil {
-		return
-	}
+	w.Write(responseJson) //err:check
 }
