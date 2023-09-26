@@ -50,7 +50,12 @@ func run() error {
 		log.Error("fail open postgres", sl.Err(err))
 		return err
 	}
-	defer db.Close()
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+
+		}
+	}(db) // Обернуть
 
 	if err := db.Ping(); err != nil {
 		slog.Error("fail ping postgres", sl.Err(err))
@@ -59,14 +64,14 @@ func run() error {
 
 	authRepo := authRepo.New(db)
 	authUsecase := authUsecase.New(authRepo)
-	authHandler := authHandler.New(authUsecase)
+	authHandler := authHandler.NewAuthHandler(authUsecase)
 
-	r := mux.NewRouter().PathPrefix("/api/v" + cfg.Version).Subrouter()
+	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
-		auth.HandleFunc("/signUp", authHandler.SignUp).Methods(http.MethodPost)
-		auth.HandleFunc("/signIn", authHandler.SignIn).Methods(http.MethodPost)
-		auth.HandleFunc("/logOut", authHandler.LogOut).Methods(http.MethodGet)
+		auth.HandleFunc("/signUp", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/signIn", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/logOut", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	//user := r.PathPrefix("/user").Subrouter()
@@ -91,6 +96,7 @@ func run() error {
 		ReadTimeout:  cfg.Timeout,
 		WriteTimeout: cfg.Timeout,
 		IdleTimeout:  cfg.IdleTimeout,
+		//ReadHeaderTimeout:
 	}
 
 	sigs := make(chan os.Signal, 1)

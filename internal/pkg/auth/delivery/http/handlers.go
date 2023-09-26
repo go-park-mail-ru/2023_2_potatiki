@@ -16,7 +16,7 @@ type AuthHandler struct {
 	usecase auth.AuthUsecase
 }
 
-func New(usecase auth.AuthUsecase) *AuthHandler {
+func NewAuthHandler(usecase auth.AuthUsecase) *AuthHandler {
 	return &AuthHandler{
 		usecase: usecase,
 	}

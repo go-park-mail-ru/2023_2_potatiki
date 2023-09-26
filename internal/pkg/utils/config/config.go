@@ -23,6 +23,7 @@ type HTTPServer struct {
 	Address     string        `yaml:"address" yaml-default:"localhost:8080"`
 	Timeout     time.Duration `yaml:"timeout" yaml-default:"4s"`
 	IdleTimeout time.Duration `yaml:"idle_timeout" yaml-default:"60s"`
+	// 10 сек
 }
 
 type Database struct {

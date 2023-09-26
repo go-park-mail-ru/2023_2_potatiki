@@ -39,7 +39,7 @@ func Status(w http.ResponseWriter, status int, response any) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json") // Засунуть длину в хеддер статус/err
 	w.WriteHeader(status)
 	w.Write(responseJson) //err:check
 }
