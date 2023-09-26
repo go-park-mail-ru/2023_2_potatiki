@@ -62,6 +62,16 @@ func run() error {
 		auth.HandleFunc("/logOut", authHandler.LogOut).Methods(http.MethodGet)
 	}
 
+	//user := r.PathPrefix("/user").Subrouter()
+	{
+
+	}
+
+	//products := r.PathPrefix("/products").Subrouter()
+	{
+
+	}
+
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
 	})
