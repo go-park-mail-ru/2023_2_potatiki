@@ -11,8 +11,8 @@ import (
 
 type AuthUsecase interface {
 	SignIn(context.Context, models.User) (models.Profile, error)
-	SignUp(context.Context, *models.User) (models.Profile, error)
-	GetProfile(context.Context, uuid.UUID) (models.Profile, error)
+	SignUp(context.Context, models.User) (models.Profile, error)
+	GetProfile(context.Context, uuid.UUID) (models.Profile, error) //Зачем этот метод?
 }
 
 type AuthRepo interface {

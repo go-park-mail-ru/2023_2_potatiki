@@ -8,7 +8,7 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 )
 
 type AuthHandler struct {
@@ -24,48 +24,49 @@ func New(usecase auth.AuthUsecase) *AuthHandler {
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
+		response.Status(w, http.StatusBadRequest, "failed to io.ReadAll(r.Body)")
 		return
 	}
 
 	u := &models.User{}
 	err = json.Unmarshal(body, u)
 	if err != nil {
+		response.Status(w, http.StatusBadRequest, "failed to json.Unmarshal(body, u)")
 		return
 	}
+
+	profile, err := h.usecase.SignIn(r.Context(), *u)
+	if err != nil {
+		response.Status(w, http.StatusBadRequest, "failed in SignUp")
+		return
+	}
+	fmt.Println(profile)
+
+	response.Status(w, http.StatusOK, nil)
 }
 
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		// Так нужно обрабатывать ошибки в handler-aх
-		// TODO : переписать resp.JSON на свою функцию
-		resp.JSON(w, r, resp.Error("failed to io.ReadAll(r.Body)"))
-
-		//Так нужно отвечать что всё хорошо
-		//resp.JSON(w, r, resp.OK())
+		response.Status(w, http.StatusBadRequest, "failed to io.ReadAll(r.Body)")
 		return
 	}
 	u := &models.User{}
 	err = json.Unmarshal(body, u)
 	if err != nil {
-		resp.JSON(w, r, resp.Error("failed to decode request"))
+		response.Status(w, http.StatusBadRequest, "failed to json.Unmarshal(body, u)")
 		return
 	}
 
-	profile, err := h.usecase.SignUp(r.Context(), u)
+	profile, err := h.usecase.SignUp(r.Context(), *u)
 	if err != nil {
-		resp.JSON(w, r, resp.Error("PLOHO"))
+		response.Status(w, http.StatusBadRequest, "failed in SignUp")
 		return
 	}
 	fmt.Println(profile)
-
-}
-
-func (h *AuthHandler) Kek(w http.ResponseWriter, r *http.Request) {
-	//fmt.Fprintln(w, "Single page:", r.URL.String())
-	resp.JSON(w, r, resp.OK())
+	response.Status(w, http.StatusOK, nil)
 }
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-
+	response.Status(w, http.StatusOK, nil)
 }

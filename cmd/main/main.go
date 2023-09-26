@@ -63,9 +63,25 @@ func run() error {
 
 	r := mux.NewRouter().PathPrefix("/api/v" + cfg.Version).Subrouter()
 	auth := r.PathPrefix("/auth").Subrouter()
+	{
+		auth.HandleFunc("/signUp", authHandler.SignUp).Methods(http.MethodPost)
+		auth.HandleFunc("/signIn", authHandler.SignIn).Methods(http.MethodPost)
+		auth.HandleFunc("/logOut", authHandler.LogOut).Methods(http.MethodGet)
+	}
 
-	auth.HandleFunc("/signUp", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
-	auth.HandleFunc("/kek", authHandler.Kek).Methods(http.MethodGet)
+	//user := r.PathPrefix("/user").Subrouter()
+	{
+
+	}
+
+	//products := r.PathPrefix("/products").Subrouter()
+	{
+
+	}
+
+	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Not Found", http.StatusNotFound)
+	})
 
 	http.Handle("/", r)
 
