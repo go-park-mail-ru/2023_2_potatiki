@@ -1,14 +1,13 @@
 package response
 
 import (
-	"bytes"
 	"encoding/json"
 	"net/http"
 )
 
 type Response struct {
-	Status string `json:"status"`
-	Error  string `json:"error,omitempty"`
+	Status string      `json:"status"`
+	Error  interface{} `json:"error,omitempty"`
 }
 
 const (
@@ -16,53 +15,22 @@ const (
 	StatusError = "Error"
 )
 
-func OK() Response {
-	return Response{
+func Status(w http.ResponseWriter, status int, errorResponse interface{}) {
+	response := Response{
 		Status: StatusOK,
 	}
-}
-
-func Error(msg string) Response {
-	return Response{
-		Status: StatusError,
-		Error:  msg,
+	if errorResponse != nil {
+		response.Status = StatusError
+		response.Error = errorResponse
 	}
-}
-
-func Resp(w http.ResponseWriter, status int, body interface{}) {
-	if body != nil {
-		w.Header().Set("Content-Type", "application/json")
-	}
-	w.WriteHeader(status)
-	if body != nil {
-		jsn, err := json.Marshal(body)
-		if err != nil {
-			return
-		}
-		_, _ = w.Write(jsn)
-	}
-}
-
-type contextKey struct {
-	name string
-}
-
-var StatusCtxKey = &contextKey{"Status"}
-
-// JSON marshals 'v' to JSON, automatically escaping HTML and setting the
-// Content-Type as application/json.
-func JSON(w http.ResponseWriter, r *http.Request, v interface{}) {
-	buf := &bytes.Buffer{}
-	enc := json.NewEncoder(buf)
-	enc.SetEscapeHTML(true)
-	if err := enc.Encode(v); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+	responseJson, err := json.Marshal(response)
+	if err != nil {
 		return
 	}
-
 	w.Header().Set("Content-Type", "application/json")
-	if status, ok := r.Context().Value(StatusCtxKey).(int); ok {
-		w.WriteHeader(status)
+	w.WriteHeader(status)
+	_, err = w.Write(responseJson)
+	if err != nil {
+		return
 	}
-	w.Write(buf.Bytes()) //nolint:errcheck
 }
