@@ -5,7 +5,7 @@ import (
 
 	"log/slog"
 
-	"github.com/mrdjeb/rfid-automat/internal/lib/logger/handlers/slogpretty"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/handlers/slogpretty"
 )
 
 const (
