@@ -6,40 +6,46 @@ import (
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
+	_ "github.com/joho/godotenv/autoload" //Load enviroment from .env
 )
 
+// TODO : learn consulapi "github.com/hashicorp/consul/api"
+
 type Config struct {
-	Env string `yaml:"env" env-default:"local"`
-	//StoragePath string `yaml:"storage_path" env-required:"true"`
+	ConfigPath string `env:"CONFIG_PATH" env-default:"config/config.yaml"`
+	Enviroment string `env:"enviroment" env-default:"local" env-description:"avalible: local, dev, prod"`
+	Version    string `yaml:"version" yaml-required:"true"`
 	HTTPServer `yaml:"http_server"`
-	Database   `yaml:"database"`
+	Database
 }
 
 type HTTPServer struct {
-	Address     string        `yaml:"address" env-default:"localhost:8080"`
-	Timeout     time.Duration `yaml:"timeout" env-default:"4s"`
-	IdleTimeout time.Duration `yaml:"idle_timeout" env-default:"60s"`
-	//User        string        `yaml:"user" env-required:"true"`
-	//Password    string        `yaml:"password" env-required:"true" env:"HTTP_SERVER_PASSWORD"`
+	Address     string        `yaml:"address" yaml-default:"localhost:8080"`
+	Timeout     time.Duration `yaml:"timeout" yaml-default:"4s"`
+	IdleTimeout time.Duration `yaml:"idle_timeout" yaml-default:"60s"`
 }
 
 type Database struct {
-	URL string `yaml:"url" env-default:"root:@tcp(:3306)/test"`
+	DBName string `env:"POSTGRES_DB" env-required:"true"`
+	DBPass string `env:"POSTGRES_PASSWORD" env-required:"true"`
+	DBHost string `env:"POSTGRES_HOST" env-default:""`
+	DBPort int    `env:"POSTGRES_PORT" env-required:"true"`
+	DBUser string `env:"POSTGRES_USER" env-required:"true"`
 }
 
 func MustLoad() *Config {
-	configPath := ".env"
-	// check if file exists
-
-	if _, err := os.Stat(configPath); os.IsNotExist(err) {
-		log.Fatalf("config file does not exist: %s", configPath)
-	}
-
 	var cfg Config
-
-	if err := cleanenv.ReadConfig(configPath, &cfg); err != nil {
-		log.Fatalf("cannot read config: %s", err)
+	if err := cleanenv.ReadEnv(&cfg); err != nil {
+		log.Fatalf("cannot read .env file: %s\n (fix: you need to put .env file in main dir)", err)
 	}
 
+	// check if config file exists
+	if _, err := os.Stat(cfg.ConfigPath); os.IsNotExist(err) {
+		log.Fatalf("config file does not exist: %s", cfg.ConfigPath)
+	}
+
+	if err := cleanenv.ReadConfig(cfg.ConfigPath, &cfg); err != nil {
+		log.Fatalf("cannot read %s: %v", cfg.ConfigPath, err)
+	}
 	return &cfg
 }
