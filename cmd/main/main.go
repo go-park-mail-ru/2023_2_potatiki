@@ -36,7 +36,7 @@ func main() {
 }
 
 func run() (err error) {
-	cfg := config.MustLoad()
+	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
 
 	log := logger.Set(cfg.Enviroment)
 
@@ -82,6 +82,7 @@ func run() (err error) {
 	products := r.PathPrefix("/products").Subrouter()
 	{
 		products.HandleFunc("/{id:[0-9]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
+		products.HandleFunc("/", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	//user := r.PathPrefix("/user").Subrouter()

@@ -3,6 +3,7 @@ package http
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
@@ -56,28 +57,34 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	idStr, ok := vars["id"]
-	if !ok || idStr == "" {
-		//log.Info("id is empty")
-		resp.JSON(w, http.StatusAccepted, resp.Err("invalid request"))
-		return
+	var (
+		offset int64
+		page   int64
+	)
+
+	offsetStr := r.URL.Query().Get("offset")
+	if offsetStr == "" {
+		offset = 0
 	}
-	id, err := uuid.Parse(idStr)
+	offset, err := strconv.ParseInt(offsetStr, 10, 64)
 	if err != nil {
-		//log.Info("id is nvalid")
-		resp.JSON(w, http.StatusAccepted, resp.Err("invalid request"))
+		//log.Info("offset is invalid")
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
 
-	product, err := h.usecase.GetProduct(r.Context(), id)
-	if errors.Is(err, repo.ErrPoductNotFound) {
-		//log.Info("product not found", "id", id)
-
-		resp.JSON(w, http.StatusBadRequest, resp.Err("not found"))
-
+	pageStr := r.URL.Query().Get("page")
+	if offsetStr == "" {
+		offset = 0
+	}
+	page, err = strconv.ParseInt(pageStr, 10, 64)
+	if err != nil {
+		//log.Info("offset is invalid")
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
+
+	product, err := h.usecase.GetProducts(r.Context(), offset, page)
 	if err != nil {
 		//log.Error("failed to get product", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("internal error"))
