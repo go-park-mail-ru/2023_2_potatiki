@@ -12,7 +12,7 @@ type AuthUsecase struct {
 	repo auth.AuthRepo
 }
 
-func New(repo auth.AuthRepo) *AuthUsecase {
+func NewAuthUsecase(repo auth.AuthRepo) *AuthUsecase {
 	return &AuthUsecase{
 		repo: repo,
 	}
@@ -22,8 +22,12 @@ func (uc *AuthUsecase) SignIn(context.Context, models.User) (models.Profile, err
 	panic("unimplemented")
 }
 
-func (uc *AuthUsecase) SignUp(context.Context, models.User) (models.Profile, error) {
-	panic("unimplemented")
+func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) {
+	profile, err := uc.repo.CreateUser(ctx, user)
+	if err != nil {
+		return models.Profile{}, err
+	}
+	return profile, nil
 }
 
 func (uc *AuthUsecase) GetProfile(context.Context, uuid.UUID) (models.Profile, error) {
