@@ -51,34 +51,34 @@ func (mr *MockAuthUsecaseMockRecorder) GetProfile(arg0, arg1 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProfile", reflect.TypeOf((*MockAuthUsecase)(nil).GetProfile), arg0, arg1)
 }
 
-// Login mocks base method.
-func (m *MockAuthUsecase) Login(arg0 context.Context, arg1 models.User) (models.Profile, error) {
+// SignIn mocks base method.
+func (m *MockAuthUsecase) SignIn(arg0 context.Context, arg1 models.User) (models.Profile, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Login", arg0, arg1)
+	ret := m.ctrl.Call(m, "SignIn", arg0, arg1)
 	ret0, _ := ret[0].(models.Profile)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Login indicates an expected call of Login.
-func (mr *MockAuthUsecaseMockRecorder) Login(arg0, arg1 interface{}) *gomock.Call {
+// SignIn indicates an expected call of SignIn.
+func (mr *MockAuthUsecaseMockRecorder) SignIn(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockAuthUsecase)(nil).Login), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignIn", reflect.TypeOf((*MockAuthUsecase)(nil).SignIn), arg0, arg1)
 }
 
-// Singup mocks base method.
-func (m *MockAuthUsecase) Singup(arg0 context.Context, arg1 models.User) (models.Profile, error) {
+// SignUp mocks base method.
+func (m *MockAuthUsecase) SignUp(arg0 context.Context, arg1 models.User) (models.Profile, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Singup", arg0, arg1)
+	ret := m.ctrl.Call(m, "SignUp", arg0, arg1)
 	ret0, _ := ret[0].(models.Profile)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// Singup indicates an expected call of Singup.
-func (mr *MockAuthUsecaseMockRecorder) Singup(arg0, arg1 interface{}) *gomock.Call {
+// SignUp indicates an expected call of SignUp.
+func (mr *MockAuthUsecaseMockRecorder) SignUp(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Singup", reflect.TypeOf((*MockAuthUsecase)(nil).Singup), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockAuthUsecase)(nil).SignUp), arg0, arg1)
 }
 
 // MockAuthRepo is a mock of AuthRepo interface.

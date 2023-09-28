@@ -15,10 +15,10 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/config"
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 )
@@ -62,16 +62,16 @@ func run() error {
 		return err
 	}
 
-	authRepo := authRepo.New(db)
-	authUsecase := authUsecase.New(authRepo)
+	authRepo := authRepo.NewAuthRepo(db)
+	authUsecase := authUsecase.NewAuthUsecase(authRepo)
 	authHandler := authHandler.NewAuthHandler(authUsecase)
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
-		auth.HandleFunc("/signUp", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
-		auth.HandleFunc("/signIn", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
-		auth.HandleFunc("/logOut", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
+		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	//user := r.PathPrefix("/user").Subrouter()

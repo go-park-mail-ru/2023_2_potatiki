@@ -1,0 +1,42 @@
+{
+	"info": {
+		"_postman_id": "8ff22c69-047d-44c4-aaa9-834e47e60e53",
+		"name": "Potiki_backened",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30122325"
+	},
+	"item": [
+		{
+			"name": "CheckSignUp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"login\": \"Dima\", \"password\": \"*\" }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:8082/api/auth/signup",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8082",
+					"path": [
+						"api",
+						"auth",
+						"signup"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

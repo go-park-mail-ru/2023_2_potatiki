@@ -22,7 +22,7 @@ func (uc *AuthUsecase) SignIn(context.Context, models.User) (models.Profile, err
 	panic("unimplemented")
 }
 
-func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) {
+func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) { //Валидация
 	profile, err := uc.repo.CreateUser(ctx, user)
 	if err != nil {
 		return models.Profile{}, err
