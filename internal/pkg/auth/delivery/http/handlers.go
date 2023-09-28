@@ -2,7 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 
@@ -37,13 +36,12 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	profile, err := h.usecase.SignIn(r.Context(), *u)
-	fmt.Println(profile)
 	if err != nil {
 		resp.Status(w, http.StatusBadRequest, resp.Err("failed in SignUp"))
 		return
 	}
 
-	resp.Status(w, http.StatusOK, resp.OK())
+	resp.Status(w, http.StatusOK, profile)
 }
 
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {

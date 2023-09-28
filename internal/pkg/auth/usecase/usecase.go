@@ -18,8 +18,12 @@ func NewAuthUsecase(repo auth.AuthRepo) *AuthUsecase {
 	}
 }
 
-func (uc *AuthUsecase) SignIn(context.Context, models.User) (models.Profile, error) {
-	panic("unimplemented")
+func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Profile, error) {
+	profile, err := uc.repo.CheckUser(ctx, user)
+	if err != nil {
+		return models.Profile{}, err
+	}
+	return profile, nil
 }
 
 func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) { //Валидация
