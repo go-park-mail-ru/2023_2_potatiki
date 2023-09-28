@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 type Response struct {
@@ -29,7 +30,7 @@ func Err(msg string) Response {
 	}
 }
 
-func Status(w http.ResponseWriter, status int, response any) {
+func JSON(w http.ResponseWriter, status int, response any) {
 	if response == nil {
 		log.Println("error in response.Status: response is nil")
 		return
@@ -40,6 +41,7 @@ func Status(w http.ResponseWriter, status int, response any) {
 		return
 	}
 	w.Header().Set("Content-Type", "application/json") // Засунуть длину в хеддер статус/err
+	w.Header().Set("Content-Length", strconv.Itoa(len(responseJson)))
 	w.WriteHeader(status)
-	w.Write(responseJson) //err:check
+	w.Write(responseJson) //err:uncheck
 }

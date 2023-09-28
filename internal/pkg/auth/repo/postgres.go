@@ -12,7 +12,7 @@ type AuthRepo struct {
 	db *sql.DB
 }
 
-func New(db *sql.DB) *AuthRepo {
+func NewAuthRepo(db *sql.DB) *AuthRepo {
 	return &AuthRepo{
 		db: db,
 	}

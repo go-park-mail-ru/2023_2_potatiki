@@ -1,49 +1,21 @@
 package http
 
 import (
-	"encoding/json"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"io"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
 )
 
-type AuthHandler struct {
-	useCase auth.AuthUsecase
+type UserHandler struct {
+	usecase user.UserUsecase
 }
 
-func NewAuthHandler(newUseCase auth.AuthUsecase) AuthHandler {
-	return AuthHandler{
-		useCase: newUseCase,
-	}
-}
-
-func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		return
-	}
-
-	u := &models.User{}
-	err = json.Unmarshal(body, u)
-	if err != nil {
-		return
+func NewUserHandler(usecase user.UserUsecase) UserHandler {
+	return UserHandler{
+		usecase: usecase,
 	}
 }
 
-func (h *AuthHandler) SingUp(w http.ResponseWriter, r *http.Request) {
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		return
-	}
-
-	u := &models.User{}
-	err = json.Unmarshal(body, u)
-	if err != nil {
-		return
-	}
-}
-
-func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-
+func (h *UserHandler) Profile(w http.ResponseWriter, r *http.Request) {
+	panic("uninplemented")
 }

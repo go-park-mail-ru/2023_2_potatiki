@@ -20,10 +20,10 @@ type Config struct {
 }
 
 type HTTPServer struct {
-	Address     string        `yaml:"address" yaml-default:"localhost:8080"`
-	Timeout     time.Duration `yaml:"timeout" yaml-default:"4s"`
-	IdleTimeout time.Duration `yaml:"idle_timeout" yaml-default:"60s"`
-	// 10 сек
+	Address           string        `yaml:"address" yaml-default:"localhost:8080"`
+	Timeout           time.Duration `yaml:"timeout" yaml-default:"4s"`
+	IdleTimeout       time.Duration `yaml:"idle_timeout" yaml-default:"60s"`
+	ReadHeaderTimeout time.Duration `yaml:"read_header_timeout" yaml-defualt:"10s"`
 }
 
 type Database struct {
@@ -36,6 +36,7 @@ type Database struct {
 
 func MustLoad() *Config {
 	var cfg Config
+
 	if err := cleanenv.ReadEnv(&cfg); err != nil {
 		log.Fatalf("cannot read .env file: %s\n (fix: you need to put .env file in main dir)", err)
 	}

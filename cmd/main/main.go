@@ -3,11 +3,13 @@ package main
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	_ "github.com/lib/pq"
 
@@ -15,10 +17,13 @@ import (
 
 	"github.com/gorilla/mux"
 
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/config"
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
+	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
+	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 )
@@ -30,7 +35,7 @@ func main() {
 	}
 }
 
-func run() error {
+func run() (err error) {
 	cfg := config.MustLoad()
 
 	log := logger.Set(cfg.Enviroment)
@@ -38,7 +43,6 @@ func run() error {
 	log.Info(
 		"starting zuzu",
 		slog.String("env", cfg.Enviroment),
-		slog.String("version", cfg.Version),
 	)
 	log.Debug("debug messages are enabled")
 
@@ -51,35 +55,36 @@ func run() error {
 		return err
 	}
 	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-
-		}
-	}(db) // Обернуть
+		err = errors.Join(err, db.Close())
+	}(db)
 
 	if err := db.Ping(); err != nil {
 		slog.Error("fail ping postgres", sl.Err(err))
 		return err
 	}
 
-	authRepo := authRepo.New(db)
-	authUsecase := authUsecase.New(authRepo)
+	authRepo := authRepo.NewAuthRepo(db)
+	authUsecase := authUsecase.NewAuthUsecase(authRepo)
 	authHandler := authHandler.NewAuthHandler(authUsecase)
+
+	productsRepo := productsRepo.NewProductsRepo(db)
+	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
+	productsHandler := productsHandler.NewProductsHandler(productsUsecase)
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
-		auth.HandleFunc("/signUp", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
-		auth.HandleFunc("/signIn", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
-		auth.HandleFunc("/logOut", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
+		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	products := r.PathPrefix("/products").Subrouter()
+	{
+		products.HandleFunc("/{id:[0-9]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	//user := r.PathPrefix("/user").Subrouter()
-	{
-
-	}
-
-	//products := r.PathPrefix("/products").Subrouter()
 	{
 
 	}
@@ -91,30 +96,38 @@ func run() error {
 	http.Handle("/", r)
 
 	srv := http.Server{
-		Handler:      r,
-		Addr:         cfg.Address,
-		ReadTimeout:  cfg.Timeout,
-		WriteTimeout: cfg.Timeout,
-		IdleTimeout:  cfg.IdleTimeout,
-		//ReadHeaderTimeout:
+		Handler:           r,
+		Addr:              cfg.Address,
+		ReadTimeout:       cfg.Timeout,
+		WriteTimeout:      cfg.Timeout,
+		IdleTimeout:       cfg.IdleTimeout,
+		ReadHeaderTimeout: cfg.ReadHeaderTimeout,
 	}
 
-	sigs := make(chan os.Signal, 1)
-	done := make(chan struct{})
-	signal.Notify(sigs, syscall.SIGINT, syscall.SIGTERM)
+	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
+	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
 	go func() {
-		<-sigs
-		if err := srv.Shutdown(context.TODO()); err != nil {
-			log.Error("server shutdown returned an err: %v\n", sl.Err(err))
+		if err := srv.ListenAndServe(); err != nil {
+			log.Error("listen and serve returned err: ", sl.Err(err))
 		}
-		close(done)
 	}()
 
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Error("listen and serve returned err: %v", sl.Err(err))
+	log.Info("server started")
+	sig := <-quit // wait for interrupt signal
+	log.Debug("handle quit os/signal: ", sig)
+	log.Info("server stopping...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Error("server shutdown returned an err: ", sl.Err(err))
 		return err
 	}
-	<-done
-	log.Info("server stop")
+
+	log.Info("server stopped")
 	return nil
 }

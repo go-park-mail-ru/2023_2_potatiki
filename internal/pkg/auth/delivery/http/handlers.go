@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -24,50 +25,57 @@ func NewAuthHandler(usecase auth.AuthUsecase) *AuthHandler {
 
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		resp.Status(w, http.StatusBadRequest, resp.Err("failed to io.ReadAll(r.Body)"))
+	if errors.Is(err, io.EOF) {
+		//log.Error("request body is empty")
+		resp.JSON(w, http.StatusBadRequest, resp.Err("empty request"))
 		return
 	}
+	if err != nil {
+		//log.Error("failed to decode request body", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("failed to decode request"))
+		return
+	}
+	//log.Info("request body decoded", slog.Any("request", req))
 
 	u := &models.User{}
 	err = json.Unmarshal(body, u)
 	if err != nil {
-		resp.Status(w, http.StatusBadRequest, resp.Err("failed to json.Unmarshal(body, u)"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("failed to json.Unmarshal(body, u)"))
 		return
 	}
 
 	profile, err := h.usecase.SignIn(r.Context(), *u)
 	if err != nil {
-		resp.Status(w, http.StatusBadRequest, resp.Err("failed in SignUp"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("failed in SignUp"))
 		return
 	}
 	fmt.Println(profile)
 
-	resp.Status(w, http.StatusOK, resp.OK())
+	resp.JSON(w, http.StatusOK, resp.OK())
 }
 
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		resp.Status(w, http.StatusBadRequest, resp.Err("failed to io.ReadAll(r.Body)"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("failed to io.ReadAll(r.Body)"))
 		return
 	}
 	u := &models.User{}
 	err = json.Unmarshal(body, u)
 	if err != nil {
-		resp.Status(w, http.StatusBadRequest, resp.Err("failed to json.Unmarshal(body, u)"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("failed to json.Unmarshal(body, u)"))
 		return
 	}
 
 	profile, err := h.usecase.SignUp(r.Context(), *u)
 	if err != nil {
-		resp.Status(w, http.StatusBadRequest, resp.Err("failed in SignUp"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("failed in SignUp"))
 		return
 	}
 	fmt.Println(profile)
-	resp.Status(w, http.StatusOK, resp.OK())
+	resp.JSON(w, http.StatusOK, resp.OK())
 }
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-	resp.Status(w, http.StatusOK, resp.OK())
+	resp.JSON(w, http.StatusOK, resp.OK())
 }

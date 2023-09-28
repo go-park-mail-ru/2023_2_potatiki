@@ -12,7 +12,7 @@ type AuthUsecase struct {
 	repo auth.AuthRepo
 }
 
-func New(repo auth.AuthRepo) *AuthUsecase {
+func NewAuthUsecase(repo auth.AuthRepo) *AuthUsecase {
 	return &AuthUsecase{
 		repo: repo,
 	}
