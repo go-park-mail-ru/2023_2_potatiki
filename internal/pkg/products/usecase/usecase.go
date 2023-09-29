@@ -19,13 +19,17 @@ func NewProductsUsecase(repo products.ProductsRepo) *ProductsUsecase {
 }
 
 func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
-	profile, err := uc.repo.ReadProduct(ctx, id)
+	product, err := uc.repo.ReadProduct(ctx, id)
 	if err != nil {
 		return models.Product{}, err
 	}
-	return profile, nil
+	return product, nil
 }
 
-func (uc *ProductsUsecase) GetProducts(context.Context, int64, int64) ([]models.Product, error) {
-	panic("unimplemented")
+func (uc *ProductsUsecase) GetProducts(ctx context.Context, offset int64, page int64) ([]models.Product, error) {
+	productsSlice, err := uc.repo.ReadProducts(ctx, offset, page)
+	if err != nil {
+		return []models.Product{}, err
+	}
+	return productsSlice, nil
 }

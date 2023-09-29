@@ -11,7 +11,7 @@ import (
 
 const (
 	getProduct  = "SELECT * FROM public.products WHERE id=$1;"
-	getProducts = "SELECT  public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+	getProducts = "SELECT Id , Name, Description, Price FROM public.products ORDER BY id LIMIT $1 OFFSET $2"
 )
 
 var (
@@ -40,6 +40,24 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 	return pr, nil
 }
 
-func (r *ProductsRepo) ReadProducts(context.Context, int64, int64) ([]models.Product, error) {
-	panic("unimplemented")
+func (r *ProductsRepo) ReadProducts(ctx context.Context, offset int64, pageSize int64) ([]models.Product, error) {
+	var productSlice []models.Product
+	rows, err := r.db.QueryContext(ctx, getProducts, pageSize, offset)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return []models.Product{}, ErrPoductNotFound
+		}
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		if err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price); err != nil {
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	if err = rows.Err(); err != nil {
+		return []models.Product{}, err
+	}
+	return productSlice, nil
 }
