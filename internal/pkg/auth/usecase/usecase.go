@@ -30,7 +30,7 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Pro
 	return profile, nil
 }
 
-func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) { //Валидация
+func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) {
 	if !user.IsValid() {
 		err := errors.New("user is not valid")
 		return models.Profile{}, err
