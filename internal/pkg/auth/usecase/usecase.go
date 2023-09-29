@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/google/uuid"
@@ -18,6 +19,10 @@ func NewAuthUsecase(repo auth.AuthRepo) *AuthUsecase {
 }
 
 func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Profile, error) {
+	if !user.IsValid() {
+		err := errors.New("user is not valid")
+		return models.Profile{}, err
+	}
 	profile, err := uc.repo.CheckUser(ctx, user)
 	if err != nil {
 		return models.Profile{}, err
@@ -26,6 +31,10 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Pro
 }
 
 func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) { //Валидация
+	if !user.IsValid() {
+		err := errors.New("user is not valid")
+		return models.Profile{}, err
+	}
 	profile, err := uc.repo.CreateUser(ctx, user)
 	if err != nil {
 		return models.Profile{}, err

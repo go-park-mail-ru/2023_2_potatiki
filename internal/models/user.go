@@ -7,6 +7,10 @@ type User struct {
 	PasswordHash string `json:"password"`
 }
 
+func (user User) IsValid() bool {
+	return len(user.Login) > 7 && len(user.Login) < 50 //Вопрос про валидацию хэша
+}
+
 type Profile struct {
 	Id          uuid.UUID `json:"id"`
 	Login       string    `json:"login"`
