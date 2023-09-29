@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/google/uuid"
@@ -34,6 +33,10 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Pro
 	return profile, nil
 }
 
-func (uc *AuthUsecase) GetProfile(context.Context, uuid.UUID) (models.Profile, error) {
-	panic("unimplemented")
+func (uc *AuthUsecase) GetProfile(ctx context.Context, userId uuid.UUID) (models.Profile, error) {
+	profile, err := uc.repo.ReadProfile(ctx, userId)
+	if err != nil {
+		return models.Profile{}, err
+	}
+	return profile, nil
 }

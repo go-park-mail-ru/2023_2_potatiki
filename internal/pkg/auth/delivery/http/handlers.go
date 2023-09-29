@@ -99,3 +99,41 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, resp.OK())
 }
+
+func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if errors.Is(err, io.EOF) {
+		h.log.Error("request body is empty")
+		resp.JSON(w, http.StatusBadRequest, resp.Err("request body is empty"))
+		return
+	}
+	if err != nil {
+		h.log.Error("failed to decode request body", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+		return
+	}
+	h.log.Debug("request body decoded", slog.Any("request", r))
+
+	ud := &models.UserId{}
+	err = json.Unmarshal(body, ud)
+	if err != nil {
+		h.log.Error("failed to unmarshal request body", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+		return
+	}
+
+	profile, err := h.uc.GetProfile(r.Context(), ud.Id)
+
+	if err != nil {
+		if errors.Is(err, repo.ErrInvalidPass) {
+			h.log.Error("failed to get profile", sl.Err(err))
+			resp.JSON(w, http.StatusBadRequest, resp.Err("invalid uuid"))
+		}
+		h.log.Error("failed to get profile", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("internal error"))
+		return
+	}
+
+	h.log.Debug("got profile", slog.Any("profile", profile.Id))
+	resp.JSON(w, http.StatusOK, profile)
+}

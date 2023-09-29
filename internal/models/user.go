@@ -13,3 +13,7 @@ type Profile struct {
 	Description string    `json:"description,omitempty"`
 	ImgSrc      string    `json:"img"`
 }
+
+type UserId struct {
+	Id uuid.UUID `json:"id"`
+}

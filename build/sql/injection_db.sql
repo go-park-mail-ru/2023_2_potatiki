@@ -6,5 +6,15 @@ CREATE TABLE IF NOT EXISTS public.profiles
     imgsrc text,
     passwordhash text,
     CONSTRAINT "ProfileId_pkey" PRIMARY KEY (id),
-    CONSTRAINT "ProfileLogin_pkey" UNIQUE (login)
+    CONSTRAINT "ProfileLogin_unique" UNIQUE (login)
+)
+
+CREATE TABLE IF NOT EXISTS public.products
+(
+    id uuid NOT NULL,
+    nameProduct text,
+    description text,
+    price int,
+    CONSTRAINT "ProductId_pkey" PRIMARY KEY (id),
+    CONSTRAINT "ProductName_unique" UNIQUE (nameProduct)
 )

@@ -4,14 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
 )
 
 const (
-	profileExists = "SELECT Id, Description, ImgSrc, PasswordHash FROM public.profiles WHERE login=$1;"
-	addProfile    = "INSERT INTO public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM public.profiles WHERE login=$1;"
+	profileExistsById    = "SELECT Login, Description, ImgSrc FROM public.profiles WHERE Id=$1;"
+	addProfile           = "INSERT INTO public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
 )
 
 var (
@@ -46,13 +46,13 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Pro
 }
 
 func (r *AuthRepo) CheckUser(ctx context.Context, user models.User) (models.Profile, error) {
-	row := r.db.QueryRowContext(ctx, profileExists, user.Login)
+	row := r.db.QueryRowContext(ctx, profileExistsByLogin, user.Login)
 	var (
-		userId          uuid.UUID
-		userDescription string
-		userImgSrc      string
+		userId           uuid.UUID
+		userDescription  string
+		userImgSrc       string
+		userPasswordHash string
 	)
-	var userPasswordHash string
 	if err := row.Scan(&userId, &userDescription, &userImgSrc, &userPasswordHash); err != nil {
 		return models.Profile{}, err
 	}
@@ -67,6 +67,20 @@ func (r *AuthRepo) CheckUser(ctx context.Context, user models.User) (models.Prof
 	}
 	return models.Profile{}, ErrInvalidPass
 }
-func (r *AuthRepo) ReadProfile(context.Context, uuid.UUID) (models.Profile, error) {
-	panic("unimplemented")
+func (r *AuthRepo) ReadProfile(ctx context.Context, userId uuid.UUID) (models.Profile, error) {
+	row := r.db.QueryRowContext(ctx, profileExistsById, userId)
+	var (
+		userLogin       string
+		userDescription string
+		userImgSrc      string
+	)
+	if err := row.Scan(&userLogin, &userDescription, &userImgSrc); err != nil {
+		return models.Profile{}, err
+	}
+	return models.Profile{
+		Id:          userId,
+		Login:       userLogin,
+		Description: userDescription,
+		ImgSrc:      userImgSrc,
+	}, nil
 }
