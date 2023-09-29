@@ -106,8 +106,6 @@ func run() (err error) {
 		ReadHeaderTimeout: cfg.ReadHeaderTimeout,
 	}
 
-	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
-	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
@@ -118,7 +116,7 @@ func run() (err error) {
 	}()
 
 	log.Info("server started")
-	sig := <-quit // wait for interrupt signal
+	sig := <-quit
 	log.Debug("handle quit os/signal: ", sig)
 	log.Info("server stopping...")
 
