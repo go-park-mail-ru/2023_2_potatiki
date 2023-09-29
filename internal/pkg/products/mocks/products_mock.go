@@ -13,31 +13,31 @@ import (
 	uuid "github.com/google/uuid"
 )
 
-// MockProductUsecase is a mock of ProductUsecase interface.
-type MockProductUsecase struct {
+// MockProductsUsecase is a mock of ProductsUsecase interface.
+type MockProductsUsecase struct {
 	ctrl     *gomock.Controller
-	recorder *MockProductUsecaseMockRecorder
+	recorder *MockProductsUsecaseMockRecorder
 }
 
-// MockProductUsecaseMockRecorder is the mock recorder for MockProductUsecase.
-type MockProductUsecaseMockRecorder struct {
-	mock *MockProductUsecase
+// MockProductsUsecaseMockRecorder is the mock recorder for MockProductsUsecase.
+type MockProductsUsecaseMockRecorder struct {
+	mock *MockProductsUsecase
 }
 
-// NewMockProductUsecase creates a new mock instance.
-func NewMockProductUsecase(ctrl *gomock.Controller) *MockProductUsecase {
-	mock := &MockProductUsecase{ctrl: ctrl}
-	mock.recorder = &MockProductUsecaseMockRecorder{mock}
+// NewMockProductsUsecase creates a new mock instance.
+func NewMockProductsUsecase(ctrl *gomock.Controller) *MockProductsUsecase {
+	mock := &MockProductsUsecase{ctrl: ctrl}
+	mock.recorder = &MockProductsUsecaseMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockProductUsecase) EXPECT() *MockProductUsecaseMockRecorder {
+func (m *MockProductsUsecase) EXPECT() *MockProductsUsecaseMockRecorder {
 	return m.recorder
 }
 
 // GetProduct mocks base method.
-func (m *MockProductUsecase) GetProduct(arg0 context.Context, arg1 uuid.UUID) (models.Product, error) {
+func (m *MockProductsUsecase) GetProduct(arg0 context.Context, arg1 uuid.UUID) (models.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProduct", arg0, arg1)
 	ret0, _ := ret[0].(models.Product)
@@ -46,13 +46,13 @@ func (m *MockProductUsecase) GetProduct(arg0 context.Context, arg1 uuid.UUID) (m
 }
 
 // GetProduct indicates an expected call of GetProduct.
-func (mr *MockProductUsecaseMockRecorder) GetProduct(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockProductsUsecaseMockRecorder) GetProduct(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProduct", reflect.TypeOf((*MockProductUsecase)(nil).GetProduct), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProduct", reflect.TypeOf((*MockProductsUsecase)(nil).GetProduct), arg0, arg1)
 }
 
 // GetProducts mocks base method.
-func (m *MockProductUsecase) GetProducts(arg0 context.Context, arg1, arg2 int64) ([]models.Product, error) {
+func (m *MockProductsUsecase) GetProducts(arg0 context.Context, arg1, arg2 int64) ([]models.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetProducts", arg0, arg1, arg2)
 	ret0, _ := ret[0].([]models.Product)
@@ -61,36 +61,36 @@ func (m *MockProductUsecase) GetProducts(arg0 context.Context, arg1, arg2 int64)
 }
 
 // GetProducts indicates an expected call of GetProducts.
-func (mr *MockProductUsecaseMockRecorder) GetProducts(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockProductsUsecaseMockRecorder) GetProducts(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProducts", reflect.TypeOf((*MockProductUsecase)(nil).GetProducts), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProducts", reflect.TypeOf((*MockProductsUsecase)(nil).GetProducts), arg0, arg1, arg2)
 }
 
-// MockProductRepo is a mock of ProductRepo interface.
-type MockProductRepo struct {
+// MockProductsRepo is a mock of ProductsRepo interface.
+type MockProductsRepo struct {
 	ctrl     *gomock.Controller
-	recorder *MockProductRepoMockRecorder
+	recorder *MockProductsRepoMockRecorder
 }
 
-// MockProductRepoMockRecorder is the mock recorder for MockProductRepo.
-type MockProductRepoMockRecorder struct {
-	mock *MockProductRepo
+// MockProductsRepoMockRecorder is the mock recorder for MockProductsRepo.
+type MockProductsRepoMockRecorder struct {
+	mock *MockProductsRepo
 }
 
-// NewMockProductRepo creates a new mock instance.
-func NewMockProductRepo(ctrl *gomock.Controller) *MockProductRepo {
-	mock := &MockProductRepo{ctrl: ctrl}
-	mock.recorder = &MockProductRepoMockRecorder{mock}
+// NewMockProductsRepo creates a new mock instance.
+func NewMockProductsRepo(ctrl *gomock.Controller) *MockProductsRepo {
+	mock := &MockProductsRepo{ctrl: ctrl}
+	mock.recorder = &MockProductsRepoMockRecorder{mock}
 	return mock
 }
 
 // EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockProductRepo) EXPECT() *MockProductRepoMockRecorder {
+func (m *MockProductsRepo) EXPECT() *MockProductsRepoMockRecorder {
 	return m.recorder
 }
 
 // ReadProduct mocks base method.
-func (m *MockProductRepo) ReadProduct(arg0 context.Context, arg1 uuid.UUID) (models.Product, error) {
+func (m *MockProductsRepo) ReadProduct(arg0 context.Context, arg1 uuid.UUID) (models.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadProduct", arg0, arg1)
 	ret0, _ := ret[0].(models.Product)
@@ -99,13 +99,13 @@ func (m *MockProductRepo) ReadProduct(arg0 context.Context, arg1 uuid.UUID) (mod
 }
 
 // ReadProduct indicates an expected call of ReadProduct.
-func (mr *MockProductRepoMockRecorder) ReadProduct(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockProductsRepoMockRecorder) ReadProduct(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProduct", reflect.TypeOf((*MockProductRepo)(nil).ReadProduct), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProduct", reflect.TypeOf((*MockProductsRepo)(nil).ReadProduct), arg0, arg1)
 }
 
 // ReadProducts mocks base method.
-func (m *MockProductRepo) ReadProducts(arg0 context.Context, arg1, arg2 int64) ([]models.Product, error) {
+func (m *MockProductsRepo) ReadProducts(arg0 context.Context, arg1, arg2 int64) ([]models.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadProducts", arg0, arg1, arg2)
 	ret0, _ := ret[0].([]models.Product)
@@ -114,7 +114,7 @@ func (m *MockProductRepo) ReadProducts(arg0 context.Context, arg1, arg2 int64) (
 }
 
 // ReadProducts indicates an expected call of ReadProducts.
-func (mr *MockProductRepoMockRecorder) ReadProducts(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockProductsRepoMockRecorder) ReadProducts(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProducts", reflect.TypeOf((*MockProductRepo)(nil).ReadProducts), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProducts", reflect.TypeOf((*MockProductsRepo)(nil).ReadProducts), arg0, arg1, arg2)
 }

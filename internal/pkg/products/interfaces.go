@@ -7,7 +7,7 @@ import (
 	"github.com/google/uuid"
 )
 
-//go:generate mockgen -source=interfaces.go -destination=./mocks/products_mock.go -package=mock
+//go:generate mockgen -source interfaces.go -destination ./mocks/products_mock.go -package mock
 
 type ProductsUsecase interface {
 	GetProduct(context.Context, uuid.UUID) (models.Product, error)

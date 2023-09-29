@@ -9,6 +9,15 @@ import (
 	"github.com/google/uuid"
 )
 
+const (
+	getProduct = "SELECT * FROM public.products WHERE id=$1;"
+	//addProfile    = "INSERT INTO public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+)
+
+var (
+	ErrPoductNotFound = errors.New("product not found")
+)
+
 type ProductsRepo struct {
 	db *sql.DB
 }
@@ -19,12 +28,16 @@ func NewProductsRepo(db *sql.DB) *ProductsRepo {
 	}
 }
 
-var (
-	ErrPoductNotFound = errors.New("product not found")
-)
-
-func (r *ProductsRepo) ReadProduct(context.Context, uuid.UUID) (models.Product, error) {
-	panic("unimplemented")
+func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
+	pr := models.Product{}
+	err := r.db.QueryRowContext(ctx, getProduct, id).Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Product{}, ErrPoductNotFound
+		}
+		return models.Product{}, err
+	}
+	return pr, nil
 }
 
 func (r *ProductsRepo) ReadProducts(context.Context, int64, int64) ([]models.Product, error) {

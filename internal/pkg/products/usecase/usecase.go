@@ -18,8 +18,12 @@ func NewProductsUsecase(repo products.ProductsRepo) *ProductsUsecase {
 	}
 }
 
-func (uc *ProductsUsecase) GetProduct(context.Context, uuid.UUID) (models.Product, error) {
-	panic("unimplemented")
+func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
+	profile, err := uc.repo.ReadProduct(ctx, id)
+	if err != nil {
+		return models.Product{}, err
+	}
+	return profile, nil
 }
 
 func (uc *ProductsUsecase) GetProducts(context.Context, int64, int64) ([]models.Product, error) {

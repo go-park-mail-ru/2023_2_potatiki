@@ -5,20 +5,25 @@ import (
 	"net/http"
 	"strconv"
 
+	"log/slog"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
 )
 
 type ProductHandler struct {
-	usecase products.ProductsUsecase
+	log *slog.Logger
+	uc  products.ProductsUsecase
 }
 
-func NewProductsHandler(usecase products.ProductsUsecase) ProductHandler {
+func NewProductsHandler(log *slog.Logger, uc products.ProductsUsecase) ProductHandler {
 	return ProductHandler{
-		usecase: usecase,
+		log: log,
+		uc:  uc,
 	}
 }
 
@@ -26,33 +31,31 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr, ok := vars["id"]
 	if !ok || idStr == "" {
-		//log.Info("id is empty")
+		h.log.Error("id is empty")
 		resp.JSON(w, http.StatusAccepted, resp.Err("invalid request"))
 		return
 	}
 	id, err := uuid.Parse(idStr)
 	if err != nil {
-		//log.Info("id is nvalid")
+		h.log.Error("id is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusAccepted, resp.Err("invalid request"))
 		return
 	}
 
-	product, err := h.usecase.GetProduct(r.Context(), id)
+	product, err := h.uc.GetProduct(r.Context(), id)
 	if errors.Is(err, repo.ErrPoductNotFound) {
-		//log.Info("product not found", "id", id)
-
-		resp.JSON(w, http.StatusBadRequest, resp.Err("not found"))
+		h.log.Error("product not found", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("product not found"))
 
 		return
 	}
 	if err != nil {
-		//log.Error("failed to get product", sl.Err(err))
+		h.log.Error("failed to get product", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("internal error"))
 		return
 	}
 
-	//log.Info("got product", slog.String("product", product.Name))
-
+	h.log.Debug("got product", slog.String("product", product.Name))
 	resp.JSON(w, http.StatusOK, product)
 }
 
@@ -68,7 +71,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	}
 	offset, err := strconv.ParseInt(offsetStr, 10, 64)
 	if err != nil {
-		//log.Info("offset is invalid")
+		h.log.Error("offset is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
@@ -79,19 +82,18 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	}
 	page, err = strconv.ParseInt(pageStr, 10, 64)
 	if err != nil {
-		//log.Info("offset is invalid")
+		h.log.Error("page is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
 
-	product, err := h.usecase.GetProducts(r.Context(), offset, page)
+	products, err := h.uc.GetProducts(r.Context(), offset, page)
 	if err != nil {
-		//log.Error("failed to get product", sl.Err(err))
+		h.log.Error("failed to get products", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("internal error"))
 		return
 	}
 
-	//log.Info("got product", slog.String("product", product.Name))
-
-	resp.JSON(w, http.StatusOK, product)
+	h.log.Debug("got products", "len", len(products))
+	resp.JSON(w, http.StatusOK, products)
 }
