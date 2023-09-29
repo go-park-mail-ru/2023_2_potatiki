@@ -47,40 +47,26 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Pro
 
 func (r *AuthRepo) CheckUser(ctx context.Context, user models.User) (models.Profile, error) {
 	row := r.db.QueryRowContext(ctx, profileExistsByLogin, user.Login)
-	var (
-		userId           uuid.UUID
-		userDescription  string
-		userImgSrc       string
-		userPasswordHash string
-	)
-	if err := row.Scan(&userId, &userDescription, &userImgSrc, &userPasswordHash); err != nil {
+	pr := models.Profile{
+		Login: user.Login,
+	}
+	var userPasswordHash string
+	if err := row.Scan(&pr.Id, &pr.Description, &pr.ImgSrc, &userPasswordHash); err != nil {
 		return models.Profile{}, err
 	}
 
 	if userPasswordHash == user.PasswordHash {
-		return models.Profile{
-			Id:          userId,
-			Login:       user.Login,
-			Description: userDescription,
-			ImgSrc:      userImgSrc,
-		}, nil
+		return pr, nil
 	}
 	return models.Profile{}, ErrInvalidPass
 }
 func (r *AuthRepo) ReadProfile(ctx context.Context, userId uuid.UUID) (models.Profile, error) {
 	row := r.db.QueryRowContext(ctx, profileExistsById, userId)
-	var (
-		userLogin       string
-		userDescription string
-		userImgSrc      string
-	)
-	if err := row.Scan(&userLogin, &userDescription, &userImgSrc); err != nil {
+	pr := models.Profile{
+		Id: userId,
+	}
+	if err := row.Scan(&pr.Login, &pr.Description, &pr.ImgSrc); err != nil {
 		return models.Profile{}, err
 	}
-	return models.Profile{
-		Id:          userId,
-		Login:       userLogin,
-		Description: userDescription,
-		ImgSrc:      userImgSrc,
-	}, nil
+	return pr, nil
 }

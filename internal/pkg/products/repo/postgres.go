@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	getProduct = "SELECT * FROM public.products WHERE id=$1;"
-	//addProfile    = "INSERT INTO public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+	getProduct  = "SELECT * FROM public.products WHERE id=$1;"
+	getProducts = "SELECT  public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
 )
 
 var (
