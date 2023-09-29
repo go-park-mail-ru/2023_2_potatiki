@@ -67,12 +67,12 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	body, err := io.ReadAll(r.Body)
-	if errors.Is(err, io.EOF) {
-		h.log.Error("request body is empty")
-		resp.JSON(w, http.StatusBadRequest, resp.Err("request body is empty"))
-		return
-	}
 	if err != nil {
+		if errors.Is(err, io.EOF) {
+			h.log.Error("request body is empty")
+			resp.JSON(w, http.StatusBadRequest, resp.Err("request body is empty"))
+			return
+		}
 		h.log.Error("failed to decode request body", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return

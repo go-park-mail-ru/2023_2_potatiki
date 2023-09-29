@@ -77,13 +77,13 @@ func run() (err error) {
 		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
-		auth.HandleFunc("/getprofile", authHandler.GetProfile).Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/get_profile", authHandler.GetProfile).Methods(http.MethodPost, http.MethodOptions)
 	}
 
 	products := r.PathPrefix("/products").Subrouter()
 	{
 		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
-		products.HandleFunc("/", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
+		products.HandleFunc("/get_all", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	//user := r.PathPrefix("/user").Subrouter()

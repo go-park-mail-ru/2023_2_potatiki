@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	getProduct  = "SELECT * FROM public.products WHERE id=$1;"
-	getProducts = "SELECT Id , NameProduct, Description, Price FROM public.products ORDER BY id LIMIT $1 OFFSET $2"
+	getProduct  = "SELECT * FROM products WHERE id=$1;"
+	getProducts = "SELECT Id , NameProduct, Description, Price FROM products ORDER BY id LIMIT $1 OFFSET $2"
 )
 
 var (
@@ -56,8 +56,12 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, offset int64, pageSize 
 		}
 		productSlice = append(productSlice, product)
 	}
-	if err = rows.Err(); err != nil {
-		return []models.Product{}, err
-	}
+	defer func(rows *sql.Rows) {
+		err = rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
+
 	return productSlice, nil
 }

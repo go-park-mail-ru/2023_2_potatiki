@@ -9,9 +9,9 @@ import (
 )
 
 const (
-	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM public.profiles WHERE login=$1;"
-	profileExistsById    = "SELECT Login, Description, ImgSrc FROM public.profiles WHERE Id=$1;"
-	addProfile           = "INSERT INTO public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM profiles WHERE login=$1;"
+	profileExistsById    = "SELECT Login, Description, ImgSrc FROM profiles WHERE Id=$1;"
+	addProfile           = "INSERT INTO profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
 )
 
 var (
