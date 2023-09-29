@@ -82,7 +82,7 @@ func run() (err error) {
 
 	products := r.PathPrefix("/products").Subrouter()
 	{
-		products.HandleFunc("/{id:[0-9]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
+		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
 		products.HandleFunc("/", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
 	}
 

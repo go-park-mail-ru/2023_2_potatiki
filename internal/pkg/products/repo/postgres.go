@@ -11,7 +11,7 @@ import (
 
 const (
 	getProduct  = "SELECT * FROM public.products WHERE id=$1;"
-	getProducts = "SELECT Id , Name, Description, Price FROM public.products ORDER BY id LIMIT $1 OFFSET $2"
+	getProducts = "SELECT Id , NameProduct, Description, Price FROM public.products ORDER BY id LIMIT $1 OFFSET $2"
 )
 
 var (

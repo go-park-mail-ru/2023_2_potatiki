@@ -77,8 +77,8 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	}
 
 	pageStr := r.URL.Query().Get("page")
-	if offsetStr == "" {
-		offset = 0
+	if pageStr == "" {
+		page = 0
 	}
 	page, err = strconv.ParseInt(pageStr, 10, 64)
 	if err != nil {
