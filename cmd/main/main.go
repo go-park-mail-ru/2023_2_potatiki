@@ -65,11 +65,11 @@ func run() (err error) {
 
 	authRepo := authRepo.NewAuthRepo(db)
 	authUsecase := authUsecase.NewAuthUsecase(authRepo)
-	authHandler := authHandler.NewAuthHandler(authUsecase)
+	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
-	productsHandler := productsHandler.NewProductsHandler(productsUsecase)
+	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 	auth := r.PathPrefix("/auth").Subrouter()

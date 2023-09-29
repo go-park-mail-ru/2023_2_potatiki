@@ -14,6 +14,10 @@ const (
 	addProfile    = "INSERT INTO public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
 )
 
+var (
+	ErrInvalidPass = errors.New("invalid pass")
+)
+
 type AuthRepo struct {
 	db *sql.DB
 }
@@ -60,11 +64,8 @@ func (r *AuthRepo) CheckUser(ctx context.Context, user models.User) (models.Prof
 			Description: userDescription,
 			ImgSrc:      userImgSrc,
 		}, nil
-	} else if userPasswordHash == "" {
-		return models.Profile{}, errors.New("no password in database")
 	}
-	
-	return models.Profile{}, errors.New("wrong password")
+	return models.Profile{}, ErrInvalidPass
 }
 func (r *AuthRepo) ReadProfile(context.Context, uuid.UUID) (models.Profile, error) {
 	panic("unimplemented")

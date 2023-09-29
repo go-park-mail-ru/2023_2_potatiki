@@ -16,15 +16,13 @@ type PrettyHandlerOptions struct {
 }
 
 type PrettyHandler struct {
-	opts PrettyHandlerOptions
+	//opts PrettyHandlerOptions
 	slog.Handler
 	l     *stdLog.Logger
 	attrs []slog.Attr
 }
 
-func (opts PrettyHandlerOptions) NewPrettyHandler(
-	out io.Writer,
-) *PrettyHandler {
+func (opts PrettyHandlerOptions) NewPrettyHandler(out io.Writer) *PrettyHandler {
 	h := &PrettyHandler{
 		Handler: slog.NewJSONHandler(out, opts.SlogOpts),
 		l:       stdLog.New(out, "", 0),
