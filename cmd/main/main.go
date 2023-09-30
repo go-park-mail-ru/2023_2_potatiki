@@ -58,7 +58,7 @@ func run() (err error) {
 		err = errors.Join(err, db.Close())
 	}(db)
 
-	if err := db.Ping(); err != nil {
+	if err = db.Ping(); err != nil {
 		slog.Error("fail ping postgres", sl.Err(err))
 		return err
 	}
@@ -73,7 +73,6 @@ func run() (err error) {
 		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
-		//auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).Methods(http.MethodGet, http.MethodOptions)
 		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).Methods(http.MethodGet, http.MethodOptions)
 	}
 

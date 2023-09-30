@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwts"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
@@ -12,6 +13,7 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
+	"time"
 )
 
 type AuthHandler struct {
@@ -82,31 +84,52 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, err := h.uc.SignUp(r.Context(), *u)
+	profile, token, err := h.uc.SignUp(r.Context(), *u)
 	if err != nil {
 		h.log.Error("failed to signup", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
 		return
 	}
+
+	LoginCookie := &http.Cookie{
+		Name:     "Default",
+		Value:    token,
+		HttpOnly: true,
+		Expires:  time.Now().UTC().Add(time.Hour * 6),
+	}
+	http.SetCookie(w, LoginCookie)
 	resp.JSON(w, http.StatusOK, profile)
 }
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
+	LoginCookie := &http.Cookie{
+		Name:     "Default",
+		Value:    "",
+		HttpOnly: true,
+		Expires:  time.Now().UTC().Add(time.Hour * 6),
+	}
+	http.SetCookie(w, LoginCookie)
 	resp.JSON(w, http.StatusOK, nil)
 }
 
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	flag, err := jwts.CheckToken(r)
+	if !flag {
+		h.log.Error("jws token is invalid", sl.Err(err))
+		resp.JSON(w, http.StatusUnauthorized, nil)
+		return
+	}
 	vars := mux.Vars(r)
 	idStr, ok := vars["id"]
 	if !ok || idStr == "" {
 		h.log.Error("id is empty")
-		resp.JSON(w, http.StatusAccepted, resp.Err("invalid request"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
 	idProfile, err := uuid.Parse(idStr)
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
-		resp.JSON(w, http.StatusAccepted, resp.Err("invalid request"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
 

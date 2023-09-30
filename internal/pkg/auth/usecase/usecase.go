@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwts"
 	"github.com/google/uuid"
 )
 
@@ -30,16 +31,17 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Pro
 	return profile, nil
 }
 
-func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) {
+func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, string, error) {
 	if !user.IsValid() {
 		err := errors.New("user is not valid")
-		return models.Profile{}, err
+		return models.Profile{}, "", err
 	}
+	token, err := jwts.MakeToken(user)
 	profile, err := uc.repo.CreateUser(ctx, user)
 	if err != nil {
-		return models.Profile{}, err
+		return models.Profile{}, "", err
 	}
-	return profile, nil
+	return profile, token, nil
 }
 
 func (uc *AuthUsecase) GetProfile(ctx context.Context, userId uuid.UUID) (models.Profile, error) {
