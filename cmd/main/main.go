@@ -67,10 +67,6 @@ func run() (err error) {
 	authUsecase := authUsecase.NewAuthUsecase(authRepo)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
-	productsRepo := productsRepo.NewProductsRepo(db)
-	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
-	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
-
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
@@ -79,6 +75,10 @@ func run() (err error) {
 		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
 		auth.HandleFunc("/get_profile", authHandler.GetProfile).Methods(http.MethodPost, http.MethodOptions)
 	}
+
+	productsRepo := productsRepo.NewProductsRepo(db)
+	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
+	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
 
 	products := r.PathPrefix("/products").Subrouter()
 	{

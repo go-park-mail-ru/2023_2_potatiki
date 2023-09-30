@@ -32,12 +32,13 @@ func Err(msg string) Response {
 
 func JSON(w http.ResponseWriter, status int, response any) {
 	if response == nil {
+		w.WriteHeader(http.StatusBadRequest)
 		log.Println("error in response.Status: response is nil")
 		return
 	}
 	responseJson, err := json.Marshal(response)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 	w.Header().Set("Content-Type", "application/json") // Засунуть длину в хеддер статус/err
