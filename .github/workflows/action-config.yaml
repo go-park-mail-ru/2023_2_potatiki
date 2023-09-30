@@ -1,0 +1,120 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - deploy
+
+env:
+  REGISTRY: "mrdjeb"
+  IMAGE_NAME: "zuzu-main-web"
+  CONTAINER_NAME: "zuzu-main"
+  FOLDER_COMPOSE: "zuzu-deploy"
+  GITHUB_SHA_SHORT:
+
+
+jobs:
+  build_and_push:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Set env
+        run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | head -c 8)" >> $GITHUB_ENV
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          file: ./Dockerfile.multistage
+          build-args: |
+              IMAGE_NAME=${{ env.IMAGE_NAME }}
+              REGISTRY=${{ env.REGISTRY }}
+              GITHUB_SHA_SHORT=${{ env.GITHUB_SHA_SHORT }}
+              
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_and_push
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Deploy docker-compose.yml via SSH action
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.HOST_MPT }}
+          port: ${{ secrets.PORT_MPT }}
+          username: ${{ secrets.USERNAME_MPT }}
+          key: ${{ secrets.SSHKEY_MPT }}
+          rm: true
+          source: docker-compose.yml
+          target: ~/${{ env.FOLDER_COMPOSE }}
+
+
+      - name: Deploy to DockerHub via SSH action
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.HOST_MPT }}
+          port: ${{ secrets.PORT_MPT }}
+          username: ${{ secrets.USERNAME_MPT }}
+          key: ${{ secrets.SSHKEY_MPT }}
+          envs: REGISTRY, IMAGE_NAME, CONTAINER_NAME, GITHUB_SHA, FOLDER_COMPOSE
+          script: |
+            cd $(echo $FOLDER_COMPOSE)
+
+            # Make .env variables file
+            cat <<EOF>.env
+            POSTGRES_DB=${{ secrets.DB_NAME }}
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
+            POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+            PGADMIN_DEFAULT_EMAIL='postgres@gmail.com'
+            PGADMIN_DEFAULT_PASSWORD='postgres'
+
+            CLIENT_ORIGIN_DOMAIN=owa.patentcore.ru
+
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            JWT_REFRESH_SECRET_KEY=${{ secrets.JWT_REFRESH_SECRET_KEY }}
+       
+            IMAGE_NAME=${{ env.IMAGE_NAME }}
+            REGISTRY=${{ env.REGISTRY }}
+            CONTAINER_NAME=${{ env.CONTAINER_NAME }}
+            EOF
+            echo "GITHUB_SHA_SHORT=`echo $GITHUB_SHA | head -c8`" >> .env
+
+            # Make certificate for site files
+            echo "${{ secrets.CRT_FILE }}" > cert.crt
+            echo "${{ secrets.KEY_FILE }}" > cert.key
+
+            # Make init script1 for postgres container, install the extension "uuid-ossp" for postgres
+            echo "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";" > init_uuid.sql
+
+            # <==========!==========>
+            # Log in to DockerHub
+            echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
+            
+            # Pull image DockerHub
+            docker pull $REGISTRY/$IMAGE_NAME:latest
+
+            # Restart docker-compose
+            docker system prune -f
+            docker compose down
+            docker compose up -d
+            # <==========!==========>
