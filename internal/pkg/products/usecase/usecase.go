@@ -26,8 +26,8 @@ func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models
 	return product, nil
 }
 
-func (uc *ProductsUsecase) GetProducts(ctx context.Context, offset int64, page int64) ([]models.Product, error) {
-	productsSlice, err := uc.repo.ReadProducts(ctx, offset, page)
+func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging int64, count int64) ([]models.Product, error) {
+	productsSlice, err := uc.repo.ReadProducts(ctx, paging, count)
 	if err != nil {
 		return []models.Product{}, err
 	}

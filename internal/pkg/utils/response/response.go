@@ -17,11 +17,11 @@ const (
 	StatusError = "Error"
 )
 
-func OK() Response {
-	return Response{
-		Status: StatusOK,
-	}
-}
+//func OK() Response {
+//	return Response{
+//		Status: StatusOK,
+//	}
+//}
 
 func Err(msg string) Response {
 	return Response{

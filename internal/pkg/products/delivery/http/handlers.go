@@ -61,36 +61,31 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	var (
-		offset int64
-		page   int64
+		paging int64
+		count  int64
+		err    error
 	)
-
-	offsetStr := r.URL.Query().Get("offset")
-	if offsetStr == "" {
-		offset = 0
+	pagingStr := r.URL.Query().Get("paging")
+	if pagingStr != "" {
+		paging, err = strconv.ParseInt(pagingStr, 10, 64)
+		if err != nil {
+			h.log.Error("paging is invalid", sl.Err(err))
+			resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+			return
+		}
 	}
-	offset, err := strconv.ParseInt(offsetStr, 10, 64)
+	countStr := r.URL.Query().Get("count")
+	count, err = strconv.ParseInt(countStr, 10, 64)
 	if err != nil {
-		h.log.Error("offset is invalid", sl.Err(err))
+		h.log.Error("count is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
 
-	pageStr := r.URL.Query().Get("page")
-	if pageStr == "" {
-		page = 0
-	}
-	page, err = strconv.ParseInt(pageStr, 10, 64)
-	if err != nil {
-		h.log.Error("page is invalid", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
-		return
-	}
-
-	products, err := h.uc.GetProducts(r.Context(), offset, page)
+	products, err := h.uc.GetProducts(r.Context(), paging, count)
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Err("internal error"))
+		resp.JSON(w, http.StatusBadRequest, nil)
 		return
 	}
 

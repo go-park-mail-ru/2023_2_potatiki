@@ -19,6 +19,8 @@ CREATE TABLE IF NOT EXISTS products
     nameProduct text,
     description text,
     price int,
+    imgsrc text,
+    rating NUMERIC(3, 2),
     CONSTRAINT "ProductId_pkey" PRIMARY KEY (id),
     CONSTRAINT "ProductName_unique" UNIQUE (nameProduct)
 );
