@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "8ff22c69-047d-44c4-aaa9-834e47e60e53",
-		"name": "Potiki_backened",
+		"name": "Potatiki_backened",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "30122325"
 	},
@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"login\": \"Dima\", \"password\": \"*\" }",
+					"raw": "{ \"login\": \"scremydalogin\", \"password\": \"*\" }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -21,14 +21,10 @@
 					}
 				},
 				"url": {
-					"raw": "127.0.0.1:8082/api/auth/signup",
+					"raw": "{{baseUrl}}/api/auth/signup",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{baseUrl}}"
 					],
-					"port": "8082",
 					"path": [
 						"api",
 						"auth",
@@ -45,7 +41,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"login\": \"Dima\", \"password\": \"*\" }",
+					"raw": "{ \"login\": \"scremydalogin\", \"password\": \"*\" }",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -53,18 +49,14 @@
 					}
 				},
 				"url": {
-					"raw": "127.0.0.1:8082/api/auth/signup",
+					"raw": "{{baseUrl}}/api/auth/signin",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{baseUrl}}"
 					],
-					"port": "8082",
 					"path": [
 						"api",
 						"auth",
-						"signup"
+						"signin"
 					]
 				}
 			},
@@ -72,12 +64,15 @@
 		},
 		{
 			"name": "CheckGetProfile",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
-				"method": "POST",
+				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"login\": \"Dima\", \"password\": \"*\" }",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -85,18 +80,14 @@
 					}
 				},
 				"url": {
-					"raw": "127.0.0.1:8082/api/auth/signup",
+					"raw": "{{baseUrl}}/api/auth/8b2379a8-5d53-457f-9fd0-22b52c1c4b81",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{baseUrl}}"
 					],
-					"port": "8082",
 					"path": [
 						"api",
 						"auth",
-						"signup"
+						"8b2379a8-5d53-457f-9fd0-22b52c1c4b81"
 					]
 				}
 			},
@@ -104,12 +95,15 @@
 		},
 		{
 			"name": "CheckGetProducts",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"login\": \"Dima\", \"password\": \"*\" }",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -117,18 +111,20 @@
 					}
 				},
 				"url": {
-					"raw": "127.0.0.1:8082/api/auth/signup",
+					"raw": "{{baseUrl}}/api/products/get_all?count=3",
 					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
+						"{{baseUrl}}"
 					],
-					"port": "8082",
 					"path": [
 						"api",
-						"auth",
-						"signup"
+						"products",
+						"get_all"
+					],
+					"query": [
+						{
+							"key": "count",
+							"value": "3"
+						}
 					]
 				}
 			},
@@ -144,7 +140,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{ \"login\": \"Dima\", \"password\": \"*\" }",
+					"raw": "",
 					"options": {
 						"raw": {
 							"language": "json"
