@@ -1,4 +1,4 @@
-package jwts
+package http
 
 import (
 	"net/http"
@@ -11,6 +11,7 @@ func SetCookie(w http.ResponseWriter, token string, ttlive time.Time) {
 		Value:    token,
 		HttpOnly: true,
 		Expires:  ttlive,
+		Secure:   true,
 	}
 	http.SetCookie(w, LoginCookie)
 }

@@ -1,4 +1,4 @@
-package jwts
+package usecase
 
 import (
 	"errors"
@@ -8,7 +8,7 @@ import (
 	"os"
 )
 
-func CheckToken(r *http.Request) (string, error) {
+func (uc *AuthUsecase) CheckToken(r *http.Request) (string, error) {
 	secret, stated := os.LookupEnv("JWT_SECRET")
 	if !stated {
 		return "", errors.New("NoSecretKey")

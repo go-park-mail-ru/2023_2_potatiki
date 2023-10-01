@@ -1,4 +1,4 @@
-package jwts
+package usecase
 
 import (
 	"errors"

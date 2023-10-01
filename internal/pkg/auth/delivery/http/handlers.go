@@ -5,7 +5,7 @@ import (
 	"errors"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwts"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
@@ -59,7 +59,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
-	jwts.SetCookie(w, token, time.Now().UTC().Add(time.Hour*6))
+	SetCookie(w, token, time.Now().UTC().Add(time.Hour*6))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
@@ -92,17 +92,17 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jwts.SetCookie(w, token, time.Now().UTC().Add(time.Hour*6))
+	SetCookie(w, token, time.Now().UTC().Add(time.Hour*6))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-	jwts.SetCookie(w, "", time.Now().UTC().AddDate(0, 0, -1))
+	SetCookie(w, "", time.Now().UTC().AddDate(0, 0, -1))
 	resp.JSON(w, http.StatusOK, nil)
 }
 
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
-	_, err := jwts.CheckToken(r)
+	_, err := usecase.CheckToken(r)
 	if err != nil {
 		h.log.Error("jws token is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusUnauthorized, nil)

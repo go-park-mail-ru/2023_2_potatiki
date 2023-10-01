@@ -13,7 +13,7 @@ type Response struct {
 }
 
 const (
-	StatusOK    = "OK"
+	//StatusOK    = "OK"
 	StatusError = "Error"
 )
 

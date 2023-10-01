@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwts"
 	"github.com/google/uuid"
 )
 
@@ -28,7 +27,7 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Pro
 	if err != nil {
 		return models.Profile{}, "", err
 	}
-	token, err := jwts.MakeToken(user)
+	token, err := MakeToken(user)
 	if err != nil {
 		return models.Profile{}, "", err
 	}
@@ -44,7 +43,7 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Pro
 	if err != nil {
 		return models.Profile{}, "", err
 	}
-	token, err := jwts.MakeToken(user)
+	token, err := MakeToken(user)
 	return profile, token, nil
 }
 
@@ -54,4 +53,7 @@ func (uc *AuthUsecase) GetProfile(ctx context.Context, userId uuid.UUID) (models
 		return models.Profile{}, err
 	}
 	return profile, nil
+}
+func (receiver) name() {
+
 }
