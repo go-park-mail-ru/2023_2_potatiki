@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/google/uuid"
+	"regexp"
 )
 
 type User struct {
@@ -10,8 +11,8 @@ type User struct {
 }
 
 func (user User) IsValid() bool {
-	//md5Regex := regexp.MustCompile("^[0-9a-fA-F]{32}$")
-	return len(user.Login) > 7 && len(user.Login) < 50 //&& md5Regex.MatchString(user.PasswordHash)
+	md5Regex := regexp.MustCompile("^[A-Za-z0-9!@#$%^&*()-_+=<>?]+$")
+	return len(user.Login) > 6 && len(user.Login) < 30 && md5Regex.MatchString(user.Login)
 }
 
 type Profile struct {
