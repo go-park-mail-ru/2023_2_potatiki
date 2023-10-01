@@ -20,10 +20,11 @@ import (
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 )
@@ -67,6 +68,13 @@ func run() (err error) {
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
+
+	r.Use(middleware.CORSMiddleware)
+
+	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Not Found", http.StatusNotFound)
+	})
+
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
 		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
@@ -90,10 +98,6 @@ func run() (err error) {
 	{
 
 	}
-
-	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Not Found", http.StatusNotFound)
-	})
 
 	http.Handle("/", r)
 
