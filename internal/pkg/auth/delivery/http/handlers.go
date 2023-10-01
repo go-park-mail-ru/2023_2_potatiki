@@ -106,7 +106,7 @@ func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 		Name:     "Default",
 		Value:    "",
 		HttpOnly: true,
-		Expires:  time.Now().UTC().Add(time.Hour * 6),
+		Expires:  time.Now().AddDate(0, 0, -1),
 	}
 	http.SetCookie(w, LoginCookie)
 	resp.JSON(w, http.StatusOK, nil)
