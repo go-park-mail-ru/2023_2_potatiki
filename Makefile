@@ -8,4 +8,4 @@ run: build_
 	./.bin
 
 rund: build_
-	./.bin -d
+	./.bin &
