@@ -19,16 +19,20 @@ func NewAuthUsecase(repo auth.AuthRepo) *AuthUsecase {
 	}
 }
 
-func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Profile, error) {
+func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Profile, string, error) {
 	if !user.IsValid() {
 		err := errors.New("user is not valid")
-		return models.Profile{}, err
+		return models.Profile{}, "", err
 	}
 	profile, err := uc.repo.CheckUser(ctx, user)
 	if err != nil {
-		return models.Profile{}, err
+		return models.Profile{}, "", err
 	}
-	return profile, nil
+	token, err := jwts.MakeToken(user)
+	if err != nil {
+		return models.Profile{}, "", err
+	}
+	return profile, token, nil
 }
 
 func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, string, error) {
@@ -36,11 +40,11 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Pro
 		err := errors.New("user is not valid")
 		return models.Profile{}, "", err
 	}
-	token, err := jwts.MakeToken(user)
 	profile, err := uc.repo.CreateUser(ctx, user)
 	if err != nil {
 		return models.Profile{}, "", err
 	}
+	token, err := jwts.MakeToken(user)
 	return profile, token, nil
 }
 

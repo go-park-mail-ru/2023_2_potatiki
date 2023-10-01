@@ -10,7 +10,7 @@ import (
 //go:generate mockgen -source=interfaces.go -destination=./mocks/auth_mock.go -package=mock
 
 type AuthUsecase interface {
-	SignIn(context.Context, models.User) (models.Profile, error)
+	SignIn(context.Context, models.User) (models.Profile, string, error)
 	SignUp(context.Context, models.User) (models.Profile, string, error)
 	GetProfile(context.Context, uuid.UUID) (models.Profile, error)
 }

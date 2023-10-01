@@ -39,7 +39,6 @@ func run() (err error) {
 	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
 
 	log := logger.Set(cfg.Enviroment)
-
 	log.Info(
 		"starting zuzu",
 		slog.String("env", cfg.Enviroment),
@@ -73,6 +72,7 @@ func run() (err error) {
 		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
+		auth.HandleFunc("/check_auth", authHandler.CheckAuth).Methods(http.MethodGet, http.MethodOptions)
 		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).Methods(http.MethodGet, http.MethodOptions)
 	}
 

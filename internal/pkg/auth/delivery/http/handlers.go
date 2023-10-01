@@ -50,7 +50,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, err := h.uc.SignIn(r.Context(), *u)
+	profile, token, err := h.uc.SignIn(r.Context(), *u)
 
 	if err != nil {
 		h.log.Error("failed to signin", sl.Err(err))
@@ -59,6 +59,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
+	jwts.SetCookie(w, token, time.Now().UTC().Add(time.Hour*6))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
@@ -91,34 +92,26 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	LoginCookie := &http.Cookie{
-		Name:     "Default",
-		Value:    token,
-		HttpOnly: true,
-		Expires:  time.Now().UTC().Add(time.Hour * 6),
-	}
-	http.SetCookie(w, LoginCookie)
+	jwts.SetCookie(w, token, time.Now().UTC().Add(time.Hour*6))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-	LoginCookie := &http.Cookie{
-		Name:     "Default",
-		Value:    "",
-		HttpOnly: true,
-		Expires:  time.Now().AddDate(0, 0, -1),
-	}
-	http.SetCookie(w, LoginCookie)
+	jwts.SetCookie(w, "", time.Now().UTC().AddDate(0, 0, -1))
 	resp.JSON(w, http.StatusOK, nil)
 }
 
-func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
-	flag, err := jwts.CheckToken(r)
-	if !flag {
+func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
+	_, err := jwts.CheckToken(r)
+	if err != nil {
 		h.log.Error("jws token is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusUnauthorized, nil)
 		return
 	}
+	resp.JSON(w, http.StatusOK, nil)
+}
+
+func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	idStr, ok := vars["id"]
 	if !ok || idStr == "" {
