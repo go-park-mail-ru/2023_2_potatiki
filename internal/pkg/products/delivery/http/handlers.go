@@ -1,14 +1,12 @@
 package http
 
 import (
-	"errors"
 	"net/http"
 	"strconv"
 
 	"log/slog"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
@@ -43,15 +41,9 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	}
 
 	product, err := h.uc.GetProduct(r.Context(), id)
-	if errors.Is(err, repo.ErrPoductNotFound) {
-		h.log.Error("product not found", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Err("product not found"))
-
-		return
-	}
 	if err != nil {
 		h.log.Error("failed to get product", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Err("internal error"))
+		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
 		return
 	}
 
@@ -85,7 +77,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	products, err := h.uc.GetProducts(r.Context(), paging, count)
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, nil)
+		resp.JSON(w, http.StatusBadRequest, resp.Nil())
 		return
 	}
 

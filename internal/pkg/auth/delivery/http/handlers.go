@@ -37,7 +37,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		h.log.Error("failed to decode request body", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, nil)
+		resp.JSON(w, http.StatusBadRequest, resp.Nil())
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
@@ -46,7 +46,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, u)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, nil)
+		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
 		return
 	}
 
@@ -72,7 +72,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		h.log.Error("failed to decode request body", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, nil)
+		resp.JSON(w, http.StatusBadRequest, resp.Nil())
 		return
 	}
 	h.log.Info("request body decoded", slog.Any("request", r))
@@ -81,7 +81,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, u)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, nil)
+		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
 		return
 	}
 
@@ -98,17 +98,17 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	SetCookie(w, "", time.Now().UTC().AddDate(0, 0, -1))
-	resp.JSON(w, http.StatusOK, nil)
+	resp.JSON(w, http.StatusOK, resp.Nil())
 }
 
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	_, err := usecase.CheckToken(r)
 	if err != nil {
 		h.log.Error("jws token is invalid", sl.Err(err))
-		resp.JSON(w, http.StatusUnauthorized, nil)
+		resp.JSON(w, http.StatusUnauthorized, resp.Err(""))
 		return
 	}
-	resp.JSON(w, http.StatusOK, nil)
+	resp.JSON(w, http.StatusOK, resp.Nil())
 }
 
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {

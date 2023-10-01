@@ -2,7 +2,6 @@ package response
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -12,16 +11,16 @@ type Response struct {
 	Error  interface{} `json:"error,omitempty"`
 }
 
+type NilResponse struct{}
+
 const (
 	//StatusOK    = "OK"
 	StatusError = "Error"
 )
 
-//func OK() Response {
-//	return Response{
-//		Status: StatusOK,
-//	}
-//}
+func Nil() NilResponse {
+	return NilResponse{}
+}
 
 func Err(msg string) Response {
 	return Response{
@@ -31,17 +30,12 @@ func Err(msg string) Response {
 }
 
 func JSON(w http.ResponseWriter, status int, response any) {
-	if response == nil {
-		w.WriteHeader(status)
-		log.Println("response.Status: response is nil")
-		return
-	}
 	responseJson, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(status)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json") // Засунуть длину в хеддер статус/err
+	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", strconv.Itoa(len(responseJson)))
 	w.WriteHeader(status)
 	w.Write(responseJson) //err:uncheck
