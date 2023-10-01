@@ -54,6 +54,3 @@ func (uc *AuthUsecase) GetProfile(ctx context.Context, userId uuid.UUID) (models
 	}
 	return profile, nil
 }
-func (receiver) name() {
-
-}

@@ -2,8 +2,6 @@ package auth
 
 import (
 	"context"
-	"net/http"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
 )
@@ -14,7 +12,7 @@ type AuthUsecase interface {
 	SignIn(context.Context, models.User) (models.Profile, string, error)
 	SignUp(context.Context, models.User) (models.Profile, string, error)
 	GetProfile(context.Context, uuid.UUID) (models.Profile, error)
-	CheckToken(r *http.Request) (string, error)
+	//CheckToken(r *http.Request) (string, error)
 }
 
 type AuthRepo interface {
