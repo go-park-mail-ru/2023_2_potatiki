@@ -26,6 +26,10 @@ func NewProductsHandler(log *slog.Logger, uc products.ProductsUsecase) ProductHa
 }
 
 func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+
 	vars := mux.Vars(r)
 	idStr, ok := vars["id"]
 	if !ok || idStr == "" {
@@ -52,6 +56,10 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+
 	var (
 		paging int64
 		count  int64

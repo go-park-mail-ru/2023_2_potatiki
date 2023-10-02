@@ -29,6 +29,10 @@ func NewAuthHandler(log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 }
 
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		if errors.Is(err, io.EOF) {
@@ -65,6 +69,10 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		if errors.Is(err, io.EOF) {
@@ -103,6 +111,9 @@ func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
 
 	tokenCookie, err := r.Cookie(AccessTokenCookieName)
 	if err != nil {
@@ -129,6 +140,10 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+
 	vars := mux.Vars(r)
 	idStr, ok := vars["id"]
 	if !ok || idStr == "" {
