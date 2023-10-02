@@ -4,3 +4,7 @@ http_server:
   idle_timeout: 30s
   read_header_timeout: 10s
   access_expiration_time: 900s
+
+
+auther:
+  access_expiration_time: 6h

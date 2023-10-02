@@ -17,7 +17,7 @@ type Config struct {
 	Version    string `yaml:"version" yaml-required:"true"`
 	HTTPServer `yaml:"http_server"`
 	Database
-	Auther
+	Auther `yaml:"auther"`
 }
 
 type HTTPServer struct {
@@ -37,7 +37,7 @@ type Database struct {
 
 type Auther struct {
 	JwtAccess            string        `env:"TOKEN_ACCESS" env-required:"true"`
-	AccessExpirationTime time.Duration `yaml:"read_header_timeout" yaml-defualt:"10s"`
+	AccessExpirationTime time.Duration `yaml:"access_expiration_time" yaml-defualt:"6h"`
 }
 
 func MustLoad() *Config {
