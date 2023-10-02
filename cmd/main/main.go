@@ -46,6 +46,7 @@ func run() (err error) {
 	)
 	log.Debug("debug messages are enabled")
 
+	//============================Database============================//
 	psqlInfo := fmt.Sprintf("port=%d user=%s password=%s dbname=%s sslmode=disable",
 		cfg.DBPort, cfg.DBUser, cfg.DBPass, cfg.DBName)
 
@@ -62,9 +63,10 @@ func run() (err error) {
 		slog.Error("fail ping postgres", sl.Err(err))
 		return err
 	}
+	//----------------------------Database----------------------------//
 
 	authRepo := authRepo.NewAuthRepo(db)
-	authUsecase := authUsecase.NewAuthUsecase(authRepo)
+	authUsecase := authUsecase.NewAuthUsecase(authRepo, cfg.Auther)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
