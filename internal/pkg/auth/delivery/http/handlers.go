@@ -3,17 +3,17 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"io"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 type AuthHandler struct {
@@ -50,7 +50,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, token, err := h.uc.SignIn(r.Context(), *u)
+	profile, token, exp, err := h.uc.SignIn(r.Context(), *u)
 
 	if err != nil {
 		h.log.Error("failed to signin", sl.Err(err))
@@ -59,7 +59,8 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
-	SetCookie(w, token, time.Now().UTC().Add(time.Hour*6))
+
+	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, token, exp))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
@@ -85,29 +86,45 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, token, err := h.uc.SignUp(r.Context(), *u)
+	profile, token, exp, err := h.uc.SignUp(r.Context(), *u)
 	if err != nil {
 		h.log.Error("failed to signup", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
 		return
 	}
 
-	SetCookie(w, token, time.Now().UTC().Add(time.Hour*6))
+	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, token, exp))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-	SetCookie(w, "", time.Now().UTC().AddDate(0, 0, -1))
+	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
 	resp.JSON(w, http.StatusOK, resp.Nil())
 }
 
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
-	_, err := usecase.CheckToken(r)
+
+	tokenCookie, err := r.Cookie(AccessTokenCookieName)
+	if err != nil {
+		switch {
+		case errors.Is(err, http.ErrNoCookie):
+			h.log.Error("token cookie not found", sl.Err(err))
+			resp.JSON(w, http.StatusUnauthorized, resp.Nil())
+			return
+		default:
+			h.log.Error("faild to get token cookie", sl.Err(err))
+			resp.JSON(w, http.StatusUnauthorized, resp.Nil())
+			return
+		}
+	}
+
+	id, err := h.uc.CheckToken(r.Context(), tokenCookie.Value)
 	if err != nil {
 		h.log.Error("jws token is invalid", sl.Err(err))
-		resp.JSON(w, http.StatusUnauthorized, resp.Err(""))
+		resp.JSON(w, http.StatusUnauthorized, resp.Nil())
 		return
 	}
+	h.log.Info("got profile id", slog.Any("profile id", id))
 	resp.JSON(w, http.StatusOK, resp.Nil())
 }
 

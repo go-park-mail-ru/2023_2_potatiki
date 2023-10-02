@@ -5,13 +5,17 @@ import (
 	"time"
 )
 
-func SetCookie(w http.ResponseWriter, token string, ttlive time.Time) {
-	LoginCookie := &http.Cookie{
-		Name:     "Default",
+const (
+	AccessTokenCookieName = "zuzu-t"
+)
+
+func getTokenCookie(name, token string, expiration time.Time) *http.Cookie {
+	return &http.Cookie{
+		Name:     name,
 		Value:    token,
+		Expires:  expiration,
+		Path:     "/",
 		HttpOnly: true,
-		Expires:  ttlive,
-		Secure:   true,
+		Secure:   true, // false ?
 	}
-	http.SetCookie(w, LoginCookie)
 }
