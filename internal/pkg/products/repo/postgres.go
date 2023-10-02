@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	getProduct  = "SELECT * FROM public.products WHERE id=$1;"
-	getProducts = "SELECT  public.profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+	getProduct  = "SELECT * FROM products WHERE id=$1;"
+	getProducts = "SELECT Id , NameProduct, Description, Price, Imgsrc, Rating FROM products ORDER BY id LIMIT $1 OFFSET $2"
 )
 
 var (
@@ -30,7 +30,8 @@ func NewProductsRepo(db *sql.DB) *ProductsRepo {
 
 func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	pr := models.Product{}
-	err := r.db.QueryRowContext(ctx, getProduct, id).Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price)
+	err := r.db.QueryRowContext(ctx, getProduct, id).
+		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.Imgsrc, &pr.Rating)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Product{}, ErrPoductNotFound
@@ -40,6 +41,24 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 	return pr, nil
 }
 
-func (r *ProductsRepo) ReadProducts(context.Context, int64, int64) ([]models.Product, error) {
-	panic("unimplemented")
+func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int64) ([]models.Product, error) {
+	var productSlice []models.Product
+	rows, err := r.db.QueryContext(ctx, getProducts, count, paging)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return []models.Product{}, ErrPoductNotFound
+		}
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.Imgsrc, &product.Rating)
+		if err != nil {
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
 }

@@ -17,6 +17,7 @@ type Config struct {
 	Version    string `yaml:"version" yaml-required:"true"`
 	HTTPServer `yaml:"http_server"`
 	Database
+	Auther `yaml:"auther"`
 }
 
 type HTTPServer struct {
@@ -32,6 +33,11 @@ type Database struct {
 	DBHost string `env:"POSTGRES_HOST" env-default:""`
 	DBPort int    `env:"POSTGRES_PORT" env-required:"true"`
 	DBUser string `env:"POSTGRES_USER" env-required:"true"`
+}
+
+type Auther struct {
+	JwtAccess            string        `env:"TOKEN_ACCESS" env-required:"true"`
+	AccessExpirationTime time.Duration `yaml:"access_expiration_time" yaml-defualt:"6h"`
 }
 
 func MustLoad() *Config {

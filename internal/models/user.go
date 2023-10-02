@@ -1,6 +1,8 @@
 package models
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type User struct {
 	Login        string `json:"login"`
@@ -14,6 +16,7 @@ type Profile struct {
 	ImgSrc      string    `json:"img"`
 }
 
-type UserId struct {
-	Id uuid.UUID `json:"id"`
+func (user User) IsValid() bool {
+	//strings.Contains()
+	return len(user.Login) > 6 && len(user.Login) < 30
 }

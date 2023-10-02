@@ -20,10 +20,11 @@ import (
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 )
@@ -39,13 +40,13 @@ func run() (err error) {
 	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
 
 	log := logger.Set(cfg.Enviroment)
-
 	log.Info(
 		"starting zuzu",
 		slog.String("env", cfg.Enviroment),
 	)
 	log.Debug("debug messages are enabled")
 
+	//============================Database============================//
 	psqlInfo := fmt.Sprintf("port=%d user=%s password=%s dbname=%s sslmode=disable",
 		cfg.DBPort, cfg.DBUser, cfg.DBPass, cfg.DBName)
 
@@ -58,42 +59,47 @@ func run() (err error) {
 		err = errors.Join(err, db.Close())
 	}(db)
 
-	if err := db.Ping(); err != nil {
+	if err = db.Ping(); err != nil {
 		slog.Error("fail ping postgres", sl.Err(err))
 		return err
 	}
+	//----------------------------Database----------------------------//
 
 	authRepo := authRepo.NewAuthRepo(db)
-	authUsecase := authUsecase.NewAuthUsecase(authRepo)
+	authUsecase := authUsecase.NewAuthUsecase(authRepo, cfg.Auther)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
-	productsRepo := productsRepo.NewProductsRepo(db)
-	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
-	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
-
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
+
+	r.Use(middleware.CORSMiddleware)
+
+	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Not Found", http.StatusNotFound)
+	})
+
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
 		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
-		auth.HandleFunc("/getprofile", authHandler.GetProfile).Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/check_auth", authHandler.CheckAuth).Methods(http.MethodGet, http.MethodOptions)
+		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).Methods(http.MethodGet, http.MethodOptions)
 	}
+
+	productsRepo := productsRepo.NewProductsRepo(db)
+	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
+	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
 
 	products := r.PathPrefix("/products").Subrouter()
 	{
-		products.HandleFunc("/{id:[0-9]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
-		products.HandleFunc("/", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
+		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
+		products.HandleFunc("/get_all", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	//user := r.PathPrefix("/user").Subrouter()
 	{
 
 	}
-
-	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Not Found", http.StatusNotFound)
-	})
 
 	http.Handle("/", r)
 
@@ -106,8 +112,6 @@ func run() (err error) {
 		ReadHeaderTimeout: cfg.ReadHeaderTimeout,
 	}
 
-	// Wait for interrupt signal to gracefully shutdown the server with a timeout of 10 seconds.
-	// Use a buffered channel to avoid missing signals as recommended for signal.Notify
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
@@ -118,7 +122,7 @@ func run() (err error) {
 	}()
 
 	log.Info("server started")
-	sig := <-quit // wait for interrupt signal
+	sig := <-quit
 	log.Debug("handle quit os/signal: ", sig)
 	log.Info("server stopping...")
 

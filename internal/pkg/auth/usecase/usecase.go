@@ -2,35 +2,65 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"time"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/google/uuid"
 )
 
 type AuthUsecase struct {
-	repo auth.AuthRepo
+	repo   auth.AuthRepo
+	auther *Auther
 }
 
-func NewAuthUsecase(repo auth.AuthRepo) *AuthUsecase {
+func NewAuthUsecase(repo auth.AuthRepo, cfg config.Auther) *AuthUsecase {
 	return &AuthUsecase{
-		repo: repo,
+		repo:   repo,
+		auther: NewAuther(cfg),
 	}
 }
 
-func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Profile, error) {
+func (uc *AuthUsecase) CheckToken(ctx context.Context, tokenStr string) (uuid.UUID, error) {
+	claims, err := uc.auther.getClaims(tokenStr)
+	if err != nil {
+		return uuid.UUID{}, err
+	}
+	return claims.ID, nil
+}
+
+func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Profile, string, time.Time, error) {
+	if !user.IsValid() {
+		err := errors.New("user is not valid")
+		return models.Profile{}, "", time.Now(), err
+	}
 	profile, err := uc.repo.CheckUser(ctx, user)
 	if err != nil {
-		return models.Profile{}, err
+		return models.Profile{}, "", time.Now(), err
 	}
-	return profile, nil
+	token, exp, err := uc.auther.generateToken(&profile)
+	if err != nil {
+		return models.Profile{}, "", time.Now(), err
+	}
+	return profile, token, exp, nil
 }
 
-func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, error) { //Валидация
+func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, string, time.Time, error) {
+	if !user.IsValid() {
+		err := errors.New("user is not valid")
+		return models.Profile{}, "", time.Now(), err
+	}
 	profile, err := uc.repo.CreateUser(ctx, user)
 	if err != nil {
-		return models.Profile{}, err
+		return models.Profile{}, "", time.Now(), err
 	}
-	return profile, nil
+	token, exp, err := uc.auther.generateToken(&profile)
+	if err != nil {
+		return models.Profile{}, "", time.Now(), err
+	}
+	return profile, token, exp, nil
 }
 
 func (uc *AuthUsecase) GetProfile(ctx context.Context, userId uuid.UUID) (models.Profile, error) {
