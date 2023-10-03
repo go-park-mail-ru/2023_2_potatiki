@@ -41,7 +41,7 @@ services:
     env_file:
       - ./.env
     expose:
-      - "5432"
+      - ${POSTGRES_PORT}:5432
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'
@@ -72,8 +72,8 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
     ports:
-      - "5050:80"
-      - "5051:443"
+      - "8098:80"
+      - "8097:443"
     depends_on:
       - postgres
     deploy:
@@ -91,7 +91,7 @@ services:
     image: ${REGISTRY}/${IMAGE_NAME}:${GITHUB_SHA_SHORT}
     restart: always
     ports:
-      - '80:80'
+      - '8082:8082'
       - '443:443'
     volumes:
       - ./.env:/docker-zuzu-main/.env
