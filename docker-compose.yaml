@@ -41,7 +41,7 @@ services:
     env_file:
       - ./.env
     expose:
-      - "5432"
+      - "65432"
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'
