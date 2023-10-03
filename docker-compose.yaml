@@ -91,7 +91,7 @@ services:
     image: ${REGISTRY}/${IMAGE_NAME}:${GITHUB_SHA_SHORT}
     restart: always
     ports:
-      - '8082:8082'
+      - '8096:8096'
       - '443:443'
     volumes:
       - ./.env:/docker-zuzu-main/.env
