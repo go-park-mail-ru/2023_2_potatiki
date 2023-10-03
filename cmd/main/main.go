@@ -46,10 +46,14 @@ func run() (err error) {
 	log.Debug("debug messages are enabled")
 
 	//============================Database============================//
-	psqlInfo := fmt.Sprintf("port=%d user=%s password=%s dbname=%s sslmode=disable",
-		cfg.DBPort, cfg.DBUser, cfg.DBPass, cfg.DBName)
 
-	db, err := sql.Open("postgres", psqlInfo)
+	db, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@%s:%d/%s",
+		cfg.DBUser,
+		cfg.DBPass,
+		cfg.DBHost,
+		cfg.DBPort,
+		cfg.DBName))
+
 	if err != nil {
 		log.Error("fail open postgres", sl.Err(err))
 		return err
