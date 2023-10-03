@@ -3,7 +3,7 @@ version: "3.9"
 services:
 
   postgres:
-    container_name: zuzu-postgres
+    container_name: zuzu-postgres-deploy
     image: postgres:latest
     restart: always
     command: 
@@ -62,7 +62,7 @@ services:
       - zuzu-network
 
   pgadmin:
-    container_name: pgadmin_container
+    container_name: pgadmin_container-deploy
     image: dpage/pgadmin4
     restart: unless-stopped
     environment:
