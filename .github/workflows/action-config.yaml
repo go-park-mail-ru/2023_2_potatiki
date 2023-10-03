@@ -76,6 +76,7 @@ jobs:
           key: ${{ secrets.SSHKEY }}
           envs: REGISTRY, IMAGE_NAME, CONTAINER_NAME, GITHUB_SHA, FOLDER_COMPOSE
           script: |
+            sudo bash
             cd $(echo $FOLDER_COMPOSE)
 
             # Make .env variables file
