@@ -47,7 +47,7 @@ func run() (err error) {
 
 	//============================Database============================//
 
-	db, err := sql.Open("postgres", fmt.Sprintf("postgres://%s:%s@%s:%d/%s",
+	db, err := sql.Open("postgres", fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		cfg.DBUser,
 		cfg.DBPass,
 		cfg.DBHost,
