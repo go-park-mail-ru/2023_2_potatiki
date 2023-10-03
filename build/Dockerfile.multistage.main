@@ -20,7 +20,7 @@ FROM scratch AS runner
 WORKDIR /docker-zuzu-main/
 
 COPY --from=builder /github.com/go-park-mail-ru/2023_2_potatiki/.bin .
-COPY --from=builder /github.com/go-park-mail-ru/2023_2_potatiki/configs configs/
+COPY --from=builder /github.com/go-park-mail-ru/2023_2_potatiki/config config/
 COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
 
 ENV TZ="Europe/Moscow"
