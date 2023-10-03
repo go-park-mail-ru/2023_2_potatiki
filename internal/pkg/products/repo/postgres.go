@@ -11,7 +11,7 @@ import (
 
 const (
 	getProduct  = "SELECT * FROM products WHERE id=$1;"
-	getProducts = "SELECT Id , NameProduct, Description, Price, Imgsrc, Rating FROM products ORDER BY id LIMIT $1 OFFSET $2"
+	getProducts = "SELECT Id , NameProduct, Description, Price, ImgSrc, Rating FROM products ORDER BY id LIMIT $1 OFFSET $2"
 )
 
 var (
@@ -31,7 +31,7 @@ func NewProductsRepo(db *sql.DB) *ProductsRepo {
 func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	pr := models.Product{}
 	err := r.db.QueryRowContext(ctx, getProduct, id).
-		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.Imgsrc, &pr.Rating)
+		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.ImgSrc, &pr.Rating)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Product{}, ErrPoductNotFound
@@ -52,7 +52,7 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 	}
 	product := models.Product{}
 	for rows.Next() {
-		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.Imgsrc, &product.Rating)
+		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.ImgSrc, &product.Rating)
 		if err != nil {
 			return []models.Product{}, err
 		}

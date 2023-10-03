@@ -102,11 +102,13 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, token, exp))
+	h.log.Debug("got profile", slog.Any("profile", profile.Id))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
+	h.log.Info("logout")
 	resp.JSON(w, http.StatusOK, resp.Nil())
 }
 

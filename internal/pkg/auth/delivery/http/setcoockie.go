@@ -16,6 +16,5 @@ func getTokenCookie(name, token string, expiration time.Time) *http.Cookie {
 		Expires:  expiration,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true, // false ?
 	}
 }

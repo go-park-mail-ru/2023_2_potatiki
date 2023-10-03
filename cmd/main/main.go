@@ -46,14 +46,12 @@ func run() (err error) {
 	log.Debug("debug messages are enabled")
 
 	//============================Database============================//
-
 	db, err := sql.Open("postgres", fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		cfg.DBUser,
 		cfg.DBPass,
 		cfg.DBHost,
 		cfg.DBPort,
 		cfg.DBName))
-
 	if err != nil {
 		log.Error("fail open postgres", sl.Err(err))
 		return err
@@ -99,11 +97,6 @@ func run() (err error) {
 		products.HandleFunc("/get_all", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
 	}
 
-	//user := r.PathPrefix("/user").Subrouter()
-	{
-
-	}
-
 	http.Handle("/", r)
 
 	srv := http.Server{
@@ -132,7 +125,7 @@ func run() (err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	if err := srv.Shutdown(ctx); err != nil {
+	if err = srv.Shutdown(ctx); err != nil {
 		log.Error("server shutdown returned an err: ", sl.Err(err))
 		return err
 	}
