@@ -62,10 +62,10 @@ func run() (err error) {
 		err = errors.Join(err, db.Close())
 	}(db)
 
-	if err = db.Ping(); err != nil {
+	/*if err = db.Ping(); err != nil {
 		slog.Error("fail ping postgres", sl.Err(err))
 		return err
-	}
+	}*/
 	//----------------------------Database----------------------------//
 
 	authRepo := authRepo.NewAuthRepo(db)
