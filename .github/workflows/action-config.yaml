@@ -63,7 +63,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
           rm: true
-          source: docker-compose.yml, build/sql/create.sql
+          source: docker-compose.yaml, build/sql/create.sql
           target: ~/${{ env.FOLDER_COMPOSE }}
 
 
