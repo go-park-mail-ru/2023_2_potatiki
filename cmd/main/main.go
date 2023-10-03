@@ -31,7 +31,6 @@ import (
 
 func main() {
 	if err := run(); err != nil {
-		//slog.Error("main error:", sl.Err(err))
 		os.Exit(1)
 	}
 }
