@@ -45,8 +45,8 @@ services:
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'
-     # - './build/sql/create.sql:/docker-entrypoint-initdb.d/create.sql'
-     # - ./init_uuid.sql:/docker-entrypoint-initdb.d/init_uuid.sql
+      #- './build/sql/create.sql:/docker-entrypoint-initdb.d/create.sql'
+      #- ./init_uuid.sql:/docker-entrypoint-initdb.d/init_uuid.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U zuzu-postgres-deploy -d ${POSTGRES_DB}"]
       interval: 5s
