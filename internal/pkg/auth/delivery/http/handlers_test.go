@@ -5,6 +5,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
@@ -20,7 +21,7 @@ func TestSignUp(t *testing.T) {
 	uc.EXPECT().SignUp(gomock.Any(), models.User{
 		Login:        "User",
 		PasswordHash: "Dima@gmail.com",
-	}).Return(models.Profile{}, nil)
+	}).Return(models.Profile{}, "", time.Time{}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
 		strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))

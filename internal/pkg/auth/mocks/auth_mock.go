@@ -168,3 +168,57 @@ func (mr *MockAuthRepoMockRecorder) ReadProfile(arg0, arg1 interface{}) *gomock.
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProfile", reflect.TypeOf((*MockAuthRepo)(nil).ReadProfile), arg0, arg1)
 }
+
+// MockAuthAuther is a mock of AuthAuther interface.
+type MockAuthAuther struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthAutherMockRecorder
+}
+
+// MockAuthAutherMockRecorder is the mock recorder for MockAuthAuther.
+type MockAuthAutherMockRecorder struct {
+	mock *MockAuthAuther
+}
+
+// NewMockAuthAuther creates a new mock instance.
+func NewMockAuthAuther(ctrl *gomock.Controller) *MockAuthAuther {
+	mock := &MockAuthAuther{ctrl: ctrl}
+	mock.recorder = &MockAuthAutherMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthAuther) EXPECT() *MockAuthAutherMockRecorder {
+	return m.recorder
+}
+
+// GenerateToken mocks base method.
+func (m *MockAuthAuther) GenerateToken(arg0 *models.Profile) (string, time.Time, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GenerateToken", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(time.Time)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GenerateToken indicates an expected call of GenerateToken.
+func (mr *MockAuthAutherMockRecorder) GenerateToken(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockAuthAuther)(nil).GenerateToken), arg0)
+}
+
+// GetClaims mocks base method.
+func (m *MockAuthAuther) GetClaims(arg0 string) (*models.Claims, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetClaims", arg0)
+	ret0, _ := ret[0].(*models.Claims)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetClaims indicates an expected call of GetClaims.
+func (mr *MockAuthAutherMockRecorder) GetClaims(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetClaims", reflect.TypeOf((*MockAuthAuther)(nil).GetClaims), arg0)
+}

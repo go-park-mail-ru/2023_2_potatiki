@@ -8,7 +8,6 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
 )
 
 type Auther struct {
@@ -23,17 +22,10 @@ func NewAuther(cfg config.Auther) *Auther {
 	}
 }
 
-type claims struct {
-	// User ID
-	ID uuid.UUID `json:"id"`
-
-	jwt.RegisteredClaims
-}
-
-func (a *Auther) generateToken(profile *models.Profile) (string, time.Time, error) {
+func (a *Auther) GenerateToken(profile *models.Profile) (string, time.Time, error) {
 	expirationTime := time.Now().UTC().Add(a.ttl)
 
-	claims := &claims{
+	claims := &models.Claims{
 		profile.Id,
 		jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
@@ -60,13 +52,13 @@ func (a *Auther) getKeyFunc() jwt.Keyfunc {
 	}
 }
 
-func (a *Auther) getClaims(tokenString string) (*claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &claims{}, a.getKeyFunc())
+func (a *Auther) GetClaims(tokenString string) (*models.Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, a.getKeyFunc())
 	if err != nil {
 		return nil, err
 	}
 
-	if claims, ok := token.Claims.(*claims); ok && token.Valid {
+	if claims, ok := token.Claims.(*models.Claims); ok && token.Valid {
 		return claims, nil
 	} else {
 		return nil, errors.New("error in GetClaims, invalid token or Claims.(*Claims) not cast")
