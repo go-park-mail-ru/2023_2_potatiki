@@ -36,7 +36,7 @@ type Database struct {
 }
 
 type Auther struct {
-	JwtAccess            string        `env:"TOKEN_ACCESS" env-required:"true"`
+	JwtAccess            string        `env:"JWT_SECRET_KEY" env-required:"true"`
 	AccessExpirationTime time.Duration `yaml:"access_expiration_time" yaml-defualt:"6h"`
 }
 

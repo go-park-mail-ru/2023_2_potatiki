@@ -45,6 +45,8 @@ services:
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'
+      - './build/sql/create.sql:/docker-entrypoint-initdb.d/create.sql'
+      - ./init_uuid.sql:/docker-entrypoint-initdb.d/init_uuid.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -55,7 +57,7 @@ services:
       resources:
         limits:
           cpus: '1'
-          memory: 500M
+          memory: 4GB
     networks:
       - zuzu-network
 
@@ -77,16 +79,16 @@ services:
     deploy:
       resources:
         limits:
-          cpus: '0.2'
-          memory: 100M
+          cpus: '0.5'
+          memory: 500M
     networks:
       - zuzu-network
 
   zuzu-main:
     env_file:
         - ./.env
-    container_name: zuzu-main
-    image: MrDjeb/ZuZu:123
+    container_name: ${CONTAINER_NAME}
+    image: ${REGISTRY}/${IMAGE_NAME}:${GITHUB_SHA_SHORT}
     restart: always
     ports:
       - '80:80'

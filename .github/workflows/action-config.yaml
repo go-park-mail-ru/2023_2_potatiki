@@ -9,7 +9,7 @@ env:
   REGISTRY: "mrdjeb"
   IMAGE_NAME: "zuzu-main-web"
   CONTAINER_NAME: "zuzu-main"
-  FOLDER_COMPOSE: "zuzu-deploy"
+  FOLDER_COMPOSE: "zuzu-main-deploy"
   GITHUB_SHA_SHORT:
 
 
@@ -41,7 +41,7 @@ jobs:
           context: .
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          file: ./Dockerfile.multistage
+          file: ./build/Dockerfile.multistage.main
           build-args: |
               IMAGE_NAME=${{ env.IMAGE_NAME }}
               REGISTRY=${{ env.REGISTRY }}
@@ -58,50 +58,42 @@ jobs:
       - name: Deploy docker-compose.yml via SSH action
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.HOST_MPT }}
-          port: ${{ secrets.PORT_MPT }}
-          username: ${{ secrets.USERNAME_MPT }}
-          key: ${{ secrets.SSHKEY_MPT }}
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSHKEY }}
           rm: true
-          source: docker-compose.yml
+          source: docker-compose.yml, build/sql/create.sql
           target: ~/${{ env.FOLDER_COMPOSE }}
 
 
       - name: Deploy to DockerHub via SSH action
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.HOST_MPT }}
-          port: ${{ secrets.PORT_MPT }}
-          username: ${{ secrets.USERNAME_MPT }}
-          key: ${{ secrets.SSHKEY_MPT }}
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSHKEY }}
           envs: REGISTRY, IMAGE_NAME, CONTAINER_NAME, GITHUB_SHA, FOLDER_COMPOSE
           script: |
             cd $(echo $FOLDER_COMPOSE)
 
             # Make .env variables file
             cat <<EOF>.env
-            POSTGRES_DB=${{ secrets.DB_NAME }}
+
+            POSTGRES_DB=${{ secrets.POSTGRES_DB }}
             POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
-            DB_HOST=${{ secrets.DB_HOST }}
-            DB_PORT=${{ secrets.DB_PORT }}
+            POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
             POSTGRES_USER=${{ secrets.POSTGRES_USER }}
-            PGADMIN_DEFAULT_EMAIL='postgres@gmail.com'
-            PGADMIN_DEFAULT_PASSWORD='postgres'
-
-            CLIENT_ORIGIN_DOMAIN=owa.patentcore.ru
-
+            PGADMIN_DEFAULT_EMAIL=${{ secrets.PGADMIN_DEFAULT_EMAIL }}
+            PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
-            JWT_REFRESH_SECRET_KEY=${{ secrets.JWT_REFRESH_SECRET_KEY }}
-       
+
             IMAGE_NAME=${{ env.IMAGE_NAME }}
             REGISTRY=${{ env.REGISTRY }}
             CONTAINER_NAME=${{ env.CONTAINER_NAME }}
             EOF
             echo "GITHUB_SHA_SHORT=`echo $GITHUB_SHA | head -c8`" >> .env
-
-            # Make certificate for site files
-            echo "${{ secrets.CRT_FILE }}" > cert.crt
-            echo "${{ secrets.KEY_FILE }}" > cert.key
 
             # Make init script1 for postgres container, install the extension "uuid-ossp" for postgres
             echo "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";" > init_uuid.sql
