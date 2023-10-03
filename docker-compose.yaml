@@ -40,7 +40,7 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata" # storing db files
     env_file:
       - ./.env
-    expose:
+    ports:
       - ${POSTGRES_PORT}:5432
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
