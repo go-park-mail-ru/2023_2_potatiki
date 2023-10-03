@@ -31,7 +31,6 @@ import (
 
 func main() {
 	if err := run(); err != nil {
-		//slog.Error("main error:", sl.Err(err))
 		os.Exit(1)
 	}
 }
@@ -94,11 +93,6 @@ func run() (err error) {
 	{
 		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
 		products.HandleFunc("/get_all", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
-	}
-
-	//user := r.PathPrefix("/user").Subrouter()
-	{
-
 	}
 
 	http.Handle("/", r)

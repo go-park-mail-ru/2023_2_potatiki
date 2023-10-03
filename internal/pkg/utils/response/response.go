@@ -38,5 +38,5 @@ func JSON(w http.ResponseWriter, status int, response any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", strconv.Itoa(len(responseJson)))
 	w.WriteHeader(status)
-	w.Write(responseJson) //err:uncheck
+	w.Write(responseJson)
 }
