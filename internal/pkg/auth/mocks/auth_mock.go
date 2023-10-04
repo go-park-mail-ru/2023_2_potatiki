@@ -10,7 +10,6 @@ import (
 	time "time"
 
 	models "github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	config "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	gomock "github.com/golang/mock/gomock"
 	uuid "github.com/google/uuid"
 )
@@ -245,18 +244,4 @@ func NewMockAuthConfig(ctrl *gomock.Controller) *MockAuthConfig {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAuthConfig) EXPECT() *MockAuthConfigMockRecorder {
 	return m.recorder
-}
-
-// MustLoad mocks base method.
-func (m *MockAuthConfig) MustLoad() *config.Config {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MustLoad")
-	ret0, _ := ret[0].(*config.Config)
-	return ret0
-}
-
-// MustLoad indicates an expected call of MustLoad.
-func (mr *MockAuthConfigMockRecorder) MustLoad() *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MustLoad", reflect.TypeOf((*MockAuthConfig)(nil).MustLoad))
 }

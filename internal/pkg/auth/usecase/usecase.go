@@ -16,11 +16,14 @@ type AuthUsecase struct {
 	auther auth.AuthAuther
 }
 
-func NewAuthUsecase(repo auth.AuthRepo, cfg config.Auther) *AuthUsecase {
-	return &AuthUsecase{
-		repo:   repo,
-		auther: NewAuther(cfg),
+func NewAuthUsecase(repo auth.AuthRepo, cfgA auth.AuthConfig) *AuthUsecase {
+	if cfg, ok := cfgA.(config.Auther); ok {
+		return &AuthUsecase{
+			repo:   repo,
+			auther: NewAuther(cfg),
+		}
 	}
+	return &AuthUsecase{}
 }
 
 func (uc *AuthUsecase) CheckToken(ctx context.Context, tokenStr string) (uuid.UUID, error) {

@@ -18,8 +18,7 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 	repo := mock.NewMockAuthRepo(ctrl)
 	cfg := mock.NewMockAuthConfig(ctrl)
 	repo.EXPECT().CreateUser(gomock.Any(), models.User{}).Return(models.Profile{}, nil)
-
-	uc := NewAuthUsecase(repo, cfg.MustLoad().Auther)
+	uc := NewAuthUsecase(repo, cfg)
 
 	profile, token, exp, err := uc.SignUp(context.Background(), models.User{})
 	fmt.Println(profile, token, exp, err)
@@ -33,7 +32,7 @@ func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 	cfg := mock.NewMockAuthConfig(ctrl)
 	repo.EXPECT().CreateUser(gomock.Any(), models.User{}).Return(models.Profile{}, errors.New("bad request"))
 
-	uc := NewAuthUsecase(repo, cfg.MustLoad().Auther)
+	uc := NewAuthUsecase(repo, cfg)
 
 	profile, token, exp, err := uc.SignUp(context.Background(), models.User{})
 	fmt.Println(profile, token, exp, err)

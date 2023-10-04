@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/google/uuid"
 )
 
@@ -29,6 +28,4 @@ type AuthAuther interface {
 	GetClaims(string) (*models.Claims, error)
 }
 
-type AuthConfig interface {
-	MustLoad() *config.Config
-}
+type AuthConfig interface{}
