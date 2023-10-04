@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 
@@ -31,7 +32,10 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 		Login:        "iudsbfiwhdbfi",
 		PasswordHash: "hafikyagdfiaysgf",
 	})
-	fmt.Println(profile, token, exp, err)
+	assert.Nil(t, err)
+	assert.NotNil(t, profile)
+	assert.NotEmpty(t, token)
+	fmt.Println(exp)
 }
 
 func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
@@ -54,7 +58,10 @@ func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 		Login:        "iudsbfiwhdbfi",
 		PasswordHash: "hafikyagdfiaysgf",
 	})
-	fmt.Println(profile, token, exp, err)
+	assert.NotNil(t, err)
+	assert.NotNil(t, profile)
+	assert.Empty(t, token)
+	fmt.Println(exp)
 }
 
 func TestAuthUsecase_SignIn(t *testing.T) {
@@ -76,7 +83,10 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 		Login:        "iudsbfiwhdbfi",
 		PasswordHash: "hafikyagdfiaysgf",
 	})
-	fmt.Println(profile, token, exp, err)
+	assert.Nil(t, err)
+	assert.NotNil(t, profile)
+	assert.NotEmpty(t, token)
+	fmt.Println(exp)
 }
 
 func TestAuthUsecase_SigInBadRepo(t *testing.T) {
@@ -98,5 +108,8 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 		Login:        "iudsbfiwhdbfi",
 		PasswordHash: "hafikyagdfiaysgf",
 	})
-	fmt.Println(profile, token, exp, err)
+	assert.NotNil(t, err)
+	assert.NotNil(t, profile)
+	assert.Empty(t, token)
+	fmt.Println(exp)
 }

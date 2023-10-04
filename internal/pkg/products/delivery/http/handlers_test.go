@@ -101,3 +101,24 @@ func TestProducts(t *testing.T) {
 	ProductsHandler.Products(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+
+func TestProductsBad(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	uc := mock.NewMockProductsUsecase(ctrl)
+	id := uuid.New()
+
+	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1)).Return(nil, errors.New("some error"))
+
+	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo",
+		strings.NewReader(
+			"[{ \"id\": \""+id.String()+"\", \"name\": \"123\" , \"description\": \"123\", \"price\": \"123\"}]"))
+	q := req.URL.Query()
+	q.Add("count", "1")
+	req.URL.RawQuery = q.Encode()
+	w := httptest.NewRecorder()
+	ProductsHandler := NewProductsHandler(logger.Set("prod"), uc)
+	ProductsHandler.Products(w, req)
+	assert.Equal(t, http.StatusBadRequest, w.Code)
+}
