@@ -14,7 +14,6 @@ type Response struct {
 type NilResponse struct{}
 
 const (
-	//StatusOK    = "OK"
 	StatusError = "Error"
 )
 

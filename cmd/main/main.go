@@ -36,8 +36,10 @@ func main() {
 }
 
 func run() (err error) {
-	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
-
+	cfg, err := config.MustLoad() // TODO : dev-config.yaml -> readme
+	if err != nil {
+		return err
+	}
 	log := logger.Set(cfg.Enviroment)
 	log.Info(
 		"starting zuzu",
