@@ -1,13 +1,14 @@
 package http
 
 import (
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"

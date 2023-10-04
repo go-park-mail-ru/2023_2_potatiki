@@ -14,6 +14,8 @@ import (
 
 func TestProducts_GetProduct(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	repo := mock.NewMockProductsRepo(ctrl)
 	repo.EXPECT().ReadProduct(gomock.Any(), models.Product{}).Return(models.Product{}, nil)
 
@@ -25,6 +27,8 @@ func TestProducts_GetProduct(t *testing.T) {
 
 func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
 	repo := mock.NewMockProductsRepo(ctrl)
 	repo.EXPECT().ReadProduct(gomock.Any(), models.User{}).Return(models.Product{}, errors.New("bad request"))
 
