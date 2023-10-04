@@ -1,13 +1,14 @@
 package http
 
 import (
-	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
@@ -18,6 +19,7 @@ import (
 
 func TestSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	uc.EXPECT().SignUp(gomock.Any(), models.User{
@@ -35,6 +37,7 @@ func TestSignUp(t *testing.T) {
 
 func TestSignIn(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	uc.EXPECT().SignIn(gomock.Any(), models.User{
@@ -52,6 +55,7 @@ func TestSignIn(t *testing.T) {
 
 func TestLogOut(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 
@@ -64,6 +68,7 @@ func TestLogOut(t *testing.T) {
 
 func TestCheckAuth(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.New(), nil)
@@ -84,6 +89,7 @@ func TestCheckAuth(t *testing.T) {
 
 func TestGetProfile(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	idProfile := uuid.New()

@@ -17,6 +17,7 @@ import (
 
 func TestProduct(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockProductsUsecase(ctrl)
 	id := uuid.New()
@@ -40,6 +41,7 @@ func TestProduct(t *testing.T) {
 
 func TestProducts(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockProductsUsecase(ctrl)
 	id := uuid.New()

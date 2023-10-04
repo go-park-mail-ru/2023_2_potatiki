@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/google/uuid"
 )
 
@@ -26,4 +27,8 @@ type AuthRepo interface {
 type AuthAuther interface {
 	GenerateToken(*models.Profile) (string, time.Time, error)
 	GetClaims(string) (*models.Claims, error)
+}
+
+type AuthConfig interface {
+	MustLoad() *config.Config
 }
