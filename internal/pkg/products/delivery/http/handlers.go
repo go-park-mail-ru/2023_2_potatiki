@@ -55,6 +55,8 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, product)
 }
 
+// count - обязателен
+// paging - ситуативно(тот же offset)
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),

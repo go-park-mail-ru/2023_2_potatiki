@@ -26,8 +26,8 @@ func (a *Auther) GenerateToken(profile *models.Profile) (string, time.Time, erro
 	expirationTime := time.Now().UTC().Add(a.ttl)
 
 	claims := &models.Claims{
-		profile.Id,
-		jwt.RegisteredClaims{
+		ID: profile.Id,
+		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			Issuer:    "auth",
 		},
