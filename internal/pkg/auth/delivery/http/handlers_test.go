@@ -34,6 +34,20 @@ func TestSignUp(t *testing.T) {
 	AuthHandler.SignUp(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+func TestSignUpBad(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	uc := mock.NewMockAuthUsecase(ctrl)
+
+	t.Run("EmptyRequestBody", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "http://example.com/foo", nil)
+		w := httptest.NewRecorder()
+		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler.SignUp(w, req)
+		assert.Equal(t, http.StatusTooManyRequests, w.Code)
+	})
+}
 
 func TestSignIn(t *testing.T) {
 	ctrl := gomock.NewController(t)
@@ -51,6 +65,21 @@ func TestSignIn(t *testing.T) {
 	AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
 	AuthHandler.SignIn(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
+}
+
+func TestSignInBad(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	uc := mock.NewMockAuthUsecase(ctrl)
+
+	t.Run("EmptyRequestBody", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "http://example.com/foo", nil)
+		w := httptest.NewRecorder()
+		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler.SignIn(w, req)
+		assert.Equal(t, http.StatusTooManyRequests, w.Code)
+	})
 }
 
 func TestLogOut(t *testing.T) {
