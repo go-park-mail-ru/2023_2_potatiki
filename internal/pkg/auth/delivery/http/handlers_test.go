@@ -18,6 +18,7 @@ import (
 
 func TestSignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	uc.EXPECT().SignUp(gomock.Any(), models.User{
@@ -32,9 +33,24 @@ func TestSignUp(t *testing.T) {
 	AuthHandler.SignUp(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
+func TestSignUpBad(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	uc := mock.NewMockAuthUsecase(ctrl)
+
+	t.Run("EmptyRequestBody", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "http://example.com/foo", nil)
+		w := httptest.NewRecorder()
+		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler.SignUp(w, req)
+		assert.Equal(t, http.StatusTooManyRequests, w.Code)
+	})
+}
 
 func TestSignIn(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	uc.EXPECT().SignIn(gomock.Any(), models.User{
@@ -50,8 +66,24 @@ func TestSignIn(t *testing.T) {
 	assert.Equal(t, http.StatusOK, w.Code)
 }
 
+func TestSignInBad(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	uc := mock.NewMockAuthUsecase(ctrl)
+
+	t.Run("EmptyRequestBody", func(t *testing.T) {
+		req := httptest.NewRequest(http.MethodPost, "http://example.com/foo", nil)
+		w := httptest.NewRecorder()
+		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler.SignIn(w, req)
+		assert.Equal(t, http.StatusTooManyRequests, w.Code)
+	})
+}
+
 func TestLogOut(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 
@@ -64,6 +96,7 @@ func TestLogOut(t *testing.T) {
 
 func TestCheckAuth(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.New(), nil)
@@ -84,6 +117,7 @@ func TestCheckAuth(t *testing.T) {
 
 func TestGetProfile(t *testing.T) {
 	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	idProfile := uuid.New()
