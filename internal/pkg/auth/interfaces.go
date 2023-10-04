@@ -28,4 +28,7 @@ type AuthAuther interface {
 	GetClaims(string) (*models.Claims, error)
 }
 
-type AuthConfig interface{}
+type AuthConfig interface {
+	GetAccessExpirationTime() time.Duration
+	GetJwtAccess() string
+}

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
@@ -17,10 +18,19 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 
 	repo := mock.NewMockAuthRepo(ctrl)
 	cfg := mock.NewMockAuthConfig(ctrl)
-	repo.EXPECT().CreateUser(gomock.Any(), models.User{}).Return(models.Profile{}, nil).AnyTimes()
+	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
+	cfg.EXPECT().GetJwtAccess().Return("")
+
+	repo.EXPECT().CreateUser(gomock.Any(), models.User{
+		Login:        "iudsbfiwhdbfi",
+		PasswordHash: "hafikyagdfiaysgf",
+	}).Return(models.Profile{}, nil)
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, exp, err := uc.SignUp(context.Background(), models.User{})
+	profile, token, exp, err := uc.SignUp(context.Background(), models.User{
+		Login:        "iudsbfiwhdbfi",
+		PasswordHash: "hafikyagdfiaysgf",
+	})
 	fmt.Println(profile, token, exp, err)
 }
 
@@ -30,10 +40,19 @@ func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 
 	repo := mock.NewMockAuthRepo(ctrl)
 	cfg := mock.NewMockAuthConfig(ctrl)
-	repo.EXPECT().CreateUser(gomock.Any(), models.User{}).Return(models.Profile{}, errors.New("bad request")).AnyTimes()
+	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
+	cfg.EXPECT().GetJwtAccess().Return("")
+
+	repo.EXPECT().CreateUser(gomock.Any(), models.User{
+		Login:        "iudsbfiwhdbfi",
+		PasswordHash: "hafikyagdfiaysgf",
+	}).Return(models.Profile{}, errors.New("bad request")).AnyTimes()
 
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, exp, err := uc.SignUp(context.Background(), models.User{})
+	profile, token, exp, err := uc.SignUp(context.Background(), models.User{
+		Login:        "iudsbfiwhdbfi",
+		PasswordHash: "hafikyagdfiaysgf",
+	})
 	fmt.Println(profile, token, exp, err)
 }

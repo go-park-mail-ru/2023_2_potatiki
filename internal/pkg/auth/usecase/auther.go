@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/golang-jwt/jwt/v5"
 )
 
@@ -15,10 +15,10 @@ type Auther struct {
 	secret string
 }
 
-func NewAuther(cfg config.Auther) *Auther {
+func NewAuther(cfg auth.AuthConfig) *Auther {
 	return &Auther{
-		ttl:    cfg.AccessExpirationTime,
-		secret: cfg.JwtAccess,
+		ttl:    cfg.GetAccessExpirationTime(), //cfg.AccessExpirationTime,
+		secret: cfg.GetJwtAccess(),            //cfg.JwtAccess,
 	}
 }
 

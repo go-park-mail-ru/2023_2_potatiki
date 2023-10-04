@@ -40,6 +40,13 @@ type Auther struct {
 	AccessExpirationTime time.Duration `yaml:"access_expiration_time" yaml-defualt:"6h"`
 }
 
+func (a Auther) GetAccessExpirationTime() time.Duration {
+	return a.AccessExpirationTime
+}
+func (a Auther) GetJwtAccess() string {
+	return a.JwtAccess
+}
+
 func MustLoad() *Config {
 	var cfg Config
 

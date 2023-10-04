@@ -245,3 +245,31 @@ func NewMockAuthConfig(ctrl *gomock.Controller) *MockAuthConfig {
 func (m *MockAuthConfig) EXPECT() *MockAuthConfigMockRecorder {
 	return m.recorder
 }
+
+// GetAccessExpirationTime mocks base method.
+func (m *MockAuthConfig) GetAccessExpirationTime() time.Duration {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAccessExpirationTime")
+	ret0, _ := ret[0].(time.Duration)
+	return ret0
+}
+
+// GetAccessExpirationTime indicates an expected call of GetAccessExpirationTime.
+func (mr *MockAuthConfigMockRecorder) GetAccessExpirationTime() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAccessExpirationTime", reflect.TypeOf((*MockAuthConfig)(nil).GetAccessExpirationTime))
+}
+
+// GetJwtAccess mocks base method.
+func (m *MockAuthConfig) GetJwtAccess() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetJwtAccess")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetJwtAccess indicates an expected call of GetJwtAccess.
+func (mr *MockAuthConfigMockRecorder) GetJwtAccess() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetJwtAccess", reflect.TypeOf((*MockAuthConfig)(nil).GetJwtAccess))
+}
