@@ -48,6 +48,7 @@ func run() (err error) {
 	log.Debug("debug messages are enabled")
 
 	//============================Database============================//
+	//docker run --name zuzu-postgres -v zuzu-db-data:/var/lib/postgresql/data -v -e 'PGDATA:/var/lib/postgresql/data/pgdata' './build/sql/injection_db.sql:/docker-entrypoint-initdb.d/init.sql' -p 8079:5432 --env-file .env --restart always postgres:latest
 	db, err := sql.Open("postgres", fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		cfg.DBUser,
 		cfg.DBPass,
@@ -109,7 +110,9 @@ func run() (err error) {
 		IdleTimeout:       cfg.IdleTimeout,
 		ReadHeaderTimeout: cfg.ReadHeaderTimeout,
 	}
-
+	//SIGINT -- ctrl + c
+	//SIGTERM -- kill
+	//Interrupt -- аппаратное прерывание, в Windows даст ошибку
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
