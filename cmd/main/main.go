@@ -36,13 +36,11 @@ func main() {
 }
 
 func run() (err error) {
-	cfg, err := config.MustLoad() // TODO : dev-config.yaml -> readme
-	if err != nil {
-		return err
-	}
+	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
+
 	log := logger.Set(cfg.Enviroment)
 	log.Info(
-		"starting zuzu",
+		"starting zuzu-main",
 		slog.String("env", cfg.Enviroment),
 	)
 	log.Debug("debug messages are enabled")
@@ -68,10 +66,20 @@ func run() (err error) {
 		return err
 	}
 	//----------------------------Database----------------------------//
-
+	//
+	//
+	//============================Init layers============================//
 	authRepo := authRepo.NewAuthRepo(db)
 	authUsecase := authUsecase.NewAuthUsecase(authRepo, cfg.Auther)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
+
+	productsRepo := productsRepo.NewProductsRepo(db)
+	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
+	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
+	//----------------------------Init layers----------------------------//
+	//
+	//
+	//============================Create router============================//
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
@@ -80,7 +88,10 @@ func run() (err error) {
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
 	})
-
+	//----------------------------Create router----------------------------//
+	//
+	//
+	//============================Setup endpoints============================//
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
 		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
@@ -90,15 +101,12 @@ func run() (err error) {
 		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).Methods(http.MethodGet, http.MethodOptions)
 	}
 
-	productsRepo := productsRepo.NewProductsRepo(db)
-	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
-	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
-
 	products := r.PathPrefix("/products").Subrouter()
 	{
 		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
 		products.HandleFunc("/get_all", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
 	}
+	//----------------------------Setup endpoints----------------------------//
 
 	http.Handle("/", r)
 
@@ -110,10 +118,9 @@ func run() (err error) {
 		IdleTimeout:       cfg.IdleTimeout,
 		ReadHeaderTimeout: cfg.ReadHeaderTimeout,
 	}
-	//SIGINT -- ctrl + c
-	//SIGTERM -- kill
-	//Interrupt -- аппаратное прерывание, в Windows даст ошибку
+
 	quit := make(chan os.Signal, 1)
+	//SIGINT = ctrl+c; SIGTERM = kill; Interrupt = аппаратное прерывание, в Windows даст ошибку
 	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {

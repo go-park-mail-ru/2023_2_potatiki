@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -47,21 +47,24 @@ func (a Auther) GetJwtAccess() string {
 	return a.JwtAccess
 }
 
-func MustLoad() (*Config, error) {
+func MustLoad() *Config {
 	var cfg Config
 
 	if err := cleanenv.ReadEnv(&cfg); err != nil {
-		return nil, fmt.Errorf("cannot read .env file: %s\n (fix: you need to put .env file in main dir)", err)
+		log.Printf("cannot read .env file: %s\n (fix: you need to put .env file in main dir)", err)
+		os.Exit(1)
 	}
 
 	// check if config file exists
 	if _, err := os.Stat(cfg.ConfigPath); os.IsNotExist(err) {
-		return nil, fmt.Errorf("config file does not exist: %s", cfg.ConfigPath)
+		log.Printf("config file does not exist: %s", cfg.ConfigPath)
+		os.Exit(1)
 	}
 
 	if err := cleanenv.ReadConfig(cfg.ConfigPath, &cfg); err != nil {
-		return nil, fmt.Errorf("cannot read %s: %v", cfg.ConfigPath, err)
+		log.Printf("cannot read %s: %v", cfg.ConfigPath, err)
+		os.Exit(1)
 	}
 
-	return &cfg, nil
+	return &cfg
 }

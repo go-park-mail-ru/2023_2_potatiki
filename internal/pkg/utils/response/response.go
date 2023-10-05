@@ -6,19 +6,13 @@ import (
 	"strconv"
 )
 
-type Response struct {
-	Status string      `json:"status"`
-	Error  interface{} `json:"error,omitempty"`
-}
-
-type NilResponse struct{}
-
 const (
 	StatusError = "Error"
 )
 
-func Nil() NilResponse {
-	return NilResponse{}
+type Response struct {
+	Status string      `json:"status"`
+	Error  interface{} `json:"error,omitempty"`
 }
 
 func Err(msg string) Response {
@@ -38,4 +32,11 @@ func JSON(w http.ResponseWriter, status int, response any) {
 	w.Header().Set("Content-Length", strconv.Itoa(len(responseJson)))
 	w.WriteHeader(status)
 	w.Write(responseJson)
+}
+
+func JSONStatus(w http.ResponseWriter, status int) {
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Length", "2")
+	w.WriteHeader(status)
+	w.Write([]byte("{}"))
 }
