@@ -29,6 +29,15 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 )
 
+// @title ZuZu Backend API
+// @description API server for ZuZu.
+
+// @contact.name Gleb, Dima
+// @contact.url t.me/MrDjeb, t.me/belozerovmsk
+
+// @host localhost:8080
+// @BasePath /
+
 func main() {
 	if err := run(); err != nil {
 		os.Exit(1)
