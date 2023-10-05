@@ -47,7 +47,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	product, err := h.uc.GetProduct(r.Context(), id)
 	if err != nil {
 		h.log.Error("failed to get product", sl.Err(err))
-		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
+		resp.JSONStatus(w, http.StatusTooManyRequests)
 		return
 	}
 
@@ -87,7 +87,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	products, err := h.uc.GetProducts(r.Context(), paging, count)
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Nil())
+		resp.JSONStatus(w, http.StatusBadRequest)
 		return
 	}
 

@@ -41,7 +41,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		h.log.Error("failed to decode request body", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Nil())
+		resp.JSONStatus(w, http.StatusBadRequest)
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
@@ -50,7 +50,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, u)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
-		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
+		resp.JSONStatus(w, http.StatusTooManyRequests)
 		return
 	}
 
@@ -81,7 +81,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		h.log.Error("failed to decode request body", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Nil())
+		resp.JSONStatus(w, http.StatusBadRequest)
 		return
 	}
 	h.log.Info("request body decoded", slog.Any("request", r))
@@ -90,7 +90,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, u)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
-		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
+		resp.JSONStatus(w, http.StatusTooManyRequests)
 		return
 	}
 
@@ -109,7 +109,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
 	h.log.Info("logout")
-	resp.JSON(w, http.StatusOK, resp.Nil())
+	resp.JSONStatus(w, http.StatusOK)
 }
 
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
@@ -122,11 +122,11 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, http.ErrNoCookie):
 			h.log.Error("token cookie not found", sl.Err(err))
-			resp.JSON(w, http.StatusUnauthorized, resp.Nil())
+			resp.JSONStatus(w, http.StatusUnauthorized)
 			return
 		default:
 			h.log.Error("faild to get token cookie", sl.Err(err))
-			resp.JSON(w, http.StatusUnauthorized, resp.Nil())
+			resp.JSONStatus(w, http.StatusUnauthorized)
 			return
 		}
 	}
@@ -134,11 +134,11 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	id, err := h.uc.CheckToken(r.Context(), tokenCookie.Value)
 	if err != nil {
 		h.log.Error("jws token is invalid", sl.Err(err))
-		resp.JSON(w, http.StatusUnauthorized, resp.Nil())
+		resp.JSONStatus(w, http.StatusUnauthorized)
 		return
 	}
 	h.log.Info("got profile id", slog.Any("profile id", id))
-	resp.JSON(w, http.StatusOK, resp.Nil())
+	resp.JSONStatus(w, http.StatusOK)
 }
 
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
