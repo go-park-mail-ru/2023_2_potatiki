@@ -1,10 +1,229 @@
 basePath: /
-host: localhost:8080
+definitions:
+  models.Product:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      img:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      rating:
+        type: number
+    type: object
+  models.Profile:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      img:
+        type: string
+      login:
+        type: string
+    type: object
+  models.User:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  response.Response:
+    properties:
+      error: {}
+      status:
+        type: string
+    type: object
+host: 127.0.0.1:8082
 info:
   contact:
     name: Gleb, Dima
     url: t.me/MrDjeb, t.me/belozerovmsk
   description: API server for ZuZu.
   title: ZuZu Backend API
-paths: {}
+paths:
+  /api/auth/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user profile
+      parameters:
+      - description: Profile UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            $ref: '#/definitions/models.Profile'
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: GetProfile
+      tags:
+      - Auth
+  /api/auth/check_auth:
+    get:
+      consumes:
+      - application/json
+      description: Check user auth
+      parameters:
+      - default: zuzu-t=xxx
+        description: Token
+        in: header
+        name: Cookie
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "401":
+          description: Unauthorized
+      security:
+      - AuthKey: []
+      summary: CheckAuth
+      tags:
+      - Auth
+  /api/auth/logout:
+    get:
+      consumes:
+      - application/json
+      description: Logout from Account
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+      summary: Logout
+      tags:
+      - Auth
+  /api/auth/signin:
+    post:
+      consumes:
+      - application/json
+      description: LogIn to Account
+      parameters:
+      - description: user info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            $ref: '#/definitions/models.Profile'
+        "400":
+          description: request body is empty
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: SignIn
+      tags:
+      - Auth
+  /api/auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Create Account
+      parameters:
+      - description: user info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            $ref: '#/definitions/models.Profile'
+        "400":
+          description: request body is empty
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: SignUp
+      tags:
+      - Auth
+  /api/products/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get product
+      parameters:
+      - description: Product UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product info
+          schema:
+            $ref: '#/definitions/models.Product'
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: Product
+      tags:
+      - Products
+  /api/products/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get products
+      parameters:
+      - description: Skip number of products
+        in: query
+        name: paging
+        type: integer
+      - description: Display number of products
+        in: query
+        name: count
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product info
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: Products
+      tags:
+      - Products
 swagger: "2.0"

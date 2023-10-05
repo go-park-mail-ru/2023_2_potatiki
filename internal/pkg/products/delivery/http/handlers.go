@@ -30,12 +30,11 @@ func NewProductsHandler(log *slog.Logger, uc products.ProductsUsecase) ProductHa
 // @Description	Get product
 // @Accept json
 // @Produce json
-// @Param id path UUID true "Product UUID"
+// @Param id path string true "Product UUID"
 // @Success	200	{object} models.Product "Product info"
-// @Failure	400	{object} http.Error	"invalid request"
+// @Failure	400	{object} response.Response	"invalid request"
 // @Failure	429
-// @Router	/api/products/{id:[0-9a-fA-F-]+} [get]
-
+// @Router	/api/products/{id} [get]
 func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -74,16 +73,15 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
 // @Success	200	{object} []models.Product "Product info"
-// @Failure	400	{object} http.Error	"invalid request"
+// @Failure	400	{object} response.Response	"invalid request"
 // @Failure	429
 // @Router	/api/products/get_all [get]
-
-// count - обязателен
-// paging - ситуативно(тот же offset)
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
+	// count - обязателен
+	// paging - ситуативно(тот же offset)
 
 	var (
 		paging int64

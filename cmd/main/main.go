@@ -37,7 +37,7 @@ import (
 // @contact.name Gleb, Dima
 // @contact.url t.me/MrDjeb, t.me/belozerovmsk
 
-// @host localhost:8080
+// @host 127.0.0.1:8082
 // @BasePath /
 
 // @securityDefinitions	AuthKey

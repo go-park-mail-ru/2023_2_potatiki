@@ -1,0 +1,10 @@
+basePath: /
+host: localhost:8080
+info:
+  contact:
+    name: Gleb, Dima
+    url: t.me/MrDjeb, t.me/belozerovmsk
+  description: API server for ZuZu.
+  title: ZuZu Backend API
+paths: {}
+swagger: "2.0"
