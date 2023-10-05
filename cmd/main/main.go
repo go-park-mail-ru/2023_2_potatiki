@@ -40,6 +40,10 @@ import (
 // @host localhost:8080
 // @BasePath /
 
+// @securityDefinitions	AuthKey
+// @in					header
+// @name				Authorization
+
 func main() {
 	if err := run(); err != nil {
 		os.Exit(1)
@@ -96,15 +100,18 @@ func run() (err error) {
 
 	r.Use(middleware.CORSMiddleware)
 
+	//============================Swagger============================//
 	r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
 		httpSwagger.DeepLinking(true),
 		httpSwagger.DocExpansion("none"),
 		httpSwagger.DomID("swagger-ui"),
 	)).Methods(http.MethodGet)
+	//============================Swagger============================//
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
 	})
+
 	//----------------------------Create router----------------------------//
 	//
 	//

@@ -28,6 +28,17 @@ func NewAuthHandler(log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 	}
 }
 
+// @Summary	SignIn
+// @Tags Auth
+// @Description	LogIn to Account
+// @Accept json
+// @Produce json
+// @Param input body models.User true "user info"
+// @Success	200	{object} SignInResponse "User profile"
+// @Failure	400	{object} http.Error	"request body is empty"
+// @Failure	429
+// @Router	/api/auth/signin [post]
+
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -68,6 +79,17 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, profile)
 }
 
+// @Summary	SignUp
+// @Tags Auth
+// @Description	Create Account
+// @Accept json
+// @Produce json
+// @Param input body models.User true "user info"
+// @Success	200 {object} SignUpResponse "User profile"
+// @Failure	400	{object} http.Error	"request body is empty"
+// @Failure	429
+// @Router	/api/auth/signup [post]
+
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -106,11 +128,28 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, profile)
 }
 
+// @Summary	Logout
+// @Tags Auth
+// @Description	Logout from Account
+// @Accept json
+// @Produce json
+// @Success	200
+// @Router	/api/auth/logout [get]
+
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
 	h.log.Info("logout")
 	resp.JSONStatus(w, http.StatusOK)
 }
+
+// @Summary	CheckAuth
+// @Tags Auth
+// @Description	Check user auth
+// @Accept json
+// @Produce json
+// @Success	200
+// @Failure	401
+// @Router	/api/auth/check_auth [get]
 
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
@@ -140,6 +179,17 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	h.log.Info("got profile id", slog.Any("profile id", id))
 	resp.JSONStatus(w, http.StatusOK)
 }
+
+// @Summary	GetProfile
+// @Tags Auth
+// @Description	Get user profile
+// @Accept json
+// @Produce json
+// @Param id path UUID true "Profile UUID"
+// @Success	200	{object} GetProfileResponse "User profile"
+// @Failure	400	{object} http.Error	"invalid request"
+// @Failure	429
+// @Router	/api/auth/{id:[0-9a-fA-F-]+} [get]
 
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
