@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	httpSwagger "github.com/swaggo/http-swagger"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/gorilla/mux"
 
+	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
@@ -93,6 +95,12 @@ func run() (err error) {
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
 	r.Use(middleware.CORSMiddleware)
+
+	r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
+		httpSwagger.DeepLinking(true),
+		httpSwagger.DocExpansion("none"),
+		httpSwagger.DomID("swagger-ui"),
+	)).Methods(http.MethodGet)
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
