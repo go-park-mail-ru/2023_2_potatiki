@@ -85,7 +85,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param input body models.User true "user info"
-// @Success	200 {object} SignUpResponse "User profile"
+// @Success	200 {object} models.Profile "User profile"
 // @Failure	400	{object} http.Error	"request body is empty"
 // @Failure	429
 // @Router	/api/auth/signup [post]
@@ -186,7 +186,7 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Param id path UUID true "Profile UUID"
-// @Success	200	{object} GetProfileResponse "User profile"
+// @Success	200	{object} models.Profile "User profile"
 // @Failure	400	{object} http.Error	"invalid request"
 // @Failure	429
 // @Router	/api/auth/{id:[0-9a-fA-F-]+} [get]
