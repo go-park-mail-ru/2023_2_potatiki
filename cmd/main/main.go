@@ -5,20 +5,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	httpSwagger "github.com/swaggo/http-swagger"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	_ "github.com/lib/pq"
-
-	"log/slog"
-
 	"github.com/gorilla/mux"
 
-	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
@@ -29,6 +24,11 @@ import (
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
+
+	_ "github.com/lib/pq"
+
+	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // @title ZuZu Backend API
@@ -43,7 +43,6 @@ import (
 // @securityDefinitions	AuthKey
 // @in					header
 // @name				Authorization
-
 func main() {
 	if err := run(); err != nil {
 		os.Exit(1)
