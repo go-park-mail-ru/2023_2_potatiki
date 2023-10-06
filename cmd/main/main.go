@@ -37,8 +37,7 @@ import (
 // @contact.name Dima
 // @contact.url http://t.me/belozerovmsk
 
-// @host localhost:8082
-// @BasePath /
+// @BasePath /api
 
 // @securityDefinitions	AuthKey
 // @in					header
