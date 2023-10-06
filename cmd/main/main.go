@@ -37,8 +37,6 @@ import (
 // @contact.name Dima
 // @contact.url http://t.me/belozerovmsk
 
-// @BasePath /api
-
 // @securityDefinitions	AuthKey
 // @in					header
 // @name				Authorization
@@ -49,6 +47,8 @@ func main() {
 }
 
 func run() (err error) {
+	// host localhost:8082
+	// BasePath /api
 	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
 
 	log := logger.Set(cfg.Enviroment)

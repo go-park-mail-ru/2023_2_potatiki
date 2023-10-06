@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   models.Product:
     properties:
@@ -39,7 +38,6 @@ definitions:
       status:
         type: string
     type: object
-host: localhost:8082
 info:
   contact:
     name: Dima

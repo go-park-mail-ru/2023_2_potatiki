@@ -8,8 +8,6 @@
             "url": "http://t.me/belozerovmsk"
         }
     },
-    "host": "localhost:8082",
-    "basePath": "/",
     "paths": {
         "/api/auth/check_auth": {
             "get": {
