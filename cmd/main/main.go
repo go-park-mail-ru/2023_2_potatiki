@@ -34,10 +34,10 @@ import (
 // @title ZuZu Backend API
 // @description API server for ZuZu.
 
-// @contact.name Gleb, Dima
-// @contact.url t.me/MrDjeb, t.me/belozerovmsk
+// @contact.name Dima
+// @contact.url http://t.me/belozerovmsk
 
-// @host 127.0.0.1:8082
+// @host localhost:8082
 // @BasePath /
 
 // @securityDefinitions	AuthKey
@@ -99,18 +99,15 @@ func run() (err error) {
 
 	r.Use(middleware.CORSMiddleware)
 
-	//============================Swagger============================//
+	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		http.Error(w, "Not Found", http.StatusNotFound)
+	})
+
 	r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
 		httpSwagger.DeepLinking(true),
 		httpSwagger.DocExpansion("none"),
 		httpSwagger.DomID("swagger-ui"),
 	)).Methods(http.MethodGet)
-	//============================Swagger============================//
-
-	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		http.Error(w, "Not Found", http.StatusNotFound)
-	})
-
 	//----------------------------Create router----------------------------//
 	//
 	//
@@ -154,7 +151,7 @@ func run() (err error) {
 
 	log.Info("server started")
 	sig := <-quit
-	log.Debug("handle quit os/signal: ", sig)
+	log.Debug("handle quit chanel: ", slog.Any("os.Signal", sig.String()))
 	log.Info("server stopping...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)

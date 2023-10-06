@@ -4,11 +4,11 @@
         "description": "API server for ZuZu.",
         "title": "ZuZu Backend API",
         "contact": {
-            "name": "Gleb, Dima",
-            "url": "t.me/MrDjeb, t.me/belozerovmsk"
+            "name": "Dima",
+            "url": "http://t.me/belozerovmsk"
         }
     },
-    "host": "127.0.0.1:8082",
+    "host": "localhost:8082",
     "basePath": "/",
     "paths": {
         "/api/auth/check_auth": {

@@ -39,11 +39,11 @@ definitions:
       status:
         type: string
     type: object
-host: 127.0.0.1:8082
+host: localhost:8082
 info:
   contact:
-    name: Gleb, Dima
-    url: t.me/MrDjeb, t.me/belozerovmsk
+    name: Dima
+    url: http://t.me/belozerovmsk
   description: API server for ZuZu.
   title: ZuZu Backend API
 paths:

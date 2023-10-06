@@ -10,8 +10,8 @@ const docTemplate = `{
         "description": "{{escape .Description}}",
         "title": "{{.Title}}",
         "contact": {
-            "name": "Gleb, Dima",
-            "url": "t.me/MrDjeb, t.me/belozerovmsk"
+            "name": "Dima",
+            "url": "http://t.me/belozerovmsk"
         },
         "version": "{{.Version}}"
     },
@@ -361,7 +361,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "",
-	Host:             "127.0.0.1:8082",
+	Host:             "localhost:8082",
 	BasePath:         "/",
 	Schemes:          []string{},
 	Title:            "ZuZu Backend API",
