@@ -28,6 +28,16 @@ func NewAuthHandler(log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 	}
 }
 
+// @Summary	SignIn
+// @Tags Auth
+// @Description	LogIn to Account
+// @Accept json
+// @Produce json
+// @Param input body models.User true "user info"
+// @Success	200	{object} models.Profile "User profile"
+// @Failure	400	{object} response.Response	"request body is empty"
+// @Failure	429
+// @Router	/api/auth/signin [post]
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -41,7 +51,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		h.log.Error("failed to decode request body", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Nil())
+		resp.JSONStatus(w, http.StatusBadRequest)
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
@@ -50,7 +60,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, u)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
-		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
+		resp.JSONStatus(w, http.StatusTooManyRequests)
 		return
 	}
 
@@ -68,6 +78,16 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, profile)
 }
 
+// @Summary	SignUp
+// @Tags Auth
+// @Description	Create Account
+// @Accept json
+// @Produce json
+// @Param input body models.User true "user info"
+// @Success	200 {object} models.Profile "User profile"
+// @Failure	400	{object} response.Response	"request body is empty"
+// @Failure	429
+// @Router	/api/auth/signup [post]
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -81,7 +101,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		h.log.Error("failed to decode request body", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Nil())
+		resp.JSONStatus(w, http.StatusBadRequest)
 		return
 	}
 	h.log.Info("request body decoded", slog.Any("request", r))
@@ -90,7 +110,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	err = json.Unmarshal(body, u)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
-		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
+		resp.JSONStatus(w, http.StatusTooManyRequests)
 		return
 	}
 
@@ -106,12 +126,29 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, profile)
 }
 
+// @Summary	Logout
+// @Tags Auth
+// @Description	Logout from Account
+// @Accept json
+// @Produce json
+// @Success	200
+// @Router	/api/auth/logout [get]
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
 	h.log.Info("logout")
-	resp.JSON(w, http.StatusOK, resp.Nil())
+	resp.JSONStatus(w, http.StatusOK)
 }
 
+// @Summary	CheckAuth
+// @Tags Auth
+// @Description	Check user auth
+// @Accept json
+// @Produce json
+// @Success	200
+// @Failure	401
+// @security AuthKey
+// @Param Cookie header string  false "Token" default(zuzu-t=xxx)
+// @Router	/api/auth/check_auth [get]
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -122,11 +159,11 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case errors.Is(err, http.ErrNoCookie):
 			h.log.Error("token cookie not found", sl.Err(err))
-			resp.JSON(w, http.StatusUnauthorized, resp.Nil())
+			resp.JSONStatus(w, http.StatusUnauthorized)
 			return
 		default:
 			h.log.Error("faild to get token cookie", sl.Err(err))
-			resp.JSON(w, http.StatusUnauthorized, resp.Nil())
+			resp.JSONStatus(w, http.StatusUnauthorized)
 			return
 		}
 	}
@@ -134,13 +171,23 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	id, err := h.uc.CheckToken(r.Context(), tokenCookie.Value)
 	if err != nil {
 		h.log.Error("jws token is invalid", sl.Err(err))
-		resp.JSON(w, http.StatusUnauthorized, resp.Nil())
+		resp.JSONStatus(w, http.StatusUnauthorized)
 		return
 	}
 	h.log.Info("got profile id", slog.Any("profile id", id))
-	resp.JSON(w, http.StatusOK, resp.Nil())
+	resp.JSONStatus(w, http.StatusOK)
 }
 
+// @Summary	GetProfile
+// @Tags Auth
+// @Description	Get user profile
+// @Accept json
+// @Produce json
+// @Param id path string true "Profile UUID"
+// @Success	200	{object} models.Profile "User profile"
+// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	429
+// @Router	/api/auth/{id} [get]
 func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),

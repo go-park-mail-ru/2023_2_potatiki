@@ -25,6 +25,16 @@ func NewProductsHandler(log *slog.Logger, uc products.ProductsUsecase) ProductHa
 	}
 }
 
+// @Summary	Product
+// @Tags Products
+// @Description	Get product
+// @Accept json
+// @Produce json
+// @Param id path string true "Product UUID"
+// @Success	200	{object} models.Product "Product info"
+// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	429
+// @Router	/api/products/{id} [get]
 func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -34,20 +44,20 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	idStr, ok := vars["id"]
 	if !ok || idStr == "" {
 		h.log.Error("id is empty")
-		resp.JSON(w, http.StatusAccepted, resp.Err("invalid request"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
 	id, err := uuid.Parse(idStr)
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
-		resp.JSON(w, http.StatusAccepted, resp.Err("invalid request"))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
 
 	product, err := h.uc.GetProduct(r.Context(), id)
 	if err != nil {
 		h.log.Error("failed to get product", sl.Err(err))
-		resp.JSON(w, http.StatusTooManyRequests, resp.Nil())
+		resp.JSONStatus(w, http.StatusTooManyRequests)
 		return
 	}
 
@@ -55,10 +65,23 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, product)
 }
 
+// @Summary	Products
+// @Tags Products
+// @Description	Get products
+// @Accept json
+// @Produce json
+// @Param paging query int false "Skip number of products"
+// @Param count query int true "Display number of products"
+// @Success	200	{object} []models.Product "Product info"
+// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	429
+// @Router	/api/products/get_all [get]
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
+	// count - обязателен
+	// paging - ситуативно(тот же offset)
 
 	var (
 		paging int64
@@ -85,7 +108,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	products, err := h.uc.GetProducts(r.Context(), paging, count)
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Nil())
+		resp.JSONStatus(w, http.StatusTooManyRequests)
 		return
 	}
 

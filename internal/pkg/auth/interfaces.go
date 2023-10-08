@@ -22,3 +22,13 @@ type AuthRepo interface {
 	CheckUser(context.Context, models.User) (models.Profile, error)
 	ReadProfile(context.Context, uuid.UUID) (models.Profile, error)
 }
+
+type AuthAuther interface {
+	GenerateToken(*models.Profile) (string, time.Time, error)
+	GetClaims(string) (*models.Claims, error)
+}
+
+type AuthConfig interface {
+	GetAccessExpirationTime() time.Duration
+	GetJwtAccess() string
+}

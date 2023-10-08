@@ -7,16 +7,15 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/google/uuid"
 )
 
 type AuthUsecase struct {
 	repo   auth.AuthRepo
-	auther *Auther
+	auther auth.AuthAuther
 }
 
-func NewAuthUsecase(repo auth.AuthRepo, cfg config.Auther) *AuthUsecase {
+func NewAuthUsecase(repo auth.AuthRepo, cfg auth.AuthConfig) *AuthUsecase {
 	return &AuthUsecase{
 		repo:   repo,
 		auther: NewAuther(cfg),
@@ -24,7 +23,7 @@ func NewAuthUsecase(repo auth.AuthRepo, cfg config.Auther) *AuthUsecase {
 }
 
 func (uc *AuthUsecase) CheckToken(ctx context.Context, tokenStr string) (uuid.UUID, error) {
-	claims, err := uc.auther.getClaims(tokenStr)
+	claims, err := uc.auther.GetClaims(tokenStr)
 	if err != nil {
 		return uuid.UUID{}, err
 	}
@@ -40,7 +39,7 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Pro
 	if err != nil {
 		return models.Profile{}, "", time.Now(), err
 	}
-	token, exp, err := uc.auther.generateToken(&profile)
+	token, exp, err := uc.auther.GenerateToken(&profile)
 	if err != nil {
 		return models.Profile{}, "", time.Now(), err
 	}
@@ -56,7 +55,7 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Pro
 	if err != nil {
 		return models.Profile{}, "", time.Now(), err
 	}
-	token, exp, err := uc.auther.generateToken(&profile)
+	token, exp, err := uc.auther.GenerateToken(&profile)
 	if err != nil {
 		return models.Profile{}, "", time.Now(), err
 	}

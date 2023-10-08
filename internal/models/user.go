@@ -18,5 +18,5 @@ type Profile struct {
 
 func (user User) IsValid() bool {
 	//strings.Contains()
-	return len(user.Login) > 6 && len(user.Login) < 30
+	return len(user.Login) >= 6 && len(user.Login) <= 30
 }

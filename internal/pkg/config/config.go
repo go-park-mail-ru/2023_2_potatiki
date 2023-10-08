@@ -40,20 +40,31 @@ type Auther struct {
 	AccessExpirationTime time.Duration `yaml:"access_expiration_time" yaml-defualt:"6h"`
 }
 
+func (a Auther) GetAccessExpirationTime() time.Duration {
+	return a.AccessExpirationTime
+}
+func (a Auther) GetJwtAccess() string {
+	return a.JwtAccess
+}
+
 func MustLoad() *Config {
 	var cfg Config
 
 	if err := cleanenv.ReadEnv(&cfg); err != nil {
-		log.Fatalf("cannot read .env file: %s\n (fix: you need to put .env file in main dir)", err)
+		log.Printf("cannot read .env file: %s\n (fix: you need to put .env file in main dir)", err)
+		os.Exit(1)
 	}
 
 	// check if config file exists
 	if _, err := os.Stat(cfg.ConfigPath); os.IsNotExist(err) {
-		log.Fatalf("config file does not exist: %s", cfg.ConfigPath)
+		log.Printf("config file does not exist: %s", cfg.ConfigPath)
+		os.Exit(1)
 	}
 
 	if err := cleanenv.ReadConfig(cfg.ConfigPath, &cfg); err != nil {
-		log.Fatalf("cannot read %s: %v", cfg.ConfigPath, err)
+		log.Printf("cannot read %s: %v", cfg.ConfigPath, err)
+		os.Exit(1)
 	}
+
 	return &cfg
 }
