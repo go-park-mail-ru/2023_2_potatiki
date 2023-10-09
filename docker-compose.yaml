@@ -3,7 +3,7 @@ version: "3.9"
 services:
 
   postgres:
-    container_name: ${POSTGRES_HOST}
+    container_name: ${DB_HOST}
     image: postgres:latest
     restart: always
     command: 
@@ -41,7 +41,7 @@ services:
     env_file:
       - ./.env
     expose:
-      - "65432"
+      - "${DB_PORT}"
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'

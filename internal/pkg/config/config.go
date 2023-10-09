@@ -30,8 +30,8 @@ type HTTPServer struct {
 type Database struct {
 	DBName string `env:"POSTGRES_DB" env-required:"true"`
 	DBPass string `env:"POSTGRES_PASSWORD" env-required:"true"`
-	DBHost string `env:"POSTGRES_HOST" env-default:""`
-	DBPort int    `env:"POSTGRES_PORT" env-required:"true"`
+	DBHost string `env:"DB_HOST" env-default:""`
+	DBPort int    `env:"DB_PORT" env-required:"true"`
 	DBUser string `env:"POSTGRES_USER" env-required:"true"`
 }
 
