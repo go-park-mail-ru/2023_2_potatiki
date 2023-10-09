@@ -78,4 +78,5 @@ values ('007749b5-7e07-4be8-8c91-8db273ace4c2', 'Apple MacBook Air 15', 137990, 
 insert into products (id, nameProduct, price, imgsrc, description, rating)
 values ('007749b5-7e07-4be8-8c91-8db273ace4c3', 'Apple MacBook Air 13', 118990, 'macbookair.png', '13-inch high-performance laptop', 5.00);
 
-
+insert into products (id, nameProduct, price, imgsrc, description, rating)
+values ('007749b5-7e07-4be8-8c91-8db273ace4c4', 'Apple MacBook Air 19', 299999, 'macbookair.png', '13-inch high-performance laptop', 5.00);
