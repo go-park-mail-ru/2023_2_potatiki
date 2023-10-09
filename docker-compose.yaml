@@ -96,7 +96,7 @@ services:
     volumes:
       - ./.env:/docker-zuzu-main/.env
     depends_on:
-      - postgres
+      - ${DB_HOST}
     networks:
       - zuzu-network
 
