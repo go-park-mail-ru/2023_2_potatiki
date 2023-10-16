@@ -1,0 +1,13 @@
+linters:
+  enable-all: true
+  disable:
+    - varnamelen
+    - depguard
+    - godox
+    - testpackage
+    - exhaustivestruct
+    - wsl
+    - revive
+    - ireturn
+    - exhaustruct
+    - misspell
