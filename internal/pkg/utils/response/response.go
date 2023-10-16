@@ -31,12 +31,18 @@ func JSON(w http.ResponseWriter, status int, response any) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Header().Set("Content-Length", strconv.Itoa(len(responseJson)))
 	w.WriteHeader(status)
-	w.Write(responseJson)
+	_, err = w.Write(responseJson)
+	if err != nil {
+		return // TODO: handle error
+	}
 }
 
 func JSONStatus(w http.ResponseWriter, status int) {
 	w.Header().Set("Content-Type", "application/json") // del
 	w.Header().Set("Content-Length", "2")              // del
 	w.WriteHeader(status)
-	w.Write([]byte("{}")) // del
+	_, err := w.Write([]byte("{}")) // del
+	if err != nil {
+		return // TODO: handle error
+	}
 }
