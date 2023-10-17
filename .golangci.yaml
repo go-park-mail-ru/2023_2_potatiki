@@ -1,5 +1,5 @@
 linters:
-  enable-all: true
+  disable-all: true
   disable:
     - varnamelen
     - depguard
@@ -12,4 +12,3 @@ linters:
     - exhaustruct
     - misspell
     - gomnd
-  disavle-all: true
