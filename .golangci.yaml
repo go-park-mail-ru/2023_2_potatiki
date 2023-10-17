@@ -12,3 +12,21 @@ linters:
     - exhaustruct
     - misspell
     - gomnd
+
+
+#linters:
+#  enable-all: true
+#  disable:
+#    - varnamelen
+#    - depguard
+#    - godox
+#    - testpackage
+#    - exhaustivestruct
+#    - wsl
+#    - revive
+#    - ireturn
+#    - exhaustruct
+#    - misspell
+#    - gomnd
+#    - paralleltest
+#    - goerr113 #del mb
