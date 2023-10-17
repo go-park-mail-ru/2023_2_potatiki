@@ -28,3 +28,12 @@ linters:
     - godot #del
     - goimports #del
     - funlen #del
+    - gofmt #err
+    - deadcode #warn
+    - scopelint #warn
+    - interfacer #warn
+    - nosnakecase #warn
+    - maligned #warn
+    - structcheck #warn
+    - ifshort #warn
+    - varcheck #warn
