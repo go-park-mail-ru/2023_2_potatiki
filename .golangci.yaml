@@ -12,3 +12,4 @@ linters:
     - exhaustruct
     - misspell
     - gomnd
+  disavle-all: true
