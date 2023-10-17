@@ -28,6 +28,7 @@ linters:
     - godot #del
     - goimports #del
     - funlen #del
+
     - gofmt #err
     - deadcode #warn
     - scopelint #warn
