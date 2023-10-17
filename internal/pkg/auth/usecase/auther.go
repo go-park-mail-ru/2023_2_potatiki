@@ -55,12 +55,13 @@ func (a *Auther) getKeyFunc() jwt.Keyfunc {
 func (a *Auther) GetClaims(tokenString string) (*models.Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, a.getKeyFunc())
 	if err != nil {
+		err = fmt.Errorf("error happened in jwt.ParseWithClaims: %w", err)
 		return nil, err
 	}
 
 	if claims, ok := token.Claims.(*models.Claims); ok && token.Valid {
 		return claims, nil
-	} else {
-		return nil, errors.New("error in GetClaims, invalid token or Claims.(*Claims) not cast")
 	}
+
+	return nil, errors.New("error in GetClaims, invalid token or Claims.(*Claims) not cast")
 }

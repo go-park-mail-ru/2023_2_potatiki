@@ -14,7 +14,8 @@ const (
 	envProd  = "prod"
 )
 
-func Set(env string) (log *slog.Logger) {
+func Set(env string) *slog.Logger {
+	var log *slog.Logger
 	switch env {
 	case envLocal:
 		log = setupPrettySlog()
@@ -31,7 +32,8 @@ func Set(env string) (log *slog.Logger) {
 			slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelInfo}),
 		)
 	}
-	return
+
+	return log
 }
 
 func setupPrettySlog() *slog.Logger {

@@ -51,7 +51,7 @@ func TestProductBad(t *testing.T) {
 		w := httptest.NewRecorder()
 		ProductHandler := NewProductsHandler(logger.Set("prod"), uc)
 		ProductHandler.Product(w, req)
-		assert.Equal(t, http.StatusAccepted, w.Code)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 
 	t.Run("InvalidID", func(t *testing.T) {
@@ -60,7 +60,7 @@ func TestProductBad(t *testing.T) {
 		w := httptest.NewRecorder()
 		ProductHandler := NewProductsHandler(logger.Set("prod"), uc)
 		ProductHandler.Product(w, req)
-		assert.Equal(t, http.StatusAccepted, w.Code)
+		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 
 	t.Run("GetProductError", func(t *testing.T) {
@@ -120,5 +120,5 @@ func TestProductsBad(t *testing.T) {
 	w := httptest.NewRecorder()
 	ProductsHandler := NewProductsHandler(logger.Set("prod"), uc)
 	ProductsHandler.Products(w, req)
-	assert.Equal(t, http.StatusBadRequest, w.Code)
+	assert.Equal(t, http.StatusTooManyRequests, w.Code)
 }
