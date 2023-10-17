@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
@@ -54,6 +55,7 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 	for rows.Next() {
 		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.ImgSrc, &product.Rating)
 		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
 			return []models.Product{}, err
 		}
 		productSlice = append(productSlice, product)

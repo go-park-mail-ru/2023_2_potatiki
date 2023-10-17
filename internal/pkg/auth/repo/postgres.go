@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
 )
@@ -33,6 +34,7 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Pro
 	_, err := r.db.ExecContext(ctx, addProfile,
 		profileId, user.Login, "", "default.png", user.PasswordHash) //sql иньекции + константу
 	if err != nil {
+		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 		return models.Profile{}, err
 	}
 
@@ -42,6 +44,7 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Pro
 		Description: "",
 		ImgSrc:      "default.png",
 	}
+
 	return profile, nil
 }
 
@@ -58,6 +61,7 @@ func (r *AuthRepo) CheckUser(ctx context.Context, user models.User) (models.Prof
 	if userPasswordHash == user.PasswordHash {
 		return pr, nil
 	}
+
 	return models.Profile{}, ErrInvalidPass
 }
 func (r *AuthRepo) ReadProfile(ctx context.Context, userId uuid.UUID) (models.Profile, error) {
@@ -66,7 +70,9 @@ func (r *AuthRepo) ReadProfile(ctx context.Context, userId uuid.UUID) (models.Pr
 		Id: userId,
 	}
 	if err := row.Scan(&pr.Login, &pr.Description, &pr.ImgSrc); err != nil {
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
 		return models.Profile{}, err
 	}
+
 	return pr, nil
 }
