@@ -11,3 +11,4 @@ linters:
     - ireturn
     - exhaustruct
     - misspell
+    - gomnd

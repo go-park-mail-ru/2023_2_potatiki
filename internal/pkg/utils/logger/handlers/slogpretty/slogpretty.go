@@ -3,6 +3,7 @@ package slogpretty
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"io"
 	stdLog "log"
 
@@ -63,6 +64,7 @@ func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
 	if len(fields) > 0 {
 		b, err = json.MarshalIndent(fields, "", "  ")
 		if err != nil {
+			err = fmt.Errorf("error happened in Handle in json.MarshalIndent: %w", err)
 			return err
 		}
 	}

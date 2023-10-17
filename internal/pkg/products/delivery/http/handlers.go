@@ -47,6 +47,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 		return
 	}
+
 	id, err := uuid.Parse(idStr)
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
@@ -97,6 +98,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+
 	countStr := r.URL.Query().Get("count")
 	count, err = strconv.ParseInt(countStr, 10, 64)
 	if err != nil {
