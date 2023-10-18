@@ -32,8 +32,8 @@ func NewAuthRepo(db *sql.DB) *AuthRepo {
 func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Profile, error) {
 	profileId := uuid.New()
 	_, err := r.db.ExecContext(ctx, addProfile,
-		profileId, user.Login, "", "default.png", user.PasswordHash) //sql иньекции + константу
-	if err != nil {
+		profileId, user.Login, "", "default.png", user.PasswordHash)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) { // !errors.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 		return models.Profile{}, err
 	}
