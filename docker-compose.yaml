@@ -73,7 +73,6 @@ services:
       - pgadmin-data:/var/lib/pgadmin
     ports:
       - "8098:80"
-      - "8097:443"
     depends_on:
       - postgres
     deploy:
@@ -92,7 +91,6 @@ services:
     restart: always
     ports:
       - '8096:8096'
-      - '443:443'
     volumes:
       - ./.env:/docker-zuzu-main/.env
     depends_on:
