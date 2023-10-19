@@ -27,6 +27,7 @@ func (uc *AuthUsecase) CheckToken(ctx context.Context, tokenStr string) (uuid.UU
 	claims, err := uc.auther.GetClaims(tokenStr)
 	if err != nil {
 		err = fmt.Errorf("error happened in auther.GetClaims: %w", err)
+
 		return uuid.UUID{}, err
 	}
 
@@ -36,18 +37,21 @@ func (uc *AuthUsecase) CheckToken(ctx context.Context, tokenStr string) (uuid.UU
 func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Profile, string, time.Time, error) {
 	if !user.IsValid() {
 		err := errors.New("user is not valid")
+
 		return models.Profile{}, "", time.Now(), err
 	}
 
 	profile, err := uc.repo.CheckUser(ctx, user)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.CheckUser: %w", err)
+
 		return models.Profile{}, "", time.Now(), err
 	}
 
 	token, exp, err := uc.auther.GenerateToken(&profile)
 	if err != nil {
 		err = fmt.Errorf("error happened in auther.GenerateToken: %w", err)
+
 		return models.Profile{}, "", time.Now(), err
 	}
 
@@ -57,18 +61,21 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Pro
 func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, string, time.Time, error) {
 	if !user.IsValid() {
 		err := errors.New("user is not valid")
+
 		return models.Profile{}, "", time.Now(), err
 	}
 
 	profile, err := uc.repo.CreateUser(ctx, user)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.CreateUser: %w", err)
+
 		return models.Profile{}, "", time.Now(), err
 	}
 
 	token, exp, err := uc.auther.GenerateToken(&profile)
 	if err != nil {
 		err = fmt.Errorf("error happened in auther.GenerateToken: %w", err)
+
 		return models.Profile{}, "", time.Now(), err
 	}
 
@@ -79,6 +86,7 @@ func (uc *AuthUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (models
 	profile, err := uc.repo.ReadProfile(ctx, userID)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadProfile: %w", err)
+
 		return models.Profile{}, err
 	}
 

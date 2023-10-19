@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/ilyakaznacheev/cleanenv"
-	_ "github.com/joho/godotenv/autoload" //Load enviroment from .env
+	_ "github.com/joho/godotenv/autoload" // Load enviroment from .env
 )
 
 // TODO : learn consulapi "github.com/hashicorp/consul/api"
@@ -15,7 +15,7 @@ type Config struct {
 	ConfigPath string `env:"CONFIG_PATH" env-default:"config/config.yaml"`
 	Enviroment string `env:"enviroment" env-default:"local" env-description:"avalible: local, dev, prod"`
 	Version    string `yaml:"version" yaml-required:"true"`
-	HTTPServer `yaml:"http_server"`
+	HTTPServer `yaml:"httpServer"`
 	Database
 	Auther `yaml:"auther"`
 }
@@ -23,8 +23,8 @@ type Config struct {
 type HTTPServer struct {
 	Address           string        `yaml:"address" yaml-default:"localhost:8080"`
 	Timeout           time.Duration `yaml:"timeout" yaml-default:"4s"`
-	IdleTimeout       time.Duration `yaml:"idle_timeout" yaml-default:"60s"`
-	ReadHeaderTimeout time.Duration `yaml:"read_header_timeout" yaml-defualt:"10s"`
+	IdleTimeout       time.Duration `yaml:"idleTimeout" yaml-default:"60s"`
+	ReadHeaderTimeout time.Duration `yaml:"readHeaderTimeout" yaml-defualt:"10s"`
 }
 
 type Database struct {
@@ -37,7 +37,7 @@ type Database struct {
 
 type Auther struct {
 	JwtAccess            string        `env:"JWT_SECRET_KEY" env-required:"true"`
-	AccessExpirationTime time.Duration `yaml:"access_expiration_time" yaml-defualt:"6h"`
+	AccessExpirationTime time.Duration `yaml:"accessExpirationTime" yaml-defualt:"6h"`
 }
 
 func (a Auther) GetAccessExpirationTime() time.Duration {

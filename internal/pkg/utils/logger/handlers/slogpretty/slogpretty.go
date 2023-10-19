@@ -17,7 +17,7 @@ type PrettyHandlerOptions struct {
 }
 
 type PrettyHandler struct {
-	//opts PrettyHandlerOptions
+	// opts PrettyHandlerOptions
 	slog.Handler
 	l     *stdLog.Logger
 	attrs []slog.Attr
@@ -65,6 +65,7 @@ func (h *PrettyHandler) Handle(_ context.Context, r slog.Record) error {
 		b, err = json.MarshalIndent(fields, "", "  ")
 		if err != nil {
 			err = fmt.Errorf("error happened in Handle in json.MarshalIndent: %w", err)
+
 			return err
 		}
 	}

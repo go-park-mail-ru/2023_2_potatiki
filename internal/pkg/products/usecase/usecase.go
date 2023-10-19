@@ -23,8 +23,10 @@ func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models
 	product, err := uc.repo.ReadProduct(ctx, id)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadProduct: %w", err)
+
 		return models.Product{}, err
 	}
+
 	return product, nil
 }
 
@@ -32,7 +34,9 @@ func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging int64, count 
 	productsSlice, err := uc.repo.ReadProducts(ctx, paging, count)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadProducts: %w", err)
+
 		return []models.Product{}, err
 	}
+
 	return productsSlice, nil
 }

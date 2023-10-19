@@ -22,5 +22,6 @@ func GFN() string {
 	frames := runtime.CallersFrames(pc[:n])
 	frame, _ := frames.Next()
 	values := strings.Split(frame.Function, "/")
+
 	return values[len(values)-1]
 }

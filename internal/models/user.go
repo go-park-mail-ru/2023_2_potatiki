@@ -10,13 +10,13 @@ type User struct {
 }
 
 type Profile struct {
-	Id          uuid.UUID `json:"id"`
+	Id          uuid.UUID `json:"id"` //nolint:stylecheck
 	Login       string    `json:"login"`
 	Description string    `json:"description,omitempty"`
 	ImgSrc      string    `json:"img"`
 }
 
 func (user User) IsValid() bool {
-	//strings.Contains()
+	// strings.Contains()
 	return len(user.Login) >= 6 && len(user.Login) <= 30
 }

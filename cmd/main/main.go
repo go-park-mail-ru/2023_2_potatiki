@@ -58,8 +58,9 @@ func run() (err error) {
 	)
 	log.Debug("debug messages are enabled")
 
-	//============================Database============================//
-	//docker run --name zuzu-postgres -v zuzu-db-data:/var/lib/postgresql/data -v -e 'PGDATA:/var/lib/postgresql/data/pgdata' './build/sql/injection_db.sql:/docker-entrypoint-initdb.d/init.sql' -p 8079:5432 --env-file .env --restart always postgres:latest
+	// ============================Database============================ //
+	//nolint:lll
+	// docker run --name zuzu-postgres -v zuzu-db-data:/var/lib/postgresql/data -v -e 'PGDATA:/var/lib/postgresql/data/pgdata' './build/sql/injection_db.sql:/docker-entrypoint-initdb.d/init.sql' -p 8079:5432 --env-file .env --restart always postgres:latest
 	db, err := sql.Open("postgres", fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		cfg.DBUser,
 		cfg.DBPass,
@@ -68,6 +69,8 @@ func run() (err error) {
 		cfg.DBName))
 	if err != nil {
 		log.Error("fail open postgres", sl.Err(err))
+		err = fmt.Errorf("error happened in sql.Open: %w", err)
+
 		return err
 	}
 	defer func(db *sql.DB) {
@@ -76,12 +79,14 @@ func run() (err error) {
 
 	if err = db.Ping(); err != nil {
 		slog.Error("fail ping postgres", sl.Err(err))
+		err = fmt.Errorf("error happened in db.Ping: %w", err)
+
 		return err
 	}
-	//----------------------------Database----------------------------//
+	// ----------------------------Database---------------------------- //
 	//
 	//
-	//============================Init layers============================//
+	// ============================Init layers============================ //
 	authRepo := authRepo.NewAuthRepo(db)
 	authUsecase := authUsecase.NewAuthUsecase(authRepo, cfg.Auther)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
@@ -89,10 +94,10 @@ func run() (err error) {
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
 	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
-	//----------------------------Init layers----------------------------//
+	// ----------------------------Init layers---------------------------- //
 	//
 	//
-	//============================Create router============================//
+	// ============================Create router============================ //
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
@@ -107,10 +112,10 @@ func run() (err error) {
 		httpSwagger.DocExpansion("none"),
 		httpSwagger.DomID("swagger-ui"),
 	)).Methods(http.MethodGet)
-	//----------------------------Create router----------------------------//
+	// ----------------------------Create router---------------------------- //
 	//
 	//
-	//============================Setup endpoints============================//
+	// ============================Setup endpoints============================ //
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
 		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
@@ -139,7 +144,7 @@ func run() (err error) {
 	}
 
 	quit := make(chan os.Signal, 1)
-	//SIGINT = ctrl+c; SIGTERM = kill; Interrupt = аппаратное прерывание, в Windows даст ошибку
+	// SIGINT = ctrl+c; SIGTERM = kill; Interrupt = аппаратное прерывание, в Windows даст ошибку
 	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	go func() {
@@ -158,9 +163,12 @@ func run() (err error) {
 
 	if err = srv.Shutdown(ctx); err != nil {
 		log.Error("server shutdown returned an err: ", sl.Err(err))
+		err = fmt.Errorf("error happened in srv.Shutdown: %w", err)
+
 		return err
 	}
 
 	log.Info("server stopped")
+
 	return nil
 }

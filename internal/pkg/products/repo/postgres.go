@@ -12,7 +12,8 @@ import (
 
 const (
 	getProduct  = "SELECT * FROM products WHERE id=$1;"
-	getProducts = "SELECT Id , NameProduct, Description, Price, ImgSrc, Rating FROM products ORDER BY id LIMIT $1 OFFSET $2"
+	getProducts = "SELECT Id , NameProduct, Description, Price, ImgSrc, Rating " +
+		"FROM products ORDER BY id LIMIT $1 OFFSET $2"
 )
 
 var (
@@ -37,8 +38,11 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 		if errors.Is(err, sql.ErrNoRows) {
 			return models.Product{}, ErrPoductNotFound
 		}
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
+
 		return models.Product{}, err
 	}
+
 	return pr, nil
 }
 
@@ -49,6 +53,8 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 		if errors.Is(err, sql.ErrNoRows) {
 			return []models.Product{}, ErrPoductNotFound
 		}
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+
 		return []models.Product{}, err
 	}
 	product := models.Product{}
@@ -56,6 +62,7 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.ImgSrc, &product.Rating)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
 			return []models.Product{}, err
 		}
 		productSlice = append(productSlice, product)

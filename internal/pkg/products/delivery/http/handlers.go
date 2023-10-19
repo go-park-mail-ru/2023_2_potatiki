@@ -45,6 +45,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	if !ok || idStr == "" {
 		h.log.Error("id is empty")
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
 		return
 	}
 
@@ -52,6 +53,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
 		return
 	}
 
@@ -59,6 +61,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("failed to get product", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
+
 		return
 	}
 
@@ -95,6 +98,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			h.log.Error("paging is invalid", sl.Err(err))
 			resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
 			return
 		}
 	}
@@ -104,6 +108,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("count is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
 		return
 	}
 
@@ -111,6 +116,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
+
 		return
 	}
 

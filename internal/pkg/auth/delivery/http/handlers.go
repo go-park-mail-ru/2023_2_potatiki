@@ -48,10 +48,12 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, io.EOF) {
 			h.log.Error("request body is empty")
 			resp.JSON(w, http.StatusBadRequest, resp.Err("request body is empty"))
+
 			return
 		}
 		h.log.Error("failed to decode request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusBadRequest)
+
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
@@ -61,6 +63,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
+
 		return
 	}
 
@@ -69,6 +72,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("failed to signin", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
+
 		return
 	}
 
@@ -98,10 +102,12 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		if errors.Is(err, io.EOF) {
 			h.log.Error("request body is empty")
 			resp.JSON(w, http.StatusBadRequest, resp.Err("request body is empty"))
+
 			return
 		}
 		h.log.Error("failed to decode request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusBadRequest)
+
 		return
 	}
 	h.log.Info("request body decoded", slog.Any("request", r))
@@ -111,6 +117,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
+
 		return
 	}
 
@@ -118,6 +125,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("failed to signup", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
+
 		return
 	}
 
@@ -160,10 +168,12 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		case errors.Is(err, http.ErrNoCookie):
 			h.log.Error("token cookie not found", sl.Err(err))
 			resp.JSONStatus(w, http.StatusUnauthorized)
+
 			return
 		default:
 			h.log.Error("faild to get token cookie", sl.Err(err))
 			resp.JSONStatus(w, http.StatusUnauthorized)
+
 			return
 		}
 	}
@@ -172,6 +182,7 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("jws token is invalid", sl.Err(err))
 		resp.JSONStatus(w, http.StatusUnauthorized)
+
 		return
 	}
 	h.log.Info("got profile id", slog.Any("profile id", id))
@@ -198,12 +209,14 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	if !ok || idStr == "" {
 		h.log.Error("id is empty")
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
 		return
 	}
 	idProfile, err := uuid.Parse(idStr)
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
 		return
 	}
 
@@ -212,6 +225,7 @@ func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("failed to signup", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid uuid"))
+
 		return
 	}
 

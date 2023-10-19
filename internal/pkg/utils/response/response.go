@@ -26,6 +26,7 @@ func JSON(w http.ResponseWriter, status int, response any) {
 	responseJSON, err := json.Marshal(response)
 	if err != nil {
 		w.WriteHeader(status)
+
 		return
 	}
 	w.Header().Set("Content-Type", "application/json")
