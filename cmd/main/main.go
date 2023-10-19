@@ -51,7 +51,19 @@ func run() (err error) {
 	// BasePath /api
 	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
 
-	log := logger.Set(cfg.Enviroment)
+	logFile, err := os.OpenFile("/var/log/potatiki.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	if err != nil {
+		fmt.Println("fail open logFile", sl.Err(err))
+	}
+	log := logger.Set(cfg.Enviroment, logFile)
+
+	defer func(logFile *os.File) {
+		err = logFile.Close()
+		if err != nil {
+			// TODO: implement
+		}
+	}(logFile)
+
 	log.Info(
 		"starting zuzu-main",
 		slog.String("env", cfg.Enviroment),

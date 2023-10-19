@@ -58,7 +58,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	}
 
 	product, err := h.uc.GetProduct(r.Context(), id)
-	if err != nil {
+	if err != nil { // TODO: check not found
 		h.log.Error("failed to get product", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 

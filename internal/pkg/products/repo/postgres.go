@@ -21,7 +21,7 @@ var (
 )
 
 type ProductsRepo struct {
-	db *sql.DB
+	db *sql.DB // TODO: add logger
 }
 
 func NewProductsRepo(db *sql.DB) *ProductsRepo {
@@ -67,7 +67,12 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 		}
 		productSlice = append(productSlice, product)
 	}
-	defer rows.Close()
+	defer func(rows *sql.Rows) {
+		err := rows.Close()
+		if err != nil {
+
+		}
+	}(rows)
 
 	return productSlice, nil
 }
