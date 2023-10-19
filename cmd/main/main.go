@@ -53,7 +53,7 @@ func run() (err error) {
 
 	logFile, err := os.OpenFile("/var/log/potatiki.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Println("fail open logFile", sl.Err(err))
+		fmt.Println("fail open logFile", sl.Err(err)) // TODO: take file path from conf and if nil - logFile = nil
 	}
 	log := logger.Set(cfg.Enviroment, logFile)
 
