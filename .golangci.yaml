@@ -25,6 +25,7 @@ linters:
     - staticcheck #del
     - sqlclosecheck #del
     - inamedparam
+    - testifylint
     - gofmt #err
     - deadcode #warn
     - golint #warn
