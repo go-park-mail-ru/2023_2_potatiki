@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 
@@ -35,7 +36,7 @@ func TestProduct(t *testing.T) {
 			"{ \"id\": \""+id.String()+"\", \"name\": \"123\" , \"description\": \"123\", \"price\": \"123\"}"))
 	req = mux.SetURLVars(req, map[string]string{"id": id.String()})
 	w := httptest.NewRecorder()
-	ProductsHandler := NewProductsHandler(logger.Set("prod"), uc)
+	ProductsHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
 	ProductsHandler.Product(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -49,7 +50,7 @@ func TestProductBad(t *testing.T) {
 	t.Run("EmptyID", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod"), uc)
+		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
 		ProductHandler.Product(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
@@ -58,7 +59,7 @@ func TestProductBad(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req = mux.SetURLVars(req, map[string]string{"id": "invalidID"})
 		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod"), uc)
+		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
 		ProductHandler.Product(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
@@ -70,7 +71,7 @@ func TestProductBad(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req = mux.SetURLVars(req, map[string]string{"id": validID.String()})
 		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod"), uc)
+		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
 		ProductHandler.Product(w, req)
 		assert.Equal(t, http.StatusTooManyRequests, w.Code)
 	})
@@ -97,7 +98,7 @@ func TestProducts(t *testing.T) {
 	q.Add("count", "1")
 	req.URL.RawQuery = q.Encode()
 	w := httptest.NewRecorder()
-	ProductsHandler := NewProductsHandler(logger.Set("prod"), uc)
+	ProductsHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
 	ProductsHandler.Products(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -118,7 +119,7 @@ func TestProductsBad(t *testing.T) {
 	q.Add("count", "1")
 	req.URL.RawQuery = q.Encode()
 	w := httptest.NewRecorder()
-	ProductsHandler := NewProductsHandler(logger.Set("prod"), uc)
+	ProductsHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
 	ProductsHandler.Products(w, req)
 	assert.Equal(t, http.StatusTooManyRequests, w.Code)
 }

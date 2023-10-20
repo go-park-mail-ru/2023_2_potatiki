@@ -4,6 +4,7 @@ import (
 	"errors"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -31,7 +32,7 @@ func TestSignUp(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
 		strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 	AuthHandler.SignUp(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -44,7 +45,7 @@ func TestSignUpBad(t *testing.T) {
 	t.Run("EmptyRequestBody", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "http://example.com/foo", nil)
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 		AuthHandler.SignUp(w, req)
 		assert.Equal(t, http.StatusTooManyRequests, w.Code)
 	})
@@ -63,7 +64,7 @@ func TestSignIn(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
 		strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 	AuthHandler.SignIn(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -77,7 +78,7 @@ func TestSignInBad(t *testing.T) {
 	t.Run("EmptyRequestBody", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "http://example.com/foo", nil)
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 		AuthHandler.SignIn(w, req)
 		assert.Equal(t, http.StatusTooManyRequests, w.Code)
 	})
@@ -91,7 +92,7 @@ func TestLogOut(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 	AuthHandler.LogOut(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -111,7 +112,7 @@ func TestCheckAuth(t *testing.T) {
 	req.AddCookie(cookie)
 
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 	AuthHandler.CheckAuth(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -125,7 +126,7 @@ func TestCheckAuthBad(t *testing.T) {
 		uc := mock.NewMockAuthUsecase(ctrl)
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 		AuthHandler.CheckAuth(w, req)
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
 	})
@@ -139,7 +140,7 @@ func TestCheckAuthBad(t *testing.T) {
 		})
 		uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.UUID{}, errors.New("invalidTokenValue"))
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 		AuthHandler.CheckAuth(w, req)
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
 	})
@@ -157,7 +158,7 @@ func TestGetProfile(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 	req = mux.SetURLVars(req, map[string]string{"id": idProfile.String()})
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 	AuthHandler.GetProfile(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -175,7 +176,7 @@ func TestGetProfileBad(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req = mux.SetURLVars(req, map[string]string{"id": idProfile.String()})
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 		AuthHandler.GetProfile(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
@@ -186,7 +187,7 @@ func TestGetProfileBad(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req = mux.SetURLVars(req, map[string]string{"id": "invalidID"})
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod"), uc)
+		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 		AuthHandler.GetProfile(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})

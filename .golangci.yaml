@@ -16,11 +16,14 @@ linters:
     - goerr113
     - rowserrcheck
     - tagalign
+    - forbidigo
     - gci
     - gofumpt
     - godot
     - goimports
     - funlen #del
+    - staticcheck #del
+    - sqlclosecheck #del
     - gofmt #err
     - deadcode #warn
     - golint #warn
