@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS profiles
 (
     id uuid NOT NULL,
     login text NOT NULL,
-    description text NOT NULL,
+    description text,
     imgsrc text NOT NULL,
     passwordhash text NOT NULL,
     CONSTRAINT "ProfileId_pkey" PRIMARY KEY (id),
@@ -24,6 +24,66 @@ CREATE TABLE IF NOT EXISTS products
     CONSTRAINT "ProductId_pkey" PRIMARY KEY (id),
     CONSTRAINT "ProductName_unique" UNIQUE (nameProduct)
 );
+
+
+CREATE TABLE IF NOT EXISTS orders
+(
+    id UUID PRIMARY KEY,
+    profileId UUID REFERENCES PROFILES(id),
+    promocodeId UUID REFERENCES PROMOCODES(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS order_items
+(
+    id UUID PRIMARY KEY,
+    orderId UUID REFERENCES ORDERS(id),
+    productId UUID REFERENCES PRODUCTS(id),
+    quantity INT
+);
+
+
+CREATE TABLE IF NOT EXISTS addresses
+(
+    id UUID PRIMARY KEY,
+    profileId UUID REFERENCES PROFILES(id),
+    city TEXT,
+    street TEXT,
+    house TEXT,
+    flat TEXT,
+    isCurrent BOOLEAN
+    );
+
+
+CREATE TABLE IF NOT EXISTS categories
+(
+    id UUID PRIMARY KEY,
+    name TEXT UNIQUE
+);
+
+
+CREATE TABLE IF NOT EXISTS category_references
+(
+    categoryId UUID REFERENCES CATEGORIES(id),
+    parentCategoryId UUID REFERENCES CATEGORIES(id)
+);
+
+
+CREATE TABLE IF NOT EXISTS shopping_cart_items
+(
+    id UUID PRIMARY KEY,
+    shoppingCartId UUID REFERENCES SHOPPINGCARTS(id),
+    productId UUID REFERENCES PRODUCTS(id),
+    quantity INT
+);
+
+
+CREATE TABLE IF NOT EXISTS promocodes
+(
+    id UUID PRIMARY KEY,
+    name TEXT UNIQUE
+);
+
 
 insert into products (id, nameProduct, price, imgsrc, description, rating)
 values ('550e8400-e29b-41d4-a716-446655440000', 'Apple MacBook Air 13 2020', 89999, 'macbook.png', '13-inch lightweight laptop', 4.5);
