@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 const (
@@ -20,10 +21,10 @@ var (
 )
 
 type AuthRepo struct {
-	db *sql.DB
+	db *pgx.Conn
 }
 
-func NewAuthRepo(db *sql.DB) *AuthRepo {
+func NewAuthRepo(db *pgx.Conn) *AuthRepo {
 	return &AuthRepo{
 		db: db,
 	}
@@ -31,7 +32,7 @@ func NewAuthRepo(db *sql.DB) *AuthRepo {
 
 func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Profile, error) {
 	profileID := uuid.New()
-	_, err := r.db.ExecContext(ctx, addProfile,
+	_, err := r.db.Exec(ctx, addProfile,
 		profileID, user.Login, "", "default.png", user.PasswordHash)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) { // !errors.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -50,7 +51,7 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Pro
 }
 
 func (r *AuthRepo) CheckUser(ctx context.Context, user models.User) (models.Profile, error) {
-	row := r.db.QueryRowContext(ctx, profileExistsByLogin, user.Login)
+	row := r.db.QueryRow(ctx, profileExistsByLogin, user.Login)
 	pr := models.Profile{
 		Login: user.Login,
 	}
@@ -68,7 +69,7 @@ func (r *AuthRepo) CheckUser(ctx context.Context, user models.User) (models.Prof
 	return models.Profile{}, ErrInvalidPass
 }
 func (r *AuthRepo) ReadProfile(ctx context.Context, userID uuid.UUID) (models.Profile, error) {
-	row := r.db.QueryRowContext(ctx, profileExistsByID, userID)
+	row := r.db.QueryRow(ctx, profileExistsByID, userID)
 	pr := models.Profile{
 		Id: userID,
 	}
