@@ -1,6 +1,6 @@
 module github.com/go-park-mail-ru/2023_2_potatiki
 
-go 1.21.0
+go 1.21
 
 require (
 	github.com/fatih/color v1.15.0
