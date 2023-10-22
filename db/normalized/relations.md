@@ -6,10 +6,10 @@
     - {id} -> name, description, price, imgsrc, rating
 
 - Таблица orders
-    - {id} ->  profileId, promocodeId
+    - {id} ->  profileId, promocodeId, status, deliveryDate, creationDate
 
 - Таблица orderitems
-    - {id, orderId, productId} -> quantity
+    - {id, orderId, productId} -> quantity, price
 
 - Таблица favourites
     - {id} -> profileId, productId 
