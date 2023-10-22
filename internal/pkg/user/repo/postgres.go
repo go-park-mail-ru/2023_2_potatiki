@@ -2,15 +2,15 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 )
 
 type UserRepo struct {
-	db *sql.DB
+	db *pgx.Conn
 }
 
-func NewUserRepo(db *sql.DB) *UserRepo {
+func NewUserRepo(db *pgx.Conn) *UserRepo {
 	return &UserRepo{
 		db: db,
 	}

@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v5"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
@@ -21,10 +22,10 @@ var (
 )
 
 type ProductsRepo struct {
-	db *sql.DB // TODO: add logger
+	db *pgx.Conn // TODO: add logger
 }
 
-func NewProductsRepo(db *sql.DB) *ProductsRepo {
+func NewProductsRepo(db *pgx.Conn) *ProductsRepo {
 	return &ProductsRepo{
 		db: db,
 	}
@@ -32,7 +33,7 @@ func NewProductsRepo(db *sql.DB) *ProductsRepo {
 
 func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	pr := models.Product{}
-	err := r.db.QueryRowContext(ctx, getProduct, id).
+	err := r.db.QueryRow(ctx, getProduct, id).
 		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.ImgSrc, &pr.Rating)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -48,7 +49,7 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 
 func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int64) ([]models.Product, error) {
 	var productSlice []models.Product
-	rows, err := r.db.QueryContext(ctx, getProducts, count, paging)
+	rows, err := r.db.Query(ctx, getProducts, count, paging)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return []models.Product{}, ErrPoductNotFound
@@ -67,12 +68,7 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 		}
 		productSlice = append(productSlice, product)
 	}
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-
-		}
-	}(rows)
+	defer rows.Close()
 
 	return productSlice, nil
 }
