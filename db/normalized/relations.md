@@ -84,6 +84,7 @@ erDiagram
         uuid orderId FK
         uuid productId FK
         int quantity
+        int price
     }
 
     ADDRESSES {
@@ -116,6 +117,7 @@ erDiagram
     PROMOCODES {
         uuid id PK
         text name UK
+        int discount
     }
 
 ```
