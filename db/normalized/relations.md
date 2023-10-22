@@ -36,12 +36,12 @@ erDiagram
     PROFILES ||--o{ SHOPPINGCARTITEMS : includes
     PROFILES ||--o{ FAVOURITES : includes
     
-    ORDERS ||--o{ PROMOCODES : includes
+    PROMOCODES ||--o{ ORDERS : includes
     ORDERS ||--o{ ORDERITEMS : includes
 
     PRODUCTS ||--o{ ORDERITEMS : includes
     PRODUCTS ||--o{ SHOPPINGCARTITEMS : includes
-    PRODUCTS ||--|{ CATEGORIES : includes
+    CATEGORIES ||--|{ PRODUCTS : includes
     PRODUCTS ||--o{ FAVOURITES : includes
 
     CATEGORIES ||--|{ CATEGORYREFERENCES : includes
