@@ -2,8 +2,8 @@ package main
 
 import (
 	"context"
-	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"log/slog"
 	"net/http"
 	"os"
@@ -27,7 +27,6 @@ import (
 	_ "github.com/lib/pq"
 
 	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
-	"github.com/jackc/pgx/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -73,7 +72,7 @@ func run() (err error) {
 	// ============================Database============================ //
 	//nolint:lll
 	// docker run --name zuzu-postgres -v zuzu-db-data:/var/lib/postgresql/data -v -e 'PGDATA:/var/lib/postgresql/data/pgdata' './build/sql/injection_db.sql:/docker-entrypoint-initdb.d/init.sql' -p 8079:5432 --env-file .env --restart always postgres:latest
-	db, err := pgx.Connect(context.Background(), fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
+	db, err := pgxpool.Connect(context.Background(), fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		cfg.DBUser,
 		cfg.DBPass,
 		cfg.DBHost,
@@ -85,9 +84,7 @@ func run() (err error) {
 
 		return err
 	}
-	defer func(db *pgx.Conn) {
-		err = errors.Join(err, db.Close(context.Background()))
-	}(db)
+	defer db.Close()
 
 	if err = db.Ping(context.Background()); err != nil {
 		slog.Error("fail ping postgres", sl.Err(err))

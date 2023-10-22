@@ -5,10 +5,9 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v5"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
+	"github.com/jackc/pgtype/pgxtype"
 )
 
 const (
@@ -22,10 +21,10 @@ var (
 )
 
 type ProductsRepo struct {
-	db *pgx.Conn // TODO: add logger
+	db pgxtype.Querier // TODO: add logger
 }
 
-func NewProductsRepo(db *pgx.Conn) *ProductsRepo {
+func NewProductsRepo(db pgxtype.Querier) *ProductsRepo {
 	return &ProductsRepo{
 		db: db,
 	}

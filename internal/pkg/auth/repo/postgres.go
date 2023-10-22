@@ -7,13 +7,13 @@ import (
 	"fmt"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgtype/pgxtype"
 )
 
 const (
-	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM profiles WHERE login=$1;"
-	profileExistsByID    = "SELECT Login, Description, ImgSrc FROM profiles WHERE Id=$1;"
-	addProfile           = "INSERT INTO profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM profile WHERE login=$1;"
+	profileExistsByID    = "SELECT Login, Description, ImgSrc FROM profile WHERE Id=$1;"
+	addProfile           = "INSERT INTO profile(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
 )
 
 var (
@@ -21,10 +21,10 @@ var (
 )
 
 type AuthRepo struct {
-	db *pgx.Conn
+	db pgxtype.Querier
 }
 
-func NewAuthRepo(db *pgx.Conn) *AuthRepo {
+func NewAuthRepo(db pgxtype.Querier) *AuthRepo {
 	return &AuthRepo{
 		db: db,
 	}
