@@ -1,12 +1,12 @@
-DROP TABLE IF EXISTS profile;
+DROP TABLE IF EXISTS profile CASCADE;
 
-DROP TABLE IF EXISTS product;
+DROP TABLE IF EXISTS product CASCADE;
 
-DROP TABLE IF EXISTS order_info;
+DROP TABLE IF EXISTS order_info CASCADE;
 
 DROP TABLE IF EXISTS order_item;
 
-DROP TABLE IF EXISTS category;
+DROP TABLE IF EXISTS category CASCADE;
 
 DROP TABLE IF EXISTS category_reference;
 
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS profile
     description text,
     imgsrc text NOT NULL DEFAULT 'default.png',
     passwordhash text NOT NULL,
-    CONSTRAINT "ProfileLogin_unique" UNIQUE (login),
+    CONSTRAINT "ProfileLogin_unique" UNIQUE (login)
 );
 
 CREATE TABLE IF NOT EXISTS category
@@ -45,20 +45,24 @@ CREATE TABLE IF NOT EXISTS product
     category_id UUID,
     FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE RESTRICT,
     CONSTRAINT "ProductName_unique" UNIQUE (name_product),
-    CHECK (rating >= 0)
-        CHECK (price > 0)
+    CHECK (rating >= 0),
+    CHECK (price > 0)
 );
 
 CREATE TABLE IF NOT EXISTS promocode
 (
     id UUID NOT NULL PRIMARY KEY,
+    discount INT NOT NULL,
     name TEXT UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS order_info
 (
     id UUID NOT NULL PRIMARY KEY,
+    delivery_date TIMESTAMP,
+    creation_date TIMESTAMP,
     profile_id UUID,
+    status TEXT,
     FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
     promocode_id UUID,
     FOREIGN KEY (promocode_id) REFERENCES promocode(id) ON DELETE RESTRICT
