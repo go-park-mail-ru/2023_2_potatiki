@@ -1,34 +1,40 @@
 # Фунциональные зависимости
 - Таблица profiles
    - {id} -> login, description, imgsrc, passwordhash
+   - {login} -> id, description, imgsrc, passwordhash
 
 - Таблица products
     - {id} -> name, description, price, imgsrc, rating
+    - {name} -> id, description, price, imgsrc, rating
 
 - Таблица orders
     - {id} ->  profileId, promocodeId, status, deliveryDate, creationDate
 
 - Таблица orderitems
-    - {id, orderId, productId} -> quantity, price
+    - {id} -> quantity, orderId, productId
+    - {orderId, productId} -> id, quantity
 
-- Таблица favourites
-    - {id} -> profileId, productId 
+- Таблица favorites
+    - {id} -> profileId, productId
+    - {profileId, productId} -> id
 
 - Таблица addresses
     - {id} -> profileId, city, street, house, flat, isCurrent
 
 - Таблица categories
     - {id} -> name
+    - {name} -> id
 
 - Таблица categoryrefferences
     - {categoryId} -> parentCategoryId
 
 - Таблица shoppingcartitems
-    - {id, profileId, productId} ->  quantity
+    - {id} ->  quantity, profileId, productId
+    - {profileId, productId} - id, quantity
 
 - Таблица promocodes
-    - {id} -> name
-
+    - {id} -> name, discount
+    - {name} -> id, discount
 ```mermaid
 erDiagram
     PROFILES ||--o{ ORDERS : includes
