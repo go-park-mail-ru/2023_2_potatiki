@@ -1,4 +1,4 @@
-package http
+package coockie
 
 import (
 	"net/http"
@@ -9,7 +9,7 @@ const (
 	AccessTokenCookieName = "zuzu-t"
 )
 
-func getTokenCookie(name, token string, expiration time.Time) *http.Cookie {
+func GetTokenCookie(name, token string, expiration time.Time) *http.Cookie {
 	return &http.Cookie{
 		Name:     name,
 		Value:    token,

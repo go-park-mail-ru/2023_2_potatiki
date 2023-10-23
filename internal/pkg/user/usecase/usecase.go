@@ -24,10 +24,6 @@ func (uc *UserUsecase) UpdatePhoto(ctx context.Context, userID uuid.UUID) error 
 	return nil
 }
 
-func (uc *UserUsecase) UpdatePassword(ctx context.Context, userID uuid.UUID, password string) error {
-	return nil
-}
-
-func (uc *UserUsecase) UpdateDescription(ctx context.Context, userID uuid.UUID, description string) error {
+func (uc *UserUsecase) UpdateInfo(ctx context.Context, userID uuid.UUID, password string) error {
 	return nil
 }

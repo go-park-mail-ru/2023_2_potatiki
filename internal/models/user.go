@@ -9,6 +9,11 @@ type User struct {
 	PasswordHash string `json:"password"`
 }
 
+func (user User) IsValid() bool {
+	// strings.Contains()
+	return len(user.Login) >= 6 && len(user.Login) <= 30
+}
+
 type Profile struct {
 	Id          uuid.UUID `json:"id"` //nolint:stylecheck
 	Login       string    `json:"login"`
@@ -16,7 +21,15 @@ type Profile struct {
 	ImgSrc      string    `json:"img"`
 }
 
-func (user User) IsValid() bool {
-	// strings.Contains()
-	return len(user.Login) >= 6 && len(user.Login) <= 30
+type UserPhoto struct {
+	ID    uuid.UUID `json:"id"`
+	Photo uuid.UUID `json:"photo"`
+}
+
+type UserInfo struct {
+	ID              uuid.UUID `json:"id"`
+	NewPasswordHash string    `json:"newPassword"`
+	OldPasswordHash string    `json:"oldPassword"`
+	NewDescription  string    `json:"newDescription"`
+	OldDescription  string    `json:"oldDescription"`
 }

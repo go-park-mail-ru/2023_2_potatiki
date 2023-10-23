@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/coockie"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -106,7 +107,7 @@ func TestCheckAuth(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 	cookie := &http.Cookie{
-		Name:  AccessTokenCookieName,
+		Name:  coockie.AccessTokenCookieName,
 		Value: "token",
 	}
 	req.AddCookie(cookie)
@@ -135,7 +136,7 @@ func TestCheckAuthBad(t *testing.T) {
 		uc := mock.NewMockAuthUsecase(ctrl)
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req.AddCookie(&http.Cookie{
-			Name:  AccessTokenCookieName,
+			Name:  coockie.AccessTokenCookieName,
 			Value: "invalidTokenValue",
 		})
 		uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.UUID{}, errors.New("invalidTokenValue"))

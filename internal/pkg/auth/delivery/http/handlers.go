@@ -2,7 +2,8 @@ package http
 
 import (
 	"encoding/json"
-	"errors"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/coockie"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/errcheck"
 	"io"
 	"log/slog"
 	"net/http"
@@ -44,16 +45,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	)
 
 	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		if errors.Is(err, io.EOF) {
-			h.log.Error("request body is empty")
-			resp.JSON(w, http.StatusBadRequest, resp.Err("request body is empty"))
-
-			return
-		}
-		h.log.Error("failed to decode request body", sl.Err(err))
-		resp.JSONStatus(w, http.StatusBadRequest)
-
+	if errcheck.BodyErr(err, h.log, w) {
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
@@ -78,7 +70,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
 
-	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, token, exp))
+	http.SetCookie(w, coockie.GetTokenCookie(coockie.AccessTokenCookieName, token, exp))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
@@ -98,19 +90,10 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	)
 
 	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		if errors.Is(err, io.EOF) {
-			h.log.Error("request body is empty")
-			resp.JSON(w, http.StatusBadRequest, resp.Err("request body is empty"))
-
-			return
-		}
-		h.log.Error("failed to decode request body", sl.Err(err))
-		resp.JSONStatus(w, http.StatusBadRequest)
-
+	if errcheck.BodyErr(err, h.log, w) {
 		return
 	}
-	h.log.Info("request body decoded", slog.Any("request", r))
+	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	u := &models.User{}
 	err = json.Unmarshal(body, u)
@@ -129,7 +112,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, token, exp))
+	http.SetCookie(w, coockie.GetTokenCookie(coockie.AccessTokenCookieName, token, exp))
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
 	resp.JSON(w, http.StatusOK, profile)
 }
@@ -142,7 +125,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 // @Success	200
 // @Router	/api/auth/logout [get]
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, getTokenCookie(AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
+	http.SetCookie(w, coockie.GetTokenCookie(coockie.AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
 	h.log.Info("logout")
 	resp.JSONStatus(w, http.StatusOK)
 }
@@ -162,20 +145,9 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		slog.String("op", sl.GFN()),
 	)
 
-	tokenCookie, err := r.Cookie(AccessTokenCookieName)
-	if err != nil {
-		switch {
-		case errors.Is(err, http.ErrNoCookie):
-			h.log.Error("token cookie not found", sl.Err(err))
-			resp.JSONStatus(w, http.StatusUnauthorized)
-
-			return
-		default:
-			h.log.Error("faild to get token cookie", sl.Err(err))
-			resp.JSONStatus(w, http.StatusUnauthorized)
-
-			return
-		}
+	tokenCookie, err := r.Cookie(coockie.AccessTokenCookieName)
+	if errcheck.TokenCookieErr(err, h.log, w) {
+		return
 	}
 
 	id, err := h.uc.CheckToken(r.Context(), tokenCookie.Value)

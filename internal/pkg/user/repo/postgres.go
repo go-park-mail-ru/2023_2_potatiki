@@ -20,10 +20,6 @@ func (r *UserRepo) UpdatePhoto(ctx context.Context, userID uuid.UUID) error {
 	return nil
 }
 
-func (r *UserRepo) UpdatePassword(ctx context.Context, userID uuid.UUID, password string) error {
-	return nil
-}
-
-func (r *UserRepo) UpdateDescription(ctx context.Context, userID uuid.UUID, description string) error {
+func (r *UserRepo) UpdateInfo(ctx context.Context, userID uuid.UUID, password string) error {
 	return nil
 }

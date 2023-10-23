@@ -9,7 +9,8 @@ import (
 	"testing"
 )
 
-//func setUp(t *testing.T, pgxRows pgx.Rows) *ProductsRepo { // mock on repo and uid used as uuid for everything that has any uid filed
+// mock on repo and uid used as uuid for everything that has any uid filed
+// func setUp(t *testing.T, pgxRows pgx.Rows) *ProductsRepo {
 //	os.Setenv("SECRET", "test")
 //	ctl := gomock.NewController(t)
 //	mockPool := pgxpoolmock.NewMockPgxPool(ctl)

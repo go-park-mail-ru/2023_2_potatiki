@@ -34,7 +34,7 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Pro
 	profileID := uuid.New()
 	_, err := r.db.Exec(ctx, addProfile,
 		profileID, user.Login, "", "default.png", user.PasswordHash)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) { // !errors.Is(err, sql.ErrNoRows) будут проверять на рк
+	if err != nil && !errors.Is(err, sql.ErrNoRows) { // !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
 		return models.Profile{}, err
