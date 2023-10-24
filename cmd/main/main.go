@@ -127,12 +127,16 @@ func run() (err error) {
 	{
 		auth.HandleFunc("/signup", authHandler.SignUp).
 			Methods(http.MethodPost, http.MethodOptions)
+
 		auth.HandleFunc("/signin", authHandler.SignIn).
 			Methods(http.MethodPost, http.MethodOptions)
+
 		auth.Handle("/logout", authMW(http.HandlerFunc(authHandler.LogOut))).
 			Methods(http.MethodGet, http.MethodOptions)
+
 		auth.Handle("/check_auth", authMW(http.HandlerFunc(authHandler.CheckAuth))).
 			Methods(http.MethodGet, http.MethodOptions)
+
 		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
@@ -141,6 +145,7 @@ func run() (err error) {
 	{
 		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).
 			Methods(http.MethodGet, http.MethodOptions)
+
 		products.HandleFunc("/get_all", productsHandler.Products).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
