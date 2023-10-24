@@ -2,7 +2,6 @@ package http
 
 import (
 	"errors"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/coockie"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/cookie"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -107,7 +107,7 @@ func TestCheckAuth(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 	cookie := &http.Cookie{
-		Name:  coockie.AccessTokenCookieName,
+		Name:  cookie.AccessTokenCookieName,
 		Value: "token",
 	}
 	req.AddCookie(cookie)
@@ -136,7 +136,7 @@ func TestCheckAuthBad(t *testing.T) {
 		uc := mock.NewMockAuthUsecase(ctrl)
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req.AddCookie(&http.Cookie{
-			Name:  coockie.AccessTokenCookieName,
+			Name:  cookie.AccessTokenCookieName,
 			Value: "invalidTokenValue",
 		})
 		uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.UUID{}, errors.New("invalidTokenValue"))

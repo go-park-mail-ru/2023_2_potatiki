@@ -1,6 +1,8 @@
 package models
 
 import (
+	"log/slog"
+
 	"github.com/google/uuid"
 )
 
@@ -35,4 +37,13 @@ type UserInfo struct {
 type ProfileInfo struct {
 	User
 	UserInfo
+}
+
+func (p *Profile) LogValue() slog.Value {
+	//nolint:lll
+	// check https://betterstack.com/community/guides/logging/logging-in-go/#hiding-sensitive-fields-with-the-logvaluer-interface
+	return slog.GroupValue(
+		slog.String("id", p.Id.String()),
+		slog.String("login", p.Login),
+	)
 }

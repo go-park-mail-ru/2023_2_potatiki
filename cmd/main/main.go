@@ -122,20 +122,27 @@ func run() (err error) {
 	//
 	//
 	// ============================Setup endpoints============================ //
+	authMW := middleware.Authenticate(log, authUsecase.Auther)
 	auth := r.PathPrefix("/auth").Subrouter()
-	auth.Use(middleware.Authenticate(log, authUsecase.Auther))
 	{
-		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
-		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
-		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
-		auth.HandleFunc("/check_auth", authHandler.CheckAuth).Methods(http.MethodGet, http.MethodOptions)
-		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).Methods(http.MethodGet, http.MethodOptions)
+		auth.HandleFunc("/signup", authHandler.SignUp).
+			Methods(http.MethodPost, http.MethodOptions)
+		auth.HandleFunc("/signin", authHandler.SignIn).
+			Methods(http.MethodPost, http.MethodOptions)
+		auth.Handle("/logout", authMW(http.HandlerFunc(authHandler.LogOut))).
+			Methods(http.MethodGet, http.MethodOptions)
+		auth.Handle("/check_auth", authMW(http.HandlerFunc(authHandler.CheckAuth))).
+			Methods(http.MethodGet, http.MethodOptions)
+		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).
+			Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	products := r.PathPrefix("/products").Subrouter()
 	{
-		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
-		products.HandleFunc("/get_all", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
+		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).
+			Methods(http.MethodGet, http.MethodOptions)
+		products.HandleFunc("/get_all", productsHandler.Products).
+			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
 

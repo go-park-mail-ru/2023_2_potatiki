@@ -8,9 +8,7 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/coockie"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/cookie"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/errcheck"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
@@ -32,17 +30,20 @@ func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
-	val := r.Context().Value(cookie.AccessTokenCookieName)
-	if ID, err := val.(uuid.UUID); !ok {
-		h.log.Error("failed cast uuid from context value")
-	}
-	_ = ID
 
-	_, err = io.ReadAll(r.Body)
-	if errcheck.BodyErr(err, h.log, w) {
+	body, err := io.ReadAll(r.Body)
+	if resp.BodyErr(err, h.log, w) {
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
+
+	ID, ok := r.Context().Value(cookie.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
+		resp.JSONStatus(w, http.StatusUnauthorized)
+	}
+
+	h.log.Info("UpdatePhoto", "body", body, "ID", ID)
 }
 
 func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
@@ -50,25 +51,16 @@ func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 		slog.String("op", sl.GFN()),
 	)
 
-	tokenCookie, err := r.Cookie(coockie.AccessTokenCookieName)
-	if errcheck.TokenCookieErr(err, h.log, w) {
-		return
-	}
-
-	id, err := h.ucAuther.CheckToken(r.Context(), tokenCookie.Value)
-	if err != nil {
-		h.log.Error("jws token is invalid", sl.Err(err))
+	id, ok := r.Context().Value(cookie.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)
-
-		return
 	}
-	h.log.Info("got profile id", slog.Any("profile id", id))
 
 	body, err := io.ReadAll(r.Body)
-	if errcheck.BodyErr(err, h.log, w) {
+	if resp.BodyErr(err, h.log, w) {
 		return
 	}
-	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	profileInfo := &models.ProfileInfo{}
 	err = json.Unmarshal(body, profileInfo)
@@ -79,7 +71,7 @@ func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = h.ucUser.UpdateInfo(r.Context(), id, *profileInfo)
+	err = h.uc.UpdateInfo(r.Context(), id, *profileInfo)
 	if err != nil {
 		h.log.Error("failed to update user info", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -87,6 +79,5 @@ func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.log.Info("updated user info")
-
 	resp.JSONStatus(w, http.StatusOK)
 }

@@ -2,8 +2,6 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/coockie"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/errcheck"
 	"io"
 	"log/slog"
 	"net/http"
@@ -11,6 +9,7 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/cookie"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
@@ -45,7 +44,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	)
 
 	body, err := io.ReadAll(r.Body)
-	if errcheck.BodyErr(err, h.log, w) {
+	if resp.BodyErr(err, h.log, w) {
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
@@ -70,7 +69,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
 
-	http.SetCookie(w, coockie.GetTokenCookie(coockie.AccessTokenCookieName, token, exp))
+	http.SetCookie(w, cookie.GetTokenCookie(cookie.AccessTokenCookieName, token, exp))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
@@ -90,7 +89,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	)
 
 	body, err := io.ReadAll(r.Body)
-	if errcheck.BodyErr(err, h.log, w) {
+	if resp.BodyErr(err, h.log, w) {
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
@@ -112,7 +111,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, coockie.GetTokenCookie(coockie.AccessTokenCookieName, token, exp))
+	http.SetCookie(w, cookie.GetTokenCookie(cookie.AccessTokenCookieName, token, exp))
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
 	resp.JSON(w, http.StatusOK, profile)
 }
@@ -125,7 +124,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 // @Success	200
 // @Router	/api/auth/logout [get]
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, coockie.GetTokenCookie(coockie.AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
+	http.SetCookie(w, cookie.GetTokenCookie(cookie.AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
 	h.log.Info("logout")
 	resp.JSONStatus(w, http.StatusOK)
 }
@@ -145,20 +144,13 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		slog.String("op", sl.GFN()),
 	)
 
-	tokenCookie, err := r.Cookie(coockie.AccessTokenCookieName)
-	if errcheck.TokenCookieErr(err, h.log, w) {
-		return
-	}
-
-	id, err := h.uc.CheckToken(r.Context(), tokenCookie.Value)
-	if err != nil {
-		h.log.Error("jws token is invalid", sl.Err(err))
+	id, ok := r.Context().Value(cookie.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)
-
-		return
 	}
-	h.log.Info("got profile id", slog.Any("profile id", id))
 
+	h.log.Info("check auth success", "id", id)
 	resp.JSONStatus(w, http.StatusOK)
 }
 

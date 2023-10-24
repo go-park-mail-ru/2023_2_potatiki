@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/coockie"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/cookie"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/gorilla/mux"
@@ -29,12 +29,12 @@ func CORSMiddleware(next http.Handler) http.Handler {
 func Authenticate(log *slog.Logger, auther auth.AuthAuther) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			tokenCookie, err := r.Cookie(coockie.AccessTokenCookieName)
+			tokenCookie, err := r.Cookie(cookie.AccessTokenCookieName)
 
 			if err != nil {
 				switch {
 				case errors.Is(err, http.ErrNoCookie):
-					log.Error("token cookie not found", sl.Err(err))
+					log.Debug("token cookie not found", sl.Err(err))
 					resp.JSONStatus(w, http.StatusUnauthorized)
 
 					return
@@ -56,7 +56,7 @@ func Authenticate(log *slog.Logger, auther auth.AuthAuther) mux.MiddlewareFunc {
 
 			log.Info("got profile id", slog.Any("profile id", claims.ID))
 
-			ctx := context.WithValue(r.Context(), coockie.AccessTokenCookieName, claims.ID)
+			ctx := context.WithValue(r.Context(), cookie.AccessTokenCookieName, claims.ID)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
