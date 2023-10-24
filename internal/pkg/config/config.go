@@ -17,7 +17,7 @@ type Config struct {
 	Auther     `yaml:"auther"`
 	Database
 	Enviroment  string `env:"ENVIROMENT" env-default:"prod" env-description:"avalible: local, dev, prod"`
-	LogFilePath string `env:"LOG_FILE_PATH" env-default:"/var/log/zuzu.log"`
+	LogFilePath string `env:"LOG_FILE_PATH" env-default:"zuzu.log"`
 }
 
 type HTTPServer struct {
