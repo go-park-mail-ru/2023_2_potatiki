@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	getProduct  = "SELECT * FROM products WHERE id=$1;"
+	getProduct  = "SELECT * FROM product WHERE id=$1;"
 	getProducts = "SELECT Id , NameProduct, Description, Price, ImgSrc, Rating " +
 		"FROM products ORDER BY id LIMIT $1 OFFSET $2"
 )
