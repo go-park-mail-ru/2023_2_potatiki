@@ -1,5 +1,5 @@
 # Фунциональные зависимости
-- Таблица profiles
+- Таблица profile
    - {id} -> login, description, imgsrc, passwordhash
    - {login} -> id, description, imgsrc, passwordhash
 
@@ -8,7 +8,7 @@
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
-- Таблица products
+- Таблица product
     - {id} -> name, description, price, imgsrc, rating, categoryId
     - {name} -> id, description, price, imgsrc, rating, categoryId
 
@@ -17,7 +17,7 @@
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
-- Таблица orders
+- Таблица order
     - {id} ->  profileId, promocodeId, status, deliveryDate, creationDate
 
   -В данном отношении потенциальным ключом является аттрибут id, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
@@ -25,7 +25,7 @@
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Ключевой аттрибут один, поэтому отношение соответсвует НФБК.
 
-- Таблица order_items
+- Таблица order_item
     - {id} -> quantity, orderId, productId
     - {orderId, productId} -> id, quantity
 
@@ -34,14 +34,14 @@
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
-- Таблица favorites
+- Таблица favorite
     - {id} -> profileId, productId
     - {profileId, productId} -> id
 
   -В данном отношении потенциальными ключами являются аттрибуты id и {profileId, productId}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевых аттрибутов нет, а любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
-- Таблица addresses
+- Таблица address
     - {id} -> profileId, city, street, house, flat, isCurrent
     - {profileId, city, street, house, flat} -> id, isCurrent
 
@@ -50,14 +50,14 @@
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
-- Таблица categories
+- Таблица category
     - {id} -> name
     - {name} -> id
       
   -В данном отношении потенциальными ключами являются аттрибуты id и name, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевых аттрибутов нет, а любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
-- Таблица category_refferences
+- Таблица category_refference
     - {categoryId} -> parentCategoryId
 
    -В данном отношении потенциальным ключjv являtтся аттрибут categoryId, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
@@ -65,7 +65,7 @@
   -Нет атрибутов, зависящих от неключевого аттрибутов, что соответсвует 3НФ.\
   -Ключевой аттрибут только один, поэтому отношение соответсвует НФБК.
 
-- Таблица shopping_cart_items
+- Таблица shopping_cart_item
     - {id} ->  quantity, profileId, productId
     - {profileId, productId} - id, quantity
 
@@ -74,7 +74,7 @@
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
-- Таблица promocodes
+- Таблица promocode
     - {id} -> name, discount
     - {name} -> id, discount
 
@@ -84,22 +84,22 @@
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 ```mermaid
 erDiagram
-    PROFILES ||--o{ ORDERS : includes
-    PROFILES ||--o{ ADDRESSES : includes
-    PROFILES ||--o{ SHOPPING_CART_ITEMS : includes
-    PROFILES ||--o{ FAVORITES : includes
+    PROFILE ||--o{ ORDER : includes
+    PROFILE ||--o{ ADDRESS : includes
+    PROFILE ||--o{ SHOPPING_CART_ITEM : includes
+    PROFILE ||--o{ FAVORITE : includes
     
-    PROMOCODES ||--o{ ORDERS : includes
-    ORDERS ||--o{ ORDER_ITEMS : includes
+    PROMOCODE ||--o{ ORDER : includes
+    ORDER ||--o{ ORDER_ITEM : includes
 
-    PRODUCTS ||--o{ ORDER_ITEMS : includes
-    PRODUCTS ||--o{ SHOPPING_CART_ITEMS : includes
-    CATEGORIES ||--|{ PRODUCTS : includes
-    PRODUCTS ||--o{ FAVORITES : includes
+    PRODUCT ||--o{ ORDER_ITEMS: includes
+    PRODUCT ||--o{ SHOPPING_CART_ITEM : includes
+    CATEGORY ||--|{ PRODUCT : includes
+    PRODUCT ||--o{ FAVORITE : includes
 
-    CATEGORIES ||--|{ CATEGORY_REFERENCES : includes
+    CATEGORY ||--|{ CATEGORY_REFERENCE : includes
 
-    PROFILES {
+    PROFILE {
         uuid id PK
         text login UK
         text description
@@ -107,7 +107,7 @@ erDiagram
         text passwordhash
     }
     
-    PRODUCTS {
+    PRODUCT {
         uuid id PK
         text name UK
         text description
@@ -117,13 +117,13 @@ erDiagram
         uuid category FK
     }
 
-    FAVORITES {
+    FAVORITE {
         uuid id PK
         uuid profileId FK
         uuid productId FK
     }
 
-    ORDERS {
+    ORDER {
         uuid id PK
         uuid profileId FK
         uuid promocodeId FK
@@ -132,7 +132,7 @@ erDiagram
         timestamp deliveryDate
     }
 
-    ORDER_ITEMS {
+    ORDER_ITEM {
         uuid id PK
         uuid orderId FK
         uuid productId FK
@@ -140,7 +140,7 @@ erDiagram
         int price
     }
 
-    ADDRESSES {
+    ADDRESS {
         uuid id PK
         uuid profileId FK
         text city
@@ -150,24 +150,24 @@ erDiagram
         bool isCurrent
     }
 
-    CATEGORIES {
+    CATEGORY {
         uuid id PK
         text name UK
     }
 
-    CATEGORY_REFERENCES {
+    CATEGORY_REFERENCE {
         uuid categoryId PK, FK
         uuid parentCategoryId FK
     }
 
-    SHOPPING_CART_ITEMS {
+    SHOPPING_CART_ITEM {
         uuid id PK
         uuid profileId FK
         uuid productId FK
         int quantity
     }
 
-    PROMOCODES {
+    PROMOCODE {
         uuid id PK
         text name UK
         int discount
