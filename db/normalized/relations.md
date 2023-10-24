@@ -92,7 +92,7 @@ erDiagram
     PROMOCODE ||--o{ ORDER : includes
     ORDER ||--o{ ORDER_ITEM : includes
 
-    PRODUCT ||--o{ ORDER_ITEMS: includes
+    PRODUCT ||--o{ ORDER_ITEM: includes
     PRODUCT ||--o{ SHOPPING_CART_ITEM : includes
     CATEGORY ||--|{ PRODUCT : includes
     PRODUCT ||--o{ FAVORITE : includes
