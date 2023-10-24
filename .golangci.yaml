@@ -24,8 +24,8 @@ linters:
     - funlen #del
     - staticcheck #del
     - sqlclosecheck #del
-    #- inamedparam #err
-    #- testifylint #err
+    - inamedparam #err
+    - testifylint #err
     - gofmt #err
     - deadcode #warn
     - golint #warn
