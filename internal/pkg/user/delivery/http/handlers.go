@@ -2,29 +2,29 @@ package http
 
 import (
 	"encoding/json"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/coockie"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/errcheck"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"io"
 	"log/slog"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/coockie"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/cookie"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/errcheck"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+	"github.com/google/uuid"
 )
 
 type UserHandler struct {
-	log      *slog.Logger
-	ucUser   user.UserUsecase
-	ucAuther auth.AuthUsecase
+	log *slog.Logger
+	uc  user.UserUsecase
 }
 
-func NewUserHandler(log *slog.Logger, ucUser user.UserUsecase, ucAuther auth.AuthUsecase) *UserHandler {
+func NewUserHandler(log *slog.Logger, uc user.UserUsecase) *UserHandler {
 	return &UserHandler{
-		log:      log,
-		ucUser:   ucUser,
-		ucAuther: ucAuther,
+		log: log,
+		uc:  uc,
 	}
 }
 
@@ -32,20 +32,11 @@ func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
-
-	tokenCookie, err := r.Cookie(coockie.AccessTokenCookieName)
-	if errcheck.TokenCookieErr(err, h.log, w) {
-		return
+	val := r.Context().Value(cookie.AccessTokenCookieName)
+	if ID, err := val.(uuid.UUID); !ok {
+		h.log.Error("failed cast uuid from context value")
 	}
-
-	id, err := h.ucAuther.CheckToken(r.Context(), tokenCookie.Value)
-	if err != nil {
-		h.log.Error("jws token is invalid", sl.Err(err))
-		resp.JSONStatus(w, http.StatusUnauthorized)
-
-		return
-	}
-	h.log.Info("got profile id", slog.Any("profile id", id))
+	_ = ID
 
 	_, err = io.ReadAll(r.Body)
 	if errcheck.BodyErr(err, h.log, w) {

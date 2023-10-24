@@ -123,6 +123,7 @@ func run() (err error) {
 	//
 	// ============================Setup endpoints============================ //
 	auth := r.PathPrefix("/auth").Subrouter()
+	auth.Use(middleware.Authenticate(log, authUsecase.Auther))
 	{
 		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
 		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
