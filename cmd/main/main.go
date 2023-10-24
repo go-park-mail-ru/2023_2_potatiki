@@ -52,6 +52,7 @@ func run() (err error) {
 	if err != nil {
 		fmt.Println("fail open logFile", sl.Err(err))
 		err = fmt.Errorf("fail open logFile: %w", err)
+
 		return err
 	}
 	defer func() { err = errors.Join(err, logFile.Close()) }()

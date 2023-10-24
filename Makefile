@@ -1,5 +1,8 @@
 .PHONY: all clean install uninstall
 
+lint:
+	golangci-lint run
+
 compose:
 	docker compose -f "local-docker-compose.yaml" up -d
 

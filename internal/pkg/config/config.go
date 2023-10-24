@@ -41,11 +41,11 @@ type Database struct {
 }
 
 func (a Auther) GetAccessExpirationTime() time.Duration {
-	//need for mock interface
+	// need for mock interface
 	return a.AccessExpirationTime
 }
 func (a Auther) GetJwtAccess() string {
-	//need for mock interface
+	// need for mock interface
 	return a.JwtAccess
 }
 
