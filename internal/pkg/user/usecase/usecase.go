@@ -65,6 +65,8 @@ func (uc *UserUsecase) UpdateInfo(ctx context.Context, userID uuid.UUID, profile
 	err = uc.repoUser.UpdateInfo(ctx, userID, profileInfo.UserInfo)
 	if err != nil {
 		err = fmt.Errorf("error happened in repoUser.UpdateInfo: %w", err)
+
+		return err
 	}
 
 	return nil
