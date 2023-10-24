@@ -2,14 +2,16 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v4/pgxpool"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/jackc/pgx/v4/pgxpool"
 
 	"github.com/gorilla/mux"
 
@@ -23,8 +25,6 @@ import (
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-
-	_ "github.com/lib/pq"
 
 	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -46,26 +46,22 @@ func main() {
 }
 
 func run() (err error) {
-	// host localhost:8082
-	// BasePath /api
 	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
 
-	logFile, err := os.OpenFile("/var/log/potatiki.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	logFile, err := os.OpenFile(cfg.LogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Println("fail open logFile", sl.Err(err)) // TODO: take file path from conf and if nil - logFile = nil
+		fmt.Println("fail open logFile", sl.Err(err))
+		err = fmt.Errorf("fail open logFile: %w", err)
+		return err
 	}
-	log := logger.Set(cfg.Enviroment, logFile)
+	defer func() { err = errors.Join(err, logFile.Close()) }()
 
-	defer func(logFile *os.File) {
-		err = logFile.Close()
-		if err != nil {
-			// TODO: implement
-		}
-	}(logFile)
+	log := logger.Set(cfg.Enviroment, logFile)
 
 	log.Info(
 		"starting zuzu-main",
 		slog.String("env", cfg.Enviroment),
+		slog.String("addr", cfg.Address),
 	)
 	log.Debug("debug messages are enabled")
 
@@ -87,7 +83,7 @@ func run() (err error) {
 	defer db.Close()
 
 	if err = db.Ping(context.Background()); err != nil {
-		slog.Error("fail ping postgres", sl.Err(err))
+		log.Error("fail ping postgres", sl.Err(err))
 		err = fmt.Errorf("error happened in db.Ping: %w", err)
 
 		return err

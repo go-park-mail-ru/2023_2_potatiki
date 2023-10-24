@@ -13,11 +13,11 @@ import (
 
 type Config struct {
 	ConfigPath string `env:"CONFIG_PATH" env-default:"config/config.yaml"`
-	Enviroment string `env:"enviroment" env-default:"local" env-description:"avalible: local, dev, prod"`
-	Version    string `yaml:"version" yaml-required:"true"`
 	HTTPServer `yaml:"httpServer"`
+	Auther     `yaml:"auther"`
 	Database
-	Auther `yaml:"auther"`
+	Enviroment  string `env:"ENVIROMENT" env-default:"prod" env-description:"avalible: local, dev, prod"`
+	LogFilePath string `env:"LOG_FILE_PATH" env-default:"/var/log/zuzu.log"`
 }
 
 type HTTPServer struct {
@@ -27,23 +27,25 @@ type HTTPServer struct {
 	ReadHeaderTimeout time.Duration `yaml:"readHeaderTimeout" yaml-defualt:"10s"`
 }
 
-type Database struct {
-	DBName string `env:"POSTGRES_DB" env-required:"true"`
-	DBPass string `env:"POSTGRES_PASSWORD" env-required:"true"`
-	DBHost string `env:"DB_HOST" env-default:""`
-	DBPort int    `env:"DB_PORT" env-required:"true"`
-	DBUser string `env:"POSTGRES_USER" env-required:"true"`
-}
-
 type Auther struct {
 	JwtAccess            string        `env:"JWT_SECRET_KEY" env-required:"true"`
 	AccessExpirationTime time.Duration `yaml:"accessExpirationTime" yaml-defualt:"6h"`
 }
 
+type Database struct {
+	DBName string `env:"POSTGRES_DB" env-required:"true"`
+	DBPass string `env:"POSTGRES_PASSWORD" env-required:"true"`
+	DBHost string `env:"DB_HOST" env-default:"0.0.0.0"`
+	DBPort int    `env:"DB_PORT" env-required:"true"`
+	DBUser string `env:"POSTGRES_USER" env-required:"true"`
+}
+
 func (a Auther) GetAccessExpirationTime() time.Duration {
+	//need for mock interface
 	return a.AccessExpirationTime
 }
 func (a Auther) GetJwtAccess() string {
+	//need for mock interface
 	return a.JwtAccess
 }
 
