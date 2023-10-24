@@ -103,6 +103,7 @@ volumes:
   zuzu-db-data:
   pgadmin-data:
   zuzu-db:
+  log-file:
 
 networks:
   zuzu-network:
