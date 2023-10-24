@@ -11,9 +11,9 @@ import (
 )
 
 const (
-	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM profiles WHERE login=$1;"
-	profileExistsByID    = "SELECT Login, Description, ImgSrc FROM profiles WHERE Id=$1;"
-	addProfile           = "INSERT INTO profiles(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM profile WHERE login=$1;"
+	profileExistsByID    = "SELECT Login, Description, ImgSrc FROM profile WHERE Id=$1;"
+	addProfile           = "INSERT INTO profile(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
 )
 
 var (
