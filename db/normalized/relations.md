@@ -40,18 +40,18 @@
 erDiagram
     PROFILES ||--o{ ORDERS : includes
     PROFILES ||--o{ ADDRESSES : includes
-    PROFILES ||--o{ SHOPPINGCARTITEMS : includes
-    PROFILES ||--o{ FAVOURITES : includes
+    PROFILES ||--o{ SHOPPING_CART_ITEMS : includes
+    PROFILES ||--o{ FAVORITES : includes
     
     PROMOCODES ||--o{ ORDERS : includes
-    ORDERS ||--o{ ORDERITEMS : includes
+    ORDERS ||--o{ ORDER_ITEMS : includes
 
-    PRODUCTS ||--o{ ORDERITEMS : includes
-    PRODUCTS ||--o{ SHOPPINGCARTITEMS : includes
+    PRODUCTS ||--o{ ORDER_ITEMS : includes
+    PRODUCTS ||--o{ SHOPPING_CART_ITEMS : includes
     CATEGORIES ||--|{ PRODUCTS : includes
-    PRODUCTS ||--o{ FAVOURITES : includes
+    PRODUCTS ||--o{ FAVORITES : includes
 
-    CATEGORIES ||--|{ CATEGORYREFERENCES : includes
+    CATEGORIES ||--|{ CATEGORY_REFERENCES : includes
 
     PROFILES {
         uuid id PK
