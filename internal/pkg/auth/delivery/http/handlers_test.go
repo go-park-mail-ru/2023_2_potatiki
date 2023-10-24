@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -103,14 +104,11 @@ func TestCheckAuth(t *testing.T) {
 	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
-	uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.New(), nil)
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-	cookie := &http.Cookie{
-		Name:  cookie.AccessTokenCookieName,
-		Value: "token",
-	}
-	req.AddCookie(cookie)
+
+	ctx := context.WithValue(req.Context(), cookie.AccessTokenCookieName, uuid.New())
+	req = req.WithContext(ctx)
 
 	w := httptest.NewRecorder()
 	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
@@ -139,7 +137,6 @@ func TestCheckAuthBad(t *testing.T) {
 			Name:  cookie.AccessTokenCookieName,
 			Value: "invalidTokenValue",
 		})
-		uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.UUID{}, errors.New("invalidTokenValue"))
 		w := httptest.NewRecorder()
 		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 		AuthHandler.CheckAuth(w, req)
