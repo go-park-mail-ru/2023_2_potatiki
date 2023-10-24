@@ -46,7 +46,7 @@ func main() {
 }
 
 func run() (err error) {
-	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
+	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme.
 
 	logFile, err := os.OpenFile(cfg.LogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
