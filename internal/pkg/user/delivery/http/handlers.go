@@ -79,12 +79,23 @@ func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
-	u := &models.UserInfo{}
-	err = json.Unmarshal(body, u)
+	profileInfo := &models.ProfileInfo{}
+	err = json.Unmarshal(body, profileInfo)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
 	}
+
+	err = h.ucUser.UpdateInfo(r.Context(), id, *profileInfo)
+	if err != nil {
+		h.log.Error("failed to update user info", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+	h.log.Info("updated user info")
+
+	resp.JSONStatus(w, http.StatusOK)
 }

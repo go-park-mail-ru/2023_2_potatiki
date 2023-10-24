@@ -158,6 +158,7 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.log.Info("got profile id", slog.Any("profile id", id))
+
 	resp.JSONStatus(w, http.StatusOK)
 }
 

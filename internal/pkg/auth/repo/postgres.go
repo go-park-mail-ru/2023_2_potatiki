@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
@@ -34,7 +33,7 @@ func (r *AuthRepo) CreateUser(ctx context.Context, user models.User) (models.Pro
 	profileID := uuid.New()
 	_, err := r.db.Exec(ctx, addProfile,
 		profileID, user.Login, "", "default.png", user.PasswordHash)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) { // !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
+	if err != nil { // !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
 		return models.Profile{}, err

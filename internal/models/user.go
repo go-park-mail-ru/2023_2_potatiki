@@ -27,9 +27,12 @@ type UserPhoto struct {
 }
 
 type UserInfo struct {
-	ID              uuid.UUID `json:"id"`
-	NewPasswordHash string    `json:"newPassword"`
-	OldPasswordHash string    `json:"oldPassword"`
-	NewDescription  string    `json:"newDescription"`
-	OldDescription  string    `json:"oldDescription"`
+	NewPasswordHash string `json:"newPassword"`
+	NewDescription  string `json:"newDescription"`
+	Description     string `json:"description"`
+}
+
+type ProfileInfo struct {
+	User
+	UserInfo
 }
