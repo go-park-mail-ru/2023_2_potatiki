@@ -1,31 +1,10 @@
-DROP TABLE IF EXISTS profile CASCADE;
-
-DROP TABLE IF EXISTS product CASCADE;
-
-DROP TABLE IF EXISTS order_info CASCADE;
-
-DROP TABLE IF EXISTS order_item;
-
-DROP TABLE IF EXISTS category CASCADE;
-
-DROP TABLE IF EXISTS category_reference;
-
-DROP TABLE IF EXISTS shopping_cart_item;
-
-DROP TABLE IF EXISTS promocode;
-
-DROP TABLE IF EXISTS address;
-
-DROP TABLE IF EXISTS favorite;
-
 CREATE TABLE IF NOT EXISTS profile
 (
     id uuid NOT NULL PRIMARY KEY,
     login text NOT NULL UNIQUE,
     description text,
     imgsrc text NOT NULL DEFAULT 'default.png',
-    passwordhash text NOT NULL,
-    CONSTRAINT "ProfileLogin_unique" UNIQUE (login)
+    passwordhash text NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS category
@@ -78,8 +57,8 @@ CREATE TABLE IF NOT EXISTS order_item
     product_id UUID NOT NULL,
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT "OrderProduct_unique" UNIQUE (order_id, product_id),
-    quantity INT,
-    CHECK (quantity >= 0)
+    quantity INT NOT NULL,
+    CHECK (quantity > 0)
 );
 
 
@@ -114,8 +93,8 @@ CREATE TABLE IF NOT EXISTS shopping_cart_item
     product_id UUID NOT NULL,
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT "ProfileProduct_unique" UNIQUE (profile_id, product_id),
-    quantity INT,
-    CHECK (quantity >= 0)
+    quantity INT NOT NULL,
+    CHECK (quantity > 0)
 );
 
 CREATE TABLE IF NOT EXISTS favorite
