@@ -12,7 +12,7 @@ import (
 
 const (
 	getProduct  = "SELECT * FROM product WHERE id=$1;"
-	getProducts = "SELECT Id , NameProduct, Description, Price, ImgSrc, Rating " +
+	getProducts = "SELECT Id , name_product, Description, Price, ImgSrc, Rating " +
 		"FROM product ORDER BY id LIMIT $1 OFFSET $2"
 )
 
