@@ -1,40 +1,39 @@
 # Фунциональные зависимости
-- Таблица profile
+- Таблица profiles
    - {id} -> login, description, imgsrc, passwordhash
    - {login} -> id, description, imgsrc, passwordhash
 
-- Таблица product
+- Таблица products
     - {id} -> name, description, price, imgsrc, rating, categoryId
     - {name} -> id, description, price, imgsrc, rating, categoryId
 
-- Таблица order_info
+- Таблица orders
     - {id} ->  profileId, promocodeId, status, deliveryDate, creationDate
 
-- Таблица order_item
+- Таблица order_items
     - {id} -> quantity, orderId, productId
     - {orderId, productId} -> id, quantity
 
-- Таблица favorite
+- Таблица favorites
     - {id} -> profileId, productId
     - {profileId, productId} -> id
 
-- Таблица address
+- Таблица addresses
     - {id} -> profileId, city, street, house, flat, isCurrent
     - {profileId, city, street, house, flat} -> id, isCurrent
 
-- Таблица category
+- Таблица categories
     - {id} -> name
     - {name} -> id
 
-- Таблица category_refference
-    - {id} -> categoryId, parentCategoryId
-    - {categoryId} -> id, parentCategoryId
+- Таблица category_refferences
+    - {categoryId} -> parentCategoryId
 
-- Таблица shopping_cart_item
+- Таблица shopping_cart_items
     - {id} ->  quantity, profileId, productId
     - {profileId, productId} - id, quantity
 
-- Таблица promocode
+- Таблица promocodes
     - {id} -> name, discount
     - {name} -> id, discount
 ```mermaid
@@ -72,7 +71,7 @@ erDiagram
         uuid category FK
     }
 
-    FAVOURITES {
+    FAVORITES {
         uuid id PK
         uuid profileId FK
         uuid productId FK
@@ -87,7 +86,7 @@ erDiagram
         timestamp deliveryDate
     }
 
-    ORDERITEMS {
+    ORDER_ITEMS {
         uuid id PK
         uuid orderId FK
         uuid productId FK
@@ -110,12 +109,12 @@ erDiagram
         text name UK
     }
 
-    CATEGORYREFERENCES {
-        uuid categoryId FK
+    CATEGORY_REFERENCES {
+        uuid categoryId PK, FK
         uuid parentCategoryId FK
     }
 
-    SHOPPINGCARTITEMS {
+    SHOPPING_CART_ITEMS {
         uuid id PK
         uuid profileId FK
         uuid productId FK
