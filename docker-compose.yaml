@@ -93,7 +93,6 @@ services:
       - '8096:8096'
     volumes:
       - ./.env:/docker-zuzu-main/.env
-      - ./zuzu.log:/docker-zuzu-main/zuzu.log
     depends_on:
       - postgres
     networks:
