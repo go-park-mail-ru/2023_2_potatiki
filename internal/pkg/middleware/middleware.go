@@ -27,10 +27,9 @@ func CORSMiddleware(next http.Handler) http.Handler {
 }
 
 func Authenticate(log *slog.Logger, auther auth.AuthAuther) mux.MiddlewareFunc {
-	return func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler { // TODO: del
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenCookie, err := r.Cookie(cookie.AccessTokenCookieName)
-
 			if err != nil {
 				switch {
 				case errors.Is(err, http.ErrNoCookie):

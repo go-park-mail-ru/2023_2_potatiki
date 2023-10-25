@@ -8,21 +8,64 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
 	"github.com/google/uuid"
+	"log/slog"
+	"os"
+	"slices"
+	"strings"
 )
 
 type UserUsecase struct {
+	log      *slog.Logger
 	repoUser user.UserRepo
 	repoAuth auth.AuthRepo
 }
 
-func NewUserUsecase(repoUser user.UserRepo, repoAuth auth.AuthRepo) *UserUsecase {
+var (
+	acceptingFileTypes      = []string{"image/webp", "image/png", "image/jpeg"}
+	ErrorForbiddenExtension = errors.New("this file extension is not allowed")
+)
+
+// TODO: nginx path from env to save imgs
+
+func NewUserUsecase(repoUser user.UserRepo, repoAuth auth.AuthRepo, log *slog.Logger) *UserUsecase {
 	return &UserUsecase{
+		log:      log,
 		repoUser: repoUser,
 		repoAuth: repoAuth,
 	}
 }
 
-func (uc *UserUsecase) UpdatePhoto(ctx context.Context, photoID uuid.UUID) error {
+func (uc *UserUsecase) UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) error {
+	if !slices.Contains(acceptingFileTypes, fileType) {
+
+		return ErrorForbiddenExtension
+	}
+	fileExtension := strings.TrimPrefix(fileType, "image/")
+
+	photoName := uuid.New().String() + "." + fileExtension
+
+	file, err := os.Create(photoName)
+	if err != nil {
+		err = fmt.Errorf("error happened in create file: %w", err)
+
+		return err
+	}
+	defer file.Close()
+
+	_, err = file.Write(filePhotoByte)
+	if err != nil {
+		err = fmt.Errorf("error happened in write to file: %w", err)
+
+		return err
+	}
+
+	err = uc.repoUser.UpdatePhoto(ctx, userID, photoName)
+	if err != nil {
+		err = fmt.Errorf("error happened in repoUser.UpdatePhoto: %w", err)
+
+		return err
+	}
+
 	return nil
 }
 

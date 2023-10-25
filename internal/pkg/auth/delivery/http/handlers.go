@@ -48,6 +48,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
+	defer r.Body.Close()
 
 	u := &models.User{}
 	err = json.Unmarshal(body, u)

@@ -23,11 +23,6 @@ type Profile struct {
 	ImgSrc      string    `json:"img"`
 }
 
-type UserPhoto struct {
-	ID    uuid.UUID `json:"id"`
-	Photo uuid.UUID `json:"photo"`
-}
-
 type UserInfo struct {
 	NewPasswordHash string `json:"newPassword"`
 	NewDescription  string `json:"newDescription"`

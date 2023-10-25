@@ -8,12 +8,12 @@ import (
 
 type UserUsecase interface {
 	// GetProfile(context.Context, uuid.UUID) (models.Profile, error) // take from pkg auth
-	UpdatePhoto(context.Context, uuid.UUID, uuid.UUID) error
+	UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) error
 	UpdateInfo(context.Context, uuid.UUID, models.ProfileInfo) error
 }
 
 type UserRepo interface {
 	// ReadProfile(context.Context, uuid.UUID) (models.Profile, error) // take from pkg auth
-	UpdatePhoto(context.Context, uuid.UUID) error
+	UpdatePhoto(context.Context, uuid.UUID, string) error
 	UpdateInfo(context.Context, uuid.UUID, models.UserInfo) error
 }

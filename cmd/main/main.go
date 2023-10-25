@@ -23,6 +23,10 @@ import (
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
+
+	userHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/delivery/http"
+	userRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/repo"
+	userUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/usecase"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
@@ -100,6 +104,10 @@ func run() (err error) {
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
 	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
+
+	usersRepo := userRepo.NewUserRepo(db)
+	usersUsecase := userUsecase.NewUserUsecase(usersRepo, authRepo, log)
+	usersHandler := userHandler.NewUserHandler(usersUsecase, log)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -148,6 +156,15 @@ func run() (err error) {
 
 		products.HandleFunc("/get_all", productsHandler.Products).
 			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	users := r.PathPrefix("/users").Subrouter()
+	{
+		users.Handle("/update-photo", authMW(http.HandlerFunc(usersHandler.UpdatePhoto))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		users.Handle("/update-info", authMW(http.HandlerFunc(usersHandler.UpdateInfo))).
+			Methods(http.MethodPost, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
 
