@@ -18,6 +18,9 @@ import (
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
+	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
+	cartUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/usecase"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
@@ -100,6 +103,10 @@ func run() (err error) {
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
 	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
+
+	cartRepo := cartRepo.NewCartRepo(db)
+	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
+	cartHandler := cartHandler.NewCartHandler(log, cartUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -147,6 +154,15 @@ func run() (err error) {
 			Methods(http.MethodGet, http.MethodOptions)
 
 		products.HandleFunc("/get_all", productsHandler.Products).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	cart := r.PathPrefix("/cart").Subrouter()
+	{
+		cart.Handle("/update", authMW(http.HandlerFunc(cartHandler.UpdateCart))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		cart.Handle("/summary", authMW(http.HandlerFunc(cartHandler.GetCart))).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
