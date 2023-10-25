@@ -36,6 +36,7 @@ func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)
+
 		return
 	}
 
@@ -46,7 +47,7 @@ func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	fileFormat := http.DetectContentType(bodyContent)
 	h.log.Debug("got []byte file", slog.Any("request", r))
 
-	if err != nil && err != io.EOF {
+	if err != nil && !errors.Is(err, io.EOF) {
 		if errors.As(err, new(*http.MaxBytesError)) {
 			resp.JSONStatus(w, http.StatusRequestEntityTooLarge)
 		} else {
@@ -57,8 +58,14 @@ func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Info("UpdatePhoto", "ID", ID)
-	_ = h.uc.UpdatePhoto(r.Context(), ID, bodyContent, fileFormat)
+	err = h.uc.UpdatePhoto(r.Context(), ID, bodyContent, fileFormat)
+	if err != nil {
+		h.log.Error("failed in uc.UpdatePhoto", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+	}
 
+	h.log.Info("updated user info")
+	resp.JSONStatus(w, http.StatusOK)
 }
 
 func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
@@ -97,6 +104,7 @@ func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
+
 	h.log.Info("updated user info")
 	resp.JSONStatus(w, http.StatusOK)
 }

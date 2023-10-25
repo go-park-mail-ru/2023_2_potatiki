@@ -37,7 +37,6 @@ func NewUserUsecase(repoUser user.UserRepo, repoAuth auth.AuthRepo, log *slog.Lo
 
 func (uc *UserUsecase) UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) error {
 	if !slices.Contains(acceptingFileTypes, fileType) {
-
 		return ErrorForbiddenExtension
 	}
 	fileExtension := strings.TrimPrefix(fileType, "image/")

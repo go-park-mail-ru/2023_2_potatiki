@@ -21,6 +21,8 @@ linters:
     - gofumpt
     - godot
     - goimports
+    - gochecknoglobals
+    - errname
     - funlen #del
     - staticcheck #del
     - sqlclosecheck #del
