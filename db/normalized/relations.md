@@ -97,8 +97,6 @@ erDiagram
   CATEGORY ||--|{ PRODUCT : includes
   PRODUCT ||--o{ FAVORITE : includes
 
-  CATEGORY ||--|{ CATEGORY_REFERENCE : includes
-
   PROFILE {
     uuid id PK
     text login UK
@@ -151,13 +149,9 @@ erDiagram
   }
 
   CATEGORY {
-    uuid id PK
+    serial id PK
     text name UK
-  }
-
-  CATEGORY_REFERENCE {
-    uuid categoryId PK, FK
-    uuid parentCategoryId FK
+    int parent FK
   }
 
   SHOPPING_CART_ITEM {

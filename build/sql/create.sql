@@ -8,8 +8,6 @@ DROP TABLE IF EXISTS order_item;
 
 DROP TABLE IF EXISTS category CASCADE;
 
-DROP TABLE IF EXISTS category_reference;
-
 DROP TABLE IF EXISTS shopping_cart_item;
 
 DROP TABLE IF EXISTS promocode;
