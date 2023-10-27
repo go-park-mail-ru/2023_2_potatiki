@@ -11,9 +11,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/jackc/pgx/v4/pgxpool"
-
+	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v4/pgxpool"
+	httpSwagger "github.com/swaggo/http-swagger"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
@@ -21,20 +27,15 @@ import (
 	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
 	cartUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/usecase"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
+	categoryHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/delivery/http"
+	categoryRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/repo"
+	categoryUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/usecase"
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
-
 	userHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/delivery/http"
 	userRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/repo"
 	userUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/usecase"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-
-	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
-	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // @title ZuZu Backend API
@@ -104,10 +105,6 @@ func run() (err error) {
 	authUsecase := authUsecase.NewAuthUsecase(authRepo, cfg.Auther)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
-	productsRepo := productsRepo.NewProductsRepo(db)
-	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
-	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
-
 	usersRepo := userRepo.NewUserRepo(db)
 	usersUsecase := userUsecase.NewUserUsecase(usersRepo, authRepo, log)
 	usersHandler := userHandler.NewUserHandler(usersUsecase, log)
@@ -115,6 +112,14 @@ func run() (err error) {
 	cartRepo := cartRepo.NewCartRepo(db)
 	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
 	cartHandler := cartHandler.NewCartHandler(log, cartUsecase)
+
+	productsRepo := productsRepo.NewProductsRepo(db)
+	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
+	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
+
+	categoryRepo := categoryRepo.NewCategoryRepo(db)
+	categoryUsecase := categoryUsecase.NewCategoryUsecase(categoryRepo)
+	categoryHandler := categoryHandler.NewCategoryHandler(log, categoryUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -165,6 +170,15 @@ func run() (err error) {
 			Methods(http.MethodPost, http.MethodOptions)
 	}
 
+	cart := r.PathPrefix("/cart").Subrouter()
+	{
+		cart.Handle("/update", authMW(http.HandlerFunc(cartHandler.UpdateCart))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		cart.Handle("/summary", authMW(http.HandlerFunc(cartHandler.GetCart))).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
 	products := r.PathPrefix("/products").Subrouter()
 	{
 		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).
@@ -177,12 +191,9 @@ func run() (err error) {
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 
-	cart := r.PathPrefix("/cart").Subrouter()
+	category := r.PathPrefix("/category").Subrouter()
 	{
-		cart.Handle("/update", authMW(http.HandlerFunc(cartHandler.UpdateCart))).
-			Methods(http.MethodPost, http.MethodOptions)
-
-		cart.Handle("/summary", authMW(http.HandlerFunc(cartHandler.GetCart))).
+		category.HandleFunc("/get_all", categoryHandler.Categories).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//

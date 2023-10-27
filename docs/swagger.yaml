@@ -29,6 +29,15 @@ definitions:
       rating:
         type: number
     type: object
+  models.Category:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      parent:
+        type: string
+    type: object
   models.Product:
     properties:
       description:
@@ -243,6 +252,29 @@ paths:
       summary: UpdateCart
       tags:
       - Cart
+  /api/category/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get category tree
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Category tree
+          schema:
+            items:
+              $ref: '#/definitions/models.Category'
+            type: array
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: Category
+      tags:
+      - Category
   /api/products/{id}:
     get:
       consumes:
