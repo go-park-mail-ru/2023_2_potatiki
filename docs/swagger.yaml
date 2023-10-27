@@ -270,6 +270,44 @@ paths:
       summary: Product
       tags:
       - Products
+  /api/products/category:
+    get:
+      consumes:
+      - application/json
+      description: Get products by category
+      parameters:
+      - description: Category UUID
+        in: query
+        name: category_id
+        required: true
+        type: string
+      - description: Skip number of products
+        in: query
+        name: paging
+        type: integer
+      - description: Display number of products
+        in: query
+        name: count
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product info
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: Products
+      tags:
+      - Products
   /api/products/get_all:
     get:
       consumes:

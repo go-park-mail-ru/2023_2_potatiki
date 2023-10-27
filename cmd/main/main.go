@@ -156,15 +156,6 @@ func run() (err error) {
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 
-	products := r.PathPrefix("/products").Subrouter()
-	{
-		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).
-			Methods(http.MethodGet, http.MethodOptions)
-
-		products.HandleFunc("/get_all", productsHandler.Products).
-			Methods(http.MethodGet, http.MethodOptions)
-	}
-
 	users := r.PathPrefix("/users").Subrouter()
 	{
 		users.Handle("/update-photo", authMW(http.HandlerFunc(usersHandler.UpdatePhoto))).
@@ -172,6 +163,18 @@ func run() (err error) {
 
 		users.Handle("/update-info", authMW(http.HandlerFunc(usersHandler.UpdateInfo))).
 			Methods(http.MethodPost, http.MethodOptions)
+	}
+
+	products := r.PathPrefix("/products").Subrouter()
+	{
+		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		products.HandleFunc("/get_all", productsHandler.Products).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		products.HandleFunc("/category", productsHandler.Category).
+			Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	cart := r.PathPrefix("/cart").Subrouter()

@@ -12,9 +12,11 @@ import (
 type ProductsUsecase interface {
 	GetProduct(context.Context, uuid.UUID) (models.Product, error)
 	GetProducts(context.Context, int64, int64) ([]models.Product, error)
+	GetCategory(context.Context, uuid.UUID, int64, int64) ([]models.Product, error)
 }
 
 type ProductsRepo interface {
 	ReadProduct(context.Context, uuid.UUID) (models.Product, error)
 	ReadProducts(context.Context, int64, int64) ([]models.Product, error)
+	ReadCategory(context.Context, uuid.UUID, int64, int64) ([]models.Product, error)
 }

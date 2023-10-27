@@ -28,7 +28,7 @@ cover:
 test:
 	go test ./...
 
-done: lint test swag build_
+done: lint test swag run
 	git add .
 
 

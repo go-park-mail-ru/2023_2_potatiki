@@ -123,3 +123,68 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("got products", "len", len(products))
 	resp.JSON(w, http.StatusOK, products)
 }
+
+// @Summary	Products
+// @Tags Products
+// @Description	Get products by category
+// @Accept json
+// @Produce json
+// @Param category_id query string true "Category UUID"
+// @Param paging query int false "Skip number of products"
+// @Param count query int true "Display number of products"
+// @Success	200	{object} []models.Product "Product info"
+// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	429
+// @Router	/api/products/category [get]
+func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+	// count - обязателен
+	// paging - ситуативно(тот же offset)
+
+	var (
+		paging int64
+		count  int64
+		err    error
+	)
+	idStr := r.URL.Query().Get("count")
+	idProfile, err := uuid.Parse(idStr)
+	if err != nil {
+		h.log.Error("id is invalid", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
+		return
+	}
+
+	pagingStr := r.URL.Query().Get("paging")
+	if pagingStr != "" {
+		paging, err = strconv.ParseInt(pagingStr, 10, 64)
+		if err != nil {
+			h.log.Error("paging is invalid", sl.Err(err))
+			resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
+			return
+		}
+	}
+
+	countStr := r.URL.Query().Get("count")
+	count, err = strconv.ParseInt(countStr, 10, 64)
+	if err != nil {
+		h.log.Error("count is invalid", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
+		return
+	}
+
+	products, err := h.uc.GetCategory(r.Context(), idProfile, paging, count)
+	if err != nil {
+		h.log.Error("failed to get products by category", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.log.Debug("got products by category", "len", len(products))
+	resp.JSON(w, http.StatusOK, products)
+}
