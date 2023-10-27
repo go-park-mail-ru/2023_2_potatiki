@@ -1,4 +1,34 @@
 definitions:
+  models.Cart:
+    properties:
+      id:
+        type: string
+      isCurrent:
+        type: boolean
+      products:
+        items:
+          $ref: '#/definitions/models.CartProduct'
+        type: array
+      profileId:
+        type: string
+    type: object
+  models.CartProduct:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      img:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      quantity:
+        type: integer
+      rating:
+        type: number
+    type: object
   models.Product:
     properties:
       description:
@@ -164,6 +194,55 @@ paths:
       summary: SignUp
       tags:
       - Auth
+  /api/cart/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cart info
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: GetCart
+      tags:
+      - Cart
+  /api/cart/update:
+    post:
+      consumes:
+      - application/json
+      description: Update cart
+      parameters:
+      - description: cart info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Cart'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: cart info
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: UpdateCart
+      tags:
+      - Cart
   /api/products/{id}:
     get:
       consumes:
