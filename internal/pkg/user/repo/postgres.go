@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	profileExistsByID    = "SELECT Login, Description, ImgSrc FROM profile WHERE Id=$1;"
-	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM profile WHERE login=$1;"
-	addProfile           = "INSERT INTO profile(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
-	updateProfileInfo    = "UPDATE profile SET Description=$1, PasswordHash=$2 WHERE Id=$3;"
-	updateProfilePhoto   = "UPDATE profile SET imgsrc=$1 WHERE Id=$2;"
+	profileExistsByID    = "SELECT login, description, imgsrc FROM profile WHERE id=$1;"
+	profileExistsByLogin = "SELECT login, description, imgsrc, passwordhash FROM profile WHERE login=$1;"
+	addProfile           = "INSERT INTO profile(id, login, description, imgsrc, passwordhash) VALUES($1, $2, $3, $4, $5);"
+	updateProfileInfo    = "UPDATE profile SET description=$1, passwordhash=$2 WHERE id=$3;"
+	updateProfilePhoto   = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
 )
 
 var (

@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	getCategories = "SELECT * FROM category"
+	getCategories = "SELECT id, name, parent FROM category ORDER BY id"
 )
 
 var (
