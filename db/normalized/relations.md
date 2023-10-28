@@ -42,11 +42,11 @@
   -Неключевых аттрибутов нет, а любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
 - Таблица address
-  - {id} -> profile_id, city, street, house, flat, isCurrent
-  - {profile_id, city, street, house, flat} -> id, isCurrent
+  - {id} -> profile_id, city, street, house, flat, is_current
+  - {profile_id, city, street, house, flat} -> id, is_current
 
   -В данном отношении потенциальными ключами являются аттрибуты id и {profile_id, city, street, house, flat}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
-  -Неключевой аттрибут(isCurrent) зависит от ключей, что соответсвует 2НФ.\
+  -Неключевой аттрибут(is_current) зависит от ключей, что соответсвует 2НФ.\
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
@@ -127,8 +127,8 @@ erDiagram
     uuid profile_id FK
     uuid promocode_id FK
     text status
-    timestampz creationDate
-    timestampz deliveryDate
+    timestampz creation_at
+    timestampz delivery_at
   }
 
   ORDER_ITEM {
@@ -146,7 +146,7 @@ erDiagram
     text street
     text house
     text flat
-    bool isCurrent
+    bool is_current
   }
 
   CATEGORY {
@@ -158,7 +158,7 @@ erDiagram
   CART {
     uuid id PK
     uuid profile_id FK
-    bool isCurrent
+    bool is_current
   }
   
   SHOPPING_CART_ITEM {

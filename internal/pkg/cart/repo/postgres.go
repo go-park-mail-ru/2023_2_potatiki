@@ -12,11 +12,11 @@ import (
 )
 
 const (
-	getCart            = "SELECT id FROM cart WHERE ProfileId=$1 and isCurrent = true;"
-	createCart         = "INSERT INTO cart(Id, ProfileId, isCurrent) VALUES($1, $2, true);"
-	updateCartProducts = "UPDATE shopping_cart_item SET quantity=$3 WHERE cartId=$1 and productId=$2 and quantity<>$3;"
-	getProducts        = "SELECT p.Id , p.name_product, p.Description, p.Price, p.ImgSrc, p.Rating, sc.Quantity " +
-		"FROM shopping_cart_item sc JOIN product p ON sc.productId=p.id WHERE p.id=$1 and sc.quantity>0;"
+	getCart            = "SELECT id FROM cart WHERE Profile_id=$1 and is_current = true;"
+	createCart         = "INSERT INTO cart(id, profile_id, is_current) VALUES($1, $2, true);"
+	updateCartProducts = "UPDATE shopping_cart_item SET quantity=$3 WHERE cart_id=$1 and product_id=$2 and quantity<>$3;"
+	getProducts        = "SELECT p._id , p.name_product, p.Description, p.Price, p.ImgSrc, p.Rating, sc.Quantity " +
+		"FROM shopping_cart_item sc JOIN product p ON sc.product_id=p.id WHERE p.id=$1 and sc.quantity>0;"
 )
 
 var (
