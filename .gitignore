@@ -26,5 +26,3 @@ go.work
 *.tmp
 *.log
 *.sh
-.github/
-
