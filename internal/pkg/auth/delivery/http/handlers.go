@@ -9,11 +9,11 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/cookie"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 )
 
 type AuthHandler struct {
@@ -35,12 +35,13 @@ func NewAuthHandler(log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 // @Produce json
 // @Param input body models.User true "user info"
 // @Success	200	{object} models.Profile "User profile"
-// @Failure	400	{object} response.Response	"request body is empty"
+// @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
 // @Router	/api/auth/signin [post]
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 
 	body, err := io.ReadAll(r.Body)
@@ -70,7 +71,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
 
-	http.SetCookie(w, cookie.GetTokenCookie(cookie.AccessTokenCookieName, token, exp))
+	http.SetCookie(w, authmw.MakeTokenCookie(token, exp))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
@@ -81,12 +82,13 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body models.User true "user info"
 // @Success	200 {object} models.Profile "User profile"
-// @Failure	400	{object} response.Response	"request body is empty"
+// @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
 // @Router	/api/auth/signup [post]
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 
 	body, err := io.ReadAll(r.Body)
@@ -112,7 +114,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, cookie.GetTokenCookie(cookie.AccessTokenCookieName, token, exp))
+	http.SetCookie(w, authmw.MakeTokenCookie(token, exp))
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
 	resp.JSON(w, http.StatusOK, profile)
 }
@@ -123,9 +125,10 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Success	200
+// @Failure	401
 // @Router	/api/auth/logout [get]
 func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
-	http.SetCookie(w, cookie.GetTokenCookie(cookie.AccessTokenCookieName, "", time.Now().UTC().AddDate(0, 0, -1)))
+	http.SetCookie(w, authmw.MakeTokenCookie("", time.Now().UTC().AddDate(0, 0, -1)))
 	h.log.Info("logout")
 	resp.JSONStatus(w, http.StatusOK)
 }
@@ -143,9 +146,10 @@ func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 
-	id, ok := r.Context().Value(cookie.AccessTokenCookieName).(uuid.UUID)
+	id, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
 	if !ok {
 		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)
@@ -153,48 +157,4 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Info("check auth success", "id", id)
 	resp.JSONStatus(w, http.StatusOK)
-}
-
-// @Summary	GetProfile
-// @Tags Auth
-// @Description	Get user profile
-// @Accept json
-// @Produce json
-// @Param id path string true "Profile UUID"
-// @Success	200	{object} models.Profile "User profile"
-// @Failure	400	{object} response.Response	"invalid request"
-// @Failure	429
-// @Router	/api/auth/{id} [get]
-func (h *AuthHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
-	h.log = h.log.With(
-		slog.String("op", sl.GFN()),
-	)
-
-	vars := mux.Vars(r)
-	idStr, ok := vars["id"]
-	if !ok || idStr == "" {
-		h.log.Error("id is empty")
-		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
-
-		return
-	}
-	idProfile, err := uuid.Parse(idStr)
-	if err != nil {
-		h.log.Error("id is invalid", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
-
-		return
-	}
-
-	profile, err := h.uc.GetProfile(r.Context(), idProfile)
-
-	if err != nil {
-		h.log.Error("failed to signup", sl.Err(err))
-		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid uuid"))
-
-		return
-	}
-
-	h.log.Debug("got profile", slog.Any("profile", profile.Id))
-	resp.JSON(w, http.StatusOK, profile)
 }

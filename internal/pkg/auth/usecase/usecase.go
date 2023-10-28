@@ -8,15 +8,16 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
 	"github.com/google/uuid"
 )
 
 type AuthUsecase struct {
-	repo   auth.AuthRepo
+	repo   user.UserRepo
 	Auther auth.AuthAuther
 }
 
-func NewAuthUsecase(repo auth.AuthRepo, cfg auth.AuthConfig) *AuthUsecase {
+func NewAuthUsecase(repo user.UserRepo, cfg auth.AuthConfig) *AuthUsecase {
 	return &AuthUsecase{
 		repo:   repo,
 		Auther: NewAuther(cfg),
@@ -80,15 +81,4 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Pro
 	}
 
 	return profile, token, exp, nil
-}
-
-func (uc *AuthUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (models.Profile, error) {
-	profile, err := uc.repo.ReadProfile(ctx, userID)
-	if err != nil {
-		err = fmt.Errorf("error happened in repo.ReadProfile: %w", err)
-
-		return models.Profile{}, err
-	}
-
-	return profile, nil
 }

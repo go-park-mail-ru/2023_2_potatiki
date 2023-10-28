@@ -2,25 +2,87 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"fmt"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
-	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/jackc/pgtype/pgxtype"
 )
 
 const (
-	updateProfileInfo  = "UPDATE profile SET Description=$1, PasswordHash=$2 WHERE Id=$3;"
-	updateProfilePhoto = "UPDATE profile SET imgsrc=$1 WHERE Id=$2;"
+	profileExistsByID    = "SELECT Login, Description, ImgSrc FROM profile WHERE Id=$1;"
+	profileExistsByLogin = "SELECT Id, Description, ImgSrc, PasswordHash FROM profile WHERE login=$1;"
+	addProfile           = "INSERT INTO profile(Id, Login, Description, ImgSrc, PasswordHash) VALUES($1, $2, $3, $4, $5);"
+	updateProfileInfo    = "UPDATE profile SET Description=$1, PasswordHash=$2 WHERE Id=$3;"
+	updateProfilePhoto   = "UPDATE profile SET imgsrc=$1 WHERE Id=$2;"
+)
+
+var (
+	ErrInvalidPass = errors.New("invalid pass")
 )
 
 type UserRepo struct {
-	db *pgxpool.Pool
+	db pgxtype.Querier
 }
 
-func NewUserRepo(db *pgxpool.Pool) *UserRepo {
+func NewUserRepo(db pgxtype.Querier) *UserRepo {
 	return &UserRepo{
 		db: db,
 	}
+}
+
+func (r *UserRepo) CreateUser(ctx context.Context, user models.User) (models.Profile, error) {
+	profileID := uuid.New()
+	_, err := r.db.Exec(ctx, addProfile,
+		profileID, user.Login, "", "default.png", user.PasswordHash)
+	if err != nil { // !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
+		err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+		return models.Profile{}, err
+	}
+
+	profile := models.Profile{
+		Id:          profileID,
+		Login:       user.Login,
+		Description: "",
+		ImgSrc:      "default.png",
+	}
+
+	return profile, nil
+}
+
+func (r *UserRepo) CheckUser(ctx context.Context, user models.User) (models.Profile, error) {
+	row := r.db.QueryRow(ctx, profileExistsByLogin, user.Login)
+	pr := models.Profile{
+		Login: user.Login,
+	}
+	var userPasswordHash string
+	if err := row.Scan(&pr.Id, &pr.Description, &pr.ImgSrc, &userPasswordHash); err != nil {
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
+
+		return models.Profile{}, err
+	}
+
+	if userPasswordHash == user.PasswordHash {
+		return pr, nil
+	}
+
+	return models.Profile{}, ErrInvalidPass
+}
+
+func (r *UserRepo) ReadProfile(ctx context.Context, userID uuid.UUID) (models.Profile, error) {
+	row := r.db.QueryRow(ctx, profileExistsByID, userID)
+	pr := models.Profile{
+		Id: userID,
+	}
+	if err := row.Scan(&pr.Login, &pr.Description, &pr.ImgSrc); err != nil {
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
+
+		return models.Profile{}, err
+	}
+
+	return pr, nil
 }
 
 func (r *UserRepo) UpdatePhoto(ctx context.Context, userID uuid.UUID, photoName string) error {

@@ -71,6 +71,9 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 }
             }
@@ -107,7 +110,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "request body is empty",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -150,48 +153,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "request body is empty",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
-                    },
-                    "429": {
-                        "description": "Too Many Requests"
-                    }
-                }
-            }
-        },
-        "/api/auth/{id}": {
-            "get": {
-                "description": "Get user profile",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Auth"
-                ],
-                "summary": "GetProfile",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Profile UUID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User profile",
-                        "schema": {
-                            "$ref": "#/definitions/models.Profile"
-                        }
-                    },
-                    "400": {
-                        "description": "invalid request",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -222,11 +184,8 @@ const docTemplate = `{
                             "$ref": "#/definitions/models.Cart"
                         }
                     },
-                    "400": {
-                        "description": "invalid request",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
-                        }
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -266,10 +225,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "invalid request",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -298,12 +260,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/models.Category"
                             }
-                        }
-                    },
-                    "400": {
-                        "description": "invalid request",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
                         }
                     },
                     "429": {
@@ -358,7 +314,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "invalid request",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -408,7 +364,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "invalid request",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -446,6 +402,132 @@ const docTemplate = `{
                         "description": "Product info",
                         "schema": {
                             "$ref": "#/definitions/models.Product"
+                        }
+                    },
+                    "400": {
+                        "description": "error messege",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/user/update-info/{id}": {
+            "get": {
+                "description": "Update user data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "UpdateInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Profile UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.Profile"
+                        }
+                    },
+                    "400": {
+                        "description": "error messege",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/user/update-photo/{id}": {
+            "post": {
+                "description": "Update user photo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "UpdatePhoto",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Profile UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.Profile"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/user/{id}": {
+            "get": {
+                "description": "Get user profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "GetProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Profile UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.Profile"
                         }
                     },
                     "400": {

@@ -61,7 +61,7 @@ func BodyErr(err error, log *slog.Logger, w http.ResponseWriter) bool {
 			return true
 		}
 		log.Error("failed to decode request body", sl.Err(err))
-		JSONStatus(w, http.StatusBadRequest)
+		JSON(w, http.StatusBadRequest, Err("invalid request body"))
 
 		return true
 	}

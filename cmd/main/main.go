@@ -18,11 +18,12 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
-	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
 	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
@@ -101,13 +102,12 @@ func run() (err error) {
 	//
 	//
 	// ============================Init layers============================ //
-	authRepo := authRepo.NewAuthRepo(db)
-	authUsecase := authUsecase.NewAuthUsecase(authRepo, cfg.Auther)
-	authHandler := authHandler.NewAuthHandler(log, authUsecase)
-
 	usersRepo := userRepo.NewUserRepo(db)
-	usersUsecase := userUsecase.NewUserUsecase(usersRepo, authRepo, log)
-	usersHandler := userHandler.NewUserHandler(usersUsecase, log)
+	usersUsecase := userUsecase.NewUserUsecase(log, usersRepo)
+	usersHandler := userHandler.NewUserHandler(log, usersUsecase)
+
+	authUsecase := authUsecase.NewAuthUsecase(usersRepo, cfg.Auther)
+	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
 	cartRepo := cartRepo.NewCartRepo(db)
 	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
@@ -127,7 +127,7 @@ func run() (err error) {
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
-	r.Use(middleware.CORSMiddleware)
+	r.Use(middleware.CORSMiddleware, logmw.New(log))
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
@@ -142,7 +142,7 @@ func run() (err error) {
 	//
 	//
 	// ============================Setup endpoints============================ //
-	authMW := middleware.Authenticate(log, authUsecase.Auther)
+	authMW := authmw.New(log, authUsecase.Auther)
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
 		auth.HandleFunc("/signup", authHandler.SignUp).
@@ -156,13 +156,13 @@ func run() (err error) {
 
 		auth.Handle("/check_auth", authMW(http.HandlerFunc(authHandler.CheckAuth))).
 			Methods(http.MethodGet, http.MethodOptions)
-
-		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).
-			Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	users := r.PathPrefix("/users").Subrouter()
 	{
+		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", usersHandler.GetProfile).
+			Methods(http.MethodGet, http.MethodOptions)
+
 		users.Handle("/update-photo", authMW(http.HandlerFunc(usersHandler.UpdatePhoto))).
 			Methods(http.MethodPost, http.MethodOptions)
 

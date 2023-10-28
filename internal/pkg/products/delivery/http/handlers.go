@@ -6,6 +6,7 @@ import (
 
 	"log/slog"
 
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
@@ -32,12 +33,13 @@ func NewProductsHandler(log *slog.Logger, uc products.ProductsUsecase) ProductHa
 // @Produce json
 // @Param id path string true "Product UUID"
 // @Success	200	{object} models.Product "Product info"
-// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
 // @Router	/api/products/{id} [get]
 func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 
 	vars := mux.Vars(r)
@@ -77,12 +79,13 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
 // @Success	200	{object} []models.Product "Product info"
-// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
 // @Router	/api/products/get_all [get]
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 	// count - обязателен
 	// paging - ситуативно(тот же offset)
@@ -133,12 +136,13 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
 // @Success	200	{object} []models.Product "Product info"
-// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
 // @Router	/api/products/category [get]
 func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 	// count - обязателен
 	// paging - ситуативно(тот же offset)

@@ -4,20 +4,26 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
-	"github.com/google/uuid"
 	"log/slog"
 	"os"
 	"slices"
 	"strings"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
+	"github.com/google/uuid"
 )
 
 type UserUsecase struct {
-	log      *slog.Logger
-	repoUser user.UserRepo
-	repoAuth auth.AuthRepo
+	log  *slog.Logger
+	repo user.UserRepo
+}
+
+func NewUserUsecase(log *slog.Logger, repo user.UserRepo) *UserUsecase {
+	return &UserUsecase{
+		log:  log,
+		repo: repo,
+	}
 }
 
 var (
@@ -27,12 +33,15 @@ var (
 
 // TODO: nginx path from env to save imgs
 
-func NewUserUsecase(repoUser user.UserRepo, repoAuth auth.AuthRepo, log *slog.Logger) *UserUsecase {
-	return &UserUsecase{
-		log:      log,
-		repoUser: repoUser,
-		repoAuth: repoAuth,
+func (uc *UserUsecase) GetProfile(ctx context.Context, userID uuid.UUID) (models.Profile, error) {
+	profile, err := uc.repo.ReadProfile(ctx, userID)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.ReadProfile: %w", err)
+
+		return models.Profile{}, err
 	}
+
+	return profile, nil
 }
 
 func (uc *UserUsecase) UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) error {
@@ -58,7 +67,7 @@ func (uc *UserUsecase) UpdatePhoto(ctx context.Context, userID uuid.UUID, filePh
 		return err
 	}
 
-	err = uc.repoUser.UpdatePhoto(ctx, userID, photoName)
+	err = uc.repo.UpdatePhoto(ctx, userID, photoName)
 	if err != nil {
 		err = fmt.Errorf("error happened in repoUser.UpdatePhoto: %w", err)
 
@@ -87,7 +96,7 @@ func (uc *UserUsecase) UpdateInfo(ctx context.Context, userID uuid.UUID, profile
 		return err
 	}
 
-	profile, err := uc.repoAuth.CheckUser(ctx, profileInfo.User)
+	profile, err := uc.repo.CheckUser(ctx, profileInfo.User)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.CheckUser: %w", err)
 
@@ -104,7 +113,7 @@ func (uc *UserUsecase) UpdateInfo(ctx context.Context, userID uuid.UUID, profile
 		return err
 	}
 
-	err = uc.repoUser.UpdateInfo(ctx, userID, profileInfo.UserInfo)
+	err = uc.repo.UpdateInfo(ctx, userID, profileInfo.UserInfo)
 	if err != nil {
 		err = fmt.Errorf("error happened in repoUser.UpdateInfo: %w", err)
 

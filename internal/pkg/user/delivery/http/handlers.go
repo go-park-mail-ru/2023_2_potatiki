@@ -3,15 +3,18 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/cookie"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
-	"github.com/google/uuid"
 	"io"
 	"log/slog"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 )
 
 const maxRequestBodySize = 1024 * 1024 * 5 // 5 MB
@@ -21,18 +24,75 @@ type UserHandler struct {
 	uc  user.UserUsecase
 }
 
-func NewUserHandler(uc user.UserUsecase, log *slog.Logger) *UserHandler {
+func NewUserHandler(log *slog.Logger, uc user.UserUsecase) *UserHandler {
 	return &UserHandler{
 		log: log,
 		uc:  uc,
 	}
 }
 
+// @Summary	GetProfile
+// @Tags User
+// @Description	Get user profile
+// @Accept json
+// @Produce json
+// @Param id path string true "Profile UUID"
+// @Success	200	{object} models.Profile "User profile"
+// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	429
+// @Router	/api/user/{id} [get]
+func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
+	)
+
+	vars := mux.Vars(r)
+	idStr, ok := vars["id"]
+	if !ok || idStr == "" {
+		h.log.Error("id is empty")
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
+		return
+	}
+	idProfile, err := uuid.Parse(idStr)
+	if err != nil {
+		h.log.Error("id is invalid", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
+		return
+	}
+
+	profile, err := h.uc.GetProfile(r.Context(), idProfile)
+
+	if err != nil {
+		h.log.Error("failed to signup", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid uuid"))
+
+		return
+	}
+
+	h.log.Debug("got profile", slog.Any("profile", profile.Id))
+	resp.JSON(w, http.StatusOK, profile)
+}
+
+// @Summary	UpdatePhoto
+// @Tags User
+// @Description	Update user photo
+// @Accept json
+// @Produce json
+// @Param id path string true "Profile UUID"
+// @Success	200	{object} models.Profile "User profile"
+// @Failure	401
+// @Failure 413
+// @Failure	429
+// @Router	/api/user/update-photo/{id} [post]
 func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
-	ID, ok := r.Context().Value(cookie.AccessTokenCookieName).(uuid.UUID)
+	ID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
 	if !ok {
 		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)
@@ -68,12 +128,24 @@ func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	resp.JSONStatus(w, http.StatusOK)
 }
 
+// @Summary	UpdateInfo
+// @Tags User
+// @Description	Update user data
+// @Accept json
+// @Produce json
+// @Param id path string true "Profile UUID"
+// @Success	200	{object} models.Profile "User profile"
+// @Failure	400	{object} response.Response	"error messege"
+// @Failure	401
+// @Failure	429
+// @Router	/api/user/update-info/{id} [get]
 func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 
-	id, ok := r.Context().Value(cookie.AccessTokenCookieName).(uuid.UUID)
+	id, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
 	if !ok {
 		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)

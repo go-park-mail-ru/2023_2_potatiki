@@ -8,7 +8,8 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/cookie"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
@@ -33,14 +34,16 @@ func NewCartHandler(log *slog.Logger, uc cart.CartUsecase) CartHandler {
 // @Produce json
 // @Param input body models.Cart true "cart info"
 // @Success	200	{object} models.Cart "cart info"
-// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	400	{object} response.Response	"error messege"
+// @Failure	401
 // @Failure	429
 // @Router	/api/cart/update [post]
 func (h *CartHandler) UpdateCart(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
-	userID, ok := r.Context().Value(cookie.AccessTokenCookieName).(uuid.UUID)
+	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
 	if !ok {
 		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)
@@ -83,15 +86,16 @@ func (h *CartHandler) UpdateCart(w http.ResponseWriter, r *http.Request) {
 // @Accept json
 // @Produce json
 // @Success	200	{object} models.Cart "Cart info"
-// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	401
 // @Failure	429
 // @Router	/api/cart/summary [get]
 func (h *CartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 
-	userID, ok := r.Context().Value(cookie.AccessTokenCookieName).(uuid.UUID)
+	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
 	if !ok {
 		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)
