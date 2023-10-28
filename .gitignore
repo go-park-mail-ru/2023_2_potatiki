@@ -25,3 +25,6 @@ go.work
 *.bin
 *.tmp
 *.log
+*.sh
+.github/
+

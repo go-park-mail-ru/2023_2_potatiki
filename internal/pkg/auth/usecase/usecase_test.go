@@ -3,12 +3,14 @@ package usecase
 import (
 	"context"
 	"errors"
-	"github.com/stretchr/testify/assert"
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
+	mockAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
+	mockUser "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/mocks"
 	"github.com/golang/mock/gomock"
 )
 
@@ -16,8 +18,8 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	repo := mock.NewMockAuthRepo(ctrl)
-	cfg := mock.NewMockAuthConfig(ctrl)
+	repo := mockUser.NewMockUserRepo(ctrl)
+	cfg := mockAuth.NewMockAuthConfig(ctrl)
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
@@ -40,8 +42,8 @@ func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	repo := mock.NewMockAuthRepo(ctrl)
-	cfg := mock.NewMockAuthConfig(ctrl)
+	repo := mockUser.NewMockUserRepo(ctrl)
+	cfg := mockAuth.NewMockAuthConfig(ctrl)
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
@@ -65,8 +67,8 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	repo := mock.NewMockAuthRepo(ctrl)
-	cfg := mock.NewMockAuthConfig(ctrl)
+	repo := mockUser.NewMockUserRepo(ctrl)
+	cfg := mockAuth.NewMockAuthConfig(ctrl)
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
@@ -89,8 +91,8 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	repo := mock.NewMockAuthRepo(ctrl)
-	cfg := mock.NewMockAuthConfig(ctrl)
+	repo := mockUser.NewMockUserRepo(ctrl)
+	cfg := mockAuth.NewMockAuthConfig(ctrl)
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 

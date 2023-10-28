@@ -6,19 +6,29 @@ compose:
 build_:
 	go build -o ./.bin cmd/main/main.go
 
+run: build_
+	./.bin
+
+rund: build_
+	./.bin &
+
+lint:
+	golangci-lint run
+
 swag:
 	swag init -g ./cmd/main/main.go
 	
-test:
+cover:
 	go test -json ./... -coverprofile coverprofile_.tmp -coverpkg=./... ; \
 	cat coverprofile_.tmp | grep -v _mock.go > coverprofile.tmp ; \
 	rm coverprofile_.tmp ; \
 	go tool cover -html coverprofile.tmp ; \
 	go tool cover -func coverprofile.tmp
 
-run: build_
-	./.bin
+test:
+	go test ./...
 
-rund: build_
-	./.bin &
+done: lint test swag run
+	git add .
+
 

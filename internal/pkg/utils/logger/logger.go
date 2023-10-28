@@ -17,12 +17,14 @@ const (
 
 func Set(env string, logOutput *os.File) *slog.Logger { // check logFile
 	var log *slog.Logger
+
 	var w io.Writer
 	if logOutput == nil {
 		w = os.Stdout
 	} else {
 		w = io.MultiWriter(os.Stdout, logOutput)
 	}
+
 	switch env {
 	case envLocal:
 		log = setupPrettySlog()

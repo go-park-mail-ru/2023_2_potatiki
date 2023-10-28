@@ -71,6 +71,9 @@ const docTemplate = `{
                 "responses": {
                     "200": {
                         "description": "OK"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
                     }
                 }
             }
@@ -107,7 +110,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "request body is empty",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -150,7 +153,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "request body is empty",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -161,9 +164,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/auth/{id}": {
+        "/api/cart/summary": {
             "get": {
-                "description": "Get user profile",
+                "description": "Get cart",
                 "consumes": [
                     "application/json"
                 ],
@@ -171,27 +174,147 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Auth"
+                    "Cart"
                 ],
-                "summary": "GetProfile",
+                "summary": "GetCart",
+                "responses": {
+                    "200": {
+                        "description": "Cart info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Cart"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/cart/update": {
+            "post": {
+                "description": "Update cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "UpdateCart",
+                "parameters": [
+                    {
+                        "description": "cart info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Cart"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "cart info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Cart"
+                        }
+                    },
+                    "400": {
+                        "description": "error messege",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/category/get_all": {
+            "get": {
+                "description": "Get category tree",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Category"
+                ],
+                "summary": "Category",
+                "responses": {
+                    "200": {
+                        "description": "Category tree",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Category"
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/products/category": {
+            "get": {
+                "description": "Get products by category",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Products",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Profile UUID",
-                        "name": "id",
-                        "in": "path",
+                        "description": "Category UUID",
+                        "name": "category_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Skip number of products",
+                        "name": "paging",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Display number of products",
+                        "name": "count",
+                        "in": "query",
                         "required": true
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User profile",
+                        "description": "Product info",
                         "schema": {
-                            "$ref": "#/definitions/models.Profile"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
                         }
                     },
                     "400": {
-                        "description": "invalid request",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -241,7 +364,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "invalid request",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -282,6 +405,132 @@ const docTemplate = `{
                         }
                     },
                     "400": {
+                        "description": "error messege",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/user/update-info/{id}": {
+            "get": {
+                "description": "Update user data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "UpdateInfo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Profile UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.Profile"
+                        }
+                    },
+                    "400": {
+                        "description": "error messege",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/user/update-photo/{id}": {
+            "post": {
+                "description": "Update user photo",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "UpdatePhoto",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Profile UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.Profile"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "413": {
+                        "description": "Request Entity Too Large"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/user/{id}": {
+            "get": {
+                "description": "Get user profile",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "User"
+                ],
+                "summary": "GetProfile",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Profile UUID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.Profile"
+                        }
+                    },
+                    "400": {
                         "description": "invalid request",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
@@ -295,6 +544,66 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Cart": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "isCurrent": {
+                    "type": "boolean"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CartProduct"
+                    }
+                },
+                "profileId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CartProduct": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "img": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
+                }
+            }
+        },
+        "models.Category": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parent": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Product": {
             "type": "object",
             "properties": {

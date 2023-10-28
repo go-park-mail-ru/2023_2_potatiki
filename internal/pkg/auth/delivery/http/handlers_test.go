@@ -1,7 +1,7 @@
 package http
 
 import (
-	"errors"
+	"context"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/gorilla/mux"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
@@ -102,14 +102,11 @@ func TestCheckAuth(t *testing.T) {
 	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
-	uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.New(), nil)
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-	cookie := &http.Cookie{
-		Name:  AccessTokenCookieName,
-		Value: "token",
-	}
-	req.AddCookie(cookie)
+
+	ctx := context.WithValue(req.Context(), authmw.AccessTokenCookieName, uuid.New())
+	req = req.WithContext(ctx)
 
 	w := httptest.NewRecorder()
 	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
@@ -135,60 +132,12 @@ func TestCheckAuthBad(t *testing.T) {
 		uc := mock.NewMockAuthUsecase(ctrl)
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req.AddCookie(&http.Cookie{
-			Name:  AccessTokenCookieName,
+			Name:  authmw.AccessTokenCookieName,
 			Value: "invalidTokenValue",
 		})
-		uc.EXPECT().CheckToken(gomock.Any(), gomock.Any()).Return(uuid.UUID{}, errors.New("invalidTokenValue"))
 		w := httptest.NewRecorder()
 		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
 		AuthHandler.CheckAuth(w, req)
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
-	})
-}
-
-func TestGetProfile(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	uc := mock.NewMockAuthUsecase(ctrl)
-	idProfile := uuid.New()
-
-	uc.EXPECT().GetProfile(gomock.Any(), idProfile).Return(models.Profile{}, nil)
-
-	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-	req = mux.SetURLVars(req, map[string]string{"id": idProfile.String()})
-	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
-	AuthHandler.GetProfile(w, req)
-
-	assert.Equal(t, http.StatusOK, w.Code)
-}
-
-func TestGetProfileBad(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	t.Run("EmptyID", func(t *testing.T) {
-		uc := mock.NewMockAuthUsecase(ctrl)
-		idProfile := uuid.New()
-		uc.EXPECT().GetProfile(gomock.Any(), idProfile).Return(models.Profile{}, errors.New("invalidProfile"))
-
-		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-		req = mux.SetURLVars(req, map[string]string{"id": idProfile.String()})
-		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
-		AuthHandler.GetProfile(w, req)
-		assert.Equal(t, http.StatusBadRequest, w.Code)
-	})
-
-	t.Run("InvalidID", func(t *testing.T) {
-		uc := mock.NewMockAuthUsecase(ctrl)
-
-		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-		req = mux.SetURLVars(req, map[string]string{"id": "invalidID"})
-		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
-		AuthHandler.GetProfile(w, req)
-		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 }

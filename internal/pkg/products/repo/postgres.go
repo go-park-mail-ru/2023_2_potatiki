@@ -5,15 +5,15 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v5"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
+	"github.com/jackc/pgtype/pgxtype"
 )
 
 const (
-	getProduct  = "SELECT * FROM product WHERE id=$1;"
-	getProducts = "SELECT Id , NameProduct, Description, Price, ImgSrc, Rating " +
+	getProduct  = "SELECT id, name, description, price, imgsrc, rating FROM product WHERE id=$1;"
+	getProducts = "SELECT id, name, description, price, imgsrc, rating " +
 		"FROM product ORDER BY id LIMIT $1 OFFSET $2"
 )
 
@@ -22,10 +22,10 @@ var (
 )
 
 type ProductsRepo struct {
-	db *pgx.Conn // TODO: add logger
+	db pgxtype.Querier // TODO: add logger
 }
 
-func NewProductsRepo(db *pgx.Conn) *ProductsRepo {
+func NewProductsRepo(db pgxtype.Querier) *ProductsRepo {
 	return &ProductsRepo{
 		db: db,
 	}
@@ -50,6 +50,32 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int64) ([]models.Product, error) {
 	var productSlice []models.Product
 	rows, err := r.db.Query(ctx, getProducts, count, paging)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return []models.Product{}, ErrPoductNotFound
+		}
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.ImgSrc, &product.Rating)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadCategory(ctx context.Context, id uuid.UUID, paging, count int64) ([]models.Product, error) {
+	var productSlice []models.Product
+	rows, err := r.db.Query(ctx, getProducts, id, count, paging)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return []models.Product{}, ErrPoductNotFound

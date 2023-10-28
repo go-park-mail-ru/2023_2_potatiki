@@ -52,21 +52,6 @@ func (mr *MockAuthUsecaseMockRecorder) CheckToken(arg0, arg1 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckToken", reflect.TypeOf((*MockAuthUsecase)(nil).CheckToken), arg0, arg1)
 }
 
-// GetProfile mocks base method.
-func (m *MockAuthUsecase) GetProfile(arg0 context.Context, arg1 uuid.UUID) (models.Profile, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetProfile", arg0, arg1)
-	ret0, _ := ret[0].(models.Profile)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetProfile indicates an expected call of GetProfile.
-func (mr *MockAuthUsecaseMockRecorder) GetProfile(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProfile", reflect.TypeOf((*MockAuthUsecase)(nil).GetProfile), arg0, arg1)
-}
-
 // SignIn mocks base method.
 func (m *MockAuthUsecase) SignIn(arg0 context.Context, arg1 models.User) (models.Profile, string, time.Time, error) {
 	m.ctrl.T.Helper()
@@ -99,74 +84,6 @@ func (m *MockAuthUsecase) SignUp(arg0 context.Context, arg1 models.User) (models
 func (mr *MockAuthUsecaseMockRecorder) SignUp(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockAuthUsecase)(nil).SignUp), arg0, arg1)
-}
-
-// MockAuthRepo is a mock of AuthRepo interface.
-type MockAuthRepo struct {
-	ctrl     *gomock.Controller
-	recorder *MockAuthRepoMockRecorder
-}
-
-// MockAuthRepoMockRecorder is the mock recorder for MockAuthRepo.
-type MockAuthRepoMockRecorder struct {
-	mock *MockAuthRepo
-}
-
-// NewMockAuthRepo creates a new mock instance.
-func NewMockAuthRepo(ctrl *gomock.Controller) *MockAuthRepo {
-	mock := &MockAuthRepo{ctrl: ctrl}
-	mock.recorder = &MockAuthRepoMockRecorder{mock}
-	return mock
-}
-
-// EXPECT returns an object that allows the caller to indicate expected use.
-func (m *MockAuthRepo) EXPECT() *MockAuthRepoMockRecorder {
-	return m.recorder
-}
-
-// CheckUser mocks base method.
-func (m *MockAuthRepo) CheckUser(arg0 context.Context, arg1 models.User) (models.Profile, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckUser", arg0, arg1)
-	ret0, _ := ret[0].(models.Profile)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CheckUser indicates an expected call of CheckUser.
-func (mr *MockAuthRepoMockRecorder) CheckUser(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUser", reflect.TypeOf((*MockAuthRepo)(nil).CheckUser), arg0, arg1)
-}
-
-// CreateUser mocks base method.
-func (m *MockAuthRepo) CreateUser(arg0 context.Context, arg1 models.User) (models.Profile, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateUser", arg0, arg1)
-	ret0, _ := ret[0].(models.Profile)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CreateUser indicates an expected call of CreateUser.
-func (mr *MockAuthRepoMockRecorder) CreateUser(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockAuthRepo)(nil).CreateUser), arg0, arg1)
-}
-
-// ReadProfile mocks base method.
-func (m *MockAuthRepo) ReadProfile(arg0 context.Context, arg1 uuid.UUID) (models.Profile, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadProfile", arg0, arg1)
-	ret0, _ := ret[0].(models.Profile)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadProfile indicates an expected call of ReadProfile.
-func (mr *MockAuthRepoMockRecorder) ReadProfile(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProfile", reflect.TypeOf((*MockAuthRepo)(nil).ReadProfile), arg0, arg1)
 }
 
 // MockAuthAuther is a mock of AuthAuther interface.

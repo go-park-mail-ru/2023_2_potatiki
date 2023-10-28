@@ -1,4 +1,43 @@
 definitions:
+  models.Cart:
+    properties:
+      id:
+        type: string
+      isCurrent:
+        type: boolean
+      products:
+        items:
+          $ref: '#/definitions/models.CartProduct'
+        type: array
+      profileId:
+        type: string
+    type: object
+  models.CartProduct:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      img:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      quantity:
+        type: integer
+      rating:
+        type: number
+    type: object
+  models.Category:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      parent:
+        type: string
+    type: object
   models.Product:
     properties:
       description:
@@ -45,33 +84,6 @@ info:
   description: API server for ZuZu.
   title: ZuZu Backend API
 paths:
-  /api/auth/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get user profile
-      parameters:
-      - description: Profile UUID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User profile
-          schema:
-            $ref: '#/definitions/models.Profile'
-        "400":
-          description: invalid request
-          schema:
-            $ref: '#/definitions/response.Response'
-        "429":
-          description: Too Many Requests
-      summary: GetProfile
-      tags:
-      - Auth
   /api/auth/check_auth:
     get:
       consumes:
@@ -105,6 +117,8 @@ paths:
       responses:
         "200":
           description: OK
+        "401":
+          description: Unauthorized
       summary: Logout
       tags:
       - Auth
@@ -128,7 +142,7 @@ paths:
           schema:
             $ref: '#/definitions/models.Profile'
         "400":
-          description: request body is empty
+          description: error messege
           schema:
             $ref: '#/definitions/response.Response'
         "429":
@@ -156,7 +170,7 @@ paths:
           schema:
             $ref: '#/definitions/models.Profile'
         "400":
-          description: request body is empty
+          description: error messege
           schema:
             $ref: '#/definitions/response.Response'
         "429":
@@ -164,6 +178,74 @@ paths:
       summary: SignUp
       tags:
       - Auth
+  /api/cart/summary:
+    get:
+      consumes:
+      - application/json
+      description: Get cart
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Cart info
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+      summary: GetCart
+      tags:
+      - Cart
+  /api/cart/update:
+    post:
+      consumes:
+      - application/json
+      description: Update cart
+      parameters:
+      - description: cart info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Cart'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: cart info
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "400":
+          description: error messege
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+      summary: UpdateCart
+      tags:
+      - Cart
+  /api/category/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get category tree
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Category tree
+          schema:
+            items:
+              $ref: '#/definitions/models.Category'
+            type: array
+        "429":
+          description: Too Many Requests
+      summary: Category
+      tags:
+      - Category
   /api/products/{id}:
     get:
       consumes:
@@ -183,12 +265,50 @@ paths:
           schema:
             $ref: '#/definitions/models.Product'
         "400":
-          description: invalid request
+          description: error messege
           schema:
             $ref: '#/definitions/response.Response'
         "429":
           description: Too Many Requests
       summary: Product
+      tags:
+      - Products
+  /api/products/category:
+    get:
+      consumes:
+      - application/json
+      description: Get products by category
+      parameters:
+      - description: Category UUID
+        in: query
+        name: category_id
+        required: true
+        type: string
+      - description: Skip number of products
+        in: query
+        name: paging
+        type: integer
+      - description: Display number of products
+        in: query
+        name: count
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Product info
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "400":
+          description: error messege
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: Products
       tags:
       - Products
   /api/products/get_all:
@@ -216,7 +336,7 @@ paths:
               $ref: '#/definitions/models.Product'
             type: array
         "400":
-          description: invalid request
+          description: error messege
           schema:
             $ref: '#/definitions/response.Response'
         "429":
@@ -224,4 +344,87 @@ paths:
       summary: Products
       tags:
       - Products
+  /api/user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get user profile
+      parameters:
+      - description: Profile UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            $ref: '#/definitions/models.Profile'
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: GetProfile
+      tags:
+      - User
+  /api/user/update-info/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Update user data
+      parameters:
+      - description: Profile UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            $ref: '#/definitions/models.Profile'
+        "400":
+          description: error messege
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+      summary: UpdateInfo
+      tags:
+      - User
+  /api/user/update-photo/{id}:
+    post:
+      consumes:
+      - application/json
+      description: Update user photo
+      parameters:
+      - description: Profile UUID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            $ref: '#/definitions/models.Profile'
+        "401":
+          description: Unauthorized
+        "413":
+          description: Request Entity Too Large
+        "429":
+          description: Too Many Requests
+      summary: UpdatePhoto
+      tags:
+      - User
 swagger: "2.0"

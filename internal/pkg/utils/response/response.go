@@ -2,8 +2,13 @@ package response
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
+	"log/slog"
 	"net/http"
 	"strconv"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 )
 
 const (
@@ -45,4 +50,22 @@ func JSONStatus(w http.ResponseWriter, status int) {
 	if _, err := w.Write([]byte("{}")); err != nil { // del
 		return // TODO: handle error
 	}
+}
+
+func BodyErr(err error, log *slog.Logger, w http.ResponseWriter) bool {
+	if err != nil {
+		if errors.Is(err, io.EOF) {
+			log.Error("request body is empty")
+			JSON(w, http.StatusBadRequest, Err("request body is empty"))
+
+			return true
+		}
+		log.Error("failed to decode request body", sl.Err(err))
+		JSON(w, http.StatusBadRequest, Err("invalid request body"))
+
+		return true
+	}
+	log.Debug("request body decoded")
+
+	return false
 }

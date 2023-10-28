@@ -11,24 +11,32 @@ import (
 	"syscall"
 	"time"
 
+	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	"github.com/gorilla/mux"
+	"github.com/jackc/pgx/v4/pgxpool"
+	httpSwagger "github.com/swaggo/http-swagger"
 
-	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
-	authRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/repo"
-	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
-	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
-	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
-	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
-	_ "github.com/lib/pq"
-
-	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
-	"github.com/jackc/pgx/v5"
-	httpSwagger "github.com/swaggo/http-swagger"
+	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
+	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
+	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
+	cartUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/usecase"
+	categoryHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/delivery/http"
+	categoryRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/repo"
+	categoryUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/usecase"
+	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
+	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
+	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
+	userHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/delivery/http"
+	userRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/repo"
+	userUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/usecase"
 )
 
 // @title ZuZu Backend API
@@ -47,33 +55,30 @@ func main() {
 }
 
 func run() (err error) {
-	// host localhost:8082
-	// BasePath /api
-	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme
+	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme.
 
-	logFile, err := os.OpenFile("/var/log/potatiki.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
+	logFile, err := os.OpenFile(cfg.LogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
-		fmt.Println("fail open logFile", sl.Err(err)) // TODO: take file path from conf and if nil - logFile = nil
-	}
-	log := logger.Set(cfg.Enviroment, logFile)
+		fmt.Println("fail open logFile", sl.Err(err))
+		err = fmt.Errorf("fail open logFile: %w", err)
 
-	defer func(logFile *os.File) {
-		err = logFile.Close()
-		if err != nil {
-			// TODO: implement
-		}
-	}(logFile)
+		return err
+	}
+	defer func() { err = errors.Join(err, logFile.Close()) }()
+
+	log := logger.Set(cfg.Enviroment, logFile)
 
 	log.Info(
 		"starting zuzu-main",
 		slog.String("env", cfg.Enviroment),
+		slog.String("addr", cfg.Address),
 	)
 	log.Debug("debug messages are enabled")
 
 	// ============================Database============================ //
 	//nolint:lll
 	// docker run --name zuzu-postgres -v zuzu-db-data:/var/lib/postgresql/data -v -e 'PGDATA:/var/lib/postgresql/data/pgdata' './build/sql/injection_db.sql:/docker-entrypoint-initdb.d/init.sql' -p 8079:5432 --env-file .env --restart always postgres:latest
-	db, err := pgx.Connect(context.Background(), fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
+	db, err := pgxpool.Connect(context.Background(), fmt.Sprintf("postgres://%v:%v@%v:%v/%v?sslmode=disable",
 		cfg.DBUser,
 		cfg.DBPass,
 		cfg.DBHost,
@@ -85,12 +90,10 @@ func run() (err error) {
 
 		return err
 	}
-	defer func(db *pgx.Conn) {
-		err = errors.Join(err, db.Close(context.Background()))
-	}(db)
+	defer db.Close()
 
 	if err = db.Ping(context.Background()); err != nil {
-		slog.Error("fail ping postgres", sl.Err(err))
+		log.Error("fail ping postgres", sl.Err(err))
 		err = fmt.Errorf("error happened in db.Ping: %w", err)
 
 		return err
@@ -99,13 +102,24 @@ func run() (err error) {
 	//
 	//
 	// ============================Init layers============================ //
-	authRepo := authRepo.NewAuthRepo(db)
-	authUsecase := authUsecase.NewAuthUsecase(authRepo, cfg.Auther)
+	usersRepo := userRepo.NewUserRepo(db)
+	usersUsecase := userUsecase.NewUserUsecase(log, usersRepo)
+	usersHandler := userHandler.NewUserHandler(log, usersUsecase)
+
+	authUsecase := authUsecase.NewAuthUsecase(usersRepo, cfg.Auther)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
+
+	cartRepo := cartRepo.NewCartRepo(db)
+	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
+	cartHandler := cartHandler.NewCartHandler(log, cartUsecase)
 
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
 	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
+
+	categoryRepo := categoryRepo.NewCategoryRepo(db)
+	categoryUsecase := categoryUsecase.NewCategoryUsecase(categoryRepo)
+	categoryHandler := categoryHandler.NewCategoryHandler(log, categoryUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -113,7 +127,7 @@ func run() (err error) {
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
-	r.Use(middleware.CORSMiddleware)
+	r.Use(middleware.CORSMiddleware, logmw.New(log))
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
@@ -128,19 +142,59 @@ func run() (err error) {
 	//
 	//
 	// ============================Setup endpoints============================ //
+	authMW := authmw.New(log, authUsecase.Auther)
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
-		auth.HandleFunc("/signup", authHandler.SignUp).Methods(http.MethodPost, http.MethodOptions)
-		auth.HandleFunc("/signin", authHandler.SignIn).Methods(http.MethodPost, http.MethodOptions)
-		auth.HandleFunc("/logout", authHandler.LogOut).Methods(http.MethodGet, http.MethodOptions)
-		auth.HandleFunc("/check_auth", authHandler.CheckAuth).Methods(http.MethodGet, http.MethodOptions)
-		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", authHandler.GetProfile).Methods(http.MethodGet, http.MethodOptions)
+		auth.HandleFunc("/signup", authHandler.SignUp).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		auth.HandleFunc("/signin", authHandler.SignIn).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		auth.Handle("/logout", authMW(http.HandlerFunc(authHandler.LogOut))).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		auth.Handle("/check_auth", authMW(http.HandlerFunc(authHandler.CheckAuth))).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	users := r.PathPrefix("/users").Subrouter()
+	{
+		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", usersHandler.GetProfile).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		users.Handle("/update-photo", authMW(http.HandlerFunc(usersHandler.UpdatePhoto))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		users.Handle("/update-info", authMW(http.HandlerFunc(usersHandler.UpdateInfo))).
+			Methods(http.MethodPost, http.MethodOptions)
+	}
+
+	cart := r.PathPrefix("/cart").Subrouter()
+	{
+		cart.Handle("/update", authMW(http.HandlerFunc(cartHandler.UpdateCart))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		cart.Handle("/summary", authMW(http.HandlerFunc(cartHandler.GetCart))).
+			Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	products := r.PathPrefix("/products").Subrouter()
 	{
-		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).Methods(http.MethodGet, http.MethodOptions)
-		products.HandleFunc("/get_all", productsHandler.Products).Methods(http.MethodGet, http.MethodOptions)
+		products.HandleFunc("/{id:[0-9a-fA-F-]+}", productsHandler.Product).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		products.HandleFunc("/get_all", productsHandler.Products).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		products.HandleFunc("/category", productsHandler.Category).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	category := r.PathPrefix("/category").Subrouter()
+	{
+		category.HandleFunc("/get_all", categoryHandler.Categories).
+			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
 

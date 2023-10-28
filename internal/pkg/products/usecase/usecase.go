@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
@@ -39,6 +40,18 @@ func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging int64, count 
 	productsSlice, err := uc.repo.ReadProducts(ctx, paging, count)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadProducts: %w", err)
+
+		return []models.Product{}, err
+	}
+
+	return productsSlice, nil
+}
+
+func (uc *ProductsUsecase) GetCategory(ctx context.Context,
+	id uuid.UUID, paging, count int64) ([]models.Product, error) {
+	productsSlice, err := uc.repo.ReadCategory(ctx, id, paging, count)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.GetCategory: %w", err)
 
 		return []models.Product{}, err
 	}
