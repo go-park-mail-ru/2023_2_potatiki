@@ -74,14 +74,23 @@ CREATE TABLE IF NOT EXISTS address
     is_current BOOLEAN
 );
 
-CREATE TABLE IF NOT EXISTS shopping_cart_item
+CREATE TABLE IF NOT EXISTS cart
 (
     id UUID NOT NULL PRIMARY KEY,
     profile_id UUID NOT NULL,
+    is_current BOOLEAN,
     FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
+    CONSTRAINT uq_cart_profile_id_product_id UNIQUE (profile_id)
+);
+
+CREATE TABLE IF NOT EXISTS shopping_cart_item
+(
+    id UUID NOT NULL PRIMARY KEY,
+    cart_id UUID NOT NULL,
+    FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE,
     product_id UUID NOT NULL,
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
-    CONSTRAINT uq_shopping_cart_item_profile_id_product_id UNIQUE (profile_id, product_id),
+    CONSTRAINT uq_shopping_cart_item_cart_id_product_id UNIQUE (cart_id, product_id),
     quantity INT NOT NULL,
     CHECK (quantity > 0)
 );

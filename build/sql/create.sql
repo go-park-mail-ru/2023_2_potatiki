@@ -92,14 +92,23 @@ CREATE TABLE IF NOT EXISTS address
     is_current BOOLEAN
     );
 
-CREATE TABLE IF NOT EXISTS shopping_cart_item
+CREATE TABLE IF NOT EXISTS cart
 (
     id UUID NOT NULL PRIMARY KEY,
     profile_id UUID NOT NULL,
+    is_current BOOLEAN,
     FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
+    CONSTRAINT uq_cart_profile_id_product_id UNIQUE (profile_id)
+    );
+
+CREATE TABLE IF NOT EXISTS shopping_cart_item
+(
+    id UUID NOT NULL PRIMARY KEY,
+    cart_id UUID NOT NULL,
+    FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE,
     product_id UUID NOT NULL,
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
-    CONSTRAINT uq_shopping_cart_item_profile_id_product_id UNIQUE (profile_id, product_id),
+    CONSTRAINT uq_shopping_cart_item_cart_id_product_id UNIQUE (cart_id, product_id),
     quantity INT NOT NULL,
     CHECK (quantity > 0)
     );
@@ -162,10 +171,10 @@ insert into product (id, name, price, imgsrc, description, rating)
 values ('3fdc3e65-589d-4aea-be26-5d011dbf4dbd', 'Apple MacBook Pro 13', 99999, 'macbook.png', '13-inch professional laptop', 4.65);
 
 insert into product (id, name, price, imgsrc, description, rating)
-values ('007749b5-7e07-4be8-8c91-8db273ace1c2', 'Apple MacBook Air 15', 137990, 'macbookair.png', '15-inch high-performance laptop', 4.95);
+values ('007749b5-7e07-4be8-8c91-8db273ace1c2', 'Apple MacBook Air 15', 137990, 'macbook.png', '15-inch high-performance laptop', 4.95);
 
 insert into product (id, name, price, imgsrc, description, rating)
-values ('007749b5-7e07-4be8-8c91-8db273ace8c3', 'Apple MacBook Air 14', 118990, 'macbookair.png', '13-inch high-performance laptop', 5.00);
+values ('007749b5-7e07-4be8-8c91-8db273ace8c3', 'Apple MacBook Air 14', 118990, 'macbook.png', '13-inch high-performance laptop', 5.00);
 
 insert into product (id, name, price, imgsrc, description, rating)
-values ('007749b5-7e07-4be8-8c91-8db273ace4c9', 'Apple MacBook Air 19', 299999, 'macbookair.png', '13-inch high-performance laptop', 5.00);
+values ('007749b5-7e07-4be8-8c91-8db273ace4c9', 'Apple MacBook Air 19', 299999, 'macbook.png', '13-inch high-performance laptop', 5.00);

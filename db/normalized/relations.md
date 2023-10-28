@@ -9,43 +9,43 @@
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
 - Таблица product
-  - {id} -> name, description, price, imgsrc, rating, categoryId
-  - {name} -> id, description, price, imgsrc, rating, categoryId
+  - {id} -> name, description, price, imgsrc, rating, category_id
+  - {name} -> id, description, price, imgsrc, rating, category_id
 
   -В данном отношении потенциальными ключами являются аттрибуты id и name, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
-  -Все неключевые аттрибуты(description, price, imgsrc, rating, categoryId) зависят от ключей, что соответсвует 2НФ.\
+  -Все неключевые аттрибуты(description, price, imgsrc, rating, category_id) зависят от ключей, что соответсвует 2НФ.\
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
 - Таблица order
-  - {id} ->  profileId, promocodeId, status, deliveryDate, creationDate
+  - {id} ->  profile_id, promocode_id, status, deliveryDate, creationDate
 
   -В данном отношении потенциальным ключом является аттрибут id, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
-  -Все неключевые аттрибуты(profileId, promocodeId, status, deliveryDate, creationDate) зависят от ключа, что соответсвует 2НФ.\
+  -Все неключевые аттрибуты(profile_id, promocode_id, status, deliveryDate, creationDate) зависят от ключа, что соответсвует 2НФ.\
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Ключевой аттрибут один, поэтому отношение соответсвует НФБК.
 
 - Таблица order_item
-  - {id} -> quantity, orderId, productId
-  - {orderId, productId} -> id, quantity
+  - {id} -> quantity, order_id, product_id
+  - {order_id, product_id} -> id, quantity
 
-  -В данном отношении потенциальными ключами являются аттрибуты id и {orderId, productId}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
+  -В данном отношении потенциальными ключами являются аттрибуты id и {order_id, product_id}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевой аттрибут(quantity) зависит от ключей, что соответсвует 2НФ.\
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
 - Таблица favorite
-  - {id} -> profileId, productId
-  - {profileId, productId} -> id
+  - {id} -> profile_id, product_id
+  - {profile_id, product_id} -> id
 
-  -В данном отношении потенциальными ключами являются аттрибуты id и {profileId, productId}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
+  -В данном отношении потенциальными ключами являются аттрибуты id и {profile_id, product_id}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевых аттрибутов нет, а любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
 - Таблица address
-  - {id} -> profileId, city, street, house, flat, isCurrent
-  - {profileId, city, street, house, flat} -> id, isCurrent
+  - {id} -> profile_id, city, street, house, flat, isCurrent
+  - {profile_id, city, street, house, flat} -> id, isCurrent
 
-  -В данном отношении потенциальными ключами являются аттрибуты id и {profileId, city, street, house, flat}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
+  -В данном отношении потенциальными ключами являются аттрибуты id и {profile_id, city, street, house, flat}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевой аттрибут(isCurrent) зависит от ключей, что соответсвует 2НФ.\
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
@@ -58,18 +58,18 @@
   -Неключевых аттрибутов нет, а любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
 
 - Таблица category_refference
-  - {categoryId} -> parentCategoryId
+  - {category_id} -> parentCategory_id
 
-  -В данном отношении потенциальным ключом является аттрибут categoryId, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
-  -Неключевой аттрибут(parentCategoryId) зависит от ключа, что соответсвует 2НФ.\
+  -В данном отношении потенциальным ключом является аттрибут category_id, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
+  -Неключевой аттрибут(parentCategory_id) зависит от ключа, что соответсвует 2НФ.\
   -Нет атрибутов, зависящих от неключевого аттрибутов, что соответсвует 3НФ.\
   -Ключевой аттрибут только один, поэтому отношение соответсвует НФБК.
 
 - Таблица shopping_cart_item
-  - {id} ->  quantity, profileId, productId
-  - {profileId, productId} - id, quantity
+  - {id} ->  quantity, profile_id, product_id
+  - {profile_id, product_id} - id, quantity
 
-  -В данном отношении потенциальными ключами являются аттрибуты id и {profileId, productId}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
+  -В данном отношении потенциальными ключами являются аттрибуты id и {profile_id, product_id}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевой аттрибут(quantity) зависит от ключей, что соответсвует 2НФ.\
   -Нет атрибутов, зависящих от неключевых аттрибутов, что соответсвует 3НФ.\
   -Любой ключевой аттрибут зависит от любого ключа, что соответсвует НФБК.
@@ -86,7 +86,7 @@
 erDiagram
   PROFILE ||--o{ ORDER : includes
   PROFILE ||--o{ ADDRESS : includes
-  PROFILE ||--o{ SHOPPING_CART_ITEM : includes
+  PROFILE ||--o{ CART : includes
   PROFILE ||--o{ FAVORITE : includes
 
   PROMOCODE ||--o{ ORDER : includes
@@ -96,6 +96,7 @@ erDiagram
   PRODUCT ||--o{ SHOPPING_CART_ITEM : includes
   CATEGORY ||--|{ PRODUCT : includes
   PRODUCT ||--o{ FAVORITE : includes
+  CART ||--o{ SHOPPING_CART_ITEM : includes
 
   PROFILE {
     uuid id PK
@@ -117,30 +118,30 @@ erDiagram
 
   FAVORITE {
     uuid id PK
-    uuid profileId FK
-    uuid productId FK
+    uuid profile_id FK
+    uuid product_id FK
   }
 
   ORDER {
     uuid id PK
-    uuid profileId FK
-    uuid promocodeId FK
+    uuid profile_id FK
+    uuid promocode_id FK
     text status
-    timestamp creationDate
-    timestamp deliveryDate
+    timestampz creationDate
+    timestampz deliveryDate
   }
 
   ORDER_ITEM {
     uuid id PK
-    uuid orderId FK
-    uuid productId FK
+    uuid order_id FK
+    uuid product_id FK
     int quantity
     int price
   }
 
   ADDRESS {
     uuid id PK
-    uuid profileId FK
+    uuid profile_id FK
     text city
     text street
     text house
@@ -154,10 +155,16 @@ erDiagram
     int parent FK
   }
 
+  CART {
+    uuid id PK
+    uuid profile_id FK
+    bool isCurrent
+  }
+  
   SHOPPING_CART_ITEM {
     uuid id PK
-    uuid profileId FK
-    uuid productId FK
+    uuid cart_id FK
+    uuid product_id FK
     int quantity
   }
 
