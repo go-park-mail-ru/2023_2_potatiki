@@ -1,7 +1,7 @@
 # Фунциональные зависимости
 - Таблица profile
   - {id} -> login, description, imgsrc, passwordhash
-  - {login} -> id, description, imgsrc, passwordhash
+  - {login} -> description, imgsrc, passwordhash
 
   -В данном отношении потенциальными ключами являются аттрибуты id и login, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Все неключевые аттрибуты(description, imgsrc, passwordhash) зависят от ключей, что соответсвует 2НФ.\
@@ -10,7 +10,7 @@
 
 - Таблица product
   - {id} -> name, description, price, imgsrc, rating, category_id
-  - {name} -> id, description, price, imgsrc, rating, category_id
+  - {name} -> description, price, imgsrc, rating, category_id
 
   -В данном отношении потенциальными ключами являются аттрибуты id и name, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Все неключевые аттрибуты(description, price, imgsrc, rating, category_id) зависят от ключей, что соответсвует 2НФ.\
@@ -27,7 +27,7 @@
 
 - Таблица order_item
   - {id} -> quantity, order_id, product_id
-  - {order_id, product_id} -> id, quantity
+  - {order_id, product_id} -> quantity
 
   -В данном отношении потенциальными ключами являются аттрибуты id и {order_id, product_id}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевой аттрибут(quantity) зависит от ключей, что соответсвует 2НФ.\
@@ -43,7 +43,7 @@
 
 - Таблица address
   - {id} -> profile_id, city, street, house, flat, is_current
-  - {profile_id, city, street, house, flat} -> id, is_current
+  - {profile_id, city, street, house, flat} -> is_current
 
   -В данном отношении потенциальными ключами являются аттрибуты id и {profile_id, city, street, house, flat}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевой аттрибут(is_current) зависит от ключей, что соответсвует 2НФ.\
@@ -67,7 +67,7 @@
 
 - Таблица shopping_cart_item
   - {id} ->  quantity, profile_id, product_id
-  - {profile_id, product_id} - id, quantity
+  - {profile_id, product_id} - quantity
 
   -В данном отношении потенциальными ключами являются аттрибуты id и {profile_id, product_id}, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевой аттрибут(quantity) зависит от ключей, что соответсвует 2НФ.\
@@ -76,7 +76,7 @@
 
 - Таблица promocode
   - {id} -> name, discount
-  - {name} -> id, discount
+  - {name} -> discount
 
   -В данном отношении потенциальными ключами являются аттрибуты id и name, также все аттрибуты отношения являются атомарными, что соответсвует 1НФ.\
   -Неключевой аттрибут(discount) зависит от ключей, что соответсвует 2НФ.\
