@@ -9,7 +9,7 @@ type Order struct {
 	Products  []CartProduct `json:"products"`
 }
 
-type CartProduct struct {
+type OrderProduct struct {
 	Quantity int64 `json:"quantity"`
 	Product
 }

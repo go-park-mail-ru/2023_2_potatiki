@@ -12,16 +12,21 @@ import (
 )
 
 const (
-	getCart            = "SELECT id FROM cart WHERE Profile_id=$1 and is_current = true;"
-	createCart         = "INSERT INTO cart(id, profile_id, is_current) VALUES($1, $2, true);"
-	updateCartProducts = "UPDATE shopping_cart_item SET quantity=$3 WHERE cart_id=$1 and product_id=$2 and quantity<>$3;"
-	getProducts        = "SELECT p.id , p.name_product, p.Description, p.Price, p.ImgSrc, p.Rating, sc.Quantity " +
-		"FROM shopping_cart_item sc JOIN product p ON sc.product_id=p.id WHERE p.id=$1 and sc.quantity>0;"
+	getCart     = "SELECT id FROM cart WHERE Profile_id=$1 and is_current = true;"
+	createCart  = "INSERT INTO cart(id, profile_id, is_current) VALUES($1, $2, true);"
+	getProducts = "SELECT p._id , p.name_product, p.Description, p.Price, p.ImgSrc, p.Rating, sc.Quantity " +
+		"FROM shopping_cart_item sc JOIN product p ON sc.product_id=p.id WHERE p.id=$1;"
+	getProduct = "SELECT id FROM product where id=$1;"
+	addProduct = "insert into shopping_cart_item(cart_id, product_id, quantity) values ($1, $2, $3)" +
+		" ON CONFLICT ON CONSTRAINT uq_shopping_cart_item_cart_id_product_id " +
+		"do update set quantity=$3 WHERE shopping_cart_item.cart_id=$1 and shopping_cart_item.product_id=$2;"
+	deleteProduct = "DELETE FROM shopping_cart_item WHERE cart_id=$1 and product_id=$2;"
 )
 
 var (
 	ErrCartNotFound    = errors.New("cart not found")
 	ErrPoductsNotFound = errors.New("products not found")
+	ErrPoductNotFound  = errors.New("product not found")
 )
 
 type CartRepo struct {
@@ -46,7 +51,7 @@ func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) error {
 	return nil
 }
 
-func (r *CartRepo) ReadCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
+func (r *CartRepo) CheckCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
 	cart := models.Cart{}
 	err := r.db.QueryRow(ctx, getCart, userID).Scan(&cart.Id)
 	if err != nil {
@@ -57,30 +62,13 @@ func (r *CartRepo) ReadCart(ctx context.Context, userID uuid.UUID) (models.Cart,
 
 		return models.Cart{}, err
 	}
-
-	cart, err = r.ReadCartProducts(ctx, cart)
-
-	return cart, err
+	return cart, nil
 }
 
-func (r *CartRepo) UpdateCart(ctx context.Context, cart models.Cart) (models.Cart, error) {
-	err := r.db.QueryRow(ctx, getCart, cart.ProfileId).Scan(&cart.Id)
+func (r *CartRepo) ReadCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
+	cart, err := r.CheckCart(ctx, userID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return models.Cart{}, ErrCartNotFound
-		}
-		err = fmt.Errorf("error happened in row.Scan: %w", err)
-
 		return models.Cart{}, err
-	}
-
-	for _, product := range cart.Products {
-		_, err := r.db.Exec(ctx, updateCartProducts, cart.Id, product.Id, product.Quantity)
-		if err != nil {
-			err = fmt.Errorf("error happened in rows.Scan: %w", err)
-
-			return cart, err
-		}
 	}
 
 	cart, err = r.ReadCartProducts(ctx, cart)
@@ -120,4 +108,45 @@ func (r *CartRepo) ReadCartProducts(ctx context.Context, cart models.Cart) (mode
 	defer rows.Close()
 
 	return cart, nil
+}
+
+func (r *CartRepo) CheckProduct(ctx context.Context, productID uuid.UUID) error {
+	product := models.CartProduct{}
+	err := r.db.QueryRow(ctx, getProduct, productID).Scan(&product.Id)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return ErrPoductNotFound
+		}
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
+
+		return err
+	}
+
+	return nil
+}
+
+func (r *CartRepo) AddProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
+	_, err := r.db.Exec(ctx, addProduct, cart.Id, product.Id, product.Quantity)
+	if err != nil {
+		err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+		return cart, err
+	}
+
+	cart, err = r.ReadCartProducts(ctx, cart)
+
+	return cart, err
+}
+
+func (r *CartRepo) DeleteProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
+	_, err := r.db.Exec(ctx, deleteProduct, cart.Id, product.Id)
+	if err != nil {
+		err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+		return cart, err
+	}
+
+	cart, err = r.ReadCartProducts(ctx, cart)
+
+	return cart, err
 }

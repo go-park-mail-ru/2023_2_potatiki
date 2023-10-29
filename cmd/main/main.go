@@ -172,8 +172,8 @@ func run() (err error) {
 
 	cart := r.PathPrefix("/cart").Subrouter()
 	{
-		cart.Handle("/update", authMW(http.HandlerFunc(cartHandler.UpdateCart))).
-			Methods(http.MethodPost, http.MethodOptions)
+		//cart.Handle("/update", authMW(http.HandlerFunc(cartHandler.UpdateCart))).
+		//	Methods(http.MethodPost, http.MethodOptions)
 
 		cart.Handle("/summary", authMW(http.HandlerFunc(cartHandler.GetCart))).
 			Methods(http.MethodGet, http.MethodOptions)
