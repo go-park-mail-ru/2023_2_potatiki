@@ -35,6 +35,12 @@ CREATE TABLE IF NOT EXISTS promocode
     name TEXT NOT NULL UNIQUE
 );
 
+CREATE TABLE IF NOT EXISTS status
+(
+    id SERIAL PRIMARY KEY,
+    name TEXT UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS order_info
 (
     id UUID NOT NULL PRIMARY KEY,
@@ -42,18 +48,13 @@ CREATE TABLE IF NOT EXISTS order_info
     creation_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     profile_id UUID NOT NULL,
     FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
-    status_id TEXT NOT NULL,
+    status_id INT NOT NULL,
     FOREIGN KEY (status_id) REFERENCES status(id) ON DELETE RESTRICT,
     promocode_id UUID,
     CONSTRAINT uq_order_info_profile_id_promocode_id UNIQUE (profile_id, promocode_id),
     FOREIGN KEY (promocode_id) REFERENCES promocode(id) ON DELETE RESTRICT
 );
 
-CREATE TABLE IF NOT EXISTS status
-(
-    id SERIAL PRIMARY KEY,
-    name TEXT UNIQUE
-);
 
 CREATE TABLE IF NOT EXISTS order_item
 (
@@ -61,11 +62,11 @@ CREATE TABLE IF NOT EXISTS order_item
     order_id UUID NOT NULL,
     FOREIGN KEY (order_id) REFERENCES order_info(id) ON DELETE CASCADE,
     product_id UUID NOT NULL,
-    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,==
+    FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT uq_order_item_order_id_product_id UNIQUE (order_id, product_id),
     quantity INT NOT NULL,
     CHECK (quantity > 0)
-    );
+);
 
 
 CREATE TABLE IF NOT EXISTS address
