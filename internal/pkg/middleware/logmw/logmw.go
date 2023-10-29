@@ -55,7 +55,7 @@ func NewWithConfig(log *slog.Logger, config Config) mux.MiddlewareFunc { //nolin
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
 
-			recorder := &ResponseWrapper{
+			wrapper := &ResponseWrapper{
 				ResponseWriter: w,
 				Status:         200,
 			}
@@ -64,13 +64,14 @@ func NewWithConfig(log *slog.Logger, config Config) mux.MiddlewareFunc { //nolin
 			if requestID == "" {
 				requestID = uuid.New().String()
 			}
+			wrapper.Header().Set(RequestIDCtx, requestID)
 
 			// ctx := context.WithValue(r.Context(), "request-id", requestID)
 			r.Header.Set(RequestIDCtx, requestID)
-			next.ServeHTTP(recorder, r)
+			next.ServeHTTP(wrapper, r)
 
-			status := recorder.Status
-			byteLen := recorder.bytesLen
+			status := wrapper.Status
+			byteLen := wrapper.bytesLen
 
 			// w.Header().Set(requestIDCtx, requestID)
 

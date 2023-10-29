@@ -1,7 +1,12 @@
 package middleware
 
 import (
+	"log/slog"
 	"net/http"
+
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+
+	"github.com/gorilla/mux"
 )
 
 func CORSMiddleware(next http.Handler) http.Handler {
@@ -15,4 +20,20 @@ func CORSMiddleware(next http.Handler) http.Handler {
 		}
 		next.ServeHTTP(w, r)
 	})
+}
+
+func Recover(log *slog.Logger) mux.MiddlewareFunc {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			defer func() {
+				if err := recover(); err != nil {
+					log.Error("Handle panic, recovered",
+						slog.Any("recover error", err),
+						slog.String("url", r.URL.Path))
+					resp.JSONStatus(w, http.StatusTooManyRequests)
+				}
+			}()
+			next.ServeHTTP(w, r)
+		})
+	}
 }

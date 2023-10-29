@@ -127,7 +127,7 @@ func run() (err error) {
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
-	r.Use(middleware.CORSMiddleware, logmw.New(log))
+	r.Use(middleware.Recover(log), middleware.CORSMiddleware, logmw.New(log))
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
