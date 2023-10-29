@@ -1,3 +1,4 @@
+
 CREATE TABLE IF NOT EXISTS profile
 (
     id uuid NOT NULL PRIMARY KEY,
@@ -64,8 +65,10 @@ CREATE TABLE IF NOT EXISTS order_item
     product_id UUID NOT NULL,
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT uq_order_item_order_id_product_id UNIQUE (order_id, product_id),
+    price INT NOT NULL,
     quantity INT NOT NULL,
-    CHECK (quantity > 0)
+    CHECK (quantity > 0),
+    CHECK (price > 0)
 );
 
 
