@@ -24,15 +24,6 @@ func NewOrderHandler(log *slog.Logger, uc order.OrderUsecase) OrderHandler {
 	}
 }
 
-// @Summary	GetOrder
-// @Tags Order
-// @Description	Get cart
-// @Accept json
-// @Produce json
-// @Success	200	{object} models.Order "Order info"
-// @Failure	401
-// @Failure	429
-// @Router	/api/cart/summary [get]
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),

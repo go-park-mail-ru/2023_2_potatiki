@@ -15,8 +15,6 @@ const (
 	getProduct  = "SELECT id, name, description, price, imgsrc, rating FROM product WHERE id=$1;"
 	getProducts = "SELECT id, name, description, price, imgsrc, rating " +
 		"FROM product ORDER BY id LIMIT $1 OFFSET $2"
-	getCategory = "SELECT id, name, description, price, imgsrc, rating " +
-		"FROM product WHERE category_id=$1 ORDER BY id LIMIT $2 OFFSET $3"
 )
 
 var (

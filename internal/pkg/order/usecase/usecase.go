@@ -41,7 +41,7 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, id uuid.UUID) (models.O
 		return models.Order{}, err
 	}
 
-	order, err := uc.repoOrder.CreateOrder(ctx, id, cart)
+	order, err := uc.repoOrder.CreateOrder(ctx, cart, id)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.CreateOrder: %w", err)
 

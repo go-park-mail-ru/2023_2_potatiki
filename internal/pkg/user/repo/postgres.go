@@ -36,8 +36,8 @@ func (r *UserRepo) CreateUser(ctx context.Context, user models.User) (models.Pro
 	profileID := uuid.New()
 	_, err := r.db.Exec(ctx, addProfile,
 		profileID, user.Login, "", "default.png", user.PasswordHash)
-	if err != nil { // !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
-		err = fmt.Errorf("error happened in rows.Scan: %w", err)
+	if err != nil {
+		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
 		return models.Profile{}, err
 	}
@@ -56,7 +56,7 @@ func (r *UserRepo) CheckUser(ctx context.Context, user models.User) (models.Prof
 	row := r.db.QueryRow(ctx, profileExistsByLogin, user.Login)
 	pr := models.Profile{
 		Login: user.Login,
-	}
+	} // errors.Is() сделать везде с проверкой что такой записи нет
 	var userPasswordHash string
 	if err := row.Scan(&pr.Id, &pr.Description, &pr.ImgSrc, &userPasswordHash); err != nil {
 		err = fmt.Errorf("error happened in row.Scan: %w", err)

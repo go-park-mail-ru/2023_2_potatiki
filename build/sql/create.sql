@@ -87,8 +87,10 @@ CREATE TABLE IF NOT EXISTS order_item
     product_id UUID NOT NULL,
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT uq_order_item_order_id_product_id UNIQUE (order_id, product_id),
+    price INT NOT NULL,
     quantity INT NOT NULL,
-    CHECK (quantity > 0)
+    CHECK (quantity > 0),
+    CHECK (price > 0)
     );
 
 
@@ -135,7 +137,6 @@ CREATE TABLE IF NOT EXISTS favorite
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT uq_favorite_profile_id_product_id UNIQUE (profile_id, product_id)
     );
-
 GRANT ALL PRIVILEGES ON DATABASE zuzu to potatiki;
 
 insert into product (id, name, price, imgsrc, description, rating)
