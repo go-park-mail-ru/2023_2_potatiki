@@ -39,16 +39,18 @@ func NewCartRepo(db pgxtype.Querier) *CartRepo {
 	}
 }
 
-func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) error {
+func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
 	cartID := uuid.New()
 	_, err := r.db.Exec(ctx, createCart, cartID, userID)
 	if err != nil {
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
-		return err
+		return models.Cart{}, err
 	}
-
-	return nil
+	cart := models.Cart{}
+	cart.Id = cartID
+	cart.ProfileId = userID
+	return cart, nil
 }
 
 func (r *CartRepo) CheckCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
