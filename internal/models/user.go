@@ -7,26 +7,27 @@ import (
 )
 
 type User struct {
-	Login        string `json:"login"`
-	PasswordHash string `json:"password"`
+	Login    string `json:"login"`
+	Password string `json:"password"`
 }
 
-func (user User) IsValid() bool {
+func (u *User) IsValid() bool {
 	// strings.Contains()
-	return len(user.Login) >= 6 && len(user.Login) <= 30
+	return len(u.Login) >= 6 && len(u.Login) <= 30
 }
 
 type Profile struct {
-	Id          uuid.UUID `json:"id"` //nolint:stylecheck
-	Login       string    `json:"login"`
-	Description string    `json:"description,omitempty"`
-	ImgSrc      string    `json:"img"`
+	Id           uuid.UUID `json:"id"` //nolint:stylecheck
+	Login        string    `json:"login"`
+	Description  string    `json:"description,omitempty"`
+	ImgSrc       string    `json:"img"`
+	PasswordHash []byte    `json:"password"`
 }
 
 type UserInfo struct {
-	NewPasswordHash string `json:"newPassword"`
-	NewDescription  string `json:"newDescription"`
-	Description     string `json:"description"`
+	NewPassword    string `json:"newPassword"`
+	NewDescription string `json:"newDescription"`
+	Description    string `json:"description"`
 }
 
 type ProfileInfo struct {

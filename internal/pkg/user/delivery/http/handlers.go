@@ -160,8 +160,8 @@ func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	h.log.Debug("got file from r.Body", slog.Any("request", r))
 
-	profileInfo := models.ProfileInfo{}
-	err = json.Unmarshal(body, &profileInfo)
+	profileInfo := &models.ProfileInfo{}
+	err = json.Unmarshal(body, profileInfo)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)

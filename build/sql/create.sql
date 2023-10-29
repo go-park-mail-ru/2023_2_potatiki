@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS profile
     login text NOT NULL UNIQUE,
     description text,
     imgsrc text NOT NULL DEFAULT 'default.png',
-    passwordhash text NOT NULL
+    passwordhash bytea NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS category
@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS category
     id SERIAL PRIMARY KEY,
     name TEXT UNIQUE,
     parent INT DEFAULT NULL REFERENCES category (id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS product
 (
@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS product
     FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE RESTRICT,
     CHECK (rating >= 0),
     CHECK (price > 0)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS promocode
 (
@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS order_info
     promocode_id UUID,
     CONSTRAINT uq_order_info_profile_id_promocode_id UNIQUE (profile_id, promocode_id),
     FOREIGN KEY (promocode_id) REFERENCES promocode(id) ON DELETE RESTRICT
-    );
+);
 
 CREATE TABLE IF NOT EXISTS order_item
 (
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS order_item
     CONSTRAINT uq_order_item_order_id_product_id UNIQUE (order_id, product_id),
     quantity INT NOT NULL,
     CHECK (quantity > 0)
-    );
+);
 
 
 CREATE TABLE IF NOT EXISTS address
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS address
     flat TEXT NOT NULL,
     CONSTRAINT uq_address_city_street_house_flat UNIQUE (city, street, house, flat),
     is_current BOOLEAN
-    );
+);
 
 CREATE TABLE IF NOT EXISTS cart
 (
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS cart
     is_current BOOLEAN,
     FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
     CONSTRAINT uq_cart_profile_id_product_id UNIQUE (profile_id)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS shopping_cart_item
 (
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS shopping_cart_item
     CONSTRAINT uq_shopping_cart_item_cart_id_product_id UNIQUE (cart_id, product_id),
     quantity INT NOT NULL,
     CHECK (quantity > 0)
-    );
+);
 
 CREATE TABLE IF NOT EXISTS favorite
 (
@@ -121,7 +121,7 @@ CREATE TABLE IF NOT EXISTS favorite
     product_id UUID NOT NULL,
     FOREIGN KEY (product_id) REFERENCES product(id) ON DELETE CASCADE,
     CONSTRAINT uq_favorite_profile_id_product_id UNIQUE (profile_id, product_id)
-    );
+);
 
 GRANT ALL PRIVILEGES ON DATABASE zuzu to potatiki;
 

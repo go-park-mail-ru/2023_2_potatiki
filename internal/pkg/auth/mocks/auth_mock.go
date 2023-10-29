@@ -11,7 +11,6 @@ import (
 
 	models "github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	gomock "github.com/golang/mock/gomock"
-	uuid "github.com/google/uuid"
 )
 
 // MockAuthUsecase is a mock of AuthUsecase interface.
@@ -37,26 +36,11 @@ func (m *MockAuthUsecase) EXPECT() *MockAuthUsecaseMockRecorder {
 	return m.recorder
 }
 
-// CheckToken mocks base method.
-func (m *MockAuthUsecase) CheckToken(arg0 context.Context, arg1 string) (uuid.UUID, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckToken", arg0, arg1)
-	ret0, _ := ret[0].(uuid.UUID)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// CheckToken indicates an expected call of CheckToken.
-func (mr *MockAuthUsecaseMockRecorder) CheckToken(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckToken", reflect.TypeOf((*MockAuthUsecase)(nil).CheckToken), arg0, arg1)
-}
-
 // SignIn mocks base method.
-func (m *MockAuthUsecase) SignIn(arg0 context.Context, arg1 models.User) (models.Profile, string, time.Time, error) {
+func (m *MockAuthUsecase) SignIn(arg0 context.Context, arg1 *models.User) (*models.Profile, string, time.Time, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignIn", arg0, arg1)
-	ret0, _ := ret[0].(models.Profile)
+	ret0, _ := ret[0].(*models.Profile)
 	ret1, _ := ret[1].(string)
 	ret2, _ := ret[2].(time.Time)
 	ret3, _ := ret[3].(error)
@@ -70,10 +54,10 @@ func (mr *MockAuthUsecaseMockRecorder) SignIn(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // SignUp mocks base method.
-func (m *MockAuthUsecase) SignUp(arg0 context.Context, arg1 models.User) (models.Profile, string, time.Time, error) {
+func (m *MockAuthUsecase) SignUp(arg0 context.Context, arg1 *models.User) (*models.Profile, string, time.Time, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignUp", arg0, arg1)
-	ret0, _ := ret[0].(models.Profile)
+	ret0, _ := ret[0].(*models.Profile)
 	ret1, _ := ret[1].(string)
 	ret2, _ := ret[2].(time.Time)
 	ret3, _ := ret[3].(error)

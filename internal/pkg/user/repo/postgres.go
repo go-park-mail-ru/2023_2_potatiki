@@ -2,7 +2,6 @@ package repo
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
@@ -11,15 +10,11 @@ import (
 )
 
 const (
-	profileExistsByID    = "SELECT login, description, imgsrc FROM profile WHERE id=$1;"
-	profileExistsByLogin = "SELECT login, description, imgsrc, passwordhash FROM profile WHERE login=$1;"
-	addProfile           = "INSERT INTO profile(id, login, description, imgsrc, passwordhash) VALUES($1, $2, $3, $4, $5);"
-	updateProfileInfo    = "UPDATE profile SET description=$1, passwordhash=$2 WHERE id=$3;"
-	updateProfilePhoto   = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
-)
-
-var (
-	ErrInvalidPass = errors.New("invalid pass")
+	profileExistsByID  = "SELECT login, description, imgsrc, passwordhash FROM profile WHERE id=$1;"
+	profileIdByUser    = "SELECT id FROM profile WHERE login=$1;"
+	addProfile         = "INSERT INTO profile(id, login, description, imgsrc, passwordhash) VALUES($1, $2, $3, $4, $5);"
+	updateProfileInfo  = "UPDATE profile SET description=$1, passwordhash=$2 WHERE id=$3;"
+	updateProfilePhoto = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
 )
 
 type UserRepo struct {
@@ -32,62 +27,50 @@ func NewUserRepo(db pgxtype.Querier) *UserRepo {
 	}
 }
 
-func (r *UserRepo) CreateUser(ctx context.Context, user models.User) (models.Profile, error) {
-	profileID := uuid.New()
+func (r *UserRepo) CreateProfile(ctx context.Context, p *models.Profile) error {
 	_, err := r.db.Exec(ctx, addProfile,
-		profileID, user.Login, "", "default.png", user.PasswordHash)
-	if err != nil { // !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
+		p.Id, p.Login, p.Description, p.ImgSrc, p.PasswordHash)
+
+	if err != nil {
+		// !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
-		return models.Profile{}, err
+		return err
 	}
 
-	profile := models.Profile{
-		Id:          profileID,
-		Login:       user.Login,
-		Description: "",
-		ImgSrc:      "default.png",
-	}
-
-	return profile, nil
+	return nil
 }
 
-func (r *UserRepo) CheckUser(ctx context.Context, user models.User) (models.Profile, error) {
-	row := r.db.QueryRow(ctx, profileExistsByLogin, user.Login)
-	pr := models.Profile{
-		Login: user.Login,
+func (r *UserRepo) ReadProfile(ctx context.Context, Id uuid.UUID) (*models.Profile, error) {
+	row := r.db.QueryRow(ctx, profileExistsByID, Id)
+	p := &models.Profile{
+		Id: Id,
 	}
-	var userPasswordHash string
-	if err := row.Scan(&pr.Id, &pr.Description, &pr.ImgSrc, &userPasswordHash); err != nil {
+	if err := row.Scan(p.Login, p.Description, p.ImgSrc, p.PasswordHash); err != nil {
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
-		return models.Profile{}, err
+		return &models.Profile{}, err
 	}
 
-	if userPasswordHash == user.PasswordHash {
-		return pr, nil
-	}
-
-	return models.Profile{}, ErrInvalidPass
+	return p, nil
 }
 
-func (r *UserRepo) ReadProfile(ctx context.Context, userID uuid.UUID) (models.Profile, error) {
-	row := r.db.QueryRow(ctx, profileExistsByID, userID)
-	pr := models.Profile{
-		Id: userID,
-	}
-	if err := row.Scan(&pr.Login, &pr.Description, &pr.ImgSrc); err != nil {
+func (r *UserRepo) GetProfileIdByUser(ctx context.Context, user *models.User) (uuid.UUID, error) {
+	row := r.db.QueryRow(ctx, profileIdByUser, user.Login)
+	var Id uuid.UUID
+	if err := row.Scan(&Id); err != nil {
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
-		return models.Profile{}, err
+		return uuid.UUID{}, err
 	}
 
-	return pr, nil
+	return Id, nil
 }
 
-func (r *UserRepo) UpdatePhoto(ctx context.Context, userID uuid.UUID, photoName string) error {
-	_, err := r.db.Exec(ctx, updateProfilePhoto, photoName, userID)
+func (r *UserRepo) UpdateProfile(ctx context.Context, p *models.Profile) error {
+	_, err := r.db.Exec(ctx, updateProfileInfo, p.Description, p.PasswordHash, p.Id)
 	if err != nil {
+		// !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
 		return err
@@ -96,9 +79,9 @@ func (r *UserRepo) UpdatePhoto(ctx context.Context, userID uuid.UUID, photoName 
 	return nil
 }
 
-func (r *UserRepo) UpdateInfo(ctx context.Context, userID uuid.UUID, userInfo models.UserInfo) error {
-	_, err := r.db.Exec(ctx, updateProfileInfo, userInfo.NewDescription, userInfo.NewPasswordHash, userID)
-	if err != nil { // !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
+func (r *UserRepo) UpdatePhoto(ctx context.Context, userID uuid.UUID, photoName string) error {
+	_, err := r.db.Exec(ctx, updateProfilePhoto, photoName, userID)
+	if err != nil {
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
 		return err

@@ -9,6 +9,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
 	"github.com/google/uuid"
 )
 
@@ -24,60 +25,69 @@ func NewAuthUsecase(repo user.UserRepo, cfg auth.AuthConfig) *AuthUsecase {
 	}
 }
 
-func (uc *AuthUsecase) CheckToken(ctx context.Context, tokenStr string) (uuid.UUID, error) {
-	claims, err := uc.Auther.GetClaims(tokenStr)
-	if err != nil {
-		err = fmt.Errorf("error happened in Auther.GetClaims: %w", err)
+var (
+	ErrPassMismatch = errors.New("password does not match")
+	ErrInvalidUser  = errors.New("user is not valid")
+)
 
-		return uuid.UUID{}, err
-	}
-
-	return claims.ID, nil
-}
-
-func (uc *AuthUsecase) SignIn(ctx context.Context, user models.User) (models.Profile, string, time.Time, error) {
+func (uc *AuthUsecase) SignIn(ctx context.Context, user *models.User) (*models.Profile, string, time.Time, error) {
 	if !user.IsValid() {
-		err := errors.New("user is not valid")
-
-		return models.Profile{}, "", time.Now(), err
+		return &models.Profile{}, "", time.Now(), ErrInvalidUser
 	}
 
-	profile, err := uc.repo.CheckUser(ctx, user)
+	Id, err := uc.repo.GetProfileIdByUser(ctx, user)
 	if err != nil {
-		err = fmt.Errorf("error happened in repo.CheckUser: %w", err)
+		err = fmt.Errorf("error happened in repo.GetProfileIdByUser: %w", err)
 
-		return models.Profile{}, "", time.Now(), err
+		return &models.Profile{}, "", time.Now(), err
 	}
 
-	token, exp, err := uc.Auther.GenerateToken(&profile)
+	profile, err := uc.repo.ReadProfile(ctx, Id)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.ReadProfile: %w", err)
+
+		return &models.Profile{}, "", time.Now(), err
+	}
+
+	if !hasher.CheckPass(profile.PasswordHash, user.Password) {
+		return &models.Profile{}, "", time.Now(), ErrPassMismatch
+	}
+
+	token, exp, err := uc.Auther.GenerateToken(profile)
 	if err != nil {
 		err = fmt.Errorf("error happened in Auther.GenerateToken: %w", err)
 
-		return models.Profile{}, "", time.Now(), err
+		return &models.Profile{}, "", time.Now(), err
 	}
 
 	return profile, token, exp, nil
 }
 
-func (uc *AuthUsecase) SignUp(ctx context.Context, user models.User) (models.Profile, string, time.Time, error) {
+func (uc *AuthUsecase) SignUp(ctx context.Context, user *models.User) (*models.Profile, string, time.Time, error) {
 	if !user.IsValid() {
-		err := errors.New("user is not valid")
-
-		return models.Profile{}, "", time.Now(), err
+		return &models.Profile{}, "", time.Now(), ErrInvalidUser
 	}
 
-	profile, err := uc.repo.CreateUser(ctx, user)
+	profile := &models.Profile{
+		Id:           uuid.New(),
+		Login:        user.Login,
+		Description:  "",
+		ImgSrc:       "default.png",
+		PasswordHash: hasher.HashPass(user.Password),
+	}
+
+	err := uc.repo.CreateProfile(ctx, profile)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.CreateUser: %w", err)
 
-		return models.Profile{}, "", time.Now(), err
+		return &models.Profile{}, "", time.Now(), err
 	}
 
-	token, exp, err := uc.Auther.GenerateToken(&profile)
+	token, exp, err := uc.Auther.GenerateToken(profile)
 	if err != nil {
 		err = fmt.Errorf("error happened in Auther.GenerateToken: %w", err)
 
-		return models.Profile{}, "", time.Now(), err
+		return &models.Profile{}, "", time.Now(), err
 	}
 
 	return profile, token, exp, nil

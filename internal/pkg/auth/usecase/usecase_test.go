@@ -23,15 +23,15 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
-	repo.EXPECT().CreateUser(gomock.Any(), models.User{
+	repo.EXPECT().CreateProfile(gomock.Any(), models.Profile{
 		Login:        "iudsbfiwhdbfi",
-		PasswordHash: "hafikyagdfiaysgf",
-	}).Return(models.Profile{}, nil)
+		PasswordHash: []byte("hafikyagdfiaysgf"),
+	}).Return(nil)
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, _, err := uc.SignUp(context.Background(), models.User{
-		Login:        "iudsbfiwhdbfi",
-		PasswordHash: "hafikyagdfiaysgf",
+	profile, token, _, err := uc.SignUp(context.Background(), &models.User{
+		Login:    "iudsbfiwhdbfi",
+		Password: "hafikyagdfiaysgf",
 	})
 	assert.Nil(t, err)
 	assert.NotNil(t, profile)
@@ -47,16 +47,16 @@ func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
-	repo.EXPECT().CreateUser(gomock.Any(), models.User{
+	repo.EXPECT().CreateProfile(gomock.Any(), models.Profile{
 		Login:        "iudsbfiwhdbfi",
-		PasswordHash: "hafikyagdfiaysgf",
-	}).Return(models.Profile{}, errors.New("bad request"))
+		PasswordHash: []byte("hafikyagdfiaysgf"),
+	}).Return(errors.New("bad request"))
 
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, _, err := uc.SignUp(context.Background(), models.User{
-		Login:        "iudsbfiwhdbfi",
-		PasswordHash: "hafikyagdfiaysgf",
+	profile, token, _, err := uc.SignUp(context.Background(), &models.User{
+		Login:    "iudsbfiwhdbfi",
+		Password: "hafikyagdfiaysgf",
 	})
 	assert.NotNil(t, err)
 	assert.NotNil(t, profile)
@@ -72,15 +72,15 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
-	repo.EXPECT().CheckUser(gomock.Any(), models.User{
+	repo.EXPECT().CreateProfile(gomock.Any(), models.Profile{
 		Login:        "iudsbfiwhdbfi",
-		PasswordHash: "hafikyagdfiaysgf",
-	}).Return(models.Profile{}, nil)
+		PasswordHash: []byte("hafikyagdfiaysgf"),
+	}).Return(nil)
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, _, err := uc.SignIn(context.Background(), models.User{
-		Login:        "iudsbfiwhdbfi",
-		PasswordHash: "hafikyagdfiaysgf",
+	profile, token, _, err := uc.SignIn(context.Background(), &models.User{
+		Login:    "iudsbfiwhdbfi",
+		Password: "hafikyagdfiaysgf",
 	})
 	assert.Nil(t, err)
 	assert.NotNil(t, profile)
@@ -96,15 +96,15 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
-	repo.EXPECT().CheckUser(gomock.Any(), models.User{
+	repo.EXPECT().CreateProfile(gomock.Any(), models.Profile{
 		Login:        "iudsbfiwhdbfi",
-		PasswordHash: "hafikyagdfiaysgf",
-	}).Return(models.Profile{}, errors.New("bad request"))
+		PasswordHash: []byte("hafikyagdfiaysgf"),
+	}).Return(errors.New("bad request"))
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, _, err := uc.SignIn(context.Background(), models.User{
-		Login:        "iudsbfiwhdbfi",
-		PasswordHash: "hafikyagdfiaysgf",
+	profile, token, _, err := uc.SignIn(context.Background(), &models.User{
+		Login:    "iudsbfiwhdbfi",
+		Password: "hafikyagdfiaysgf",
 	})
 	assert.NotNil(t, err)
 	assert.NotNil(t, profile)

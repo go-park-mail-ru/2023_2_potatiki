@@ -60,7 +60,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, token, exp, err := h.uc.SignIn(r.Context(), *u)
+	profile, token, exp, err := h.uc.SignIn(r.Context(), u)
 
 	if err != nil {
 		h.log.Error("failed to signin", sl.Err(err))
@@ -106,7 +106,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, token, exp, err := h.uc.SignUp(r.Context(), *u)
+	profile, token, exp, err := h.uc.SignUp(r.Context(), u)
 	if err != nil {
 		h.log.Error("failed to signup", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))

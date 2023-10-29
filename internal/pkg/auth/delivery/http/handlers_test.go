@@ -25,8 +25,8 @@ func TestSignUp(t *testing.T) {
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	uc.EXPECT().SignUp(gomock.Any(), models.User{
-		Login:        "User",
-		PasswordHash: "Dima@gmail.com",
+		Login:    "User",
+		Password: "Dima@gmail.com",
 	}).Return(models.Profile{}, "", time.Time{}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
@@ -57,8 +57,8 @@ func TestSignIn(t *testing.T) {
 
 	uc := mock.NewMockAuthUsecase(ctrl)
 	uc.EXPECT().SignIn(gomock.Any(), models.User{
-		Login:        "User",
-		PasswordHash: "Dima@gmail.com",
+		Login:    "User",
+		Password: "Dima@gmail.com",
 	}).Return(models.Profile{}, "", time.Time{}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
