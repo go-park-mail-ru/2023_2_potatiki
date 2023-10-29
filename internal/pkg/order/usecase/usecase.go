@@ -1,60 +1,40 @@
 package usecase
 
 import (
-	"context"
-	"errors"
-	"fmt"
-
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
-	"github.com/google/uuid"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
 )
 
-type CartUsecase struct {
-	repo cart.CartRepo
+type OrderUsecase struct {
+	repo order.OrderRepo
 }
 
-func NewCartUsecase(repo cart.CartRepo) *CartUsecase {
-	return &CartUsecase{
+func NewOrderUsecase(repo order.OrderRepo) *OrderUsecase {
+	return &OrderUsecase{
 		repo: repo,
 	}
 }
 
-func (uc *CartUsecase) UpdateCart(ctx context.Context, cart models.Cart) (models.Cart, error) {
-	_, err := uc.repo.ReadCart(ctx, cart.ProfileId)
-	if errors.Is(err, repo.ErrCartNotFound) {
-		err := uc.repo.CreateCart(ctx, cart.ProfileId)
-		if err != nil {
-			err = fmt.Errorf("error happened in repo.UpdateCart: %w", err)
-
-			return models.Cart{}, err
-		}
-	}
-
-	cart, err = uc.repo.UpdateCart(ctx, cart)
-	if err != nil {
-		err = fmt.Errorf("error happened in repo.UpdateCart: %w", err)
-
-		return models.Cart{}, err
-	}
-
-	return cart, nil
-}
-
-func (uc *CartUsecase) GetCart(ctx context.Context, id uuid.UUID) (models.Cart, error) {
-	cart, err := uc.repo.ReadCart(ctx, id)
-
-	if errors.Is(err, repo.ErrCartNotFound) {
-		err = uc.repo.CreateCart(ctx, cart.ProfileId)
-		if err != nil {
-			err = fmt.Errorf("error happened in repo.GetCart: %w", err)
-
-			return models.Cart{}, err
-		}
-
-		return models.Cart{}, nil
-	}
-
-	return cart, nil
-}
+//func (uc *OrderUsecase) GetOrder(ctx context.Context, id uuid.UUID) (models.Order, error) {
+//	order, err := uc.repo.ReadOrder(ctx, id)
+//	if err != nil {
+//		if errors.Is(err, repo.ErrOrderNotFound) {
+//			// TODO: implement
+//		}
+//		err = fmt.Errorf("error happened in repo.ReadOrder: %w", err)
+//
+//		return models.Order{}, err
+//	}
+//
+//	return order, nil
+//}
+//
+//func (uc *OrderUsecase) CreateOrder(ctx context.Context, id uuid.UUID) (models.Order, error) {
+//	order, err := uc.repo.CreateOrder(ctx, id)
+//	if err != nil {
+//		err = fmt.Errorf("error happened in repo.CreateOrder: %w", err)
+//
+//		return models.Order{}, err
+//	}
+//
+//	return order, nil
+//}
