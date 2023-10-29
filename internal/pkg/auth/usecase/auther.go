@@ -17,8 +17,8 @@ type Auther struct {
 
 func NewAuther(cfg auth.AuthConfig) *Auther {
 	return &Auther{
-		ttl:    cfg.GetAccessExpirationTime(), //cfg.AccessExpirationTime,
-		secret: cfg.GetJwtAccess(),            //cfg.JwtAccess,
+		ttl:    cfg.GetAccessExpirationTime(), // cfg.AccessExpirationTime,
+		secret: cfg.GetJwtAccess(),            // cfg.JwtAccess,
 	}
 }
 
@@ -48,6 +48,7 @@ func (a *Auther) getKeyFunc() jwt.Keyfunc {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
+
 		return []byte(a.secret), nil
 	}
 }
@@ -55,12 +56,14 @@ func (a *Auther) getKeyFunc() jwt.Keyfunc {
 func (a *Auther) GetClaims(tokenString string) (*models.Claims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, a.getKeyFunc())
 	if err != nil {
+		err = fmt.Errorf("error happened in jwt.ParseWithClaims: %w", err)
+
 		return nil, err
 	}
 
 	if claims, ok := token.Claims.(*models.Claims); ok && token.Valid {
 		return claims, nil
-	} else {
-		return nil, errors.New("error in GetClaims, invalid token or Claims.(*Claims) not cast")
 	}
+
+	return nil, errors.New("error in GetClaims, invalid token or Claims.(*Claims) not cast")
 }

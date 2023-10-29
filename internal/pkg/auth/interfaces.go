@@ -13,14 +13,7 @@ import (
 type AuthUsecase interface {
 	SignIn(context.Context, models.User) (models.Profile, string, time.Time, error)
 	SignUp(context.Context, models.User) (models.Profile, string, time.Time, error)
-	GetProfile(context.Context, uuid.UUID) (models.Profile, error)
 	CheckToken(context.Context, string) (uuid.UUID, error)
-}
-
-type AuthRepo interface {
-	CreateUser(context.Context, models.User) (models.Profile, error)
-	CheckUser(context.Context, models.User) (models.Profile, error)
-	ReadProfile(context.Context, uuid.UUID) (models.Profile, error)
 }
 
 type AuthAuther interface {

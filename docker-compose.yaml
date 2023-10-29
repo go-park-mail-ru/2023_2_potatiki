@@ -1,0 +1,110 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    container_name: ${DB_HOST}
+    image: postgres:latest
+    restart: always
+    command: 
+      - "postgres"
+      - "-c"
+      - "max_connections=5"
+      - "-c"
+      - "shared_buffers=100MB"
+      - "-c"
+      - "effective_cache_size=0.5GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=64MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "temp_file_limit=1GB"
+      - "-c"
+      - "log_min_duration_statement=200ms"
+      - "-c"
+      - "idle_in_transaction_session_timeout=10s"
+      - "-c"
+      - "lock_timeout=1s"
+      - "-c"
+      - "statement_timeout=60s"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.max=10000"
+      - "-c"
+      - "pg_stat_statements.track=all"
+    environment:
+      PGDATA: "/var/lib/postgresql/data/pgdata" # storing db files
+    env_file:
+      - ./.env
+    expose:
+      - "${DB_PORT}"
+    volumes:
+      - 'zuzu-db-data:/var/lib/postgresql/data'
+      - './build/sql/:/docker-entrypoint-initdb.d/'
+      #- './build/sql/create.sql:/docker-entrypoint-initdb.d/create.sql'
+      #- ./init_uuid.sql:/docker-entrypoint-initdb.d/init_uuid.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4GB
+    networks:
+      - zuzu-network
+
+  pgadmin:
+    container_name: pgadmin_container-deploy
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    environment:
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    env_file:
+      - ./.env
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    ports:
+      - "8098:80"
+    depends_on:
+      - postgres
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 500M
+    networks:
+      - zuzu-network
+
+  zuzu-main:
+    env_file:
+        - ./.env
+    container_name: ${CONTAINER_NAME}
+    image: ${REGISTRY}/${IMAGE_NAME}:${GITHUB_SHA_SHORT}
+    restart: always
+    ports:
+      - '8096:8096'
+    volumes:
+      - ./.env:/docker-zuzu-main/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
+
+volumes:
+  zuzu-db-data:
+  pgadmin-data:
+  zuzu-db:
+  zuzu-logs:
+
+networks:
+  zuzu-network:
+    driver: bridge
