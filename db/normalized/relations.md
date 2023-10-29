@@ -121,7 +121,7 @@ erDiagram
     uuid id PK
     uuid profile_id FK
     uuid promocode_id FK
-    text status
+    int status FK
     timestampz creation_at
     timestampz delivery_at
   }

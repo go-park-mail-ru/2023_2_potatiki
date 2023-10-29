@@ -39,8 +39,8 @@ func NewCartRepo(db pgxtype.Querier) *CartRepo {
 	}
 }
 
-func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) error {
-	cartID := uuid.New()
+func (r *CartRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID) error {
+	orderID := uuid.New()
 	_, err := r.db.Exec(ctx, createCart, cartID, userID)
 	if err != nil {
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -108,45 +108,4 @@ func (r *CartRepo) ReadCartProducts(ctx context.Context, cart models.Cart) (mode
 	defer rows.Close()
 
 	return cart, nil
-}
-
-func (r *CartRepo) CheckProduct(ctx context.Context, productID uuid.UUID) error {
-	product := models.CartProduct{}
-	err := r.db.QueryRow(ctx, getProduct, productID).Scan(&product.Id)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return ErrPoductNotFound
-		}
-		err = fmt.Errorf("error happened in row.Scan: %w", err)
-
-		return err
-	}
-
-	return nil
-}
-
-func (r *CartRepo) AddProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
-	_, err := r.db.Exec(ctx, addProduct, cart.Id, product.Id, product.Quantity)
-	if err != nil {
-		err = fmt.Errorf("error happened in rows.Scan: %w", err)
-
-		return cart, err
-	}
-
-	cart, err = r.ReadCartProducts(ctx, cart)
-
-	return cart, err
-}
-
-func (r *CartRepo) DeleteProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
-	_, err := r.db.Exec(ctx, deleteProduct, cart.Id, product.Id)
-	if err != nil {
-		err = fmt.Errorf("error happened in rows.Scan: %w", err)
-
-		return cart, err
-	}
-
-	cart, err = r.ReadCartProducts(ctx, cart)
-
-	return cart, err
 }

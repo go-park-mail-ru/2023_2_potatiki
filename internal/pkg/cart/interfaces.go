@@ -23,4 +23,5 @@ type CartRepo interface {
 	AddProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
 	DeleteProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
 	CheckProduct(context.Context, uuid.UUID) error
+	DeleteCart(ctx context.Context, cartID uuid.UUID) error
 }
