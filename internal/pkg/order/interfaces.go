@@ -12,6 +12,7 @@ import (
 type OrderUsecase interface {
 	CreateOrder(ctx context.Context, id uuid.UUID) (models.Order, error)
 	GetCurrentOrder(ctx context.Context, userID uuid.UUID) (models.Order, error)
+	GetOrders(ctx context.Context, userID uuid.UUID) ([]models.Order, error)
 }
 
 type OrderRepo interface {

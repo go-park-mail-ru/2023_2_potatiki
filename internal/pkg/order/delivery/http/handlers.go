@@ -90,7 +90,7 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	order, err := h.uc.GetOrders(r.Context(), userID)
+	orders, err := h.uc.GetOrders(r.Context(), userID)
 	if err != nil {
 		h.log.Error("failed to get cart", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -98,32 +98,6 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.log.Debug("h.uc.GetOrders", "order", order)
-	resp.JSON(w, http.StatusOK, order)
+	h.log.Debug("h.uc.GetOrders", "orders", orders)
+	resp.JSON(w, http.StatusOK, orders)
 }
-
-//func (h *OrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
-//	h.log = h.log.With(
-//		slog.String("op", sl.GFN()),
-//		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
-//	)
-//
-//	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
-//	if !ok {
-//		h.log.Error("failed cast uuid from context value")
-//		resp.JSONStatus(w, http.StatusUnauthorized)
-//
-//		return
-//	}
-//
-//	order, err := h.uc.GetOrder(r.Context(), userID)
-//	if err != nil {
-//		h.log.Error("failed to get cart", sl.Err(err))
-//		resp.JSONStatus(w, http.StatusTooManyRequests)
-//
-//		return
-//	}
-//
-//	h.log.Debug("h.uc.GetOrder", "order", order)
-//	resp.JSON(w, http.StatusOK, order)
-//}

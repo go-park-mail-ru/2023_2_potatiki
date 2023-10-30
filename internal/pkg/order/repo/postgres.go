@@ -16,7 +16,8 @@ const (
 	createOrder     = "INSERT INTO order_info (id, profile_id, delivery_at) VALUES ($1, $2, $3);"
 	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4);"
 	getProductInfo  = "SELECT name, description, price, imgsrc, rating  FROM product WHERE id=$1;"
-	getCurrentOrder = "SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.imgsrc AS product_imgscr, p.rating AS product_rating, oi.quantity AS product_quantity, oi.price AS product_price " +
+	getCurrentOrder = "SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.imgsrc AS product_imgscr, p.rating AS product_rating, " +
+		"oi.quantity AS product_quantity, oi.price AS product_price " +
 		"FROM order_item oi " +
 		"JOIN product p ON oi.product_id = p.id " +
 		"WHERE oi.order_id = $1;"
@@ -91,7 +92,6 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uu
 		order.Products = append(order.Products, models.OrderProduct{Quantity: cartProduct.Quantity,
 			Product: models.Product{Id: cartProduct.Id, Name: cartProduct.Name, Description: cartProduct.Description,
 				Price: cartProduct.Price, ImgSrc: cartProduct.ImgSrc, Rating: cartProduct.Rating}})
-
 	}
 
 	return order, nil
@@ -174,92 +174,3 @@ func (r *OrderRepo) ReadOrdersID(ctx context.Context, userID uuid.UUID) ([]uuid.
 
 	return ordersID, nil
 }
-
-//func (r *OrderRepo) ReadOrders(ctx context.Context, ordersID []uuid.UUID) (models.Order, error) {
-//	var orders []models.Order
-//	for _, orderID := range ordersID {
-//		rows, err := r.db.Query(ctx, getCurrentOrder, orderID)
-//
-//		var productsOrder []models.OrderProduct
-//		var productOrder models.OrderProduct
-//		order := models.Order{Id: orderID, Products: productsOrder}
-//
-//		for rows.Next() {
-//			err = rows.Scan(
-//				&productOrder.Id,
-//				&productOrder.Name,
-//				&productOrder.Description,
-//				&productOrder.ImgSrc,
-//				&productOrder.Rating,
-//				&productOrder.Quantity,
-//				&productOrder.Price,
-//			)
-//			if err != nil {
-//				err = fmt.Errorf("error happened in rows.Scan: %w", err)
-//
-//				return models.Order{}, err
-//			}
-//			order.Products = append(order.Products, productOrder)
-//		}
-//		rows.Close()
-//	}
-//	rows, err := r.db.Query(ctx, getCurrentOrder, orderID)
-//	defer rows.Close()
-//	if err != nil {
-//		if errors.Is(err, sql.ErrNoRows) {
-//			return models.Order{}, ErrPoductsInOrderNotFound
-//		}
-//		err = fmt.Errorf("error happened in db.Query: %w", err)
-//
-//		return models.Order{}, err
-//	}
-//
-//	var productsOrder []models.OrderProduct
-//	var productOrder models.OrderProduct
-//	order := models.Order{Id: orderID, Products: productsOrder}
-//	for rows.Next() {
-//		err = rows.Scan(
-//			&productOrder.Id,
-//			&productOrder.Name,
-//			&productOrder.Description,
-//			&productOrder.ImgSrc,
-//			&productOrder.Rating,
-//			&productOrder.Quantity,
-//			&productOrder.Price,
-//		)
-//		if err != nil {
-//			err = fmt.Errorf("error happened in rows.Scan: %w", err)
-//
-//			return models.Order{}, err
-//		}
-//		order.Products = append(order.Products, productOrder)
-//	}
-//
-//	return order, nil
-//}
-
-//func (r *CartRepo) CheckCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
-//	cart := models.Cart{}
-//	err := r.db.QueryRow(ctx, getCart, userID).Scan(&cart.Id)
-//	if err != nil {
-//		if errors.Is(err, sql.ErrNoRows) {
-//			return models.Cart{}, ErrCartNotFound
-//		}
-//		err = fmt.Errorf("error happened in row.Scan: %w", err)
-//
-//		return models.Cart{}, err
-//	}
-//	return cart, nil
-//}
-//
-//func (r *CartRepo) ReadCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
-//	cart, err := r.CheckCart(ctx, userID)
-//	if err != nil {
-//		return models.Cart{}, err
-//	}
-//
-//	cart, err = r.ReadCartProducts(ctx, cart)
-//
-//	return cart, err
-//}
-//
