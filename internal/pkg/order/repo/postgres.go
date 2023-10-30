@@ -26,14 +26,6 @@ const (
 		"JOIN status s ON oi.status_id = s.id " +
 		"WHERE oi.profile_id = $1 AND s.name = $2;"
 	getOrdersID = "SELECT id AS order_id FROM order_info WHERE profile_id=$1;"
-	getCart     = "SELECT id FROM cart WHERE Profile_id=$1 and is_current = true;"
-	getProducts = "SELECT p._id , p.name_product, p.Description, p.Price, p.ImgSrc, p.Rating, sc.Quantity " +
-		"FROM shopping_cart_item sc JOIN product p ON sc.product_id=p.id WHERE p.id=$1;"
-	getProduct = "SELECT id FROM product where id=$1;"
-	addProduct = "insert into shopping_cart_item(cart_id, product_id, quantity) values ($1, $2, $3)" +
-		" ON CONFLICT ON CONSTRAINT uq_shopping_cart_item_cart_id_product_id " +
-		"do update set quantity=$3 WHERE shopping_cart_item.cart_id=$1 and shopping_cart_item.product_id=$2;"
-	deleteProduct = "DELETE FROM shopping_cart_item WHERE cart_id=$1 and product_id=$2;"
 )
 
 var (
