@@ -13,6 +13,7 @@ type CartUsecase interface {
 	GetCart(context.Context, uuid.UUID) (models.Cart, error)
 	AddProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
 	DeleteProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
+	UpdateCart(context.Context, models.Cart) (models.Cart, error)
 }
 
 type CartRepo interface {
@@ -22,6 +23,6 @@ type CartRepo interface {
 	ReadCartProducts(context.Context, models.Cart) (models.Cart, error)
 	AddProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
 	DeleteProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
-	CheckProduct(context.Context, uuid.UUID) error
 	DeleteCart(ctx context.Context, cartID uuid.UUID) error
+	UpdateCart(context.Context, models.Cart) (models.Cart, error)
 }

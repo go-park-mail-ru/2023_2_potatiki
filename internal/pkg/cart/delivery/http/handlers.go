@@ -27,6 +27,57 @@ func NewCartHandler(log *slog.Logger, uc cart.CartUsecase) CartHandler {
 	}
 }
 
+// @Summary	UpdateCart
+// @Tags Cart
+// @Description	Update cart
+// @Accept json
+// @Produce json
+// @Param @Param input body models.Cart true "cart info"
+// @Success	200	{object} models.Cart "cart info"
+// @Failure	400	{object} response.Response	"invalid request"
+// @Failure	429
+// @Router	/api/cart/update [post]
+func (h *CartHandler) UpdateCart(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
+		resp.JSONStatus(w, http.StatusUnauthorized)
+
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if resp.BodyErr(err, h.log, w) {
+		return
+	}
+	defer r.Body.Close()
+	h.log.Debug("request body decoded", slog.Any("request", r))
+
+	c := models.Cart{}
+	err = json.Unmarshal(body, &c)
+	if err != nil {
+		h.log.Error("failed to unmarshal request body", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+	c.ProfileId = userID
+
+	cart, err := h.uc.UpdateCart(r.Context(), c)
+	if err != nil {
+		h.log.Error("failed to update cart", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.log.Debug("update cart")
+	resp.JSON(w, http.StatusOK, cart)
+}
+
 // @Summary	GetCart
 // @Tags Cart
 // @Description	Get cart
