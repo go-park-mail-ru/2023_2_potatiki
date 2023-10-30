@@ -50,6 +50,32 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, order)
 }
 
+//func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
+//	h.log = h.log.With(
+//		slog.String("op", sl.GFN()),
+//		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
+//	)
+//
+//	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
+//	if !ok {
+//		h.log.Error("failed cast uuid from context value")
+//		resp.JSONStatus(w, http.StatusUnauthorized)
+//
+//		return
+//	}
+//
+//	order, err := h.uc.GetCurrentOrder(r.Context(), userID)
+//	if err != nil {
+//		h.log.Error("failed to get cart", sl.Err(err))
+//		resp.JSONStatus(w, http.StatusTooManyRequests)
+//
+//		return
+//	}
+//
+//	h.log.Debug("h.uc.CreateOrder", "order", order)
+//	resp.JSON(w, http.StatusOK, order)
+//}
+
 //func (h *OrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
 //	h.log = h.log.With(
 //		slog.String("op", sl.GFN()),

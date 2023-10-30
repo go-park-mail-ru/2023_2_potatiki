@@ -51,6 +51,19 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, id uuid.UUID) (models.O
 	return order, nil
 }
 
+//
+//func (uc *OrderUsecase) GetCurrentOrder(ctx context.Context, id uuid.UUID) (models.Order, error) {
+//
+//	order, err := uc.repoOrder.ReadCurrentOrder(ctx, id)
+//	if err != nil {
+//		err = fmt.Errorf("error happened in repo.CreateOrder: %w", err)
+//
+//		return models.Order{}, err
+//	}
+//
+//	return order, nil
+//}
+
 //func (uc *OrderUsecase) GetOrder(ctx context.Context, id uuid.UUID) (models.Order, error) {
 //	cart, err := uc.repo.ReadCart(ctx, id)
 //	order, err := uc.repo.ReadOrder(ctx, id)
