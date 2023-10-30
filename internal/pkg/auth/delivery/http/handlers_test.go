@@ -24,10 +24,10 @@ func TestSignUp(t *testing.T) {
 	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
-	uc.EXPECT().SignUp(gomock.Any(), models.User{
+	uc.EXPECT().SignUp(gomock.Any(), &models.User{
 		Login:    "User",
 		Password: "Dima@gmail.com",
-	}).Return(models.Profile{}, "", time.Time{}, nil)
+	}).Return(&models.Profile{}, "", time.Time{}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
 		strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))
@@ -56,10 +56,10 @@ func TestSignIn(t *testing.T) {
 	defer ctrl.Finish()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
-	uc.EXPECT().SignIn(gomock.Any(), models.User{
+	uc.EXPECT().SignIn(gomock.Any(), &models.User{
 		Login:    "User",
 		Password: "Dima@gmail.com",
-	}).Return(models.Profile{}, "", time.Time{}, nil)
+	}).Return(&models.Profile{}, "", time.Time{}, nil)
 
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
 		strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))

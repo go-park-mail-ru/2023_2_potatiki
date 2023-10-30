@@ -63,6 +63,10 @@ definitions:
         type: string
       login:
         type: string
+      password:
+        items:
+          type: integer
+        type: array
     type: object
   models.User:
     properties:
@@ -178,6 +182,66 @@ paths:
       summary: SignUp
       tags:
       - Auth
+  /api/cart/add_product:
+    post:
+      consumes:
+      - application/json
+      description: add product to cart or change its number
+      parameters:
+      - description: product info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.CartProduct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: cart info
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+      summary: AddProduct
+      tags:
+      - Cart
+  /api/cart/delete_product:
+    post:
+      consumes:
+      - application/json
+      description: delete product from cart
+      parameters:
+      - description: product info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.CartProduct'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: cart info
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/response.Response'
+        "401":
+          description: Unauthorized
+        "429":
+          description: Too Many Requests
+      summary: DeleteProduct
+      tags:
+      - Cart
   /api/cart/summary:
     get:
       consumes:
@@ -195,36 +259,6 @@ paths:
         "429":
           description: Too Many Requests
       summary: GetCart
-      tags:
-      - Cart
-  /api/cart/update:
-    post:
-      consumes:
-      - application/json
-      description: Update cart
-      parameters:
-      - description: cart info
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/models.Cart'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: cart info
-          schema:
-            $ref: '#/definitions/models.Cart'
-        "400":
-          description: error messege
-          schema:
-            $ref: '#/definitions/response.Response'
-        "401":
-          description: Unauthorized
-        "429":
-          description: Too Many Requests
-      summary: UpdateCart
       tags:
       - Cart
   /api/category/get_all:

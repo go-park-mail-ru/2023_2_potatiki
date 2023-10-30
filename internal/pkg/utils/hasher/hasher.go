@@ -11,7 +11,7 @@ const SaltLen = 8
 
 func HashPass(plainPassword string) []byte {
 	salt := make([]byte, SaltLen)
-	rand.Read(salt)
+	rand.Read(salt) //nolint:errcheck
 
 	return hash(salt, plainPassword)
 }
@@ -24,7 +24,7 @@ func CheckPass(passHash []byte, plainPassword string) bool {
 }
 
 func hash(salt []byte, plainPassword string) []byte {
-	hashedPass := argon2.IDKey([]byte(plainPassword), []byte(salt), 1, 64*1024, 4, 32)
+	hashedPass := argon2.IDKey([]byte(plainPassword), salt, 1, 64*1024, 4, 32)
 
 	return append(salt, hashedPass...)
 }

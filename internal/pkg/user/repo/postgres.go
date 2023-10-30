@@ -11,7 +11,7 @@ import (
 
 const (
 	profileExistsByID  = "SELECT login, description, imgsrc, passwordhash FROM profile WHERE id=$1;"
-	profileIdByUser    = "SELECT id FROM profile WHERE login=$1;"
+	profileIDByUser    = "SELECT id FROM profile WHERE login=$1;"
 	addProfile         = "INSERT INTO profile(id, login, description, imgsrc, passwordhash) VALUES($1, $2, $3, $4, $5);"
 	updateProfileInfo  = "UPDATE profile SET description=$1, passwordhash=$2 WHERE id=$3;"
 	updateProfilePhoto = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
@@ -41,10 +41,10 @@ func (r *UserRepo) CreateProfile(ctx context.Context, p *models.Profile) error {
 	return nil
 }
 
-func (r *UserRepo) ReadProfile(ctx context.Context, Id uuid.UUID) (*models.Profile, error) {
-	row := r.db.QueryRow(ctx, profileExistsByID, Id)
+func (r *UserRepo) ReadProfile(ctx context.Context, ID uuid.UUID) (*models.Profile, error) {
+	row := r.db.QueryRow(ctx, profileExistsByID, ID)
 	p := &models.Profile{
-		Id: Id,
+		Id: ID,
 	}
 	if err := row.Scan(p.Login, p.Description, p.ImgSrc, p.PasswordHash); err != nil {
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
@@ -56,7 +56,7 @@ func (r *UserRepo) ReadProfile(ctx context.Context, Id uuid.UUID) (*models.Profi
 }
 
 func (r *UserRepo) GetProfileIdByUser(ctx context.Context, user *models.User) (uuid.UUID, error) {
-	row := r.db.QueryRow(ctx, profileIdByUser, user.Login)
+	row := r.db.QueryRow(ctx, profileIDByUser, user.Login)
 	var Id uuid.UUID
 	if err := row.Scan(&Id); err != nil {
 		err = fmt.Errorf("error happened in row.Scan: %w", err)

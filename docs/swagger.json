@@ -155,6 +155,98 @@
                 }
             }
         },
+        "/api/cart/add_product": {
+            "post": {
+                "description": "add product to cart or change its number",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "AddProduct",
+                "parameters": [
+                    {
+                        "description": "product info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CartProduct"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "cart info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Cart"
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/cart/delete_product": {
+            "post": {
+                "description": "delete product from cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "DeleteProduct",
+                "parameters": [
+                    {
+                        "description": "product info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CartProduct"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "cart info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Cart"
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
         "/api/cart/summary": {
             "get": {
                 "description": "Get cart",
@@ -173,52 +265,6 @@
                         "description": "Cart info",
                         "schema": {
                             "$ref": "#/definitions/models.Cart"
-                        }
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "429": {
-                        "description": "Too Many Requests"
-                    }
-                }
-            }
-        },
-        "/api/cart/update": {
-            "post": {
-                "description": "Update cart",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Cart"
-                ],
-                "summary": "UpdateCart",
-                "parameters": [
-                    {
-                        "description": "cart info",
-                        "name": "input",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/models.Cart"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "cart info",
-                        "schema": {
-                            "$ref": "#/definitions/models.Cart"
-                        }
-                    },
-                    "400": {
-                        "description": "error messege",
-                        "schema": {
-                            "$ref": "#/definitions/response.Response"
                         }
                     },
                     "401": {
@@ -632,6 +678,12 @@
                 },
                 "login": {
                     "type": "string"
+                },
+                "password": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
                 }
             }
         },

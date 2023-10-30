@@ -10,17 +10,14 @@ import (
 //go:generate mockgen -source interfaces.go -destination ./mocks/cart_mock.go -package mock
 
 type OrderUsecase interface {
-	GetCart(context.Context, uuid.UUID) (models.Cart, error)
-	AddProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
-	DeleteProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
+	CreateOrder(ctx context.Context, id uuid.UUID) (models.Order, error)
+	GetCurrentOrder(ctx context.Context, userID uuid.UUID) (models.Order, error)
+	GetOrders(ctx context.Context, userID uuid.UUID) ([]models.Order, error)
 }
 
 type OrderRepo interface {
-	CreateCart(context.Context, uuid.UUID) (models.Cart, error)
-	CheckCart(context.Context, uuid.UUID) (models.Cart, error)
-	ReadCart(context.Context, uuid.UUID) (models.Cart, error)
-	ReadCartProducts(context.Context, models.Cart) (models.Cart, error)
-	AddProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
-	DeleteProduct(context.Context, models.Cart, models.CartProduct) (models.Cart, error)
-	CheckProduct(context.Context, uuid.UUID) error
+	CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID) (models.Order, error)
+	ReadOrderID(ctx context.Context, userID uuid.UUID, status string) (uuid.UUID, error)
+	ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)
+	ReadOrdersID(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error)
 }

@@ -23,7 +23,7 @@ func TestGetProfile(t *testing.T) {
 	uc := mock.NewMockUserUsecase(ctrl)
 	idProfile := uuid.New()
 
-	uc.EXPECT().GetProfile(gomock.Any(), idProfile).Return(models.Profile{}, nil)
+	uc.EXPECT().GetProfile(gomock.Any(), idProfile).Return(&models.Profile{}, nil)
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 	req = mux.SetURLVars(req, map[string]string{"id": idProfile.String()})
@@ -41,7 +41,7 @@ func TestGetProfileBad(t *testing.T) {
 	t.Run("EmptyID", func(t *testing.T) {
 		uc := mock.NewMockUserUsecase(ctrl)
 		idProfile := uuid.New()
-		uc.EXPECT().GetProfile(gomock.Any(), idProfile).Return(models.Profile{}, errors.New("invalidProfile"))
+		uc.EXPECT().GetProfile(gomock.Any(), idProfile).Return(&models.Profile{}, errors.New("invalidProfile"))
 
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req = mux.SetURLVars(req, map[string]string{"id": idProfile.String()})

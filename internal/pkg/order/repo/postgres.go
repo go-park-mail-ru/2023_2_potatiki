@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
@@ -12,141 +13,163 @@ import (
 )
 
 const (
-	getCart     = "SELECT id FROM cart WHERE Profile_id=$1 and is_current = true;"
-	createCart  = "INSERT INTO cart(id, profile_id, is_current) VALUES($1, $2, true);"
-	getProducts = "SELECT p._id , p.name_product, p.Description, p.Price, p.ImgSrc, p.Rating, sc.Quantity " +
-		"FROM shopping_cart_item sc JOIN product p ON sc.product_id=p.id WHERE p.id=$1;"
-	getProduct = "SELECT id FROM product where id=$1;"
-	addProduct = "insert into shopping_cart_item(cart_id, product_id, quantity) values ($1, $2, $3)" +
-		" ON CONFLICT ON CONSTRAINT uq_shopping_cart_item_cart_id_product_id " +
-		"do update set quantity=$3 WHERE shopping_cart_item.cart_id=$1 and shopping_cart_item.product_id=$2;"
-	deleteProduct = "DELETE FROM shopping_cart_item WHERE cart_id=$1 and product_id=$2;"
+	createOrder     = "INSERT INTO order_info (id, profile_id, delivery_at) VALUES ($1, $2, $3);"
+	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4);"
+	getProductInfo  = "SELECT name, description, price, imgsrc, rating  FROM product WHERE id=$1;"
+	getCurrentOrder = "SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.imgsrc AS product_imgscr, p.rating AS product_rating, " +
+		"oi.quantity AS product_quantity, oi.price AS product_price " +
+		"FROM order_item oi " +
+		"JOIN product p ON oi.product_id = p.id " +
+		"WHERE oi.order_id = $1;"
+	getCurrentOrderID = "SELECT oi.id AS order_id " +
+		"FROM order_info oi " +
+		"JOIN status s ON oi.status_id = s.id " +
+		"WHERE oi.profile_id = $1 AND s.name = $2;"
+	getOrdersID = "SELECT id AS order_id FROM order_info WHERE profile_id=$1;"
 )
+
+//CREATE OR ALTER PROCEDURE create_order(a UUiD, b UUID, c TIMESTAMPTZ, e int, )
+//LANGUAGE SQL
+//AS $$
+//INSERT INTO order_info (id, profile_id, delivery_at, status_id) VALUES (a, b, c, e);
+//INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4);
+//$$;
 
 var (
-	ErrCartNotFound    = errors.New("cart not found")
-	ErrPoductsNotFound = errors.New("products not found")
-	ErrPoductNotFound  = errors.New("product not found")
+	ErrOrderNotFound          = errors.New("order not found")
+	ErrOrdersNotFound         = errors.New("orders not found")
+	ErrPoductsInOrderNotFound = errors.New("products in order not found")
+	ErrPoductNotFound         = errors.New("product not found")
 )
 
-type CartRepo struct {
+type OrderRepo struct {
 	db pgxtype.Querier
 }
 
-func NewCartRepo(db pgxtype.Querier) *CartRepo {
-	return &CartRepo{
+func NewOrderRepo(db pgxtype.Querier) *OrderRepo {
+	return &OrderRepo{
 		db: db,
 	}
 }
 
-func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) error {
-	cartID := uuid.New()
-	_, err := r.db.Exec(ctx, createCart, cartID, userID)
+// TODO: Добавить добавление статуса в заказ
+func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID) (models.Order, error) {
+	orderID := uuid.New()
+	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour))
 	if err != nil {
+		err = fmt.Errorf("error happened in db.Exec: %w", err)
+
+		return models.Order{}, err
+	}
+	var productsOrder []models.OrderProduct
+	order := models.Order{Id: orderID, Products: productsOrder}
+	for _, cartProduct := range cart.Products {
+		err = r.db.QueryRow(ctx, getProductInfo, cartProduct.Id).Scan(
+			&cartProduct.Name,
+			&cartProduct.Description,
+			&cartProduct.Price,
+			&cartProduct.ImgSrc,
+			&cartProduct.Rating,
+		)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return models.Order{}, ErrPoductNotFound
+			}
+			err = fmt.Errorf("error happened in row.Scan: %w", err)
+
+			return models.Order{}, err
+		}
+
+		orderItemID := uuid.New()
+		_, err = r.db.Exec(ctx, createOrderItem,
+			orderItemID, orderID, cartProduct.Id, cartProduct.Quantity, cartProduct.Price)
+		if err != nil {
+			err = fmt.Errorf("error happened in db.Exec: %w", err)
+
+			return models.Order{}, err
+		}
+		order.Products = append(order.Products, models.OrderProduct{Quantity: cartProduct.Quantity,
+			Product: models.Product{Id: cartProduct.Id, Name: cartProduct.Name, Description: cartProduct.Description,
+				Price: cartProduct.Price, ImgSrc: cartProduct.ImgSrc, Rating: cartProduct.Rating}})
+	}
+
+	return order, nil
+}
+
+func (r *OrderRepo) ReadOrderID(ctx context.Context, userID uuid.UUID, status string) (uuid.UUID, error) {
+	var orderID uuid.UUID
+	err := r.db.QueryRow(ctx, getCurrentOrderID, userID, status).Scan(&orderID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return uuid.UUID{}, ErrOrderNotFound
+		}
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
-		return err
+		return uuid.UUID{}, err
 	}
 
-	return nil
+	return orderID, nil
 }
 
-func (r *CartRepo) CheckCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
-	cart := models.Cart{}
-	err := r.db.QueryRow(ctx, getCart, userID).Scan(&cart.Id)
+func (r *OrderRepo) ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error) {
+	rows, err := r.db.Query(ctx, getCurrentOrder, orderID)
+	defer rows.Close()
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return models.Cart{}, ErrCartNotFound
+			return models.Order{}, ErrPoductsInOrderNotFound
 		}
-		err = fmt.Errorf("error happened in row.Scan: %w", err)
+		err = fmt.Errorf("error happened in db.Query: %w", err)
 
-		return models.Cart{}, err
-	}
-	return cart, nil
-}
-
-func (r *CartRepo) ReadCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
-	cart, err := r.CheckCart(ctx, userID)
-	if err != nil {
-		return models.Cart{}, err
+		return models.Order{}, err
 	}
 
-	cart, err = r.ReadCartProducts(ctx, cart)
-
-	return cart, err
-}
-
-func (r *CartRepo) ReadCartProducts(ctx context.Context, cart models.Cart) (models.Cart, error) {
-	rows, err := r.db.Query(ctx, getProducts, cart.Id)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return cart, ErrPoductsNotFound
-		}
-		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
-
-		return cart, err
-	}
-
-	product := models.CartProduct{}
+	var productsOrder []models.OrderProduct
+	var productOrder models.OrderProduct
+	order := models.Order{Id: orderID, Products: productsOrder}
 	for rows.Next() {
 		err = rows.Scan(
-			&product.Id,
-			&product.Name,
-			&product.Description,
-			&product.Price,
-			&product.ImgSrc,
-			&product.Rating,
-			&product.Quantity,
+			&productOrder.Id,
+			&productOrder.Name,
+			&productOrder.Description,
+			&productOrder.ImgSrc,
+			&productOrder.Rating,
+			&productOrder.Quantity,
+			&productOrder.Price,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
-			return cart, err
+			return models.Order{}, err
 		}
-		cart.Products = append(cart.Products, product)
+		order.Products = append(order.Products, productOrder)
 	}
-	defer rows.Close()
 
-	return cart, nil
+	return order, nil
 }
 
-func (r *CartRepo) CheckProduct(ctx context.Context, productID uuid.UUID) error {
-	product := models.CartProduct{}
-	err := r.db.QueryRow(ctx, getProduct, productID).Scan(&product.Id)
+func (r *OrderRepo) ReadOrdersID(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error) {
+	rows, err := r.db.Query(ctx, getOrdersID, userID)
+	defer rows.Close()
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return ErrPoductNotFound
+			return []uuid.UUID{}, ErrOrdersNotFound
 		}
-		err = fmt.Errorf("error happened in row.Scan: %w", err)
+		err = fmt.Errorf("error happened in db.Query: %w", err)
 
-		return err
+		return []uuid.UUID{}, err
 	}
 
-	return nil
-}
+	var orderID uuid.UUID
+	var ordersID []uuid.UUID
+	for rows.Next() {
+		err = rows.Scan(&orderID)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
-func (r *CartRepo) AddProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
-	_, err := r.db.Exec(ctx, addProduct, cart.Id, product.Id, product.Quantity)
-	if err != nil {
-		err = fmt.Errorf("error happened in rows.Scan: %w", err)
-
-		return cart, err
+			return []uuid.UUID{}, err
+		}
+		ordersID = append(ordersID, orderID)
 	}
 
-	cart, err = r.ReadCartProducts(ctx, cart)
-
-	return cart, err
-}
-
-func (r *CartRepo) DeleteProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
-	_, err := r.db.Exec(ctx, deleteProduct, cart.Id, product.Id)
-	if err != nil {
-		err = fmt.Errorf("error happened in rows.Scan: %w", err)
-
-		return cart, err
-	}
-
-	cart, err = r.ReadCartProducts(ctx, cart)
-
-	return cart, err
+	return ordersID, nil
 }

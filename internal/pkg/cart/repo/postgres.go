@@ -21,6 +21,7 @@ const (
 		" ON CONFLICT ON CONSTRAINT uq_shopping_cart_item_cart_id_product_id " +
 		"do update set quantity=$3 WHERE shopping_cart_item.cart_id=$1 and shopping_cart_item.product_id=$2;"
 	deleteProduct = "DELETE FROM shopping_cart_item WHERE cart_id=$1 and product_id=$2;"
+	deleteCard    = "DELETE FROM cart WHERE profile_id=$1"
 )
 
 var (
@@ -51,6 +52,17 @@ func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) (models.Car
 	cart.Id = cartID
 	cart.ProfileId = userID
 	return cart, nil
+}
+
+func (r *CartRepo) DeleteCart(ctx context.Context, cartID uuid.UUID) error {
+	_, err := r.db.Exec(ctx, deleteCard, cartID)
+	if err != nil {
+		err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+		return err
+	}
+
+	return nil
 }
 
 func (r *CartRepo) CheckCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
