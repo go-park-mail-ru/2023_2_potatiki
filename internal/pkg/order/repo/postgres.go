@@ -28,6 +28,13 @@ const (
 	getOrdersID = "SELECT id AS order_id FROM order_info WHERE profile_id=$1;"
 )
 
+//CREATE OR ALTER PROCEDURE create_order(a UUiD, b UUID, c TIMESTAMPTZ, e int, )
+//LANGUAGE SQL
+//AS $$
+//INSERT INTO order_info (id, profile_id, delivery_at, status_id) VALUES (a, b, c, e);
+//INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4);
+//$$;
+
 var (
 	ErrOrderNotFound          = errors.New("order not found")
 	ErrOrdersNotFound         = errors.New("orders not found")

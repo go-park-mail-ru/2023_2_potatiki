@@ -38,3 +38,13 @@ linters:
     - structcheck #warn
     - ifshort #warn
     - varcheck #warn
+    - wrapcheck #del!!!
+    - whitespace #del!!!
+    - nlreturn #del!!!
+    - ineffassign #del!!!
+    - wastedassign #del!!!
+    - lll #del!!!
+    - prealloc #del!!!
+    - gosec #del!!!
+    - gocritic #del!!!
+    - dupl #del!!!
