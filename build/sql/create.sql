@@ -155,7 +155,7 @@ VALUES
 
 CREATE TABLE IF NOT EXISTS shopping_cart_item
 (
-    id UUID NOT NULL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     cart_id UUID NOT NULL,
     FOREIGN KEY (cart_id) REFERENCES cart(id) ON DELETE CASCADE,
     product_id UUID NOT NULL,
