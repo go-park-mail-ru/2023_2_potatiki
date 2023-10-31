@@ -51,18 +51,18 @@ func (mr *MockProfileUsecaseMockRecorder) GetProfile(arg0, arg1 interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProfile", reflect.TypeOf((*MockProfileUsecase)(nil).GetProfile), arg0, arg1)
 }
 
-// UpdateInfo mocks base method.
-func (m *MockProfileUsecase) UpdateInfo(arg0 context.Context, arg1 uuid.UUID, arg2 *models.ProfileInfo) error {
+// UpdateData mocks base method.
+func (m *MockProfileUsecase) UpdateData(arg0 context.Context, arg1 uuid.UUID, arg2 *models.UpdateProfileDataPayload) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateInfo", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "UpdateData", arg0, arg1, arg2)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// UpdateInfo indicates an expected call of UpdateInfo.
-func (mr *MockProfileUsecaseMockRecorder) UpdateInfo(arg0, arg1, arg2 interface{}) *gomock.Call {
+// UpdateData indicates an expected call of UpdateData.
+func (mr *MockProfileUsecaseMockRecorder) UpdateData(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateInfo", reflect.TypeOf((*MockProfileUsecase)(nil).UpdateInfo), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateData", reflect.TypeOf((*MockProfileUsecase)(nil).UpdateData), arg0, arg1, arg2)
 }
 
 // UpdatePhoto mocks base method.

@@ -166,7 +166,7 @@ func run() (err error) {
 		profile.Handle("/update-photo", authMW(http.HandlerFunc(profileHandler.UpdatePhoto))).
 			Methods(http.MethodPost, http.MethodOptions)
 
-		profile.Handle("/update-info", authMW(http.HandlerFunc(profileHandler.UpdateInfo))).
+		profile.Handle("/update-data", authMW(http.HandlerFunc(profileHandler.UpdateProfileData))).
 			Methods(http.MethodPost, http.MethodOptions)
 	}
 

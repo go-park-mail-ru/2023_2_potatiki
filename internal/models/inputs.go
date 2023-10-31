@@ -10,3 +10,8 @@ type SignInPayload struct {
 	Login    string `json:"login" validate:"required,min=6,max=30"`
 	Password string `json:"password" validate:"required,min=8,max=32"`
 }
+
+type UpdateProfileDataPayload struct {
+	Password string `json:"password" validate:"required,min=8,max=32"`
+	Phone    string `json:"phone" validate:"required,e164"`
+}

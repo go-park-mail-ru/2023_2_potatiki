@@ -70,6 +70,20 @@ definitions:
       phone:
         type: string
     type: object
+  models.SignInPayload:
+    properties:
+      login:
+        maxLength: 30
+        minLength: 6
+        type: string
+      password:
+        maxLength: 32
+        minLength: 8
+        type: string
+    required:
+    - login
+    - password
+    type: object
   models.SignUpPayload:
     properties:
       login:
@@ -84,6 +98,18 @@ definitions:
         type: string
     required:
     - login
+    - password
+    - phone
+    type: object
+  models.UpdateProfileDataPayload:
+    properties:
+      password:
+        maxLength: 32
+        minLength: 8
+        type: string
+      phone:
+        type: string
+    required:
     - password
     - phone
     type: object
@@ -104,7 +130,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Check user auth
+      description: Check user is logged in
       parameters:
       - default: zuzu-t=xxx
         description: Token
@@ -142,19 +168,19 @@ paths:
     post:
       consumes:
       - application/json
-      description: LogIn to Account
+      description: Login to Account
       parameters:
-      - description: user info
+      - description: SignInPayload
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.SignUpPayload'
+          $ref: '#/definitions/models.SignInPayload'
       produces:
       - application/json
       responses:
         "200":
-          description: User profile
+          description: Profile
           schema:
             $ref: '#/definitions/models.Profile'
         "400":
@@ -172,7 +198,7 @@ paths:
       - application/json
       description: Create Account
       parameters:
-      - description: user info
+      - description: SignUpPayload
         in: body
         name: input
         required: true
@@ -182,7 +208,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: User profile
+          description: Profile
           schema:
             $ref: '#/definitions/models.Profile'
         "400":
@@ -394,7 +420,7 @@ paths:
     get:
       consumes:
       - application/json
-      description: Get user profile
+      description: Get profile by ID
       parameters:
       - description: Profile UUID
         in: path
@@ -405,11 +431,11 @@ paths:
       - application/json
       responses:
         "200":
-          description: User profile
+          description: Profile
           schema:
             $ref: '#/definitions/models.Profile'
         "400":
-          description: invalid request
+          description: error messege
           schema:
             $ref: '#/definitions/response.Response'
         "429":
@@ -417,22 +443,23 @@ paths:
       summary: GetProfile
       tags:
       - Profile
-  /api/profile/update-info/{id}:
-    get:
+  /api/profile/update-data:
+    post:
       consumes:
       - application/json
       description: Update profile data
       parameters:
-      - description: Profile UUID
-        in: path
-        name: id
+      - description: UpdateProfileDataPayload
+        in: body
+        name: input
         required: true
-        type: string
+        schema:
+          $ref: '#/definitions/models.UpdateProfileDataPayload'
       produces:
       - application/json
       responses:
         "200":
-          description: User profile
+          description: Profile
           schema:
             $ref: '#/definitions/models.Profile'
         "400":
@@ -443,25 +470,26 @@ paths:
           description: Unauthorized
         "429":
           description: Too Many Requests
-      summary: UpdateInfo
+      summary: UpdateProfileData
       tags:
       - Profile
   /api/profile/update-photo/{id}:
     post:
       consumes:
       - application/json
-      description: Update user photo
+      description: Update profile photo
       parameters:
-      - description: Profile UUID
-        in: path
-        name: id
+      - description: photo
+        in: body
+        name: input
         required: true
-        type: string
+        schema:
+          type: integer
       produces:
       - application/json
       responses:
         "200":
-          description: User profile
+          description: Profile
           schema:
             $ref: '#/definitions/models.Profile'
         "401":

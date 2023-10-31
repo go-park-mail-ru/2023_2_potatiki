@@ -2,6 +2,7 @@ package profile
 
 import (
 	"context"
+	"errors"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/google/uuid"
@@ -12,7 +13,7 @@ import (
 type ProfileUsecase interface {
 	GetProfile(context.Context, uuid.UUID) (*models.Profile, error)
 	UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) error
-	UpdateInfo(context.Context, uuid.UUID, *models.ProfileInfo) error
+	UpdateData(context.Context, uuid.UUID, *models.UpdateProfileDataPayload) error
 }
 
 type ProfileRepo interface {
@@ -22,3 +23,9 @@ type ProfileRepo interface {
 	UpdateProfile(context.Context, *models.Profile) error
 	UpdatePhoto(context.Context, uuid.UUID, string) error
 }
+
+var (
+	ErrorForbiddenExtension = errors.New("this file extension is not allowed")
+	ErrPassMismatch         = errors.New("password does not match")
+	ErrDoubleData           = errors.New("profile field and new field are the same")
+)

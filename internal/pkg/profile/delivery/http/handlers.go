@@ -33,12 +33,12 @@ func NewProfileHandler(log *slog.Logger, uc profile.ProfileUsecase) *ProfileHand
 
 // @Summary	GetProfile
 // @Tags Profile
-// @Description	Get user profile
+// @Description	Get profile by ID
 // @Accept json
 // @Produce json
 // @Param id path string true "Profile UUID"
-// @Success	200	{object} models.Profile "User profile"
-// @Failure	400	{object} response.Response	"invalid request"
+// @Success	200	{object} models.Profile "Profile"
+// @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
 // @Router	/api/profile/{id} [get]
 func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -76,13 +76,71 @@ func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, profile)
 }
 
-// @Summary	UpdatePhoto
+// @Summary	UpdateProfileData
 // @Tags Profile
-// @Description	Update user photo
+// @Description	Update profile data
 // @Accept json
 // @Produce json
-// @Param id path string true "Profile UUID"
-// @Success	200	{object} models.Profile "User profile"
+// @Param input body models.UpdateProfileDataPayload true "UpdateProfileDataPayload"
+// @Success	200	{object} models.Profile "Profile"
+// @Failure	400	{object} response.Response	"error messege"
+// @Failure	401
+// @Failure	429
+// @Router	/api/profile/update-data [post]
+func (h *ProfileHandler) UpdateProfileData(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
+	)
+
+	id, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
+		resp.JSONStatus(w, http.StatusUnauthorized)
+
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if resp.BodyErr(err, h.log, w) {
+		return
+	}
+	defer r.Body.Close()
+	h.log.Debug("got file from r.Body", slog.Any("request", r))
+
+	payload := &models.UpdateProfileDataPayload{}
+	err = json.Unmarshal(body, payload)
+	if err != nil {
+		h.log.Error("failed to unmarshal request body", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	err = h.uc.UpdateData(r.Context(), id, payload)
+	if err != nil {
+		if errors.Is(err, profile.ErrDoubleData) {
+			h.log.Warn("failed to update profile data", sl.Err(err))
+			resp.JSON(w, http.StatusBadRequest, resp.Err(err.Error()))
+		}
+
+		h.log.Error("failed to update profile data", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.log.Info("updated profile info")
+	resp.JSONStatus(w, http.StatusOK)
+}
+
+// @Summary	UpdatePhoto
+// @Tags Profile
+// @Description	Update profile photo
+// @Accept json
+// @Produce json
+// @Param input body byte true "photo"
+// @Success	200	{object} models.Profile "Profile"
 // @Failure	401
 // @Failure 413
 // @Failure	429
@@ -124,59 +182,6 @@ func (h *ProfileHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 	}
 
-	h.log.Info("updated profile info")
-	resp.JSONStatus(w, http.StatusOK)
-}
-
-// @Summary	UpdateInfo
-// @Tags Profile
-// @Description	Update profile data
-// @Accept json
-// @Produce json
-// @Param id path string true "Profile UUID"
-// @Success	200	{object} models.Profile "User profile"
-// @Failure	400	{object} response.Response	"error messege"
-// @Failure	401
-// @Failure	429
-// @Router	/api/profile/update-info/{id} [get]
-func (h *ProfileHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
-	h.log = h.log.With(
-		slog.String("op", sl.GFN()),
-		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
-	)
-
-	id, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
-	if !ok {
-		h.log.Error("failed cast uuid from context value")
-		resp.JSONStatus(w, http.StatusUnauthorized)
-
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if resp.BodyErr(err, h.log, w) {
-		return
-	}
-	defer r.Body.Close()
-	h.log.Debug("got file from r.Body", slog.Any("request", r))
-
-	profileInfo := &models.ProfileInfo{}
-	err = json.Unmarshal(body, profileInfo)
-	if err != nil {
-		h.log.Error("failed to unmarshal request body", sl.Err(err))
-		resp.JSONStatus(w, http.StatusTooManyRequests)
-
-		return
-	}
-
-	err = h.uc.UpdateInfo(r.Context(), id, profileInfo)
-	if err != nil {
-		h.log.Error("failed to update profile info", sl.Err(err))
-		resp.JSONStatus(w, http.StatusTooManyRequests)
-
-		return
-	}
-
-	h.log.Info("updated profile info")
+	h.log.Info("updated profile success")
 	resp.JSONStatus(w, http.StatusOK)
 }

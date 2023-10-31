@@ -13,7 +13,7 @@ const (
 	profileById        = "SELECT login, description, imgsrc, phone, passwordhash FROM profile WHERE id=$1;"
 	profileIdByLogin   = "SELECT id FROM profile WHERE login=$1;"
 	addProfile         = "INSERT INTO profile(id, login, description, imgsrc, phone, passwordhash) VALUES($1, $2, $3, $4, $5, $6);"
-	updateProfileInfo  = "UPDATE profile SET description=$1, passwordhash=$2 WHERE id=$3;"
+	updateProfileInfo  = "UPDATE profile SET phone=$1, passwordhash=$2 WHERE id=$3;"
 	updateProfilePhoto = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
 )
 
@@ -65,7 +65,7 @@ func (r *ProfileRepo) GetProfileIdByLogin(ctx context.Context, login string) (uu
 }
 
 func (r *ProfileRepo) UpdateProfile(ctx context.Context, p *models.Profile) error {
-	_, err := r.db.Exec(ctx, updateProfileInfo, p.Description, p.PasswordHash, p.Id)
+	_, err := r.db.Exec(ctx, updateProfileInfo, p.Phone, p.PasswordHash, p.Id)
 	if err != nil {
 		// !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in db.Exec: %w", err)

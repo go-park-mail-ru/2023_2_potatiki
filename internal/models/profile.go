@@ -19,17 +19,6 @@ func (p *Profile) HidePass() {
 	p.PasswordHash = []byte("lolkek")
 }
 
-type UserInfo struct {
-	NewPassword    string `json:"newPassword"`
-	NewDescription string `json:"newDescription"`
-	Description    string `json:"description"`
-}
-
-type ProfileInfo struct {
-	SignUpPayload
-	UserInfo
-}
-
 func (p *Profile) LogValue() slog.Value {
 	return slog.GroupValue(
 		slog.String("id", p.Id.String()),

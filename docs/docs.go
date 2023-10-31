@@ -25,7 +25,7 @@ const docTemplate = `{
                         "AuthKey": []
                     }
                 ],
-                "description": "Check user auth",
+                "description": "Check user is logged in",
                 "consumes": [
                     "application/json"
                 ],
@@ -80,7 +80,7 @@ const docTemplate = `{
         },
         "/api/auth/signin": {
             "post": {
-                "description": "LogIn to Account",
+                "description": "Login to Account",
                 "consumes": [
                     "application/json"
                 ],
@@ -93,18 +93,18 @@ const docTemplate = `{
                 "summary": "SignIn",
                 "parameters": [
                     {
-                        "description": "user info",
+                        "description": "SignInPayload",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.SignUpPayload"
+                            "$ref": "#/definitions/models.SignInPayload"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User profile",
+                        "description": "Profile",
                         "schema": {
                             "$ref": "#/definitions/models.Profile"
                         }
@@ -136,7 +136,7 @@ const docTemplate = `{
                 "summary": "SignUp",
                 "parameters": [
                     {
-                        "description": "user info",
+                        "description": "SignUpPayload",
                         "name": "input",
                         "in": "body",
                         "required": true,
@@ -147,7 +147,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "User profile",
+                        "description": "Profile",
                         "schema": {
                             "$ref": "#/definitions/models.Profile"
                         }
@@ -462,8 +462,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/profile/update-info/{id}": {
-            "get": {
+        "/api/profile/update-data": {
+            "post": {
                 "description": "Update profile data",
                 "consumes": [
                     "application/json"
@@ -474,19 +474,21 @@ const docTemplate = `{
                 "tags": [
                     "Profile"
                 ],
-                "summary": "UpdateInfo",
+                "summary": "UpdateProfileData",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Profile UUID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "UpdateProfileDataPayload",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UpdateProfileDataPayload"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User profile",
+                        "description": "Profile",
                         "schema": {
                             "$ref": "#/definitions/models.Profile"
                         }
@@ -508,7 +510,7 @@ const docTemplate = `{
         },
         "/api/profile/update-photo/{id}": {
             "post": {
-                "description": "Update user photo",
+                "description": "Update profile photo",
                 "consumes": [
                     "application/json"
                 ],
@@ -521,16 +523,18 @@ const docTemplate = `{
                 "summary": "UpdatePhoto",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Profile UUID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "photo",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User profile",
+                        "description": "Profile",
                         "schema": {
                             "$ref": "#/definitions/models.Profile"
                         }
@@ -549,7 +553,7 @@ const docTemplate = `{
         },
         "/api/profile/{id}": {
             "get": {
-                "description": "Get user profile",
+                "description": "Get profile by ID",
                 "consumes": [
                     "application/json"
                 ],
@@ -571,13 +575,13 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "User profile",
+                        "description": "Profile",
                         "schema": {
                             "$ref": "#/definitions/models.Profile"
                         }
                     },
                     "400": {
-                        "description": "invalid request",
+                        "description": "error messege",
                         "schema": {
                             "$ref": "#/definitions/response.Response"
                         }
@@ -699,6 +703,25 @@ const docTemplate = `{
                 }
             }
         },
+        "models.SignInPayload": {
+            "type": "object",
+            "required": [
+                "login",
+                "password"
+            ],
+            "properties": {
+                "login": {
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8
+                }
+            }
+        },
         "models.SignUpPayload": {
             "type": "object",
             "required": [
@@ -712,6 +735,23 @@ const docTemplate = `{
                     "maxLength": 30,
                     "minLength": 6
                 },
+                "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8
+                },
+                "phone": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UpdateProfileDataPayload": {
+            "type": "object",
+            "required": [
+                "password",
+                "phone"
+            ],
+            "properties": {
                 "password": {
                     "type": "string",
                     "maxLength": 32,
