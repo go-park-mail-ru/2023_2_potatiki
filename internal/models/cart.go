@@ -7,9 +7,9 @@ import (
 )
 
 type Cart struct {
-	Id        uuid.UUID     `json:"id"`        //nolint:stylecheck
-	ProfileId uuid.UUID     `json:"profileId"` //nolint:stylecheck
-	IsCurrent bool          `json:"isCurrent"` //nolint:stylecheck
+	Id        uuid.UUID     `json:"-"` //nolint:stylecheck
+	ProfileId uuid.UUID     `json:"-"` //nolint:stylecheck
+	IsCurrent bool          `json:"-"` //nolint:stylecheck
 	Products  []CartProduct `json:"products"`
 }
 

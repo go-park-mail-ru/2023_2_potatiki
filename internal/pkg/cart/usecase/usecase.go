@@ -25,7 +25,7 @@ func (uc *CartUsecase) GetCart(ctx context.Context, id uuid.UUID) (models.Cart, 
 	cart, err := uc.repo.ReadCart(ctx, id)
 
 	if errors.Is(err, repo.ErrCartNotFound) {
-		cart, err = uc.repo.CreateCart(ctx, cart.ProfileId)
+		cart, err = uc.repo.CreateCart(ctx, id)
 		if err != nil {
 			err = fmt.Errorf("error happened in repo.GetCart: %w", err)
 
@@ -35,37 +35,45 @@ func (uc *CartUsecase) GetCart(ctx context.Context, id uuid.UUID) (models.Cart, 
 		return cart, nil
 	}
 
+	if err != nil {
+		return models.Cart{}, err
+	}
+
 	return cart, nil
 }
 
 func (uc *CartUsecase) AddProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
-	c, err := uc.repo.CheckCart(ctx, cart.ProfileId)
+	cart, err := uc.repo.CheckCart(ctx, cart.ProfileId)
 
 	if errors.Is(err, repo.ErrCartNotFound) {
-		c, err = uc.repo.CreateCart(ctx, cart.ProfileId)
+		cart, err = uc.repo.CreateCart(ctx, cart.ProfileId)
 		if err != nil {
 			err = fmt.Errorf("error happened in repo.GetCart: %w", err)
 
 			return models.Cart{}, err
 		}
 
-		c, err = uc.repo.AddProduct(ctx, c, product)
+		cart, err = uc.repo.AddProduct(ctx, cart, product)
 
-		return c, err
+		return cart, err
 	}
 
-	c, err = uc.repo.AddProduct(ctx, c, product)
+	if err != nil {
+		return models.Cart{}, err
+	}
+
+	cart, err = uc.repo.AddProduct(ctx, cart, product)
 
 	return cart, err
 }
 
 func (uc *CartUsecase) DeleteProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
-	c, err := uc.repo.CheckCart(ctx, cart.ProfileId)
+	cart, err := uc.repo.CheckCart(ctx, cart.ProfileId)
 	if err != nil {
 		return models.Cart{}, err
 	}
 
-	c, err = uc.repo.DeleteProduct(ctx, c, product)
+	cart, err = uc.repo.DeleteProduct(ctx, cart, product)
 
 	return cart, err
 }
@@ -77,6 +85,10 @@ func (uc *CartUsecase) UpdateCart(ctx context.Context, cart models.Cart) (models
 		if err != nil {
 			return models.Cart{}, err
 		}
+	}
+
+	if err != nil {
+		return models.Cart{}, err
 	}
 
 	cart, err = uc.repo.UpdateCart(ctx, cart)
