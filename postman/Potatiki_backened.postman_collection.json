@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "8ff22c69-047d-44c4-aaa9-834e47e60e53",
+		"_postman_id": "27d504aa-2ea2-429b-9b94-6424a8872acf",
 		"name": "Potatiki_backened",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "30122325"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30722310"
 	},
 	"item": [
 		{
@@ -20,22 +20,12 @@
 								"src": "/home/scremyda/pictures/flowers.jpg"
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/profile/update-photo",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"profile",
-								"update-photo"
-							]
-						}
+						"url": "{{baseUrl}}/api/profile/update-photo"
 					},
 					"response": []
 				},
 				{
-					"name": "CheckGetProfile",
+					"name": "GetProfile",
 					"protocolProfileBehavior": {
 						"disableBodyPruning": true
 					},
@@ -51,45 +41,25 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/profile/937e6428-9432-431f-bc62-8e16f3e0cb1c",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"profile",
-								"937e6428-9432-431f-bc62-8e16f3e0cb1c"
-							]
-						}
+						"url": "{{baseUrl}}/api/profile/937e6428-9432-431f-bc62-8e16f3e0cb1c"
 					},
 					"response": []
 				},
 				{
-					"name": "update-info",
+					"name": "update-data",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"description\": \"string\",\n  \"id\": \"string\",\n  \"img\": \"string\",\n  \"login\": \"string\",\n  \"password\": [\n    0\n  ],\n  \"phone\": \"string\"\n}\n",
+							"raw": "{\r\n    \"phone\": \"+782345678901\", \r\n    \"password\": \"12345678191\" \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/profile/update-info",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"profile",
-								"update-info"
-							]
-						}
+						"url": "{{baseUrl}}/api/profile/update-data"
 					},
 					"response": []
 				}
@@ -98,34 +68,6 @@
 		{
 			"name": "Auth",
 			"item": [
-				{
-					"name": "CheckSignUp",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{ \"login\": \"scremydfhulasdddsfxcsd\", \"password\": \"*asdsjjjad\" }",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/signup",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"signup"
-							]
-						}
-					},
-					"response": []
-				},
 				{
 					"name": "CheckCheckAuth",
 					"protocolProfileBehavior": {
@@ -143,17 +85,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/check_auth",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"check_auth"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/check_auth"
 					},
 					"response": []
 				},
@@ -174,45 +106,43 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/logout",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"logout"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/logout"
 					},
 					"response": []
 				},
 				{
-					"name": "CheckSignIn",
+					"name": "SignIn",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"login\": \"7889hgssdfsksdft788u%\", \"password\": \"*wqeqwe\" }",
+							"raw": "{ \"login\": \"MrDjeb\", \"password\": \"1234567819\" }",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/signin",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"signin"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/signin"
+					},
+					"response": []
+				},
+				{
+					"name": "SignUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"login\": \"MrDjeb\",\r\n    \"phone\": \"+78234567890\", \r\n    \"password\": \"1234567819\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{baseUrl}}/api/auth/signup"
 					},
 					"response": []
 				}
@@ -320,17 +250,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/products/123e4567-e89b-12d3-a456-426614174000",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"products",
-								"123e4567-e89b-12d3-a456-426614174000"
-							]
-						}
+						"url": "{{baseUrl}}/api/products/123e4567-e89b-12d3-a456-426614174000"
 					},
 					"response": []
 				}
@@ -356,17 +276,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/category/get_all",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"category",
-								"get_all"
-							]
-						}
+						"url": "{{baseUrl}}/api/category/get_all"
 					},
 					"response": []
 				}
@@ -389,17 +299,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/order/submit",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"order",
-								"submit"
-							]
-						}
+						"url": "{{baseUrl}}/api/order/submit"
 					},
 					"response": []
 				},
@@ -420,17 +320,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/order/get_all",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"order",
-								"get_all"
-							]
-						}
+						"url": "{{baseUrl}}/api/order/get_all"
 					},
 					"response": []
 				},
@@ -451,17 +341,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/order/get_current",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"order",
-								"get_current"
-							]
-						}
+						"url": "{{baseUrl}}/api/order/get_current"
 					},
 					"response": []
 				}
