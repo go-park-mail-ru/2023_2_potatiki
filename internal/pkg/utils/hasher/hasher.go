@@ -17,7 +17,7 @@ func HashPass(plainPassword string) []byte {
 }
 
 func CheckPass(passHash []byte, plainPassword string) bool {
-	salt := make([]byte, SaltLen, SaltLen)
+	salt := make([]byte, SaltLen)
 	copy(salt, passHash[:SaltLen])
 
 	userPassHash := hash(salt, plainPassword)
