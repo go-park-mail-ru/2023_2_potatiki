@@ -41,18 +41,15 @@ func (r *UserRepo) CreateProfile(ctx context.Context, p *models.Profile) error {
 	return nil
 }
 
-func (r *UserRepo) ReadProfile(ctx context.Context, ID uuid.UUID) (*models.Profile, error) {
-	row := r.db.QueryRow(ctx, profileExistsByID, ID)
-	p := &models.Profile{
-		Id: ID,
-	}
-	if err := row.Scan(p.Login, p.Description, p.ImgSrc, p.PasswordHash); err != nil {
+func (r *UserRepo) ReadProfile(ctx context.Context, Id uuid.UUID) (*models.Profile, error) {
+	p := models.Profile{Id: Id}
+	if err := r.db.QueryRow(ctx, profileExistsByID, Id).
+		Scan(&p.Login, &p.Description, &p.ImgSrc, &p.PasswordHash); err != nil {
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
 		return &models.Profile{}, err
 	}
-
-	return p, nil
+	return &p, nil
 }
 
 func (r *UserRepo) GetProfileIdByUser(ctx context.Context, user *models.User) (uuid.UUID, error) {

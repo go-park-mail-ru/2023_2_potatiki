@@ -43,6 +43,7 @@ func (uc *UserUsecase) GetProfile(ctx context.Context, Id uuid.UUID) (*models.Pr
 
 		return &models.Profile{}, err
 	}
+	profile.HidePass()
 
 	return profile, nil
 }

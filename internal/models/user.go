@@ -24,6 +24,10 @@ type Profile struct {
 	PasswordHash []byte    `json:"password"`
 }
 
+func (p *Profile) HidePass() {
+	p.PasswordHash = []byte("lolkek")
+}
+
 type UserInfo struct {
 	NewPassword    string `json:"newPassword"`
 	NewDescription string `json:"newDescription"`

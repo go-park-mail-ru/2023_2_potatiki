@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"log/slog"
 	"net/http"
 
@@ -28,7 +29,7 @@ func Recover(log *slog.Logger) mux.MiddlewareFunc {
 			defer func() {
 				if err := recover(); err != nil {
 					log.Error("Handle panic, recovered",
-						slog.Any("recover error", err),
+						slog.String("recover error", fmt.Sprintf("%v", err)),
 						slog.String("url", r.URL.Path))
 					resp.JSONStatus(w, http.StatusTooManyRequests)
 				}
