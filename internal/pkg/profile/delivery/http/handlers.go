@@ -10,7 +10,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/google/uuid"
@@ -19,20 +19,20 @@ import (
 
 const maxRequestBodySize = 1024 * 1024 * 5 // 5 MB
 
-type UserHandler struct {
+type ProfileHandler struct {
 	log *slog.Logger
-	uc  user.UserUsecase
+	uc  profile.ProfileUsecase
 }
 
-func NewUserHandler(log *slog.Logger, uc user.UserUsecase) *UserHandler {
-	return &UserHandler{
+func NewProfileHandler(log *slog.Logger, uc profile.ProfileUsecase) *ProfileHandler {
+	return &ProfileHandler{
 		log: log,
 		uc:  uc,
 	}
 }
 
 // @Summary	GetProfile
-// @Tags User
+// @Tags Profile
 // @Description	Get user profile
 // @Accept json
 // @Produce json
@@ -40,8 +40,8 @@ func NewUserHandler(log *slog.Logger, uc user.UserUsecase) *UserHandler {
 // @Success	200	{object} models.Profile "User profile"
 // @Failure	400	{object} response.Response	"invalid request"
 // @Failure	429
-// @Router	/api/user/{id} [get]
-func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+// @Router	/api/profile/{id} [get]
+func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
@@ -77,7 +77,7 @@ func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Summary	UpdatePhoto
-// @Tags User
+// @Tags Profile
 // @Description	Update user photo
 // @Accept json
 // @Produce json
@@ -86,8 +86,8 @@ func (h *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 // @Failure	401
 // @Failure 413
 // @Failure	429
-// @Router	/api/user/update-photo/{id} [post]
-func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
+// @Router	/api/profile/update-photo/{id} [post]
+func (h *ProfileHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
@@ -124,13 +124,13 @@ func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 	}
 
-	h.log.Info("updated user info")
+	h.log.Info("updated profile info")
 	resp.JSONStatus(w, http.StatusOK)
 }
 
 // @Summary	UpdateInfo
-// @Tags User
-// @Description	Update user data
+// @Tags Profile
+// @Description	Update profile data
 // @Accept json
 // @Produce json
 // @Param id path string true "Profile UUID"
@@ -138,8 +138,8 @@ func (h *UserHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 // @Failure	400	{object} response.Response	"error messege"
 // @Failure	401
 // @Failure	429
-// @Router	/api/user/update-info/{id} [get]
-func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
+// @Router	/api/profile/update-info/{id} [get]
+func (h *ProfileHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
@@ -171,12 +171,12 @@ func (h *UserHandler) UpdateInfo(w http.ResponseWriter, r *http.Request) {
 
 	err = h.uc.UpdateInfo(r.Context(), id, profileInfo)
 	if err != nil {
-		h.log.Error("failed to update user info", sl.Err(err))
+		h.log.Error("failed to update profile info", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
 	}
 
-	h.log.Info("updated user info")
+	h.log.Info("updated profile info")
 	resp.JSONStatus(w, http.StatusOK)
 }

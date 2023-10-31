@@ -10,18 +10,19 @@ import (
 	"strings"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
-type UserUsecase struct {
+type ProfileUsecase struct {
 	log  *slog.Logger
-	repo user.UserRepo
+	repo profile.ProfileRepo
 }
 
-func NewUserUsecase(log *slog.Logger, repo user.UserRepo) *UserUsecase {
-	return &UserUsecase{
+func NewProfileUsecase(log *slog.Logger, repo profile.ProfileRepo) *ProfileUsecase {
+	return &ProfileUsecase{
 		log:  log,
 		repo: repo,
 	}
@@ -31,12 +32,12 @@ var (
 	acceptingFileTypes      = []string{"image/webp", "image/png", "image/jpeg"}
 	ErrorForbiddenExtension = errors.New("this file extension is not allowed")
 	ErrPassMismatch         = errors.New("password does not match")
-	ErrInvalidUser          = errors.New("user is not valid")
+	ErrInvalidSignUpPayload = errors.New("SignUpPayload is not valid")
 )
 
 // TODO: nginx path from env to save imgs
 
-func (uc *UserUsecase) GetProfile(ctx context.Context, Id uuid.UUID) (*models.Profile, error) {
+func (uc *ProfileUsecase) GetProfile(ctx context.Context, Id uuid.UUID) (*models.Profile, error) {
 	profile, err := uc.repo.ReadProfile(ctx, Id)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadProfile: %w", err)
@@ -48,7 +49,7 @@ func (uc *UserUsecase) GetProfile(ctx context.Context, Id uuid.UUID) (*models.Pr
 	return profile, nil
 }
 
-func (uc *UserUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePhotoByte []byte, fileType string) error {
+func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePhotoByte []byte, fileType string) error {
 	if !slices.Contains(acceptingFileTypes, fileType) {
 		return ErrorForbiddenExtension
 	}
@@ -81,24 +82,24 @@ func (uc *UserUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePhotoB
 	return nil
 }
 
-func (uc *UserUsecase) UpdateInfo(ctx context.Context, Id uuid.UUID, profileInfo *models.ProfileInfo) error {
-	if !profileInfo.User.IsValid() {
-		return ErrInvalidUser
+func (uc *ProfileUsecase) UpdateInfo(ctx context.Context, Id uuid.UUID, profileInfo *models.ProfileInfo) error {
+	if err := validator.New().Struct(profileInfo.SignUpPayload); err != nil {
+		return ErrInvalidSignUpPayload
 	}
 
 	if profileInfo.Description == profileInfo.NewDescription {
-		err := errors.New("user description and new description are the same")
+		err := errors.New("profile description and new description are the same")
 
 		return err
 	}
 
 	if profileInfo.Password == profileInfo.NewPassword {
-		err := errors.New("user password and new password are the same")
+		err := errors.New("profile password and new password are the same")
 
 		return err
 	}
 
-	profileId, err := uc.repo.GetProfileIdByUser(ctx, &profileInfo.User)
+	profileId, err := uc.repo.GetProfileIdByLogin(ctx, profileInfo.SignUpPayload.Login)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.GetProfileIdByUser: %w", err)
 
@@ -113,7 +114,7 @@ func (uc *UserUsecase) UpdateInfo(ctx context.Context, Id uuid.UUID, profileInfo
 	}
 
 	if profile.Login != profileInfo.Login {
-		err = errors.New("user login in db and login from client does not match")
+		err = errors.New("profile login in db and login from client does not match")
 
 		return err
 	}

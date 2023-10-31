@@ -8,17 +8,18 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 )
 
 type AuthUsecase struct {
-	repo   user.UserRepo
+	repo   profile.ProfileRepo
 	Auther auth.AuthAuther
 }
 
-func NewAuthUsecase(repo user.UserRepo, cfg auth.AuthConfig) *AuthUsecase {
+func NewAuthUsecase(repo profile.ProfileRepo, cfg auth.AuthConfig) *AuthUsecase {
 	return &AuthUsecase{
 		repo:   repo,
 		Auther: NewAuther(cfg),
@@ -27,15 +28,14 @@ func NewAuthUsecase(repo user.UserRepo, cfg auth.AuthConfig) *AuthUsecase {
 
 var (
 	ErrPassMismatch = errors.New("password does not match")
-	ErrInvalidUser  = errors.New("user is not valid")
 )
 
-func (uc *AuthUsecase) SignIn(ctx context.Context, user *models.User) (*models.Profile, string, time.Time, error) {
-	if !user.IsValid() {
-		return &models.Profile{}, "", time.Now(), ErrInvalidUser
+func (uc *AuthUsecase) SignIn(ctx context.Context, payload *models.SignInPayload) (*models.Profile, string, time.Time, error) {
+	if err := validator.New().Struct(payload); err != nil {
+		return &models.Profile{}, "", time.Now(), err
 	}
 
-	Id, err := uc.repo.GetProfileIdByUser(ctx, user)
+	Id, err := uc.repo.GetProfileIdByLogin(ctx, payload.Login)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.GetProfileIdByUser: %w", err)
 
@@ -49,7 +49,7 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, user *models.User) (*models.P
 		return &models.Profile{}, "", time.Now(), err
 	}
 
-	if !hasher.CheckPass(profile.PasswordHash, user.Password) {
+	if !hasher.CheckPass(profile.PasswordHash, payload.Password) {
 		return &models.Profile{}, "", time.Now(), ErrPassMismatch
 	}
 
@@ -64,9 +64,9 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, user *models.User) (*models.P
 	return profile, token, exp, nil
 }
 
-func (uc *AuthUsecase) SignUp(ctx context.Context, user *models.User) (*models.Profile, string, time.Time, error) {
-	if !user.IsValid() {
-		return &models.Profile{}, "", time.Now(), ErrInvalidUser
+func (uc *AuthUsecase) SignUp(ctx context.Context, user *models.SignUpPayload) (*models.Profile, string, time.Time, error) {
+	if err := validator.New().Struct(user); err != nil {
+		return &models.Profile{}, "", time.Now(), err
 	}
 
 	profile := &models.Profile{
@@ -74,12 +74,13 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, user *models.User) (*models.P
 		Login:        user.Login,
 		Description:  "",
 		ImgSrc:       "default.png",
+		Phone:        user.Phone,
 		PasswordHash: hasher.HashPass(user.Password),
 	}
 
 	err := uc.repo.CreateProfile(ctx, profile)
 	if err != nil {
-		err = fmt.Errorf("error happened in repo.CreateUser: %w", err)
+		err = fmt.Errorf("error happened in repo.CreateProfile: %w", err)
 
 		return &models.Profile{}, "", time.Now(), err
 	}

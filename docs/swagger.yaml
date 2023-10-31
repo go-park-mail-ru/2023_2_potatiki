@@ -67,13 +67,25 @@ definitions:
         items:
           type: integer
         type: array
+      phone:
+        type: string
     type: object
-  models.User:
+  models.SignUpPayload:
     properties:
       login:
+        maxLength: 30
+        minLength: 6
         type: string
       password:
+        maxLength: 32
+        minLength: 8
         type: string
+      phone:
+        type: string
+    required:
+    - login
+    - password
+    - phone
     type: object
   response.Response:
     properties:
@@ -137,7 +149,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.SignUpPayload'
       produces:
       - application/json
       responses:
@@ -165,7 +177,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.User'
+          $ref: '#/definitions/models.SignUpPayload'
       produces:
       - application/json
       responses:
@@ -378,7 +390,7 @@ paths:
       summary: Products
       tags:
       - Products
-  /api/user/{id}:
+  /api/profile/{id}:
     get:
       consumes:
       - application/json
@@ -404,12 +416,12 @@ paths:
           description: Too Many Requests
       summary: GetProfile
       tags:
-      - User
-  /api/user/update-info/{id}:
+      - Profile
+  /api/profile/update-info/{id}:
     get:
       consumes:
       - application/json
-      description: Update user data
+      description: Update profile data
       parameters:
       - description: Profile UUID
         in: path
@@ -433,8 +445,8 @@ paths:
           description: Too Many Requests
       summary: UpdateInfo
       tags:
-      - User
-  /api/user/update-photo/{id}:
+      - Profile
+  /api/profile/update-photo/{id}:
     post:
       consumes:
       - application/json
@@ -460,5 +472,5 @@ paths:
           description: Too Many Requests
       summary: UpdatePhoto
       tags:
-      - User
+      - Profile
 swagger: "2.0"

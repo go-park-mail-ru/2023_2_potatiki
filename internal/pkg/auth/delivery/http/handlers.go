@@ -33,7 +33,7 @@ func NewAuthHandler(log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 // @Description	LogIn to Account
 // @Accept json
 // @Produce json
-// @Param input body models.User true "user info"
+// @Param input body models.SignUpPayload true "user info"
 // @Success	200	{object} models.Profile "User profile"
 // @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
@@ -51,7 +51,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 	defer r.Body.Close()
 
-	u := &models.User{}
+	u := &models.SignInPayload{}
 	err = json.Unmarshal(body, u)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
@@ -80,7 +80,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 // @Description	Create Account
 // @Accept json
 // @Produce json
-// @Param input body models.User true "user info"
+// @Param input body models.SignUpPayload true "user info"
 // @Success	200 {object} models.Profile "User profile"
 // @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
@@ -97,7 +97,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
-	u := &models.User{}
+	u := &models.SignUpPayload{}
 	err = json.Unmarshal(body, u)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))

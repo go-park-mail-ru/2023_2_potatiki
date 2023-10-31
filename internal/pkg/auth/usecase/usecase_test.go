@@ -11,7 +11,7 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mockAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
-	mockUser "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/mocks"
+	mockProfile "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/mocks"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
 	"github.com/golang/mock/gomock"
 )
@@ -20,7 +20,7 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	repo := mockUser.NewMockUserRepo(ctrl)
+	repo := mockProfile.NewMockProfileRepo(ctrl)
 	cfg := mockAuth.NewMockAuthConfig(ctrl)
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
@@ -36,8 +36,9 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 	repo.EXPECT().CreateProfile(gomock.Any(), gomock.Any()).Return(nil)
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, _, err := uc.SignUp(context.Background(), &models.User{
+	profile, token, _, err := uc.SignUp(context.Background(), &models.SignUpPayload{
 		Login:    "iudsbfiwhdbfi",
+		Phone:    "+79912245678",
 		Password: "hafikyagdfiaysgf",
 	})
 	assert.Nil(t, err)
@@ -49,7 +50,7 @@ func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	repo := mockUser.NewMockUserRepo(ctrl)
+	repo := mockProfile.NewMockProfileRepo(ctrl)
 	cfg := mockAuth.NewMockAuthConfig(ctrl)
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
@@ -58,8 +59,9 @@ func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, _, err := uc.SignUp(context.Background(), &models.User{
+	profile, token, _, err := uc.SignUp(context.Background(), &models.SignUpPayload{
 		Login:    "iudsbfiwhdbfi",
+		Phone:    "+79912245678",
 		Password: "hafikyagdfiaysgf",
 	})
 	assert.NotNil(t, err)
@@ -71,12 +73,12 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	repo := mockUser.NewMockUserRepo(ctrl)
+	repo := mockProfile.NewMockProfileRepo(ctrl)
 	cfg := mockAuth.NewMockAuthConfig(ctrl)
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
-	user := &models.User{
+	payload := &models.SignInPayload{
 		Login:    "iudsbfiwhdbfi",
 		Password: "hafikyagdfiaysgf",
 	}
@@ -90,11 +92,11 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 		PasswordHash: hasher.HashPass("hafikyagdfiaysgf"),
 	}
 
-	repo.EXPECT().GetProfileIdByUser(gomock.Any(), user).Return(Id, nil)
+	repo.EXPECT().GetProfileIdByLogin(gomock.Any(), payload.Login).Return(Id, nil)
 	repo.EXPECT().ReadProfile(gomock.Any(), Id).Return(p, nil)
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, _, err := uc.SignIn(context.Background(), user)
+	profile, token, _, err := uc.SignIn(context.Background(), payload)
 	assert.Nil(t, err)
 	assert.NotNil(t, profile)
 	assert.NotEmpty(t, token)
@@ -104,12 +106,12 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	repo := mockUser.NewMockUserRepo(ctrl)
+	repo := mockProfile.NewMockProfileRepo(ctrl)
 	cfg := mockAuth.NewMockAuthConfig(ctrl)
 	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
 	cfg.EXPECT().GetJwtAccess().Return("")
 
-	user := &models.User{
+	payload := &models.SignInPayload{
 		Login:    "iudsbfiwhdbfi",
 		Password: "hafikyagdfiaysgf",
 	}
@@ -123,10 +125,10 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 		PasswordHash: hasher.HashPass("hafikyagdfiaysgf"),
 	}
 
-	repo.EXPECT().GetProfileIdByUser(gomock.Any(), user).Return(Id, errors.New("bad"))
+	repo.EXPECT().GetProfileIdByLogin(gomock.Any(), payload.Login).Return(Id, errors.New("bad"))
 	uc := NewAuthUsecase(repo, cfg)
 
-	profile, token, _, err := uc.SignIn(context.Background(), user)
+	profile, token, _, err := uc.SignIn(context.Background(), payload)
 	assert.NotNil(t, err)
 	assert.NotNil(t, profile)
 	assert.Empty(t, token)

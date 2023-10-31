@@ -6,7 +6,6 @@ import (
 )
 
 type Claims struct {
-	// User ID
-	ID uuid.UUID `json:"id"`
+	ID uuid.UUID `json:"id"` // Profile ID
 	jwt.RegisteredClaims
 }

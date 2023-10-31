@@ -89,7 +89,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.SignUpPayload"
                         }
                     }
                 ],
@@ -132,7 +132,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.User"
+                            "$ref": "#/definitions/models.SignUpPayload"
                         }
                     }
                 ],
@@ -453,9 +453,9 @@
                 }
             }
         },
-        "/api/user/update-info/{id}": {
+        "/api/profile/update-info/{id}": {
             "get": {
-                "description": "Update user data",
+                "description": "Update profile data",
                 "consumes": [
                     "application/json"
                 ],
@@ -463,7 +463,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Profile"
                 ],
                 "summary": "UpdateInfo",
                 "parameters": [
@@ -497,7 +497,7 @@
                 }
             }
         },
-        "/api/user/update-photo/{id}": {
+        "/api/profile/update-photo/{id}": {
             "post": {
                 "description": "Update user photo",
                 "consumes": [
@@ -507,7 +507,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Profile"
                 ],
                 "summary": "UpdatePhoto",
                 "parameters": [
@@ -538,7 +538,7 @@
                 }
             }
         },
-        "/api/user/{id}": {
+        "/api/profile/{id}": {
             "get": {
                 "description": "Get user profile",
                 "consumes": [
@@ -548,7 +548,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "User"
+                    "Profile"
                 ],
                 "summary": "GetProfile",
                 "parameters": [
@@ -684,16 +684,31 @@
                     "items": {
                         "type": "integer"
                     }
+                },
+                "phone": {
+                    "type": "string"
                 }
             }
         },
-        "models.User": {
+        "models.SignUpPayload": {
             "type": "object",
+            "required": [
+                "login",
+                "password",
+                "phone"
+            ],
             "properties": {
                 "login": {
-                    "type": "string"
+                    "type": "string",
+                    "maxLength": 30,
+                    "minLength": 6
                 },
                 "password": {
+                    "type": "string",
+                    "maxLength": 32,
+                    "minLength": 8
+                },
+                "phone": {
                     "type": "string"
                 }
             }

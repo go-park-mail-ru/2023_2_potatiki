@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS profile
     login text NOT NULL UNIQUE,
     description text,
     imgsrc text NOT NULL DEFAULT 'default.png',
+    phone text NOT NULL,
     passwordhash bytea NOT NULL
 );
 

@@ -34,9 +34,9 @@ import (
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
-	userHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/delivery/http"
-	userRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/repo"
-	userUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/user/usecase"
+	profileHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/delivery/http"
+	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
+	profileUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/usecase"
 )
 
 // @title ZuZu Backend API
@@ -102,11 +102,11 @@ func run() (err error) {
 	//
 	//
 	// ============================Init layers============================ //
-	usersRepo := userRepo.NewUserRepo(db)
-	usersUsecase := userUsecase.NewUserUsecase(log, usersRepo)
-	usersHandler := userHandler.NewUserHandler(log, usersUsecase)
+	profileRepo := profileRepo.NewProfileRepo(db)
+	profileUsecase := profileUsecase.NewProfileUsecase(log, profileRepo)
+	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
-	authUsecase := authUsecase.NewAuthUsecase(usersRepo, cfg.Auther)
+	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.Auther)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
 	cartRepo := cartRepo.NewCartRepo(db)
@@ -158,15 +158,15 @@ func run() (err error) {
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 
-	users := r.PathPrefix("/users").Subrouter()
+	profile := r.PathPrefix("/profile").Subrouter()
 	{
-		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", usersHandler.GetProfile).
+		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", profileHandler.GetProfile).
 			Methods(http.MethodGet, http.MethodOptions)
 
-		users.Handle("/update-photo", authMW(http.HandlerFunc(usersHandler.UpdatePhoto))).
+		profile.Handle("/update-photo", authMW(http.HandlerFunc(profileHandler.UpdatePhoto))).
 			Methods(http.MethodPost, http.MethodOptions)
 
-		users.Handle("/update-info", authMW(http.HandlerFunc(usersHandler.UpdateInfo))).
+		profile.Handle("/update-info", authMW(http.HandlerFunc(profileHandler.UpdateInfo))).
 			Methods(http.MethodPost, http.MethodOptions)
 	}
 
