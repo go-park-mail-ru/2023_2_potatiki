@@ -217,13 +217,13 @@ func run() (err error) {
 
 	order := r.PathPrefix("/order").Subrouter()
 	{
-		order.HandleFunc("/create", orderHandler.CreateOrder).
+		order.Handle("/create", authMW(http.HandlerFunc(orderHandler.CreateOrder))).
 			Methods(http.MethodPost, http.MethodOptions)
 
-		order.HandleFunc("/get_current", orderHandler.GetCurrentOrder).
+		order.Handle("/get_current", authMW(http.HandlerFunc(orderHandler.GetCurrentOrder))).
 			Methods(http.MethodGet, http.MethodOptions)
 
-		order.HandleFunc("/get_all", orderHandler.GetOrders).
+		order.Handle("/get_all", authMW(http.HandlerFunc(orderHandler.GetOrders))).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
