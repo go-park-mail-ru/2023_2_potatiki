@@ -118,7 +118,7 @@ func (h *CartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
 // @Description	add product to cart or change its number
 // @Accept json
 // @Produce json
-// @Param input body models.CartProduct true "product info"
+// @Param input body models.Product true "product info"
 // @Success	200	{object} models.Cart "cart info"
 // @Failure	400	{object} response.Response	"error message"
 // @Failure	401

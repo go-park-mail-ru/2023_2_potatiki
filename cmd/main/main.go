@@ -172,7 +172,7 @@ func run() (err error) {
 
 	profile := r.PathPrefix("/profile").Subrouter()
 	{
-		auth.HandleFunc("/{id:[0-9a-fA-F-]+}", profileHandler.GetProfile).
+		profile.HandleFunc("/{id:[0-9a-fA-F-]+}", profileHandler.GetProfile).
 			Methods(http.MethodGet, http.MethodOptions)
 
 		profile.Handle("/update-photo", authMW(http.HandlerFunc(profileHandler.UpdatePhoto))).

@@ -41,7 +41,7 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/937e6428-9432-431f-bc62-8e16f3e0cb1c"
+						"url": "{{baseUrl}}/api/profile/259ac449-0db9-4296-b57b-e6e93daa5048"
 					},
 					"response": []
 				},
@@ -117,7 +117,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"login\": \"MrDjeb\", \"password\": \"1234567819\" }",
+							"raw": "{ \"login\": \"MrDjeb\", \"password\": \"12345678191\" }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -250,7 +250,7 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/products/123e4567-e89b-12d3-a456-426614174000"
+						"url": "{{baseUrl}}/api/products/007749b5-7e07-4be8-8c91-8db273ace1c2"
 					},
 					"response": []
 				}
