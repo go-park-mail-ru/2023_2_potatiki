@@ -25,18 +25,26 @@ import (
 
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+
 	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
 	cartUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/usecase"
+
 	categoryHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/delivery/http"
 	categoryRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/repo"
 	categoryUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/usecase"
+
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
+
 	profileHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/delivery/http"
 	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
 	profileUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/usecase"
+
+	orderHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/http"
+	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
+	orderUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/usecase"
 )
 
 // @title ZuZu Backend API
@@ -120,6 +128,10 @@ func run() (err error) {
 	categoryRepo := categoryRepo.NewCategoryRepo(db)
 	categoryUsecase := categoryUsecase.NewCategoryUsecase(categoryRepo)
 	categoryHandler := categoryHandler.NewCategoryHandler(log, categoryUsecase)
+
+	orderRepo := orderRepo.NewOrderRepo(db)
+	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo)
+	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -194,6 +206,18 @@ func run() (err error) {
 	category := r.PathPrefix("/category").Subrouter()
 	{
 		category.HandleFunc("/get_all", categoryHandler.Categories).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	order := r.PathPrefix("/order").Subrouter()
+	{
+		order.HandleFunc("/create", orderHandler.CreateOrder).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		order.HandleFunc("/get_current", orderHandler.GetCurrentOrder).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		order.HandleFunc("/get_all", orderHandler.GetOrders).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
