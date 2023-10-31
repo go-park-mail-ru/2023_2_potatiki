@@ -7,221 +7,465 @@
 	},
 	"item": [
 		{
-			"name": "CheckSignUp",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \"login\": \"scremydfhulaoasdddsfxcsd\", \"password\": \"*asdsad\" }",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Profile",
+			"item": [
+				{
+					"name": "update-photo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/home/scremyda/pictures/flowers.jpg"
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-photo",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-photo"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/signup",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"signup"
-					]
+				{
+					"name": "CheckGetProfile",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/937e6428-9432-431f-bc62-8e16f3e0cb1c",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"937e6428-9432-431f-bc62-8e16f3e0cb1c"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-info",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"string\",\n  \"id\": \"string\",\n  \"img\": \"string\",\n  \"login\": \"string\",\n  \"password\": [\n    0\n  ],\n  \"phone\": \"string\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-info",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-info"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "CheckCheckAuth",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Auth",
+			"item": [
+				{
+					"name": "CheckSignUp",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"login\": \"scremydfhulasdddsfxcsd\", \"password\": \"*asdsjjjad\" }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/check_auth",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"check_auth"
-					]
+				{
+					"name": "CheckCheckAuth",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/check_auth",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"check_auth"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CheckLogout",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CheckSignIn",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{ \"login\": \"7889hgssdfsksdft788u%\", \"password\": \"*wqeqwe\" }",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "CheckLogout",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Products",
+			"item": [
+				{
+					"name": "get_all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/get_all?count=3",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"get_all"
+							],
+							"query": [
+								{
+									"key": "count",
+									"value": "3"
+								}
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/logout",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"logout"
-					]
+				{
+					"name": "category",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/get_all?paging=1&count=3&category_id=1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"get_all"
+							],
+							"query": [
+								{
+									"key": "paging",
+									"value": "1"
+								},
+								{
+									"key": "count",
+									"value": "3"
+								},
+								{
+									"key": "category_id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CheckGetProduct",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/products/123e4567-e89b-12d3-a456-426614174000",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"123e4567-e89b-12d3-a456-426614174000"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "CheckSignIn",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{ \"login\": \"scremydalogin\", \"password\": \"*\" }",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Category",
+			"item": [
+				{
+					"name": "get_all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/category/get_all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"category",
+								"get_all"
+							]
 						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/signin",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"signin"
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "CheckGetProfile",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+			"name": "Order",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/order/submit",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"submit"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{baseUrl}}/api/auth/8b2379a8-5d53-457f-9fd0-22b52c1c4b81",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"auth",
-						"8b2379a8-5d53-457f-9fd0-22b52c1c4b81"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "CheckGetProducts",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
+				{
+					"name": "get_all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/order/get_all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"get_all"
+							]
 						}
-					}
+					},
+					"response": []
 				},
-				"url": {
-					"raw": "{{baseUrl}}/api/products/get_all?count=3",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"products",
-						"get_all"
-					],
-					"query": [
-						{
-							"key": "count",
-							"value": "3"
+				{
+					"name": "get_current",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/order/get_current",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"get_current"
+							]
 						}
-					]
+					},
+					"response": []
 				}
-			},
-			"response": []
-		},
-		{
-			"name": "CheckGetProduct",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "{{baseUrl}}/api/products/123e4567-e89b-12d3-a456-426614174000",
-					"host": [
-						"{{baseUrl}}"
-					],
-					"path": [
-						"api",
-						"products",
-						"123e4567-e89b-12d3-a456-426614174000"
-					]
-				}
-			},
-			"response": []
+			]
 		}
 	]
 }
