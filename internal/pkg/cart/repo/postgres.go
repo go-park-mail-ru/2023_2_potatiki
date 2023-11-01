@@ -2,12 +2,12 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/google/uuid"
 	"github.com/jackc/pgtype/pgxtype"
+	"github.com/jackc/pgx/v4"
+	"github.com/satori/go.uuid"
 )
 
 const (
@@ -19,7 +19,7 @@ const (
 		" ON CONFLICT ON CONSTRAINT uq_shopping_cart_item_cart_id_product_id " +
 		"do update set quantity=$3 WHERE shopping_cart_item.cart_id=$1 and shopping_cart_item.product_id=$2;"
 	deleteProduct = "DELETE FROM shopping_cart_item WHERE cart_id=$1 and product_id=$2;"
-	deleteCard    = "DELETE FROM cart WHERE profile_id=$1"
+	deleteCard    = "UPDATE cart SET is_current=$1 WHERE id=$2"
 )
 
 var (
@@ -38,22 +38,19 @@ func NewCartRepo(db pgxtype.Querier) *CartRepo {
 }
 
 func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
-	cartID := uuid.New()
+	cartID := uuid.NewV4()
 	_, err := r.db.Exec(ctx, createCart, cartID, userID)
 	if err != nil {
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
 		return models.Cart{}, err
 	}
-	cart := models.Cart{}
-	cart.Id = cartID
-	cart.ProfileId = userID
 
-	return cart, nil
+	return models.Cart{Id: cartID, ProfileId: userID, IsCurrent: true}, nil
 }
 
 func (r *CartRepo) DeleteCart(ctx context.Context, cartID uuid.UUID) error {
-	_, err := r.db.Exec(ctx, deleteCard, cartID)
+	_, err := r.db.Exec(ctx, deleteCard, false, cartID)
 	if err != nil {
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
@@ -68,7 +65,7 @@ func (r *CartRepo) CheckCart(ctx context.Context, userID uuid.UUID) (models.Cart
 	cart.ProfileId = userID
 	err := r.db.QueryRow(ctx, getCart, userID).Scan(&cart.Id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Cart{}, ErrCartNotFound
 		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
@@ -93,7 +90,7 @@ func (r *CartRepo) ReadCart(ctx context.Context, userID uuid.UUID) (models.Cart,
 func (r *CartRepo) UpdateCart(ctx context.Context, cart models.Cart) (models.Cart, error) {
 	err := r.db.QueryRow(ctx, getCart, cart.ProfileId).Scan(&cart.Id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Cart{}, ErrCartNotFound
 		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
@@ -118,7 +115,7 @@ func (r *CartRepo) UpdateCart(ctx context.Context, cart models.Cart) (models.Car
 func (r *CartRepo) ReadCartProducts(ctx context.Context, cart models.Cart) (models.Cart, error) {
 	rows, err := r.db.Query(ctx, getProducts, cart.Id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return cart, ErrPoductsNotFound
 		}
 		err = fmt.Errorf("error happened in db.QueryContext: %w", err)

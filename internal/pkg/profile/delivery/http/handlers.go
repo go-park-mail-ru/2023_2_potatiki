@@ -13,8 +13,8 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/satori/go.uuid"
 )
 
 const maxRequestBodySize = 1024 * 1024 * 5 // 5 MB
@@ -55,7 +55,7 @@ func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	idProfile, err := uuid.Parse(idStr)
+	idProfile, err := uuid.FromString(idStr)
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))

@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
@@ -26,7 +26,7 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 	cfg.EXPECT().GetJwtAccess().Return("")
 
 	_ = &models.Profile{
-		Id:           uuid.New(),
+		Id:           uuid.NewV4(),
 		Login:        "iudsbfiwhdbfi",
 		Description:  "",
 		ImgSrc:       "default.png",
@@ -82,10 +82,10 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 		Login:    "iudsbfiwhdbfi",
 		Password: "hafikyagdfiaysgf",
 	}
-	Id := uuid.New()
+	Id := uuid.NewV4()
 
 	p := &models.Profile{
-		Id:           uuid.New(),
+		Id:           uuid.NewV4(),
 		Login:        "iudsbfiwhdbfi",
 		Description:  "",
 		ImgSrc:       "default.png",
@@ -115,10 +115,10 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 		Login:    "iudsbfiwhdbfi",
 		Password: "hafikyagdfiaysgf",
 	}
-	Id := uuid.New()
+	Id := uuid.NewV4()
 
 	_ = &models.Profile{
-		Id:           uuid.New(),
+		Id:           uuid.NewV4(),
 		Login:        "iudsbfiwhdbfi",
 		Description:  "",
 		ImgSrc:       "default.png",

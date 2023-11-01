@@ -98,9 +98,8 @@ CREATE TABLE IF NOT EXISTS cart
     id UUID NOT NULL PRIMARY KEY,
     profile_id UUID NOT NULL,
     is_current BOOLEAN,
-    FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
-    CONSTRAINT uq_cart_profile_id_product_id UNIQUE (profile_id)
-    );
+    FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE
+);
 
 INSERT INTO cart (id, profile_id, is_current)
 VALUES
@@ -166,37 +165,37 @@ CREATE TABLE IF NOT EXISTS shopping_cart_item
     );
 
 
-INSERT INTO shopping_cart_item (id, cart_id, product_id, quantity)
+INSERT INTO shopping_cart_item (cart_id, product_id, quantity)
 VALUES
-    ('c55d22d9-0630-4a7a-92a9-9e3e301c6a8a', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
-    ('b3f7b7c3-06f4-40c9-b35a-47bf7c69dd7d', 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 3),
+    ( 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
+    ( 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 3),
 
-    ('ae5b8c4d-3b61-4e18-8fcb-6c888c14dcca', '98d460d4-3f6e-46f2-a9c7-5e36924a3e0c', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
-    ('d7e09f9a-48bb-4bf2-83e9-5e2e7a8c9c86', '98d460d4-3f6e-46f2-a9c7-5e36924a3e0c', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 2),
+    ('98d460d4-3f6e-46f2-a9c7-5e36924a3e0c', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
+    ( '98d460d4-3f6e-46f2-a9c7-5e36924a3e0c', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 2),
 
-    ('ee4f8e5a-0eef-42a1-85ec-2f03e3c4e7c2', '4d26e8e7-af08-42d1-8160-8d0d8e7d24b6', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 4),
-    ('1e7c4b1b-04f3-4d6c-8f49-4b1f4e6c1e3c', '4d26e8e7-af08-42d1-8160-8d0d8e7d24b6', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 1),
+    ( '4d26e8e7-af08-42d1-8160-8d0d8e7d24b6', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 4),
+    ( '4d26e8e7-af08-42d1-8160-8d0d8e7d24b6', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 1),
 
-    ('f34b45b6-2e4a-4aa3-babf-6e6217c21bf9', 'f34b43b6-2e4a-4aa3-babf-6e6217c21bf9', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
-    ('f34b45b6-2e5a-4aa3-babf-6e6217c21bf9', 'f34b43b6-2e4a-4aa3-babf-6e6217c21bf9', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 1),
+    ( 'f34b43b6-2e4a-4aa3-babf-6e6217c21bf9', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
+    ( 'f34b43b6-2e4a-4aa3-babf-6e6217c21bf9', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 1),
 
-    ('39d8c3f9-2f6e-4a3d-8a9b-2b6a8f7e63ab', '39d8c3f9-2f6e-4a3d-8a9b-2b6a8f7e63ab', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 2),
-    ('39d8c3f9-2f7e-4a3d-8a9b-2b6a8f7e63ab', '39d8c3f9-2f6e-4a3d-8a9b-2b6a8f7e63ab', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 2),
+    ( '39d8c3f9-2f6e-4a3d-8a9b-2b6a8f7e63ab', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 2),
+    ( '39d8c3f9-2f6e-4a3d-8a9b-2b6a8f7e63ab', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 2),
 
-    ('a7e06ef1-76b5-4e85-a3b8-832745e6d416', 'a7e06ef1-76b5-4e85-a3b8-832745e6d416', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
-    ('a7e06ef1-78b5-4e85-a3b8-832745e6d416', 'a7e06ef1-76b5-4e85-a3b8-832745e6d416', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 2),
+    ( 'a7e06ef1-76b5-4e85-a3b8-832745e6d416', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
+    ( 'a7e06ef1-76b5-4e85-a3b8-832745e6d416', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 2),
 
-    ('c6e4e63c-8b65-4b98-aebd-76b1ff1c0e9a', 'c6e4e63c-8b64-4b98-aebd-76b1ff1c0e9a', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 3),
-    ('c6e4e63c-8b67-4b98-aebd-76b1ff1c0e9a', 'c6e4e63c-8b64-4b98-aebd-76b1ff1c0e9a', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 4),
+    ( 'c6e4e63c-8b64-4b98-aebd-76b1ff1c0e9a', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 3),
+    ('c6e4e63c-8b64-4b98-aebd-76b1ff1c0e9a', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 4),
 
-    ('9f85360d-7c3b-4c44-bc13-d73a3e5d4ac3', '9f85360d-7c1b-4c44-bc13-d73a3e5d4ac3', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
-    ('9f85360d-7c2b-4c44-bc13-d73a3e5d4ac3', '9f85360d-7c1b-4c44-bc13-d73a3e5d4ac3', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 2),
+    ( '9f85360d-7c1b-4c44-bc13-d73a3e5d4ac3', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 1),
+    ( '9f85360d-7c1b-4c44-bc13-d73a3e5d4ac3', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 2),
 
-    ('d3a4c7c0-7a8b-4e4a-bc6b-4e4d6a8d7a3c', 'd3a4c7c0-7a6b-4e4a-bc6b-4e4d6a8d7a3c', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 3),
-    ('d3a4c7c0-7a1b-4e4a-bc6b-4e4d6a8d7a3c', 'd3a4c7c0-7a6b-4e4a-bc6b-4e4d6a8d7a3c', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 3),
+    ( 'd3a4c7c0-7a6b-4e4a-bc6b-4e4d6a8d7a3c', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 3),
+    ( 'd3a4c7c0-7a6b-4e4a-bc6b-4e4d6a8d7a3c', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 3),
 
-    ('7e6b3a7d-2e1b-4c0b-8c7c-4e7b3c8e0d3a', '7e6b3a7d-2e3b-4c0b-8c7c-4e7b3c8e0d3a', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 9),
-    ('7e6b3a7d-2e2b-4c0b-8c7c-4e7b3c8e0d3a', '7e6b3a7d-2e3b-4c0b-8c7c-4e7b3c8e0d3a', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 1);
+    ( '7e6b3a7d-2e3b-4c0b-8c7c-4e7b3c8e0d3a', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 9),
+    ( '7e6b3a7d-2e3b-4c0b-8c7c-4e7b3c8e0d3a', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 1);
 
 ------------------------------------------------------------------------------------------------------------------------
 

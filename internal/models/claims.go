@@ -2,7 +2,7 @@ package models
 
 import (
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 type Claims struct {

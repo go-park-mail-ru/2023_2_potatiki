@@ -3,7 +3,7 @@ package models
 import (
 	"log/slog"
 
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 type Profile struct {

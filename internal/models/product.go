@@ -1,6 +1,6 @@
 package models
 
-import "github.com/google/uuid"
+import "github.com/satori/go.uuid"
 
 type Product struct {
 	Id          uuid.UUID `json:"id"` //nolint:stylecheck

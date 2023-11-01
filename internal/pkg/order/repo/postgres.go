@@ -2,19 +2,19 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v4"
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/google/uuid"
 	"github.com/jackc/pgtype/pgxtype"
+	"github.com/satori/go.uuid"
 )
 
 const (
-	createOrder     = "INSERT INTO order_info (id, profile_id, delivery_at) VALUES ($1, $2, $3);"
-	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4);"
+	createOrder     = "INSERT INTO order_info (id, profile_id, delivery_at, status_id) VALUES ($1, $2, $3, $4);"
+	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4, $5);"
 	getProductInfo  = "SELECT name, description, price, imgsrc, rating  FROM product WHERE id=$1;"
 	getCurrentOrder = "SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.imgsrc AS product_imgscr, p.rating AS product_rating, " +
 		"oi.quantity AS product_quantity, oi.price AS product_price " +
@@ -23,8 +23,9 @@ const (
 		"WHERE oi.order_id = $1;"
 	getCurrentOrderID = "SELECT oi.id AS order_id " +
 		"FROM order_info oi " +
-		"JOIN status s ON oi.status_id = s.id " +
-		"WHERE oi.profile_id = $1 AND s.name = $2;"
+		// "JOIN status s ON oi.status_id = s.id " +
+		"WHERE oi.profile_id = $1 " + // AND s.name = $2;
+		"ORDER BY oi.creation_at DESC;"
 	getOrdersID = "SELECT id AS order_id FROM order_info WHERE profile_id=$1;"
 )
 
@@ -54,8 +55,8 @@ func NewOrderRepo(db pgxtype.Querier) *OrderRepo {
 
 // TODO: Добавить добавление статуса в заказ
 func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID) (models.Order, error) {
-	orderID := uuid.New()
-	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour))
+	orderID := uuid.NewV4()
+	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour), 1)
 	if err != nil {
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
@@ -72,7 +73,7 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uu
 			&cartProduct.Rating,
 		)
 		if err != nil {
-			if errors.Is(err, sql.ErrNoRows) {
+			if errors.Is(err, pgx.ErrNoRows) {
 				return models.Order{}, ErrPoductNotFound
 			}
 			err = fmt.Errorf("error happened in row.Scan: %w", err)
@@ -80,7 +81,7 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uu
 			return models.Order{}, err
 		}
 
-		orderItemID := uuid.New()
+		orderItemID := uuid.NewV4()
 		_, err = r.db.Exec(ctx, createOrderItem,
 			orderItemID, orderID, cartProduct.Id, cartProduct.Quantity, cartProduct.Price)
 		if err != nil {
@@ -98,9 +99,9 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uu
 
 func (r *OrderRepo) ReadOrderID(ctx context.Context, userID uuid.UUID, status string) (uuid.UUID, error) {
 	var orderID uuid.UUID
-	err := r.db.QueryRow(ctx, getCurrentOrderID, userID, status).Scan(&orderID)
+	err := r.db.QueryRow(ctx, getCurrentOrderID, userID).Scan(&orderID)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return uuid.UUID{}, ErrOrderNotFound
 		}
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -115,7 +116,7 @@ func (r *OrderRepo) ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Or
 	rows, err := r.db.Query(ctx, getCurrentOrder, orderID)
 	defer rows.Close()
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Order{}, ErrPoductsInOrderNotFound
 		}
 		err = fmt.Errorf("error happened in db.Query: %w", err)
@@ -151,7 +152,7 @@ func (r *OrderRepo) ReadOrdersID(ctx context.Context, userID uuid.UUID) ([]uuid.
 	rows, err := r.db.Query(ctx, getOrdersID, userID)
 	defer rows.Close()
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return []uuid.UUID{}, ErrOrdersNotFound
 		}
 		err = fmt.Errorf("error happened in db.Query: %w", err)

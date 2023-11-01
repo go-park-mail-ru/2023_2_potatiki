@@ -11,7 +11,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 type AuthUsecase struct {
@@ -70,7 +70,7 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, user *models.SignUpPayload) (
 	}
 
 	profile := &models.Profile{
-		Id:           uuid.New(),
+		Id:           uuid.NewV4(),
 		Login:        user.Login,
 		Description:  "",
 		ImgSrc:       "default.png",

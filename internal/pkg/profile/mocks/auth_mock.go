@@ -10,7 +10,7 @@ import (
 
 	models "github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	gomock "github.com/golang/mock/gomock"
-	uuid "github.com/google/uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 // MockProfileUsecase is a mock of ProfileUsecase interface.

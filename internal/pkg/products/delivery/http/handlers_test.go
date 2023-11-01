@@ -12,8 +12,8 @@ import (
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/mocks"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -22,7 +22,7 @@ func TestProduct(t *testing.T) {
 	defer ctrl.Finish()
 
 	uc := mock.NewMockProductsUsecase(ctrl)
-	id := uuid.New()
+	id := uuid.NewV4()
 	uc.EXPECT().GetProduct(gomock.Any(), id).Return(
 		models.Product{
 			Id:          id,
@@ -65,7 +65,7 @@ func TestProductBad(t *testing.T) {
 	})
 
 	t.Run("GetProductError", func(t *testing.T) {
-		validID := uuid.New()
+		validID := uuid.NewV4()
 		uc.EXPECT().GetProduct(gomock.Any(), validID).Return(models.Product{}, errors.New("getProductError"))
 
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
@@ -82,7 +82,7 @@ func TestProducts(t *testing.T) {
 	defer ctrl.Finish()
 
 	uc := mock.NewMockProductsUsecase(ctrl)
-	id := uuid.New()
+	id := uuid.NewV4()
 	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1)).Return(
 		[]models.Product{{
 			Id:          id,
@@ -108,7 +108,7 @@ func TestProductsBad(t *testing.T) {
 	defer ctrl.Finish()
 
 	uc := mock.NewMockProductsUsecase(ctrl)
-	id := uuid.New()
+	id := uuid.NewV4()
 
 	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1)).Return(nil, errors.New("some error"))
 

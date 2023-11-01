@@ -9,7 +9,7 @@ import (
 	repoCart "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 type OrderUsecase struct {
@@ -91,7 +91,7 @@ func (uc *OrderUsecase) GetOrders(ctx context.Context, userID uuid.UUID) ([]mode
 		return []models.Order{}, err
 	}
 
-	var orders []models.Order
+	orders := make([]models.Order, 0)
 	for _, orderID := range ordersID {
 		order, err := uc.repoOrder.ReadOrder(ctx, orderID)
 		if err != nil {

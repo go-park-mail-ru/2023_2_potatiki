@@ -8,7 +8,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 type CartUsecase struct {
@@ -43,10 +43,11 @@ func (uc *CartUsecase) GetCart(ctx context.Context, id uuid.UUID) (models.Cart, 
 }
 
 func (uc *CartUsecase) AddProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
-	cart, err := uc.repo.CheckCart(ctx, cart.ProfileId)
+	userID := cart.ProfileId
+	cartChecked, err := uc.repo.CheckCart(ctx, userID)
 
 	if errors.Is(err, repo.ErrCartNotFound) {
-		cart, err = uc.repo.CreateCart(ctx, cart.ProfileId)
+		cart, err = uc.repo.CreateCart(ctx, userID)
 		if err != nil {
 			err = fmt.Errorf("error happened in repo.GetCart: %w", err)
 
@@ -62,7 +63,7 @@ func (uc *CartUsecase) AddProduct(ctx context.Context, cart models.Cart, product
 		return models.Cart{}, err
 	}
 
-	cart, err = uc.repo.AddProduct(ctx, cart, product)
+	cart, err = uc.repo.AddProduct(ctx, cartChecked, product)
 
 	return cart, err
 }

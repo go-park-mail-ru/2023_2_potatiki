@@ -9,7 +9,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 type OrderHandler struct {

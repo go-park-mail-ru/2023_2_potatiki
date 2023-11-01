@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
@@ -105,7 +105,7 @@ func TestCheckAuth(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 
-	ctx := context.WithValue(req.Context(), authmw.AccessTokenCookieName, uuid.New())
+	ctx := context.WithValue(req.Context(), authmw.AccessTokenCookieName, uuid.NewV4())
 	req = req.WithContext(ctx)
 
 	w := httptest.NewRecorder()

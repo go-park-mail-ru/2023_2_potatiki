@@ -10,8 +10,8 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/satori/go.uuid"
 )
 
 type ProductHandler struct {
@@ -51,7 +51,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	id, err := uuid.Parse(idStr)
+	id, err := uuid.FromString(idStr)
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
@@ -153,7 +153,7 @@ func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 		err    error
 	)
 	idStr := r.URL.Query().Get("count")
-	idProfile, err := uuid.Parse(idStr)
+	idProfile, err := uuid.FromString(idStr)
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))

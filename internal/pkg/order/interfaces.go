@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 //go:generate mockgen -source interfaces.go -destination ./mocks/cart_mock.go -package mock

@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 type ProductsUsecase struct {

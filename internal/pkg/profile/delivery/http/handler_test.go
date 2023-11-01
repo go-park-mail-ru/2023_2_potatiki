@@ -11,8 +11,8 @@ import (
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/mocks"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +21,7 @@ func TestGetProfile(t *testing.T) {
 	defer ctrl.Finish()
 
 	uc := mock.NewMockProfileUsecase(ctrl)
-	idProfile := uuid.New()
+	idProfile := uuid.NewV4()
 
 	uc.EXPECT().GetProfile(gomock.Any(), idProfile).Return(&models.Profile{}, nil)
 
@@ -40,7 +40,7 @@ func TestGetProfileBad(t *testing.T) {
 
 	t.Run("EmptyID", func(t *testing.T) {
 		uc := mock.NewMockProfileUsecase(ctrl)
-		idProfile := uuid.New()
+		idProfile := uuid.NewV4()
 		uc.EXPECT().GetProfile(gomock.Any(), idProfile).Return(&models.Profile{}, errors.New("invalidProfile"))
 
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)

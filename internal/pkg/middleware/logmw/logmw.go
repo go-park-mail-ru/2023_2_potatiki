@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/gorilla/mux"
+	"github.com/satori/go.uuid"
 )
 
 const RequestIDCtx = "x-request-id"
@@ -62,7 +62,7 @@ func NewWithConfig(log *slog.Logger, config Config) mux.MiddlewareFunc { //nolin
 
 			requestID := r.Header.Get(RequestIDCtx) // TODO wrap
 			if requestID == "" {
-				requestID = uuid.New().String()
+				requestID = uuid.NewV4().String()
 			}
 			wrapper.Header().Set(RequestIDCtx, requestID)
 

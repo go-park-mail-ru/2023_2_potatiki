@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/driftprogramming/pgxpoolmock"
 	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -42,7 +42,7 @@ func TestProductsRepo_ReadProduct(t *testing.T) {
 	mockPool := pgxpoolmock.NewMockPgxPool(ctl)
 
 	columns := []string{"Id", "NameProduct", "Description", "Price", "ImgSrc", "Rating"}
-	id := uuid.New()
+	id := uuid.NewV4()
 	repo := NewProductsRepo(mockPool)
 	pgxRows := pgxpoolmock.NewRows(columns).
 		AddRow(id, "", "", int64(0), "", float64(0)).ToPgxRows()

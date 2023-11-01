@@ -12,7 +12,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
+	"github.com/satori/go.uuid"
 )
 
 type ProfileUsecase struct {
@@ -81,7 +81,7 @@ func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePho
 	}
 	fileExtension := strings.TrimPrefix(fileType, "image/")
 
-	photoName := uuid.New().String() + "." + fileExtension
+	photoName := uuid.NewV4().String() + "." + fileExtension
 
 	file, err := os.Create(photoName)
 	if err != nil {
