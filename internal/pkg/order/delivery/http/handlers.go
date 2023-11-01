@@ -24,6 +24,15 @@ func NewOrderHandler(log *slog.Logger, uc order.OrderUsecase) OrderHandler {
 	}
 }
 
+// @Summary	CreateOrder
+// @Tags Order
+// @Description	Create Order using profile ID from cookies
+// @Accept json
+// @Produce json
+// @Success	200	{object} models.Order "New order info"
+// @Failure	401	"User unauthorized"
+// @Failure	429
+// @Router	/api/order/create [post]
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -50,6 +59,15 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, order)
 }
 
+// @Summary	GetCurrentOrder
+// @Tags Order
+// @Description	Get Current Order using profile ID from cookies
+// @Accept json
+// @Produce json
+// @Success	200	{object} models.Order "Current order info"
+// @Failure	401	"User unauthorized"
+// @Failure	429
+// @Router	/api/order/get_current [get]
 func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -76,6 +94,15 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, order)
 }
 
+// @Summary	GetOrders
+// @Tags Order
+// @Description	Get all Orders using profile ID from cookies
+// @Accept json
+// @Produce json
+// @Success	200	{array} models.Order "All orders info"
+// @Failure	401	"User unauthorized"
+// @Failure	429
+// @Router	/api/order/get_all [get]
 func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),

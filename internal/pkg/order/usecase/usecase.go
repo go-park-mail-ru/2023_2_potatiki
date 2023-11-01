@@ -42,7 +42,7 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, id uuid.UUID) (models.O
 		return models.Order{}, err
 	}
 
-	order, err := uc.repoOrder.CreateOrder(ctx, cart, id)
+	order, err := uc.repoOrder.CreateOrder(ctx, cart, id, 1)
 	if err != nil {
 		if errors.Is(err, repo.ErrPoductNotFound) {
 			return models.Order{}, err
@@ -57,7 +57,7 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, id uuid.UUID) (models.O
 
 func (uc *OrderUsecase) GetCurrentOrder(ctx context.Context, userID uuid.UUID) (models.Order, error) {
 
-	orderID, err := uc.repoOrder.ReadOrderID(ctx, userID, "Pending")
+	orderID, err := uc.repoOrder.ReadOrderID(ctx, userID)
 	if err != nil {
 		if errors.Is(err, repo.ErrOrderNotFound) {
 			// TODO: implement

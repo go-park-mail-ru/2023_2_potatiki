@@ -348,6 +348,96 @@
                 }
             }
         },
+        "/api/order/create": {
+            "post": {
+                "description": "Create Order using profile ID from cookies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "CreateOrder",
+                "responses": {
+                    "200": {
+                        "description": "New order info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Order"
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/order/get_all": {
+            "get": {
+                "description": "Get all Orders using profile ID from cookies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "GetOrders",
+                "responses": {
+                    "200": {
+                        "description": "All orders info",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Order"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/order/get_current": {
+            "get": {
+                "description": "Get Current Order using profile ID from cookies",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "GetCurrentOrder",
+                "responses": {
+                    "200": {
+                        "description": "Current order info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Order"
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
         "/api/products/category": {
             "get": {
                 "description": "Get products by category",
@@ -676,6 +766,46 @@
                 },
                 "parent": {
                     "type": "integer"
+                }
+            }
+        },
+        "models.Order": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "products": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.OrderProduct"
+                    }
+                }
+            }
+        },
+        "models.OrderProduct": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "img": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "quantity": {
+                    "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
                 }
             }
         },
