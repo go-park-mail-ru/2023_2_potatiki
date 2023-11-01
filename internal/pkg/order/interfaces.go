@@ -16,8 +16,8 @@ type OrderUsecase interface {
 }
 
 type OrderRepo interface {
-	CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID) (models.Order, error)
-	ReadOrderID(ctx context.Context, userID uuid.UUID, status string) (uuid.UUID, error)
+	CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID, statusID int) (models.Order, error)
+	ReadOrderID(ctx context.Context, userID uuid.UUID) (uuid.UUID, error)
 	ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Order, error)
 	ReadOrdersID(ctx context.Context, userID uuid.UUID) ([]uuid.UUID, error)
 }

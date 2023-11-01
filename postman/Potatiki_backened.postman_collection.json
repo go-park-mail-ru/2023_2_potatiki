@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "f936f315-aa20-4e44-8a28-ed4dfe9bcc3d",
+		"_postman_id": "f0afb63c-18b2-49bb-8351-f351d9fc4d9d",
 		"name": "Potatiki_backened",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "30722310"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30122325"
 	},
 	"item": [
 		{
@@ -17,10 +17,20 @@
 						"body": {
 							"mode": "file",
 							"file": {
-								"src": "/home/scremyda/pictures/flowers.jpg"
+								"src": "/home/scremyda/Загрузки/autopart1.jpg"
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/update-photo"
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-photo",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-photo"
+							]
+						}
 					},
 					"response": []
 				},
@@ -41,7 +51,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/1e65f1ea-db12-4a7a-be9a-dcfb25887433"
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/5af2d39f-a63a-4da6-a96e-3c5562198cc0",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"5af2d39f-a63a-4da6-a96e-3c5562198cc0"
+							]
+						}
 					},
 					"response": []
 				},
@@ -59,7 +79,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/update-data"
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-data",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-data"
+							]
+						}
 					},
 					"response": []
 				}
@@ -85,7 +115,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/check_auth"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/check_auth",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"check_auth"
+							]
+						}
 					},
 					"response": []
 				},
@@ -106,7 +146,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/logout"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
 					},
 					"response": []
 				},
@@ -117,14 +167,24 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"login\": \"MrDjeb\", \"password\": \"1234567819\" }",
+							"raw": "{ \n    \"login\": \"MrDjeb\", \n    \"password\": \"1234567819\" \n}",
 							"options": {
 								"raw": {
 									"language": "json"
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/signin"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signin"
+							]
+						}
 					},
 					"response": []
 				},
@@ -142,7 +202,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/signup"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
+						}
 					},
 					"response": []
 				}
@@ -250,7 +320,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/products/007749b5-7e07-4be8-8c91-8db273ace1c2"
+						"url": {
+							"raw": "{{baseUrl}}/api/products/007749b5-7e07-4be8-8c91-8db273ace1c2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"007749b5-7e07-4be8-8c91-8db273ace1c2"
+							]
+						}
 					},
 					"response": []
 				}
@@ -276,7 +356,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/category/get_all"
+						"url": {
+							"raw": "{{baseUrl}}/api/category/get_all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"category",
+								"get_all"
+							]
+						}
 					},
 					"response": []
 				}
@@ -299,28 +389,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/order/submit"
-					},
-					"response": []
-				},
-				{
-					"name": "get_all",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": "{{baseUrl}}/api/order/get_all"
+						"url": {
+							"raw": "{{baseUrl}}/api/order/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"create"
+							]
+						}
 					},
 					"response": []
 				},
@@ -341,7 +420,168 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/order/get_current"
+						"url": {
+							"raw": "{{baseUrl}}/api/order/get_current",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"get_current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/order/get_all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"get_all"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Cart",
+			"item": [
+				{
+					"name": "update",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "summary",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/summary",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								"summary"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add_product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"id\": \"007749b5-7e07-4be8-8c91-8db273ace4c5\",\n  \"quantity\": 3\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/add_product",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								"add_product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete_product",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/delete_product",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								"delete_product"
+							]
+						}
 					},
 					"response": []
 				}

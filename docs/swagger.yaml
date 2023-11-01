@@ -32,6 +32,32 @@ definitions:
       parent:
         type: integer
     type: object
+  models.Order:
+    properties:
+      id:
+        type: string
+      products:
+        items:
+          $ref: '#/definitions/models.OrderProduct'
+        type: array
+    type: object
+  models.OrderProduct:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      img:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      quantity:
+        type: integer
+      rating:
+        type: number
+    type: object
   models.Product:
     properties:
       description:
@@ -344,6 +370,65 @@ paths:
       summary: Category
       tags:
       - Category
+  /api/order/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Order using profile ID from cookies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: New order info
+          schema:
+            $ref: '#/definitions/models.Order'
+        "401":
+          description: User unauthorized
+        "429":
+          description: Too Many Requests
+      summary: CreateOrder
+      tags:
+      - Order
+  /api/order/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get all Orders using profile ID from cookies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: All orders info
+          schema:
+            items:
+              $ref: '#/definitions/models.Order'
+            type: array
+        "401":
+          description: User unauthorized
+        "429":
+          description: Too Many Requests
+      summary: GetOrders
+      tags:
+      - Order
+  /api/order/get_current:
+    get:
+      consumes:
+      - application/json
+      description: Get Current Order using profile ID from cookies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Current order info
+          schema:
+            $ref: '#/definitions/models.Order'
+        "401":
+          description: User unauthorized
+        "429":
+          description: Too Many Requests
+      summary: GetCurrentOrder
+      tags:
+      - Order
   /api/products/{id}:
     get:
       consumes:

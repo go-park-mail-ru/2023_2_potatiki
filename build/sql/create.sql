@@ -34,8 +34,8 @@ CREATE TABLE IF NOT EXISTS profile
 
 INSERT INTO profile (id, login, description, imgsrc, phone, passwordhash)
 VALUES
-    ('c6e4e63c-8b64-4b98-aebd-76b1ff1c0e9a', 'user1', 'Описание пользователя 1', 'user1.png', '+7(916)-442-41-26', E'\\x0123456789ABCDEF'),
-    ('9f85360d-7c1b-4c44-bc13-d73a3e5d4ac3', 'user2', 'Описание пользователя 2', 'user2.png', '+7(916)-442-41-26', E'\\xABCDEF0123456789'),
+    ('c6e4e63c-8b64-4b98-aebd-76b1ff1c0e9a', 'scremyda', 'Описание пользователя 1', 'user1.png', '+7(916)-442-41-26', E'\\x53b483ac6ff31100c8af51a7815ddd0f4669f9bbff49f7f5e7bdfcf9cc58eea50b5fbaff99343a1c'),
+    ('9f85360d-7c1b-4c44-bc13-d73a3e5d4ac3', 'scremyda)', 'Описание пользователя 2', 'user2.png', '+7(916)-442-41-26', E'\\x14dc16379c5f2455511b562922bc43cd283470a20287d23c0cef5e08f125281dece36cdc4bb59cbc'),
     ('a7e06ef1-76b5-4e85-a3b8-832745e6d416', 'user3', 'Описание пользователя 3', 'user3.png', '+7(916)-442-41-26', E'\\xFEDCBA9876543210'),
     ('4d26e8e7-af08-42d1-8160-8d0d8e7d24b6', 'user4', 'Описание пользователя 4', 'user4.png', '+7(916)-442-41-26', E'\\x1234567890ABCDEF'),
     ('f34b43b6-2e4a-4aa3-babf-6e6217c21bf9', 'user5', 'Описание пользователя 5', 'user5.png', '+7(916)-442-41-26', E'\\xEFCDAB8967452301'),

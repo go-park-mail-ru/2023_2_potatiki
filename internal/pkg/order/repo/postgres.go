@@ -36,6 +36,8 @@ const (
 //INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4);
 //$$;
 
+// iota + map = status
+
 var (
 	ErrOrderNotFound          = errors.New("order not found")
 	ErrOrdersNotFound         = errors.New("orders not found")
@@ -54,9 +56,9 @@ func NewOrderRepo(db pgxtype.Querier) *OrderRepo {
 }
 
 // TODO: Добавить добавление статуса в заказ
-func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID) (models.Order, error) {
+func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID, statusID int) (models.Order, error) {
 	orderID := uuid.NewV4()
-	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour), 1)
+	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour), statusID)
 	if err != nil {
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
@@ -97,7 +99,7 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uu
 	return order, nil
 }
 
-func (r *OrderRepo) ReadOrderID(ctx context.Context, userID uuid.UUID, status string) (uuid.UUID, error) {
+func (r *OrderRepo) ReadOrderID(ctx context.Context, userID uuid.UUID) (uuid.UUID, error) {
 	var orderID uuid.UUID
 	err := r.db.QueryRow(ctx, getCurrentOrderID, userID).Scan(&orderID)
 	if err != nil {
