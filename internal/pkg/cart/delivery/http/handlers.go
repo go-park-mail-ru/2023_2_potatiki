@@ -32,7 +32,7 @@ func NewCartHandler(log *slog.Logger, uc cart.CartUsecase) CartHandler {
 // @Description	Update cart
 // @Accept json
 // @Produce json
-// @Param @Param input body models.Cart true "cart info"
+// @Param input body models.Cart true "cart info"
 // @Success	200	{object} models.Cart "cart info"
 // @Failure	400	{object} response.Response	"invalid request"
 // @Failure	429

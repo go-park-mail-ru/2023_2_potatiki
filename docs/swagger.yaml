@@ -1,16 +1,10 @@
 definitions:
   models.Cart:
     properties:
-      id:
-        type: string
-      isCurrent:
-        type: boolean
       products:
         items:
           $ref: '#/definitions/models.CartProduct'
         type: array
-      profileId:
-        type: string
     type: object
   models.CartProduct:
     properties:
@@ -32,11 +26,11 @@ definitions:
   models.Category:
     properties:
       id:
-        type: string
+        type: integer
       name:
         type: string
       parent:
-        type: string
+        type: integer
     type: object
   models.Product:
     properties:
@@ -231,7 +225,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.CartProduct'
+          $ref: '#/definitions/models.Product'
       produces:
       - application/json
       responses:
@@ -297,6 +291,34 @@ paths:
         "429":
           description: Too Many Requests
       summary: GetCart
+      tags:
+      - Cart
+  /api/cart/update:
+    post:
+      consumes:
+      - application/json
+      description: Update cart
+      parameters:
+      - description: cart info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Cart'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: cart info
+          schema:
+            $ref: '#/definitions/models.Cart'
+        "400":
+          description: invalid request
+          schema:
+            $ref: '#/definitions/response.Response'
+        "429":
+          description: Too Many Requests
+      summary: UpdateCart
       tags:
       - Cart
   /api/category/get_all:

@@ -184,7 +184,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CartProduct"
+                            "$ref": "#/definitions/models.Product"
                         }
                     }
                 ],
@@ -278,6 +278,49 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/cart/update": {
+            "post": {
+                "description": "Update cart",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "UpdateCart",
+                "parameters": [
+                    {
+                        "description": "cart info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Cart"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "cart info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Cart"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid request",
+                        "schema": {
+                            "$ref": "#/definitions/response.Response"
+                        }
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -597,20 +640,11 @@ const docTemplate = `{
         "models.Cart": {
             "type": "object",
             "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "isCurrent": {
-                    "type": "boolean"
-                },
                 "products": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/models.CartProduct"
                     }
-                },
-                "profileId": {
-                    "type": "string"
                 }
             }
         },
@@ -644,13 +678,13 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {
-                    "type": "string"
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
                 "parent": {
-                    "type": "string"
+                    "type": "integer"
                 }
             }
         },
