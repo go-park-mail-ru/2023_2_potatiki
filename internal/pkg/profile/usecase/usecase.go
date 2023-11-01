@@ -81,9 +81,11 @@ func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePho
 	}
 	fileExtension := strings.TrimPrefix(fileType, "image/")
 
+	folderPath := "photos/"
+
 	photoName := uuid.NewV4().String() + "." + fileExtension
 
-	file, err := os.Create(photoName)
+	file, err := os.Create(folderPath + photoName)
 	if err != nil {
 		err = fmt.Errorf("error happened in create file: %w", err)
 
