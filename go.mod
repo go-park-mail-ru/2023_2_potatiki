@@ -7,7 +7,6 @@ require (
 	github.com/fatih/color v1.15.0
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/golang/mock v1.6.0
-	github.com/google/uuid v1.3.1
 	github.com/gorilla/mux v1.8.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgtype v1.7.0

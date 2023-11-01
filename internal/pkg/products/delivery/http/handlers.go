@@ -11,7 +11,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/gorilla/mux"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 type ProductHandler struct {
@@ -78,7 +78,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
-// @Success	200	{object} []models.Product "Product info"
+// @Success	200	{object} []models.Product "Products array"
 // @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
 // @Router	/api/products/get_all [get]
@@ -132,10 +132,10 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 // @Description	Get products by category
 // @Accept json
 // @Produce json
-// @Param category_id query string true "Category UUID"
+// @Param category_id query int true "Category ID"
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
-// @Success	200	{object} []models.Product "Product info"
+// @Success	200	{object} []models.Product "Products by category id"
 // @Failure	400	{object} response.Response	"error messege"
 // @Failure	429
 // @Router	/api/products/category [get]
@@ -152,8 +152,8 @@ func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 		count  int64
 		err    error
 	)
-	idStr := r.URL.Query().Get("count")
-	idProfile, err := uuid.FromString(idStr)
+	idStr := r.URL.Query().Get("category_id")
+	id, err := strconv.Atoi(idStr)
 	if err != nil {
 		h.log.Error("id is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
@@ -181,7 +181,7 @@ func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	products, err := h.uc.GetCategory(r.Context(), idProfile, paging, count)
+	products, err := h.uc.GetCategory(r.Context(), id, paging, count)
 	if err != nil {
 		h.log.Error("failed to get products by category", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)

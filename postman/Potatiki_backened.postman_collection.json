@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "27d504aa-2ea2-429b-9b94-6424a8872acf",
+		"_postman_id": "f936f315-aa20-4e44-8a28-ed4dfe9bcc3d",
 		"name": "Potatiki_backened",
 		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "30722310"
@@ -41,7 +41,7 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/259ac449-0db9-4296-b57b-e6e93daa5048"
+						"url": "{{baseUrl}}/api/profile/1e65f1ea-db12-4a7a-be9a-dcfb25887433"
 					},
 					"response": []
 				},
@@ -117,7 +117,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \"login\": \"MrDjeb\", \"password\": \"12345678191\" }",
+							"raw": "{ \"login\": \"MrDjeb\", \"password\": \"1234567819\" }",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -206,14 +206,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/products/get_all?paging=1&count=3&category_id=1",
+							"raw": "{{baseUrl}}/api/products/category?paging=1&count=3&category_id=5",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"products",
-								"get_all"
+								"category"
 							],
 							"query": [
 								{
@@ -226,7 +226,7 @@
 								},
 								{
 									"key": "category_id",
-									"value": "1"
+									"value": "5"
 								}
 							]
 						}

@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
@@ -32,7 +32,7 @@ func TestSignUp(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
 		strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
+	AuthHandler := NewAuthHandler(logger.Set("local", os.Stdout), uc)
 	AuthHandler.SignUp(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -45,7 +45,7 @@ func TestSignUpBad(t *testing.T) {
 	t.Run("EmptyRequestBody", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "http://example.com/foo", nil)
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
+		AuthHandler := NewAuthHandler(logger.Set("local", os.Stdout), uc)
 		AuthHandler.SignUp(w, req)
 		assert.Equal(t, http.StatusTooManyRequests, w.Code)
 	})
@@ -64,7 +64,7 @@ func TestSignIn(t *testing.T) {
 	req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
 		strings.NewReader("{ \"login\": \"Userrr\", \"password\": \"Dima@gmail.com\" }"))
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
+	AuthHandler := NewAuthHandler(logger.Set("local", os.Stdout), uc)
 	AuthHandler.SignIn(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -78,7 +78,7 @@ func TestSignInBad(t *testing.T) {
 	t.Run("EmptyRequestBody", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodPost, "http://example.com/foo", nil)
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
+		AuthHandler := NewAuthHandler(logger.Set("local", os.Stdout), uc)
 		AuthHandler.SignIn(w, req)
 		assert.Equal(t, http.StatusTooManyRequests, w.Code)
 	})
@@ -92,7 +92,7 @@ func TestLogOut(t *testing.T) {
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
+	AuthHandler := NewAuthHandler(logger.Set("local", os.Stdout), uc)
 	AuthHandler.LogOut(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -100,16 +100,17 @@ func TestLogOut(t *testing.T) {
 func TestCheckAuth(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
+	id := uuid.NewV4()
 
 	uc := mock.NewMockAuthUsecase(ctrl)
-
+	uc.EXPECT().CheckAuth(gomock.Any(), id).Return(&models.Profile{}, nil)
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 
-	ctx := context.WithValue(req.Context(), authmw.AccessTokenCookieName, uuid.NewV4())
+	ctx := context.WithValue(req.Context(), authmw.AccessTokenCookieName, id)
 	req = req.WithContext(ctx)
 
 	w := httptest.NewRecorder()
-	AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
+	AuthHandler := NewAuthHandler(logger.Set("local", os.Stdout), uc)
 	AuthHandler.CheckAuth(w, req)
 
 	assert.Equal(t, http.StatusOK, w.Code)
@@ -121,9 +122,11 @@ func TestCheckAuthBad(t *testing.T) {
 
 	t.Run("NoTokenCookie", func(t *testing.T) {
 		uc := mock.NewMockAuthUsecase(ctrl)
+		//uc.EXPECT().CheckAuth(gomock.Any(), uuid.NewV4()).Return(nil, errors.New("NoTokenCookie"))
+
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
+		AuthHandler := NewAuthHandler(logger.Set("local", os.Stdout), uc)
 		AuthHandler.CheckAuth(w, req)
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
 	})
@@ -136,7 +139,7 @@ func TestCheckAuthBad(t *testing.T) {
 			Value: "invalidTokenValue",
 		})
 		w := httptest.NewRecorder()
-		AuthHandler := NewAuthHandler(logger.Set("prod", os.Stdout), uc)
+		AuthHandler := NewAuthHandler(logger.Set("local", os.Stdout), uc)
 		AuthHandler.CheckAuth(w, req)
 		assert.Equal(t, http.StatusUnauthorized, w.Code)
 	})

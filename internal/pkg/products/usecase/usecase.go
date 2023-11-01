@@ -9,7 +9,7 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 type ProductsUsecase struct {
@@ -47,8 +47,7 @@ func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging int64, count 
 	return productsSlice, nil
 }
 
-func (uc *ProductsUsecase) GetCategory(ctx context.Context,
-	id uuid.UUID, paging, count int64) ([]models.Product, error) {
+func (uc *ProductsUsecase) GetCategory(ctx context.Context, id int, paging, count int64) ([]models.Product, error) {
 	productsSlice, err := uc.repo.ReadCategory(ctx, id, paging, count)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.GetCategory: %w", err)

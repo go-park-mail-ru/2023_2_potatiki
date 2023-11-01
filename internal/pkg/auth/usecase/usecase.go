@@ -11,7 +11,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
 	"github.com/go-playground/validator/v10"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 type AuthUsecase struct {
@@ -94,4 +94,17 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, user *models.SignUpPayload) (
 
 	profile.HidePass()
 	return profile, token, exp, nil
+}
+
+func (uc *AuthUsecase) CheckAuth(ctx context.Context, Id uuid.UUID) (*models.Profile, error) {
+	profile, err := uc.repo.ReadProfile(ctx, Id)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.ReadProfile: %w", err)
+
+		return &models.Profile{}, err
+	}
+
+	profile.HidePass()
+
+	return profile, nil
 }

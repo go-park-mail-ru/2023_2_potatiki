@@ -13,7 +13,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 type AuthHandler struct {
@@ -138,8 +138,9 @@ func (h *AuthHandler) LogOut(w http.ResponseWriter, r *http.Request) {
 // @Description	Check user is logged in
 // @Accept json
 // @Produce json
-// @Success	200
+// @Success	200	{object} models.Profile "Profile"
 // @Failure	401
+// @Failure	429
 // @security AuthKey
 // @Param Cookie header string  false "Token" default(zuzu-t=xxx)
 // @Router	/api/auth/check_auth [get]
@@ -153,8 +154,20 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	if !ok {
 		h.log.Error("failed cast uuid from context value")
 		resp.JSONStatus(w, http.StatusUnauthorized)
+
+		return
 	}
 
-	h.log.Info("check auth success", "id", id)
-	resp.JSONStatus(w, http.StatusOK)
+	h.log.Debug("check auth success", "id", id)
+
+	profile, err := h.uc.CheckAuth(r.Context(), id)
+	if err != nil {
+		h.log.Error("failed to CheckAuth", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.log.Debug("got profile", slog.Any("profile", profile.Id))
+	resp.JSON(w, http.StatusOK, profile)
 }

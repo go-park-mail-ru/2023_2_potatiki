@@ -9,9 +9,9 @@ import (
 //go:generate mockgen -source interfaces.go -destination ./mocks/products_mock.go -package mock
 
 type CategoryUsecase interface {
-	Categories(context.Context) ([]models.Category, error)
+	Categories(context.Context) (models.CategoryTree, error)
 }
 
 type CategoryRepo interface {
-	ReadCategories(context.Context) ([]models.Category, error)
+	ReadCategories(context.Context) (models.CategoryTree, error)
 }

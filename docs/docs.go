@@ -47,10 +47,16 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "Profile",
+                        "schema": {
+                            "$ref": "#/definitions/models.Profile"
+                        }
                     },
                     "401": {
                         "description": "Unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
                     }
                 }
             }
@@ -372,8 +378,8 @@ const docTemplate = `{
                 "summary": "Products",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "Category UUID",
+                        "type": "integer",
+                        "description": "Category ID",
                         "name": "category_id",
                         "in": "query",
                         "required": true
@@ -394,7 +400,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Product info",
+                        "description": "Products by category id",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -444,7 +450,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Product info",
+                        "description": "Products array",
                         "schema": {
                             "type": "array",
                             "items": {

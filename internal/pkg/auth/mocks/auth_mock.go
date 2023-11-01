@@ -11,6 +11,7 @@ import (
 
 	models "github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/satori/go.uuid"
 )
 
 // MockAuthUsecase is a mock of AuthUsecase interface.
@@ -34,6 +35,21 @@ func NewMockAuthUsecase(ctrl *gomock.Controller) *MockAuthUsecase {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockAuthUsecase) EXPECT() *MockAuthUsecaseMockRecorder {
 	return m.recorder
+}
+
+// CheckAuth mocks base method.
+func (m *MockAuthUsecase) CheckAuth(arg0 context.Context, arg1 uuid.UUID) (*models.Profile, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckAuth", arg0, arg1)
+	ret0, _ := ret[0].(*models.Profile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckAuth indicates an expected call of CheckAuth.
+func (mr *MockAuthUsecaseMockRecorder) CheckAuth(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckAuth", reflect.TypeOf((*MockAuthUsecase)(nil).CheckAuth), arg0, arg1)
 }
 
 // SignIn mocks base method.

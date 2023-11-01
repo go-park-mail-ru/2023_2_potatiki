@@ -8,13 +8,15 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 const (
 	getProduct  = "SELECT id, name, description, price, imgsrc, rating FROM product WHERE id=$1;"
-	getProducts = "SELECT id, name, description, price, imgsrc, rating " +
-		"FROM product ORDER BY id LIMIT $1 OFFSET $2"
+	getProducts = `SELECT id, name, description, price, imgsrc, rating 
+	FROM product ORDER BY id LIMIT $1 OFFSET $2;`
+	getProductsByategoryId = `SELECT id, name, description, price, imgsrc, rating 
+	FROM product WHERE category_id=$3 ORDER BY id LIMIT $1 OFFSET $2;`
 )
 
 var (
@@ -73,14 +75,15 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 	return productSlice, nil
 }
 
-func (r *ProductsRepo) ReadCategory(ctx context.Context, id uuid.UUID, paging, count int64) ([]models.Product, error) {
+func (r *ProductsRepo) ReadCategory(ctx context.Context, id int, paging, count int64) ([]models.Product, error) {
 	var productSlice []models.Product
-	rows, err := r.db.Query(ctx, getProducts, id, count, paging)
+	rows, err := r.db.Query(ctx, getProductsByategoryId, count, paging, id)
+	fmt.Println(count, paging, id)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return []models.Product{}, ErrPoductNotFound
 		}
-		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+		err = fmt.Errorf("error happened in db.Query: %w", err)
 
 		return []models.Product{}, err
 	}

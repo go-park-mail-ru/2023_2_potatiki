@@ -18,13 +18,13 @@ func NewCategoryUsecase(repo category.CategoryRepo) *CategoryUsecase {
 	}
 }
 
-func (uc *CategoryUsecase) Categories(ctx context.Context) ([]models.Category, error) {
-	categorySlice, err := uc.repo.ReadCategories(ctx)
+func (uc *CategoryUsecase) Categories(ctx context.Context) (models.CategoryTree, error) {
+	tree, err := uc.repo.ReadCategories(ctx)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadCategories: %w", err)
 
-		return []models.Category{}, err
+		return models.CategoryTree{}, err
 	}
 
-	return categorySlice, nil
+	return tree, nil
 }

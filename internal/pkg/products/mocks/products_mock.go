@@ -37,7 +37,7 @@ func (m *MockProductsUsecase) EXPECT() *MockProductsUsecaseMockRecorder {
 }
 
 // GetCategory mocks base method.
-func (m *MockProductsUsecase) GetCategory(arg0 context.Context, arg1 uuid.UUID, arg2, arg3 int64) ([]models.Product, error) {
+func (m *MockProductsUsecase) GetCategory(arg0 context.Context, arg1 int, arg2, arg3 int64) ([]models.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCategory", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].([]models.Product)
@@ -105,7 +105,7 @@ func (m *MockProductsRepo) EXPECT() *MockProductsRepoMockRecorder {
 }
 
 // ReadCategory mocks base method.
-func (m *MockProductsRepo) ReadCategory(arg0 context.Context, arg1 uuid.UUID, arg2, arg3 int64) ([]models.Product, error) {
+func (m *MockProductsRepo) ReadCategory(arg0 context.Context, arg1 int, arg2, arg3 int64) ([]models.Product, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadCategory", arg0, arg1, arg2, arg3)
 	ret0, _ := ret[0].([]models.Product)

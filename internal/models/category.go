@@ -10,6 +10,12 @@ type Category struct {
 	Parent int64  `json:"parent"`
 }
 
+const MAX_LEVEL_CATEGORY = 3
+
+type CategoryBranch [MAX_LEVEL_CATEGORY]string
+
+type CategoryTree []Category
+
 func (c *Category) LogValue() slog.Value {
 	return slog.GroupValue(
 		//slog.Int64("id", c.Id),
