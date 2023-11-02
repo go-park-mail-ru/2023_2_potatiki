@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"log/slog"
 	"net/http"
 	"os"
@@ -17,9 +19,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
@@ -141,7 +141,9 @@ func run() (err error) {
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
-	r.Use(middleware.Recover(log), middleware.CORSMiddleware, logmw.New(log))
+	// r.Use(middleware.Recover(log), middleware.CORSMiddleware, logmw.New(log))
+
+	r.Use(middleware.Recover(log), logmw.New(log))
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
