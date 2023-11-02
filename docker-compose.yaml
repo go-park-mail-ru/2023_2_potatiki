@@ -94,7 +94,7 @@ services:
     volumes:
       - ./.env:/docker-zuzu-main/.env
       - zuzu-logs:/var/lib/zuzu/logs
-      - "/home/ubuntu/front_deploy/2023_2_Potatiki/public/static/images/user/:/docker-zuzu-main/${PHOTOS_FILE_PATH}"
+      - "/data/public/photos/:/docker-zuzu-main/${PHOTOS_FILE_PATH}"
     depends_on:
       - postgres
     networks:
