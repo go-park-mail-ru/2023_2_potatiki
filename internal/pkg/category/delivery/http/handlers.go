@@ -9,7 +9,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
 )
 
 type CategoryHandler struct {

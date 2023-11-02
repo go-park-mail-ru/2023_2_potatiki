@@ -7,9 +7,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwter"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
 	"github.com/gorilla/mux"
 )
 
@@ -27,7 +27,7 @@ func MakeTokenCookie(token string, expiration time.Time) *http.Cookie {
 	}
 }
 
-func New(log *slog.Logger, auther auth.AuthAuther) mux.MiddlewareFunc {
+func New(log *slog.Logger, auther jwter.JWTer) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler { // TODO: del
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenCookie, err := r.Cookie(AccessTokenCookieName)
@@ -48,7 +48,7 @@ func New(log *slog.Logger, auther auth.AuthAuther) mux.MiddlewareFunc {
 
 			claims, err := auther.GetClaims(tokenCookie.Value)
 			if err != nil {
-				log.Error("jws token is invalid", sl.Err(err))
+				log.Error("jws token is invalid auth", sl.Err(err))
 				resp.JSONStatus(w, http.StatusUnauthorized)
 
 				return

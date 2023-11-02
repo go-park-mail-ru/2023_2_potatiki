@@ -1,15 +1,16 @@
 package http
 
 import (
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
 	"log/slog"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
-	"github.com/satori/go.uuid"
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
+	uuid "github.com/satori/go.uuid"
 )
 
 type OrderHandler struct {

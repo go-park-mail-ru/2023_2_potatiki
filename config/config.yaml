@@ -3,5 +3,7 @@ httpServer:
   timeout: 4s
   idleTimeout: 30s
   readHeaderTimeout: 10s
-auther:
+authJwt:
+  accessExpirationTime: 6h
+csrfJwt:
   accessExpirationTime: 6h

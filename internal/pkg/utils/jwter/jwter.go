@@ -1,4 +1,4 @@
-package usecase
+package jwter
 
 import (
 	"errors"
@@ -6,36 +6,49 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/golang-jwt/jwt/v5"
 )
 
-type Auther struct {
-	ttl    time.Duration
-	secret string
+//go:generate mockgen -source jwter.go -destination ./mocks/jwt_mock.go -package mock
+
+type Configer interface {
+	GetTTL() time.Duration
+	GetSecret() string
+	GetIssuer() string
 }
 
-func NewAuther(cfg auth.AuthConfig) *Auther {
-	return &Auther{
-		ttl:    cfg.GetAccessExpirationTime(), // cfg.AccessExpirationTime,
-		secret: cfg.GetJwtAccess(),            // cfg.JwtAccess,
+type JWTer interface {
+	GenerateToken(*models.Profile) (string, time.Time, error)
+	GetClaims(string) (*models.Claims, error)
+}
+type JWTManager struct {
+	ttl    time.Duration
+	secret string
+	issuer string
+}
+
+func New(cfg Configer) *JWTManager {
+	return &JWTManager{
+		ttl:    cfg.GetTTL(),
+		secret: cfg.GetSecret(),
+		issuer: cfg.GetIssuer(),
 	}
 }
 
-func (a *Auther) GenerateToken(profile *models.Profile) (string, time.Time, error) {
-	expirationTime := time.Now().UTC().Add(a.ttl)
+func (j *JWTManager) GenerateToken(profile *models.Profile) (string, time.Time, error) {
+	expirationTime := time.Now().UTC().Add(j.ttl)
 
 	claims := &models.Claims{
 		ID: profile.Id,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
-			Issuer:    "auth",
+			Issuer:    j.issuer,
 		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	tokenStr, err := token.SignedString([]byte(a.secret))
+	tokenStr, err := token.SignedString([]byte(j.secret))
 	if err != nil {
 		return "", time.Now(), err
 	}
@@ -43,18 +56,18 @@ func (a *Auther) GenerateToken(profile *models.Profile) (string, time.Time, erro
 	return tokenStr, expirationTime, nil
 }
 
-func (a *Auther) getKeyFunc() jwt.Keyfunc {
+func (j *JWTManager) getKeyFunc() jwt.Keyfunc {
 	return func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
-		return []byte(a.secret), nil
+		return []byte(j.secret), nil
 	}
 }
 
-func (a *Auther) GetClaims(tokenString string) (*models.Claims, error) {
-	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, a.getKeyFunc())
+func (j *JWTManager) GetClaims(tokenString string) (*models.Claims, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.Claims{}, j.getKeyFunc())
 	if err != nil {
 		err = fmt.Errorf("error happened in jwt.ParseWithClaims: %w", err)
 

@@ -20,6 +20,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwter"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
@@ -116,7 +117,7 @@ func run() (err error) {
 	profileUsecase := profileUsecase.NewProfileUsecase(log, profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
-	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.Auther)
+	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
 	authHandler := authHandler.NewAuthHandler(log, authUsecase)
 
 	cartRepo := cartRepo.NewCartRepo(db)
@@ -156,7 +157,9 @@ func run() (err error) {
 	//
 	//
 	// ============================Setup endpoints============================ //
-	authMW := authmw.New(log, authUsecase.Auther)
+	authMW := authmw.New(log, jwter.New(cfg.AuthJWT))
+	csrfMW := authmw.New(log, jwter.New(cfg.CSRFJWT))
+
 	auth := r.PathPrefix("/auth").Subrouter()
 	{
 		auth.HandleFunc("/signup", authHandler.SignUp).
@@ -177,10 +180,10 @@ func run() (err error) {
 		profile.HandleFunc("/{id:[0-9a-fA-F-]+}", profileHandler.GetProfile).
 			Methods(http.MethodGet, http.MethodOptions)
 
-		profile.Handle("/update-photo", authMW(http.HandlerFunc(profileHandler.UpdatePhoto))).
+		profile.Handle("/update-photo", authMW(csrfMW(http.HandlerFunc(profileHandler.UpdatePhoto)))).
 			Methods(http.MethodPost, http.MethodOptions)
 
-		profile.Handle("/update-data", authMW(http.HandlerFunc(profileHandler.UpdateProfileData))).
+		profile.Handle("/update-data", authMW(csrfMW(http.HandlerFunc(profileHandler.UpdateProfileData)))).
 			Methods(http.MethodPost, http.MethodOptions)
 	}
 
