@@ -12,18 +12,20 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
 	"github.com/go-playground/validator/v10"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 type ProfileUsecase struct {
-	log  *slog.Logger
-	repo profile.ProfileRepo
+	log       *slog.Logger
+	repo      profile.ProfileRepo
+	photoPath string
 }
 
-func NewProfileUsecase(log *slog.Logger, repo profile.ProfileRepo) *ProfileUsecase {
+func NewProfileUsecase(log *slog.Logger, repo profile.ProfileRepo, cfg profile.ProfileConfig) *ProfileUsecase {
 	return &ProfileUsecase{
-		log:  log,
-		repo: repo,
+		log:       log,
+		repo:      repo,
+		photoPath: cfg.GetPhotosFilePath(),
 	}
 }
 
@@ -79,13 +81,23 @@ func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePho
 	if !slices.Contains(acceptingFileTypes, fileType) {
 		return profile.ErrorForbiddenExtension
 	}
-	fileExtension := strings.TrimPrefix(fileType, "image/")
 
-	folderPath := "photos/"
+	_, err := os.Stat(uc.photoPath)
+	if err != nil {
+		if os.IsNotExist(err) {
+			err = fmt.Errorf("photos upload file path [%s] is not exist, error: %w", uc.photoPath, err)
+
+			return err
+		}
+
+		return fmt.Errorf("bad photos file path [%s], error: %w", uc.photoPath, err)
+	}
+
+	fileExtension := strings.TrimPrefix(fileType, "image/")
 
 	photoName := uuid.NewV4().String() + "." + fileExtension
 
-	file, err := os.Create(folderPath + photoName)
+	file, err := os.Create(uc.photoPath + photoName)
 	if err != nil {
 		err = fmt.Errorf("error happened in create file: %w", err)
 

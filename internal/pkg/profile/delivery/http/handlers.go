@@ -14,7 +14,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
 	"github.com/gorilla/mux"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 const maxRequestBodySize = 1024 * 1024 * 5 // 5 MB
@@ -180,6 +180,8 @@ func (h *ProfileHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("failed in uc.UpdatePhoto", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
 	}
 
 	h.log.Info("updated profile success")

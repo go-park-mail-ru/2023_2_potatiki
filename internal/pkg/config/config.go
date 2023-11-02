@@ -16,8 +16,9 @@ type Config struct {
 	HTTPServer `yaml:"httpServer"`
 	Auther     `yaml:"auther"`
 	Database
-	Enviroment  string `env:"ENVIROMENT" env-default:"prod" env-description:"avalible: local, dev, prod"`
-	LogFilePath string `env:"LOG_FILE_PATH" env-default:"zuzu.log"`
+	Enviroment     string `env:"ENVIROMENT" env-default:"prod" env-description:"avalible: local, dev, prod"`
+	LogFilePath    string `env:"LOG_FILE_PATH" env-default:"zuzu.log"`
+	PhotosFilePath string `env:"PHOTOS_FILE_PATH" env-default:"photos/"`
 }
 
 type HTTPServer struct {
@@ -47,6 +48,13 @@ func (a Auther) GetAccessExpirationTime() time.Duration {
 func (a Auther) GetJwtAccess() string {
 	// need for mock interface
 	return a.JwtAccess
+}
+
+func (c Config) GetPhotosFilePath() string {
+	// need for mock interface
+
+	return c.PhotosFilePath
+
 }
 
 func MustLoad() *Config {

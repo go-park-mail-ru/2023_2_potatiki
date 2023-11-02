@@ -5,7 +5,7 @@ import (
 	"errors"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 //go:generate mockgen -source interfaces.go -destination ./mocks/auth_mock.go -package mock
@@ -22,6 +22,10 @@ type ProfileRepo interface {
 	GetProfileIdByLogin(context.Context, string) (uuid.UUID, error)
 	UpdateProfile(context.Context, *models.Profile) error
 	UpdatePhoto(context.Context, uuid.UUID, string) error
+}
+
+type ProfileConfig interface {
+	GetPhotosFilePath() string
 }
 
 var (

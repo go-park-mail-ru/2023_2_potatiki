@@ -12,6 +12,7 @@ env:
   IMAGE_NAME: "zuzu-main-web"
   CONTAINER_NAME: "zuzu-main"
   FOLDER_COMPOSE: "zuzu-main-deploy"
+  PHOTOS_FILE_PATH: "photos/"
   GITHUB_SHA_SHORT:
 
 
@@ -96,7 +97,7 @@ jobs:
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
-          envs: REGISTRY, IMAGE_NAME, CONTAINER_NAME, GITHUB_SHA, FOLDER_COMPOSE
+          envs: REGISTRY, IMAGE_NAME, CONTAINER_NAME, GITHUB_SHA, FOLDER_COMPOSE, PHOTOS_FILE_PATH
           script: |
             sudo bash
             cd $(echo $FOLDER_COMPOSE)
@@ -113,6 +114,7 @@ jobs:
             PGADMIN_DEFAULT_PASSWORD=${{ secrets.PGADMIN_DEFAULT_PASSWORD }}
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
 
+            PHOTOS_FILE_PATH=${{env.PHOTOS_FILE_PATH}}
             IMAGE_NAME=${{ env.IMAGE_NAME }}
             REGISTRY=${{ env.REGISTRY }}
             CONTAINER_NAME=${{ env.CONTAINER_NAME }}

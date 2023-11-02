@@ -80,6 +80,8 @@ func run() (err error) {
 		"starting zuzu-main",
 		slog.String("env", cfg.Enviroment),
 		slog.String("addr", cfg.Address),
+		slog.String("log_file_path", cfg.LogFilePath),
+		slog.String("photos_file_path", cfg.PhotosFilePath),
 	)
 	log.Debug("debug messages are enabled")
 
@@ -111,7 +113,7 @@ func run() (err error) {
 	//
 	// ============================Init layers============================ //
 	profileRepo := profileRepo.NewProfileRepo(db)
-	profileUsecase := profileUsecase.NewProfileUsecase(log, profileRepo)
+	profileUsecase := profileUsecase.NewProfileUsecase(log, profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.Auther)
