@@ -51,6 +51,7 @@ func (uc *ProfileUsecase) UpdateData(ctx context.Context, Id uuid.UUID, payload 
 	if err := validator.New().Struct(payload); err != nil {
 		return err
 	}
+	payload.Sanitize()
 
 	profil, err := uc.repo.ReadProfile(ctx, Id)
 	if err != nil {

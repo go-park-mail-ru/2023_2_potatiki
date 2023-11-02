@@ -34,6 +34,7 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, payload *models.SignInPayload
 	if err := validator.New().Struct(payload); err != nil {
 		return &models.Profile{}, "", time.Now(), err
 	}
+	payload.Sanitize()
 
 	Id, err := uc.repo.GetProfileIdByLogin(ctx, payload.Login)
 	if err != nil {
@@ -64,18 +65,19 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, payload *models.SignInPayload
 	return profile, token, exp, nil
 }
 
-func (uc *AuthUsecase) SignUp(ctx context.Context, user *models.SignUpPayload) (*models.Profile, string, time.Time, error) {
-	if err := validator.New().Struct(user); err != nil {
+func (uc *AuthUsecase) SignUp(ctx context.Context, payload *models.SignUpPayload) (*models.Profile, string, time.Time, error) {
+	if err := validator.New().Struct(payload); err != nil {
 		return &models.Profile{}, "", time.Now(), err
 	}
+	payload.Sanitize()
 
 	profile := &models.Profile{
 		Id:           uuid.NewV4(),
-		Login:        user.Login,
+		Login:        payload.Login,
 		Description:  "",
 		ImgSrc:       "default.png",
-		Phone:        user.Phone,
-		PasswordHash: hasher.HashPass(user.Password),
+		Phone:        payload.Phone,
+		PasswordHash: hasher.HashPass(payload.Password),
 	}
 
 	err := uc.repo.CreateProfile(ctx, profile)
