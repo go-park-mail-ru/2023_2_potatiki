@@ -94,7 +94,7 @@ services:
     volumes:
       - ./.env:/docker-zuzu-main/.env
       - zuzu-logs:/var/lib/zuzu/logs
-      - "/data/public/photos/:/docker-zuzu-main/${PHOTOS_FILE_PATH}"
+      - "/data/public/static/images/:/docker-zuzu-main/${PHOTOS_FILE_PATH}"
     depends_on:
       - postgres
     networks:
