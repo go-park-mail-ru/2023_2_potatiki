@@ -16,14 +16,14 @@ import (
 )
 
 type AuthUsecase struct {
-	repo   profile.ProfileRepo
-	Auther jwter.JWTer
+	repo    profile.ProfileRepo
+	authJWT jwter.JWTer
 }
 
 func NewAuthUsecase(repo profile.ProfileRepo, cfg jwter.Configer) *AuthUsecase {
 	return &AuthUsecase{
-		repo:   repo,
-		Auther: jwter.New(cfg),
+		repo:    repo,
+		authJWT: jwter.New(cfg),
 	}
 }
 
@@ -55,7 +55,7 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, payload *models.SignInPayload
 		return &models.Profile{}, "", time.Now(), ErrPassMismatch
 	}
 
-	token, exp, err := uc.Auther.GenerateToken(profile)
+	token, exp, err := uc.authJWT.EncodeAuthToken(profile.Id)
 	if err != nil {
 		err = fmt.Errorf("error happened in Auther.GenerateToken: %w", err)
 
@@ -88,7 +88,7 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, payload *models.SignUpPayload
 		return &models.Profile{}, "", time.Now(), err
 	}
 
-	token, exp, err := uc.Auther.GenerateToken(profile)
+	token, exp, err := uc.authJWT.EncodeAuthToken(profile.Id)
 	if err != nil {
 		err = fmt.Errorf("error happened in Auther.GenerateToken: %w", err)
 

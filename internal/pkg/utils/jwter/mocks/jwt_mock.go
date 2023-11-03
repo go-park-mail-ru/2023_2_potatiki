@@ -8,8 +8,8 @@ import (
 	reflect "reflect"
 	time "time"
 
-	models "github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/satori/go.uuid"
 )
 
 // MockConfiger is a mock of Configer interface.
@@ -100,33 +100,64 @@ func (m *MockJWTer) EXPECT() *MockJWTerMockRecorder {
 	return m.recorder
 }
 
-// GenerateToken mocks base method.
-func (m *MockJWTer) GenerateToken(arg0 *models.Profile) (string, time.Time, error) {
+// DecodeAuthToken mocks base method.
+func (m *MockJWTer) DecodeAuthToken(arg0 string) (uuid.UUID, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GenerateToken", arg0)
+	ret := m.ctrl.Call(m, "DecodeAuthToken", arg0)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DecodeAuthToken indicates an expected call of DecodeAuthToken.
+func (mr *MockJWTerMockRecorder) DecodeAuthToken(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecodeAuthToken", reflect.TypeOf((*MockJWTer)(nil).DecodeAuthToken), arg0)
+}
+
+// DecodeCSRFToken mocks base method.
+func (m *MockJWTer) DecodeCSRFToken(arg0 string) (string, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DecodeCSRFToken", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// DecodeCSRFToken indicates an expected call of DecodeCSRFToken.
+func (mr *MockJWTerMockRecorder) DecodeCSRFToken(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DecodeCSRFToken", reflect.TypeOf((*MockJWTer)(nil).DecodeCSRFToken), arg0)
+}
+
+// EncodeAuthToken mocks base method.
+func (m *MockJWTer) EncodeAuthToken(arg0 uuid.UUID) (string, time.Time, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "EncodeAuthToken", arg0)
 	ret0, _ := ret[0].(string)
 	ret1, _ := ret[1].(time.Time)
 	ret2, _ := ret[2].(error)
 	return ret0, ret1, ret2
 }
 
-// GenerateToken indicates an expected call of GenerateToken.
-func (mr *MockJWTerMockRecorder) GenerateToken(arg0 interface{}) *gomock.Call {
+// EncodeAuthToken indicates an expected call of EncodeAuthToken.
+func (mr *MockJWTerMockRecorder) EncodeAuthToken(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GenerateToken", reflect.TypeOf((*MockJWTer)(nil).GenerateToken), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EncodeAuthToken", reflect.TypeOf((*MockJWTer)(nil).EncodeAuthToken), arg0)
 }
 
-// GetClaims mocks base method.
-func (m *MockJWTer) GetClaims(arg0 string) (*models.Claims, error) {
+// EncodeCSRFToken mocks base method.
+func (m *MockJWTer) EncodeCSRFToken(arg0 string) (string, time.Time, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetClaims", arg0)
-	ret0, _ := ret[0].(*models.Claims)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "EncodeCSRFToken", arg0)
+	ret0, _ := ret[0].(string)
+	ret1, _ := ret[1].(time.Time)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
-// GetClaims indicates an expected call of GetClaims.
-func (mr *MockJWTerMockRecorder) GetClaims(arg0 interface{}) *gomock.Call {
+// EncodeCSRFToken indicates an expected call of EncodeCSRFToken.
+func (mr *MockJWTerMockRecorder) EncodeCSRFToken(arg0 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetClaims", reflect.TypeOf((*MockJWTer)(nil).GetClaims), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "EncodeCSRFToken", reflect.TypeOf((*MockJWTer)(nil).EncodeCSRFToken), arg0)
 }

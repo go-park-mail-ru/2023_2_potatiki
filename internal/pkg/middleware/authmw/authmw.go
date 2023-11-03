@@ -27,7 +27,7 @@ func MakeTokenCookie(token string, expiration time.Time) *http.Cookie {
 	}
 }
 
-func New(log *slog.Logger, auther jwter.JWTer) mux.MiddlewareFunc {
+func New(log *slog.Logger, authJWT jwter.JWTer) mux.MiddlewareFunc {
 	return func(next http.Handler) http.Handler { // TODO: del
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			tokenCookie, err := r.Cookie(AccessTokenCookieName)
@@ -46,7 +46,9 @@ func New(log *slog.Logger, auther jwter.JWTer) mux.MiddlewareFunc {
 				}
 			}
 
-			claims, err := auther.GetClaims(tokenCookie.Value)
+			log.Debug("AUTH MW", "token", tokenCookie.Value)
+
+			ID, err := authJWT.DecodeAuthToken(tokenCookie.Value)
 			if err != nil {
 				log.Error("jws token is invalid auth", sl.Err(err))
 				resp.JSONStatus(w, http.StatusUnauthorized)
@@ -54,9 +56,9 @@ func New(log *slog.Logger, auther jwter.JWTer) mux.MiddlewareFunc {
 				return
 			}
 
-			log.Info("got profile id", slog.Any("profile id", claims.ID))
+			log.Info("got profile id", slog.Any("profile id", ID))
 
-			ctx := context.WithValue(r.Context(), AccessTokenCookieName, claims.ID)
+			ctx := context.WithValue(r.Context(), AccessTokenCookieName, ID)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
