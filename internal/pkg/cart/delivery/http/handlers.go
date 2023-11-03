@@ -32,7 +32,7 @@ func NewCartHandler(log *slog.Logger, uc cart.CartUsecase) CartHandler {
 // @Description	Update cart
 // @Accept json
 // @Produce json
-// @Param input body models.Cart true "cart info"
+// @Param input body models.CartUpdate true "cart info"
 // @Success	200	{object} models.Cart "cart info"
 // @Failure	400	{object} response.Response	"invalid request"
 // @Failure	429
@@ -118,7 +118,7 @@ func (h *CartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
 // @Description	add product to cart or change its number
 // @Accept json
 // @Produce json
-// @Param input body models.CartProduct true "product info"
+// @Param input body models.CartProductUpdate true "product info"
 // @Success	200	{object} models.Cart "cart info"
 // @Failure	400	{object} response.Response	"error message"
 // @Failure	401
@@ -144,7 +144,7 @@ func (h *CartHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
-	p := models.CartProduct{}
+	p := models.CartProductUpdate{}
 	err = json.Unmarshal(body, &p)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
@@ -172,7 +172,7 @@ func (h *CartHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 // @Description	delete product from cart
 // @Accept json
 // @Produce json
-// @Param input body models.CartProduct true "product info"
+// @Param input body models.CartProductDelete true "product info"
 // @Success	200	{object} models.Cart "cart info"
 // @Failure	400	{object} response.Response	"error message"
 // @Failure	401
@@ -198,7 +198,7 @@ func (h *CartHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
-	p := models.CartProduct{}
+	p := models.CartProductDelete{}
 	err = json.Unmarshal(body, &p)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))

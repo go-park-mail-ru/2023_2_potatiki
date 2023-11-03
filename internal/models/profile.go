@@ -12,11 +12,7 @@ type Profile struct {
 	Description  string    `json:"description,omitempty"`
 	ImgSrc       string    `json:"img"`
 	Phone        string    `json:"phone"`
-	PasswordHash []byte    `json:"password"`
-}
-
-func (p *Profile) HidePass() {
-	p.PasswordHash = []byte("lolkek")
+	PasswordHash []byte    `json:"-"`
 }
 
 func (p *Profile) LogValue() slog.Value {

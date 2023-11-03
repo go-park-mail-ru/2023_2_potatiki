@@ -11,15 +11,24 @@ import (
 )
 
 const (
-	getCart     = "SELECT id FROM cart WHERE Profile_id=$1 and is_current = true;"
-	createCart  = "INSERT INTO cart(id, profile_id, is_current) VALUES($1, $2, true);"
-	getProducts = "SELECT p.id , p.name, p.Description, p.Price, p.ImgSrc, p.Rating, sc.Quantity " +
-		"FROM shopping_cart_item sc JOIN product p ON sc.product_id=p.id WHERE sc.cart_id=$1;"
+	getCart = "SELECT id FROM cart WHERE Profile_id=$1 and is_current = true;"
+
+	createCart = "INSERT INTO cart(id, profile_id, is_current) VALUES($1, $2, true);"
+
+	getProducts = `SELECT p.id, p.name, p.description, p.price, p.imgsrc, p.rating, sc.quantity,
+    c.id AS category_id, c.name AS category_name
+	FROM shopping_cart_item sc
+	JOIN product p ON sc.product_id = p.id
+	JOIN category c ON p.category_id = c.id
+	WHERE sc.cart_id = $1;`
+
 	updateOrCreateProduct = "insert into shopping_cart_item(cart_id, product_id, quantity) values ($1, $2, $3)" +
 		" ON CONFLICT ON CONSTRAINT uq_shopping_cart_item_cart_id_product_id " +
 		"do update set quantity=$3 WHERE shopping_cart_item.cart_id=$1 and shopping_cart_item.product_id=$2;"
+
 	deleteProduct = "DELETE FROM shopping_cart_item WHERE cart_id=$1 and product_id=$2;"
-	deleteCard    = "UPDATE cart SET is_current=$1 WHERE id=$2"
+
+	deleteCard = "UPDATE cart SET is_current=$1 WHERE id=$2"
 )
 
 var (
@@ -37,16 +46,16 @@ func NewCartRepo(db pgxtype.Querier) *CartRepo {
 	}
 }
 
-func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) (models.Cart, error) {
+func (r *CartRepo) CreateCart(ctx context.Context, userID uuid.UUID) (uuid.UUID, error) {
 	cartID := uuid.NewV4()
 	_, err := r.db.Exec(ctx, createCart, cartID, userID)
 	if err != nil {
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
-		return models.Cart{}, err
+		return uuid.UUID{}, err
 	}
 
-	return models.Cart{Id: cartID, ProfileId: userID, IsCurrent: true}, nil
+	return cartID, nil
 }
 
 func (r *CartRepo) DeleteCart(ctx context.Context, cartID uuid.UUID) error {
@@ -99,7 +108,7 @@ func (r *CartRepo) UpdateCart(ctx context.Context, cart models.Cart) (models.Car
 	}
 
 	for _, product := range cart.Products {
-		_, err := r.db.Exec(ctx, updateOrCreateProduct, cart.Id, product.Id, product.Quantity)
+		_, err = r.db.Exec(ctx, updateOrCreateProduct, cart.Id, product.Id, product.Quantity)
 		if err != nil {
 			err = fmt.Errorf("error happened in db.Exec: %w", err)
 
@@ -134,6 +143,8 @@ func (r *CartRepo) ReadCartProducts(ctx context.Context, cart models.Cart) (mode
 			&product.ImgSrc,
 			&product.Rating,
 			&product.Quantity,
+			&product.Category.Id,
+			&product.Category.Name,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -146,7 +157,7 @@ func (r *CartRepo) ReadCartProducts(ctx context.Context, cart models.Cart) (mode
 	return cart, nil
 }
 
-func (r *CartRepo) AddProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
+func (r *CartRepo) AddProduct(ctx context.Context, cart models.Cart, product models.CartProductUpdate) (models.Cart, error) {
 	_, err := r.db.Exec(ctx, updateOrCreateProduct, cart.Id, product.Id, product.Quantity)
 	if err != nil {
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
@@ -159,7 +170,7 @@ func (r *CartRepo) AddProduct(ctx context.Context, cart models.Cart, product mod
 	return cart, err
 }
 
-func (r *CartRepo) DeleteProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
+func (r *CartRepo) DeleteProduct(ctx context.Context, cart models.Cart, product models.CartProductDelete) (models.Cart, error) {
 	_, err := r.db.Exec(ctx, deleteProduct, cart.Id, product.Id)
 	if err != nil {
 		err = fmt.Errorf("error happened in db.Exec: %w", err)

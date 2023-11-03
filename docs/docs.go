@@ -190,7 +190,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CartProduct"
+                            "$ref": "#/definitions/models.CartProductUpdate"
                         }
                     }
                 ],
@@ -236,7 +236,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.CartProduct"
+                            "$ref": "#/definitions/models.CartProductDelete"
                         }
                     }
                 ],
@@ -311,7 +311,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.Cart"
+                            "$ref": "#/definitions/models.CartUpdate"
                         }
                     }
                 ],
@@ -747,20 +747,29 @@ const docTemplate = `{
         "models.CartProduct": {
             "type": "object",
             "properties": {
-                "description": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "categoryName": {
                     "type": "string"
                 },
-                "id": {
+                "categoryParent": {
+                    "type": "integer"
+                },
+                "description": {
                     "type": "string"
                 },
                 "img": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "price": {
                     "type": "integer"
+                },
+                "productId": {
+                    "type": "string"
+                },
+                "productName": {
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
@@ -770,16 +779,46 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CartProductDelete": {
+            "type": "object",
+            "properties": {
+                "productId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CartProductUpdate": {
+            "type": "object",
+            "properties": {
+                "productId": {
+                    "type": "string"
+                },
+                "quantity": {
+                    "type": "integer"
+                }
+            }
+        },
+        "models.CartUpdate": {
+            "type": "object",
+            "properties": {
+                "productsInfo": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CartProductUpdate"
+                    }
+                }
+            }
+        },
         "models.Category": {
             "type": "object",
             "properties": {
-                "id": {
+                "categoryId": {
                     "type": "integer"
                 },
-                "name": {
+                "categoryName": {
                     "type": "string"
                 },
-                "parent": {
+                "categoryParent": {
                     "type": "integer"
                 }
             }
@@ -801,20 +840,29 @@ const docTemplate = `{
         "models.OrderProduct": {
             "type": "object",
             "properties": {
-                "description": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "categoryName": {
                     "type": "string"
                 },
-                "id": {
+                "categoryParent": {
+                    "type": "integer"
+                },
+                "description": {
                     "type": "string"
                 },
                 "img": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "price": {
                     "type": "integer"
+                },
+                "productId": {
+                    "type": "string"
+                },
+                "productName": {
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
@@ -827,20 +875,29 @@ const docTemplate = `{
         "models.Product": {
             "type": "object",
             "properties": {
-                "description": {
+                "categoryId": {
+                    "type": "integer"
+                },
+                "categoryName": {
                     "type": "string"
                 },
-                "id": {
+                "categoryParent": {
+                    "type": "integer"
+                },
+                "description": {
                     "type": "string"
                 },
                 "img": {
                     "type": "string"
                 },
-                "name": {
-                    "type": "string"
-                },
                 "price": {
                     "type": "integer"
+                },
+                "productId": {
+                    "type": "string"
+                },
+                "productName": {
+                    "type": "string"
                 },
                 "rating": {
                     "type": "number"
@@ -861,12 +918,6 @@ const docTemplate = `{
                 },
                 "login": {
                     "type": "string"
-                },
-                "password": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 },
                 "phone": {
                     "type": "string"

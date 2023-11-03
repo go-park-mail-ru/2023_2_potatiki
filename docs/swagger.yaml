@@ -8,28 +8,53 @@ definitions:
     type: object
   models.CartProduct:
     properties:
-      description:
+      categoryId:
+        type: integer
+      categoryName:
         type: string
-      id:
+      categoryParent:
+        type: integer
+      description:
         type: string
       img:
         type: string
-      name:
-        type: string
       price:
         type: integer
+      productId:
+        type: string
+      productName:
+        type: string
       quantity:
         type: integer
       rating:
         type: number
     type: object
+  models.CartProductDelete:
+    properties:
+      productId:
+        type: string
+    type: object
+  models.CartProductUpdate:
+    properties:
+      productId:
+        type: string
+      quantity:
+        type: integer
+    type: object
+  models.CartUpdate:
+    properties:
+      productsInfo:
+        items:
+          $ref: '#/definitions/models.CartProductUpdate'
+        type: array
+    type: object
   models.Category:
     properties:
-      id:
+      categoryId:
         type: integer
-      name:
+      categoryName:
         type: string
-      parent:
+      categoryParent:
         type: integer
     type: object
   models.Order:
@@ -43,16 +68,22 @@ definitions:
     type: object
   models.OrderProduct:
     properties:
-      description:
+      categoryId:
+        type: integer
+      categoryName:
         type: string
-      id:
+      categoryParent:
+        type: integer
+      description:
         type: string
       img:
         type: string
-      name:
-        type: string
       price:
         type: integer
+      productId:
+        type: string
+      productName:
+        type: string
       quantity:
         type: integer
       rating:
@@ -60,16 +91,22 @@ definitions:
     type: object
   models.Product:
     properties:
-      description:
+      categoryId:
+        type: integer
+      categoryName:
         type: string
-      id:
+      categoryParent:
+        type: integer
+      description:
         type: string
       img:
         type: string
-      name:
-        type: string
       price:
         type: integer
+      productId:
+        type: string
+      productName:
+        type: string
       rating:
         type: number
     type: object
@@ -83,10 +120,6 @@ definitions:
         type: string
       login:
         type: string
-      password:
-        items:
-          type: integer
-        type: array
       phone:
         type: string
     type: object
@@ -255,7 +288,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.CartProduct'
+          $ref: '#/definitions/models.CartProductUpdate'
       produces:
       - application/json
       responses:
@@ -285,7 +318,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.CartProduct'
+          $ref: '#/definitions/models.CartProductDelete'
       produces:
       - application/json
       responses:
@@ -334,7 +367,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.Cart'
+          $ref: '#/definitions/models.CartUpdate'
       produces:
       - application/json
       responses:

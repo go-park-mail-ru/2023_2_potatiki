@@ -25,7 +25,8 @@ func (uc *CartUsecase) GetCart(ctx context.Context, id uuid.UUID) (models.Cart, 
 	cart, err := uc.repo.ReadCart(ctx, id)
 
 	if errors.Is(err, repo.ErrCartNotFound) {
-		cart, err = uc.repo.CreateCart(ctx, id)
+		cart.Id, err = uc.repo.CreateCart(ctx, id)
+		cart.IsCurrent = true
 		if err != nil {
 			err = fmt.Errorf("error happened in repo.GetCart: %w", err)
 
@@ -42,12 +43,13 @@ func (uc *CartUsecase) GetCart(ctx context.Context, id uuid.UUID) (models.Cart, 
 	return cart, nil
 }
 
-func (uc *CartUsecase) AddProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
+func (uc *CartUsecase) AddProduct(ctx context.Context, cart models.Cart, product models.CartProductUpdate) (models.Cart, error) {
 	userID := cart.ProfileId
 	cartChecked, err := uc.repo.CheckCart(ctx, userID)
 
 	if errors.Is(err, repo.ErrCartNotFound) {
-		cart, err = uc.repo.CreateCart(ctx, userID)
+		cart.Id, err = uc.repo.CreateCart(ctx, userID)
+		cart.IsCurrent = true
 		if err != nil {
 			err = fmt.Errorf("error happened in repo.GetCart: %w", err)
 
@@ -68,7 +70,7 @@ func (uc *CartUsecase) AddProduct(ctx context.Context, cart models.Cart, product
 	return cart, err
 }
 
-func (uc *CartUsecase) DeleteProduct(ctx context.Context, cart models.Cart, product models.CartProduct) (models.Cart, error) {
+func (uc *CartUsecase) DeleteProduct(ctx context.Context, cart models.Cart, product models.CartProductDelete) (models.Cart, error) {
 	cart, err := uc.repo.CheckCart(ctx, cart.ProfileId)
 	if err != nil {
 		return models.Cart{}, err
@@ -82,7 +84,8 @@ func (uc *CartUsecase) DeleteProduct(ctx context.Context, cart models.Cart, prod
 func (uc *CartUsecase) UpdateCart(ctx context.Context, cart models.Cart) (models.Cart, error) {
 	_, err := uc.repo.ReadCart(ctx, cart.ProfileId)
 	if errors.Is(err, repo.ErrCartNotFound) {
-		cart, err = uc.repo.CreateCart(ctx, cart.ProfileId)
+		cart.Id, err = uc.repo.CreateCart(ctx, cart.ProfileId)
+		cart.IsCurrent = true
 		if err != nil {
 			return models.Cart{}, err
 		}

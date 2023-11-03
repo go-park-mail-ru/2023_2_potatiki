@@ -11,7 +11,10 @@ const SaltLen = 8
 
 func HashPass(plainPassword string) []byte {
 	salt := make([]byte, SaltLen)
-	rand.Read(salt) // TODO: handle error
+	_, err := rand.Read(salt)
+	if err != nil {
+		return nil
+	} // TODO: handle error
 
 	return hash(salt, plainPassword)
 }

@@ -48,7 +48,7 @@ VALUES
 ------------------------------------------------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS category
 (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY,
     name TEXT UNIQUE,
     parent INT DEFAULT NULL REFERENCES category (id)
     );

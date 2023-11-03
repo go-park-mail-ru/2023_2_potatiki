@@ -196,7 +196,7 @@ func run() (err error) {
 			Methods(http.MethodPost, http.MethodOptions)
 
 		cart.Handle("/delete_product", authMW(http.HandlerFunc(cartHandler.DeleteProduct))).
-			Methods(http.MethodPost, http.MethodOptions)
+			Methods(http.MethodDelete, http.MethodOptions)
 	}
 
 	products := r.PathPrefix("/products").Subrouter()

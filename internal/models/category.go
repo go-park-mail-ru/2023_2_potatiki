@@ -5,9 +5,9 @@ import (
 )
 
 type Category struct {
-	Id     int64  `json:"id"` //nolint:stylecheck
-	Name   string `json:"name"`
-	Parent int64  `json:"parent"`
+	Id     int64  `json:"categoryId"`
+	Name   string `json:"categoryName"`
+	Parent int64  `json:"categoryParent,omitempty"`
 }
 
 const MAX_LEVEL_CATEGORY = 3

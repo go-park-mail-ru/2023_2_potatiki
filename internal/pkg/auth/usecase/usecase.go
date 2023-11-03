@@ -60,7 +60,6 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, payload *models.SignInPayload
 
 		return &models.Profile{}, "", time.Now(), err
 	}
-	profile.HidePass()
 
 	return profile, token, exp, nil
 }
@@ -94,7 +93,6 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, payload *models.SignUpPayload
 		return &models.Profile{}, "", time.Now(), err
 	}
 
-	profile.HidePass()
 	return profile, token, exp, nil
 }
 
@@ -105,8 +103,6 @@ func (uc *AuthUsecase) CheckAuth(ctx context.Context, Id uuid.UUID) (*models.Pro
 
 		return &models.Profile{}, err
 	}
-
-	profile.HidePass()
 
 	return profile, nil
 }
