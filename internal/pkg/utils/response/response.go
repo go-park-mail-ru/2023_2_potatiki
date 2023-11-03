@@ -44,12 +44,7 @@ func JSON(w http.ResponseWriter, status int, response any) {
 }
 
 func JSONStatus(w http.ResponseWriter, status int) {
-	w.Header().Set("Content-Type", "application/json") // del
-	w.Header().Set("Content-Length", "2")              // del
 	w.WriteHeader(status)
-	if _, err := w.Write([]byte("{}")); err != nil { // del
-		return // TODO: handle error
-	}
 }
 
 func BodyErr(err error, log *slog.Logger, w http.ResponseWriter) bool {

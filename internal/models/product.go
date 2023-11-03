@@ -8,5 +8,5 @@ type Product struct {
 	Description string    `json:"description,omitempty"`
 	Price       int64     `json:"price"`
 	ImgSrc      string    `json:"img"`
-	Rating      float64   `json:"rating"`
+	Rating      float64   `json:"rating"` // TODO: category add
 }
