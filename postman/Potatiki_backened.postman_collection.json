@@ -13,11 +13,45 @@
 					"name": "update-photo",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5NTAzfQ.4SpCazezU61cgQxVvKaikCg583Sat5xSlTgX--rt89M",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "file",
 							"file": {
 								"src": "/home/scremyda/Загрузки/autopart1.jpg"
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-photo",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-photo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-photo CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": ""
 							}
 						},
 						"url": {
@@ -52,14 +86,14 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/profile/5af2d39f-a63a-4da6-a96e-3c5562198cc0",
+							"raw": "{{baseUrl}}/api/profile/8af2a131-a4eb-4a57-b745-46dbfb7e0e03",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
 								"profile",
-								"5af2d39f-a63a-4da6-a96e-3c5562198cc0"
+								"8af2a131-a4eb-4a57-b745-46dbfb7e0e03"
 							]
 						}
 					},
@@ -69,10 +103,47 @@
 					"name": "update-data",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5NDE4fQ.yyJqS0-GOvHVJw7YYTlaq5yf5V0zwakowcyz7J0HDcU",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"phone\": \"+782345678901\", \r\n    \"password\": \"12345678191\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-data",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-data"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update-data CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -164,7 +235,13 @@
 					"name": "SignIn",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5MDkwfQ.SijBfaewVBDW_CnnL811dFY8RdYzIMP0gXusuysqVdY",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{ \n    \"login\": \"MrDjeb\", \n    \"password\": \"1234567819\" \n}",
@@ -189,13 +266,87 @@
 					"response": []
 				},
 				{
+					"name": "SignIn CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5MDkwfQ.SijBfaewVBDW_CnnL811dFY8RdYzIMP0gXusuysqVdY",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signin"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "SignUp",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5NDUzfQ.Fe0vHigszr-FG4KPhoy8yaz0nScNg9e_mzmopWoB5iY",
+								"type": "text"
+							}
+						],
 						"body": {
 							"mode": "raw",
 							"raw": "{\r\n    \"login\": \"MrDjeb\",\r\n    \"phone\": \"+78234567890\", \r\n    \"password\": \"1234567819\" \r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "SignUp CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -239,7 +390,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/products/get_all?count=3",
+							"raw": "{{baseUrl}}/api/products/get_all?count=5",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -251,7 +402,7 @@
 							"query": [
 								{
 									"key": "count",
-									"value": "3"
+									"value": "5"
 								}
 							]
 						}
@@ -477,7 +628,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\n    \"products\": [\n        {\n            \"quantity\": 1,\n            \"productId\": \"007749b5-7e07-4be8-8c91-8db273ace4c3\"\n        },\n        {\n            \"quantity\": 1,\n            \"productId\": \"007749b5-7e07-4be8-8c91-8db273ace4c1\"\n        },\n        {\n            \"quantity\": 1,\n            \"productId\": \"007749b5-7e07-4be8-8c91-8db273ace4c2\"\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -536,7 +687,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"id\": \"007749b5-7e07-4be8-8c91-8db273ace4c5\",\n  \"quantity\": 3\n}",
+							"raw": "{\n  \"productId\": \"007749b5-7e07-4be8-8c91-8db273ace4c3\",\n  \"quantity\": 2\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -560,11 +711,11 @@
 				{
 					"name": "delete_product",
 					"request": {
-						"method": "POST",
+						"method": "DELETE",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "",
+							"raw": "{\n  \"productId\": \"007749b5-7e07-4be8-8c91-8db273ace1c2\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
