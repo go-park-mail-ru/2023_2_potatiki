@@ -2,10 +2,11 @@ package http
 
 import (
 	"errors"
-	repoCart "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	"log/slog"
 	"net/http"
+
+	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
+	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
 
@@ -55,7 +56,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	order, err := h.uc.CreateOrder(r.Context(), userID)
 	if err != nil {
 		h.log.Error("failed to get cart", sl.Err(err))
-		if errors.Is(err, repoCart.ErrCartNotFound) || errors.Is(err, repo.ErrPoductNotFound) {
+		if errors.Is(err, cartRepo.ErrCartNotFound) || errors.Is(err, orderRepo.ErrPoductNotFound) {
 			resp.JSONStatus(w, http.StatusNotFound)
 
 			return
@@ -96,7 +97,7 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 	order, err := h.uc.GetCurrentOrder(r.Context(), userID)
 	if err != nil {
 		h.log.Error("failed to get cart", sl.Err(err))
-		if errors.Is(err, repo.ErrOrderNotFound) || errors.Is(err, repo.ErrPoductsInOrderNotFound) {
+		if errors.Is(err, orderRepo.ErrOrderNotFound) || errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
 			resp.JSONStatus(w, http.StatusNotFound)
 
 			return
@@ -137,7 +138,7 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 	orders, err := h.uc.GetOrders(r.Context(), userID)
 	if err != nil {
 		h.log.Error("failed to get cart", sl.Err(err))
-		if errors.Is(err, repo.ErrOrdersNotFound) || errors.Is(err, repo.ErrPoductsInOrderNotFound) {
+		if errors.Is(err, orderRepo.ErrOrdersNotFound) || errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
 			resp.JSONStatus(w, http.StatusNotFound)
 
 			return
