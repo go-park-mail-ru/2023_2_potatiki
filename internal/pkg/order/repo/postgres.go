@@ -13,19 +13,35 @@ import (
 )
 
 const (
-	createOrder     = "INSERT INTO order_info (id, profile_id, delivery_at, status_id) VALUES ($1, $2, $3, $4);"
+	createOrder = "INSERT INTO order_info (id, profile_id, delivery_at, status_id) VALUES ($1, $2, $3, $4);"
+
 	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4, $5);"
-	getProductInfo  = "SELECT name, description, price, imgsrc, rating  FROM product WHERE id=$1;"
-	getCurrentOrder = "SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.imgsrc AS product_imgscr, p.rating AS product_rating, " +
-		"oi.quantity AS product_quantity, oi.price AS product_price " +
-		"FROM order_item oi " +
-		"JOIN product p ON oi.product_id = p.id " +
-		"WHERE oi.order_id = $1;"
+
+	getProductInfo = `
+	SELECT p.name, p.description, p.price, p.imgsrc, p.rating, 
+    c.id AS category_id, c.name AS category_name
+	FROM product p
+	JOIN category c ON p.category_id = c.id
+	WHERE p.id = $1;
+	`
+
+	getCurrentOrder = `
+	SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.price AS product_price, 
+	p.imgsrc AS product_imgsrc, p.rating AS product_rating, oi.quantity AS product_quantity, c.id AS category_id, 
+	c.name AS category_name, o.status_id AS status_id
+	FROM order_item oi
+	JOIN product p ON oi.product_id = p.id
+	JOIN order_info o ON oi.order_id = o.id
+	JOIN category c ON p.category_id = c.id
+	WHERE oi.order_id = $1;
+	`
+
 	getCurrentOrderID = "SELECT oi.id AS order_id " +
 		"FROM order_info oi " +
 		// "JOIN status s ON oi.status_id = s.id " +
 		"WHERE oi.profile_id = $1 " + // AND s.name = $2;
 		"ORDER BY oi.creation_at DESC;"
+
 	getOrdersID = "SELECT id AS order_id FROM order_info WHERE profile_id=$1;"
 )
 
@@ -65,14 +81,17 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uu
 		return models.Order{}, err
 	}
 	var productsOrder []models.OrderProduct
-	order := models.Order{Id: orderID, Products: productsOrder}
+	order := models.Order{Id: orderID, Status: statusID, Products: productsOrder}
 	for _, cartProduct := range cart.Products {
+		orderProduct := models.OrderProduct{Quantity: cartProduct.Quantity, Product: models.Product{Id: cartProduct.Id}}
 		err = r.db.QueryRow(ctx, getProductInfo, cartProduct.Id).Scan(
-			&cartProduct.Name,
-			&cartProduct.Description,
-			&cartProduct.Price,
-			&cartProduct.ImgSrc,
-			&cartProduct.Rating,
+			&orderProduct.Name,
+			&orderProduct.Description,
+			&orderProduct.Price,
+			&orderProduct.ImgSrc,
+			&orderProduct.Rating,
+			&orderProduct.Category.Id,
+			&orderProduct.Category.Name,
 		)
 		if err != nil {
 			if errors.Is(err, pgx.ErrNoRows) {
@@ -91,9 +110,7 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uu
 
 			return models.Order{}, err
 		}
-		order.Products = append(order.Products, models.OrderProduct{Quantity: cartProduct.Quantity,
-			Product: models.Product{Id: cartProduct.Id, Name: cartProduct.Name, Description: cartProduct.Description,
-				Price: cartProduct.Price, ImgSrc: cartProduct.ImgSrc, Rating: cartProduct.Rating}})
+		order.Products = append(order.Products, orderProduct)
 	}
 
 	return order, nil
@@ -126,18 +143,22 @@ func (r *OrderRepo) ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Or
 		return models.Order{}, err
 	}
 
-	var productsOrder []models.OrderProduct
 	var productOrder models.OrderProduct
+	var productsOrder []models.OrderProduct
+	var orderStatusID int
 	order := models.Order{Id: orderID, Products: productsOrder}
 	for rows.Next() {
 		err = rows.Scan(
 			&productOrder.Id,
 			&productOrder.Name,
 			&productOrder.Description,
+			&productOrder.Price,
 			&productOrder.ImgSrc,
 			&productOrder.Rating,
 			&productOrder.Quantity,
-			&productOrder.Price,
+			&productOrder.Category.Id,
+			&productOrder.Category.Name,
+			&orderStatusID, // или лучше еще 1 запрос?
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -146,6 +167,7 @@ func (r *OrderRepo) ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Or
 		}
 		order.Products = append(order.Products, productOrder)
 	}
+	order.Status = orderStatusID
 
 	return order, nil
 }
