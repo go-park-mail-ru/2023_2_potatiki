@@ -46,32 +46,42 @@ func (uc *ProfileUsecase) GetProfile(ctx context.Context, Id uuid.UUID) (*models
 	return profile, nil
 }
 
-func (uc *ProfileUsecase) UpdateData(ctx context.Context, Id uuid.UUID, payload *models.UpdateProfileDataPayload) (*models.Profile, error) {
+func (uc *ProfileUsecase) UpdateData(ctx context.Context, Id uuid.UUID, payload *models.UpdateProfileDataPayload) (*models.Profile, error) { //nolint:cyclop
 	if err := validator.New().Struct(payload); err != nil {
 		return nil, err
 	}
 	payload.Sanitize()
+	if payload.Phone != "" {
+		if (payload.Passwords.OldPass == "") !=
+			(payload.Passwords.NewPass == "") {
+			return nil, profile.ErrBadUpdateData
+		}
+	} else {
+		if payload.Passwords.OldPass == "" ||
+			payload.Passwords.NewPass == "" {
+			return nil, profile.ErrBadUpdateData
+		}
+	}
 
 	profileInfo, err := uc.repo.ReadProfile(ctx, Id)
 	if err != nil {
-		err = fmt.Errorf("error happened in repo.ReadProfile: %w", err)
-
-		return nil, err
+		return nil, fmt.Errorf("error happened in repo.ReadProfile: %w", err)
 	}
 
-	if profileInfo.Phone == payload.Phone &&
-		hasher.CheckPass(profileInfo.PasswordHash, payload.Password) {
-		return nil, profile.ErrDoubleData
+	if payload.Passwords.OldPass != "" && payload.Passwords.NewPass != "" {
+		if hasher.CheckPass(profileInfo.PasswordHash, payload.Passwords.OldPass) {
+			profileInfo.PasswordHash = hasher.HashPass(payload.Passwords.NewPass)
+		} else {
+			return nil, profile.ErrBadUpdateData
+		}
 	}
 
-	profileInfo.Phone = payload.Phone
-	profileInfo.PasswordHash = hasher.HashPass(payload.Password)
+	if payload.Phone != "" {
+		profileInfo.Phone = payload.Phone
+	}
 
-	err = uc.repo.UpdateProfile(ctx, profileInfo)
-	if err != nil {
-		err = fmt.Errorf("error happened in repoUser.UpdateProfile: %w", err)
-
-		return nil, err
+	if err = uc.repo.UpdateProfile(ctx, profileInfo); err != nil {
+		return nil, fmt.Errorf("error happened in repoUser.UpdateProfile: %w", err)
 	}
 
 	return profileInfo, nil

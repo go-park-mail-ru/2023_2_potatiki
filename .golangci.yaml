@@ -41,7 +41,7 @@ linters:
     - varcheck #warn
     - wrapcheck #del!!!
     - whitespace #del!!!
-    - nlreturn #del!!!
+    - nlreturn  #del!!!
     - ineffassign #del!!!
     - wastedassign #del!!!
     - lll #del!!!

@@ -980,15 +980,21 @@ const docTemplate = `{
         },
         "models.UpdateProfileDataPayload": {
             "type": "object",
-            "required": [
-                "password",
-                "phone"
-            ],
             "properties": {
-                "password": {
-                    "type": "string",
-                    "maxLength": 32,
-                    "minLength": 8
+                "passwords": {
+                    "type": "object",
+                    "properties": {
+                        "newPass": {
+                            "type": "string",
+                            "maxLength": 32,
+                            "minLength": 8
+                        },
+                        "oldPass": {
+                            "type": "string",
+                            "maxLength": 32,
+                            "minLength": 8
+                        }
+                    }
                 },
                 "phone": {
                     "type": "string"

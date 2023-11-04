@@ -158,15 +158,19 @@ definitions:
     type: object
   models.UpdateProfileDataPayload:
     properties:
-      password:
-        maxLength: 32
-        minLength: 8
-        type: string
+      passwords:
+        properties:
+          newPass:
+            maxLength: 32
+            minLength: 8
+            type: string
+          oldPass:
+            maxLength: 32
+            minLength: 8
+            type: string
+        type: object
       phone:
         type: string
-    required:
-    - password
-    - phone
     type: object
   responser.Response:
     properties:

@@ -46,7 +46,7 @@ func New(log *slog.Logger, authJWT jwter.JWTer) mux.MiddlewareFunc {
 				}
 			}
 
-			log.Debug("AUTH MW", "token", tokenCookie.Value)
+			//log.Debug("AUTH MW", "token", tokenCookie.Value)
 
 			ID, err := authJWT.DecodeAuthToken(tokenCookie.Value)
 			if err != nil {

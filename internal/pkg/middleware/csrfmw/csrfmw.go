@@ -39,7 +39,7 @@ func New(log *slog.Logger, jwtCORS jwter.JWTer) mux.MiddlewareFunc {
 
 					return
 				}
-				log.Debug("CSRF MW get csrf token", "token", token)
+				//log.Debug("CSRF MW get csrf token", "token", token)
 
 				UserAgent, err := jwtCORS.DecodeCSRFToken(token)
 
@@ -55,7 +55,6 @@ func New(log *slog.Logger, jwtCORS jwter.JWTer) mux.MiddlewareFunc {
 
 					return
 				}
-				log.Debug("CSRF M", "token", token)
 				next.ServeHTTP(w, r)
 			}
 		})

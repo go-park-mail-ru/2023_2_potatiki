@@ -30,6 +30,5 @@ type ProfileConfig interface {
 
 var (
 	ErrorForbiddenExtension = errors.New("this file extension is not allowed")
-	ErrPassMismatch         = errors.New("password does not match")
-	ErrDoubleData           = errors.New("profile field and new field are the same")
+	ErrBadUpdateData        = errors.New("incorrect update data profile payload")
 )

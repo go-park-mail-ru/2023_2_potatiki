@@ -13,6 +13,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
+	"github.com/go-playground/validator/v10"
 	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
 )
@@ -119,14 +120,17 @@ func (h *ProfileHandler) UpdateProfileData(w http.ResponseWriter, r *http.Reques
 
 	profileInfo, err := h.uc.UpdateData(r.Context(), id, payload)
 	if err != nil {
-		if errors.Is(err, profile.ErrDoubleData) {
-			h.log.Warn("failed to update profile data", sl.Err(err))
+		h.log.Warn("failed to update profile data", sl.Err(err))
+		var validationErrors validator.ValidationErrors
+
+		switch {
+		case errors.Is(err, profile.ErrBadUpdateData):
+			resp.JSONStatus(w, http.StatusBadRequest)
+		case errors.As(err, &validationErrors):
 			resp.JSON(w, http.StatusBadRequest, resp.Err(err.Error()))
+		default:
+			resp.JSONStatus(w, http.StatusTooManyRequests)
 		}
-
-		h.log.Error("failed to update profile data", sl.Err(err))
-		resp.JSONStatus(w, http.StatusTooManyRequests)
-
 		return
 	}
 
