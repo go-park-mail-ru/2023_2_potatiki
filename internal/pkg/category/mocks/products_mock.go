@@ -36,10 +36,10 @@ func (m *MockCategoryUsecase) EXPECT() *MockCategoryUsecaseMockRecorder {
 }
 
 // Categories mocks base method.
-func (m *MockCategoryUsecase) Categories(arg0 context.Context) ([]models.Category, error) {
+func (m *MockCategoryUsecase) Categories(arg0 context.Context) (models.CategoryTree, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Categories", arg0)
-	ret0, _ := ret[0].([]models.Category)
+	ret0, _ := ret[0].(models.CategoryTree)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -74,10 +74,10 @@ func (m *MockCategoryRepo) EXPECT() *MockCategoryRepoMockRecorder {
 }
 
 // ReadCategories mocks base method.
-func (m *MockCategoryRepo) ReadCategories(arg0 context.Context) ([]models.Category, error) {
+func (m *MockCategoryRepo) ReadCategories(arg0 context.Context) (models.CategoryTree, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ReadCategories", arg0)
-	ret0, _ := ret[0].([]models.Category)
+	ret0, _ := ret[0].(models.CategoryTree)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }

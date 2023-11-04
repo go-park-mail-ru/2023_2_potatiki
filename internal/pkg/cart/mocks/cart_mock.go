@@ -37,7 +37,7 @@ func (m *MockCartUsecase) EXPECT() *MockCartUsecaseMockRecorder {
 }
 
 // AddProduct mocks base method.
-func (m *MockCartUsecase) AddProduct(arg0 context.Context, arg1 models.Cart, arg2 models.CartProduct) (models.Cart, error) {
+func (m *MockCartUsecase) AddProduct(arg0 context.Context, arg1 models.Cart, arg2 models.CartProductUpdate) (models.Cart, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddProduct", arg0, arg1, arg2)
 	ret0, _ := ret[0].(models.Cart)
@@ -52,7 +52,7 @@ func (mr *MockCartUsecaseMockRecorder) AddProduct(arg0, arg1, arg2 interface{}) 
 }
 
 // DeleteProduct mocks base method.
-func (m *MockCartUsecase) DeleteProduct(arg0 context.Context, arg1 models.Cart, arg2 models.CartProduct) (models.Cart, error) {
+func (m *MockCartUsecase) DeleteProduct(arg0 context.Context, arg1 models.Cart, arg2 models.CartProductDelete) (models.Cart, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteProduct", arg0, arg1, arg2)
 	ret0, _ := ret[0].(models.Cart)
@@ -120,7 +120,7 @@ func (m *MockCartRepo) EXPECT() *MockCartRepoMockRecorder {
 }
 
 // AddProduct mocks base method.
-func (m *MockCartRepo) AddProduct(arg0 context.Context, arg1 models.Cart, arg2 models.CartProduct) (models.Cart, error) {
+func (m *MockCartRepo) AddProduct(arg0 context.Context, arg1 models.Cart, arg2 models.CartProductUpdate) (models.Cart, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddProduct", arg0, arg1, arg2)
 	ret0, _ := ret[0].(models.Cart)
@@ -150,10 +150,10 @@ func (mr *MockCartRepoMockRecorder) CheckCart(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // CreateCart mocks base method.
-func (m *MockCartRepo) CreateCart(arg0 context.Context, arg1 uuid.UUID) (models.Cart, error) {
+func (m *MockCartRepo) CreateCart(arg0 context.Context, arg1 uuid.UUID) (uuid.UUID, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateCart", arg0, arg1)
-	ret0, _ := ret[0].(models.Cart)
+	ret0, _ := ret[0].(uuid.UUID)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -179,7 +179,7 @@ func (mr *MockCartRepoMockRecorder) DeleteCart(ctx, cartID interface{}) *gomock.
 }
 
 // DeleteProduct mocks base method.
-func (m *MockCartRepo) DeleteProduct(arg0 context.Context, arg1 models.Cart, arg2 models.CartProduct) (models.Cart, error) {
+func (m *MockCartRepo) DeleteProduct(arg0 context.Context, arg1 models.Cart, arg2 models.CartProductDelete) (models.Cart, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteProduct", arg0, arg1, arg2)
 	ret0, _ := ret[0].(models.Cart)

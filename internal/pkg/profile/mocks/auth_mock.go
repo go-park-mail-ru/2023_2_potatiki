@@ -52,11 +52,12 @@ func (mr *MockProfileUsecaseMockRecorder) GetProfile(arg0, arg1 interface{}) *go
 }
 
 // UpdateData mocks base method.
-func (m *MockProfileUsecase) UpdateData(arg0 context.Context, arg1 uuid.UUID, arg2 *models.UpdateProfileDataPayload) error {
+func (m *MockProfileUsecase) UpdateData(arg0 context.Context, arg1 uuid.UUID, arg2 *models.UpdateProfileDataPayload) (*models.Profile, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateData", arg0, arg1, arg2)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*models.Profile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // UpdateData indicates an expected call of UpdateData.
@@ -66,11 +67,12 @@ func (mr *MockProfileUsecaseMockRecorder) UpdateData(arg0, arg1, arg2 interface{
 }
 
 // UpdatePhoto mocks base method.
-func (m *MockProfileUsecase) UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) error {
+func (m *MockProfileUsecase) UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) (*models.Profile, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdatePhoto", ctx, userID, filePhotoByte, fileType)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*models.Profile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // UpdatePhoto indicates an expected call of UpdatePhoto.
@@ -172,4 +174,41 @@ func (m *MockProfileRepo) UpdateProfile(arg0 context.Context, arg1 *models.Profi
 func (mr *MockProfileRepoMockRecorder) UpdateProfile(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateProfile", reflect.TypeOf((*MockProfileRepo)(nil).UpdateProfile), arg0, arg1)
+}
+
+// MockProfileConfig is a mock of ProfileConfig interface.
+type MockProfileConfig struct {
+	ctrl     *gomock.Controller
+	recorder *MockProfileConfigMockRecorder
+}
+
+// MockProfileConfigMockRecorder is the mock recorder for MockProfileConfig.
+type MockProfileConfigMockRecorder struct {
+	mock *MockProfileConfig
+}
+
+// NewMockProfileConfig creates a new mock instance.
+func NewMockProfileConfig(ctrl *gomock.Controller) *MockProfileConfig {
+	mock := &MockProfileConfig{ctrl: ctrl}
+	mock.recorder = &MockProfileConfigMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockProfileConfig) EXPECT() *MockProfileConfigMockRecorder {
+	return m.recorder
+}
+
+// GetPhotosFilePath mocks base method.
+func (m *MockProfileConfig) GetPhotosFilePath() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetPhotosFilePath")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetPhotosFilePath indicates an expected call of GetPhotosFilePath.
+func (mr *MockProfileConfigMockRecorder) GetPhotosFilePath() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPhotosFilePath", reflect.TypeOf((*MockProfileConfig)(nil).GetPhotosFilePath))
 }
