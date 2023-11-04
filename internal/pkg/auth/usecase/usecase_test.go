@@ -6,14 +6,13 @@ import (
 	"testing"
 	"time"
 
-	"github.com/satori/go.uuid"
-	"github.com/stretchr/testify/assert"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	mockAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/mocks"
 	mockProfile "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/mocks"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
+	mockJWT "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwter/mocks"
 	"github.com/golang/mock/gomock"
+	uuid "github.com/satori/go.uuid"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAuthUsecase_SignUp(t *testing.T) {
@@ -21,9 +20,10 @@ func TestAuthUsecase_SignUp(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mockProfile.NewMockProfileRepo(ctrl)
-	cfg := mockAuth.NewMockAuthConfig(ctrl)
-	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
-	cfg.EXPECT().GetJwtAccess().Return("")
+	cfg := mockJWT.NewMockConfiger(ctrl)
+	cfg.EXPECT().GetTTL().Return(time.Second)
+	cfg.EXPECT().GetSecret().Return("time.Second")
+	cfg.EXPECT().GetIssuer().Return("time.Second")
 
 	_ = &models.Profile{
 		Id:           uuid.NewV4(),
@@ -51,9 +51,10 @@ func TestAuthUsecase_SignUpBadRepo(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mockProfile.NewMockProfileRepo(ctrl)
-	cfg := mockAuth.NewMockAuthConfig(ctrl)
-	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
-	cfg.EXPECT().GetJwtAccess().Return("")
+	cfg := mockJWT.NewMockConfiger(ctrl)
+	cfg.EXPECT().GetTTL().Return(time.Second)
+	cfg.EXPECT().GetSecret().Return("time.Second")
+	cfg.EXPECT().GetIssuer().Return("time.Second")
 
 	repo.EXPECT().CreateProfile(gomock.Any(), gomock.Any()).Return(errors.New("bad request"))
 
@@ -74,9 +75,10 @@ func TestAuthUsecase_SignIn(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mockProfile.NewMockProfileRepo(ctrl)
-	cfg := mockAuth.NewMockAuthConfig(ctrl)
-	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
-	cfg.EXPECT().GetJwtAccess().Return("")
+	cfg := mockJWT.NewMockConfiger(ctrl)
+	cfg.EXPECT().GetTTL().Return(time.Second)
+	cfg.EXPECT().GetSecret().Return("time.Second")
+	cfg.EXPECT().GetIssuer().Return("time.Second")
 
 	payload := &models.SignInPayload{
 		Login:    "iudsbfiwhdbfi",
@@ -107,9 +109,10 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 	defer ctrl.Finish()
 
 	repo := mockProfile.NewMockProfileRepo(ctrl)
-	cfg := mockAuth.NewMockAuthConfig(ctrl)
-	cfg.EXPECT().GetAccessExpirationTime().Return(time.Second)
-	cfg.EXPECT().GetJwtAccess().Return("")
+	cfg := mockJWT.NewMockConfiger(ctrl)
+	cfg.EXPECT().GetTTL().Return(time.Second)
+	cfg.EXPECT().GetSecret().Return("time.Second")
+	cfg.EXPECT().GetIssuer().Return("time.Second")
 
 	payload := &models.SignInPayload{
 		Login:    "iudsbfiwhdbfi",

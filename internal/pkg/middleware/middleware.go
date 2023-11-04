@@ -5,7 +5,7 @@ import (
 	"log/slog"
 	"net/http"
 
-	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/response"
+	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
 
 	"github.com/gorilla/mux"
 )

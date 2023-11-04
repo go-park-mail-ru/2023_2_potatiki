@@ -7,22 +7,23 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/hasher"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwter"
+
 	"github.com/go-playground/validator/v10"
 	uuid "github.com/satori/go.uuid"
 )
 
 type AuthUsecase struct {
-	repo   profile.ProfileRepo
-	Auther auth.AuthAuther
+	repo    profile.ProfileRepo
+	authJWT jwter.JWTer
 }
 
-func NewAuthUsecase(repo profile.ProfileRepo, cfg auth.AuthConfig) *AuthUsecase {
+func NewAuthUsecase(repo profile.ProfileRepo, cfg jwter.Configer) *AuthUsecase {
 	return &AuthUsecase{
-		repo:   repo,
-		Auther: NewAuther(cfg),
+		repo:    repo,
+		authJWT: jwter.New(cfg),
 	}
 }
 
@@ -54,7 +55,7 @@ func (uc *AuthUsecase) SignIn(ctx context.Context, payload *models.SignInPayload
 		return &models.Profile{}, "", time.Now(), ErrPassMismatch
 	}
 
-	token, exp, err := uc.Auther.GenerateToken(profile)
+	token, exp, err := uc.authJWT.EncodeAuthToken(profile.Id)
 	if err != nil {
 		err = fmt.Errorf("error happened in Auther.GenerateToken: %w", err)
 
@@ -86,7 +87,7 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, payload *models.SignUpPayload
 		return &models.Profile{}, "", time.Now(), err
 	}
 
-	token, exp, err := uc.Auther.GenerateToken(profile)
+	token, exp, err := uc.authJWT.EncodeAuthToken(profile.Id)
 	if err != nil {
 		err = fmt.Errorf("error happened in Auther.GenerateToken: %w", err)
 

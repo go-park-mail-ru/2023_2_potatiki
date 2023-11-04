@@ -15,7 +15,6 @@ func HashPass(plainPassword string) []byte {
 	if err != nil {
 		return nil
 	} // TODO: handle error
-
 	return hash(salt, plainPassword)
 }
 

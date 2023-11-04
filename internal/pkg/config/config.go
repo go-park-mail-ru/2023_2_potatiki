@@ -14,7 +14,9 @@ import (
 type Config struct {
 	ConfigPath string `env:"CONFIG_PATH" env-default:"config/config.yaml"`
 	HTTPServer `yaml:"httpServer"`
-	Auther     `yaml:"auther"`
+	AuthJWT    `yaml:"authJwt"`
+	CSRFJWT    `yaml:"csrfJwt"`
+
 	Database
 	Enviroment     string `env:"ENVIROMENT" env-default:"prod" env-description:"avalible: local, dev, prod"`
 	LogFilePath    string `env:"LOG_FILE_PATH" env-default:"zuzu.log"`
@@ -28,9 +30,36 @@ type HTTPServer struct {
 	ReadHeaderTimeout time.Duration `yaml:"readHeaderTimeout" yaml-defualt:"10s"`
 }
 
-type Auther struct {
-	JwtAccess            string        `env:"JWT_SECRET_KEY" env-required:"true"`
+type AuthJWT struct {
+	JwtAccess            string        `env:"AUTH_JWT_SECRET_KEY" env-required:"true"`
 	AccessExpirationTime time.Duration `yaml:"accessExpirationTime" yaml-defualt:"6h"`
+	Issuer               string
+}
+
+func (a AuthJWT) GetTTL() time.Duration {
+	return a.AccessExpirationTime
+}
+func (a AuthJWT) GetSecret() string {
+	return a.JwtAccess
+}
+func (a AuthJWT) GetIssuer() string {
+	return "auth"
+}
+
+type CSRFJWT struct {
+	JwtAccess            string        `env:"CSRF_JWT_SECRET_KEY" env-required:"true"`
+	AccessExpirationTime time.Duration `yaml:"accessExpirationTime" yaml-defualt:"6h"`
+	Issuer               string
+}
+
+func (a CSRFJWT) GetTTL() time.Duration {
+	return a.AccessExpirationTime
+}
+func (a CSRFJWT) GetSecret() string {
+	return a.JwtAccess
+}
+func (a CSRFJWT) GetIssuer() string {
+	return "csrf"
 }
 
 type Database struct {
@@ -39,15 +68,6 @@ type Database struct {
 	DBHost string `env:"DB_HOST" env-default:"0.0.0.0"`
 	DBPort int    `env:"DB_PORT" env-required:"true"`
 	DBUser string `env:"POSTGRES_USER" env-required:"true"`
-}
-
-func (a Auther) GetAccessExpirationTime() time.Duration {
-	// need for mock interface
-	return a.AccessExpirationTime
-}
-func (a Auther) GetJwtAccess() string {
-	// need for mock interface
-	return a.JwtAccess
 }
 
 func (c Config) GetPhotosFilePath() string {
