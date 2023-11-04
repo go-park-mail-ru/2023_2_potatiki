@@ -118,7 +118,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -161,7 +161,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -204,7 +204,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "401": {
@@ -250,7 +250,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "401": {
@@ -325,7 +325,7 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -386,6 +386,9 @@ const docTemplate = `{
                     "401": {
                         "description": "User unauthorized"
                     },
+                    "404": {
+                        "description": "Cart not found"
+                    },
                     "429": {
                         "description": "Too Many Requests"
                     }
@@ -418,6 +421,9 @@ const docTemplate = `{
                     "401": {
                         "description": "User unauthorized"
                     },
+                    "404": {
+                        "description": "Orders not found"
+                    },
                     "429": {
                         "description": "Too Many Requests"
                     }
@@ -446,6 +452,9 @@ const docTemplate = `{
                     },
                     "401": {
                         "description": "User unauthorized"
+                    },
+                    "404": {
+                        "description": "Order not found"
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -501,7 +510,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -551,7 +560,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -592,7 +601,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -635,7 +644,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "401": {
@@ -722,7 +731,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -834,6 +843,9 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/models.OrderProduct"
                     }
+                },
+                "statusId": {
+                    "type": "integer"
                 }
             }
         },
@@ -983,7 +995,7 @@ const docTemplate = `{
                 }
             }
         },
-        "response.Response": {
+        "responser.Response": {
             "type": "object",
             "properties": {
                 "error": {},

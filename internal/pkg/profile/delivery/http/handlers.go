@@ -38,7 +38,7 @@ func NewProfileHandler(log *slog.Logger, uc profile.ProfileUsecase) *ProfileHand
 // @Produce json
 // @Param id path string true "Profile UUID"
 // @Success	200	{object} models.Profile "Profile"
-// @Failure	400	{object} response.Response	"error messege"
+// @Failure	400	{object} responser.Response	"error messege"
 // @Failure	429
 // @Router	/api/profile/{id} [get]
 func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -83,7 +83,7 @@ func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body models.UpdateProfileDataPayload true "UpdateProfileDataPayload"
 // @Success	200	{object} models.Profile "Profile"
-// @Failure	400	{object} response.Response	"error messege"
+// @Failure	400	{object} responser.Response	"error messege"
 // @Failure	401
 // @Failure	429
 // @Router	/api/profile/update-data [post]
@@ -117,7 +117,7 @@ func (h *ProfileHandler) UpdateProfileData(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = h.uc.UpdateData(r.Context(), id, payload)
+	profileInfo, err := h.uc.UpdateData(r.Context(), id, payload)
 	if err != nil {
 		if errors.Is(err, profile.ErrDoubleData) {
 			h.log.Warn("failed to update profile data", sl.Err(err))
@@ -131,7 +131,7 @@ func (h *ProfileHandler) UpdateProfileData(w http.ResponseWriter, r *http.Reques
 	}
 
 	h.log.Info("updated profile info")
-	resp.JSONStatus(w, http.StatusOK)
+	resp.JSON(w, http.StatusOK, profileInfo)
 }
 
 // @Summary	UpdatePhoto
@@ -176,7 +176,7 @@ func (h *ProfileHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Info("UpdatePhoto", "ID", ID)
-	err = h.uc.UpdatePhoto(r.Context(), ID, bodyContent, fileFormat)
+	profileInfo, err := h.uc.UpdatePhoto(r.Context(), ID, bodyContent, fileFormat)
 	if err != nil {
 		h.log.Error("failed in uc.UpdatePhoto", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -185,5 +185,5 @@ func (h *ProfileHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Info("updated profile success")
-	resp.JSONStatus(w, http.StatusOK)
+	resp.JSON(w, http.StatusOK, profileInfo)
 }

@@ -38,11 +38,15 @@ const (
 
 	getCurrentOrderID = "SELECT oi.id AS order_id " +
 		"FROM order_info oi " +
-		// "JOIN status s ON oi.status_id = s.id " +
-		"WHERE oi.profile_id = $1 " + // AND s.name = $2;
+		"WHERE oi.profile_id = $1 " +
 		"ORDER BY oi.creation_at DESC;"
 
-	getOrdersID = "SELECT id AS order_id FROM order_info WHERE profile_id=$1;"
+	getOrdersID = `
+	SELECT id AS order_id
+	FROM order_info
+	WHERE profile_id = $1
+	ORDER BY creation_at DESC;
+	`
 )
 
 //CREATE OR ALTER PROCEDURE create_order(a UUiD, b UUID, c TIMESTAMPTZ, e int, )
@@ -194,6 +198,9 @@ func (r *OrderRepo) ReadOrdersID(ctx context.Context, userID uuid.UUID) ([]uuid.
 			return []uuid.UUID{}, err
 		}
 		ordersID = append(ordersID, orderID)
+	}
+	if len(ordersID) == 0 {
+		return []uuid.UUID{}, ErrOrdersNotFound
 	}
 
 	return ordersID, nil

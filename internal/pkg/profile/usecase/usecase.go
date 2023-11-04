@@ -46,40 +46,40 @@ func (uc *ProfileUsecase) GetProfile(ctx context.Context, Id uuid.UUID) (*models
 	return profile, nil
 }
 
-func (uc *ProfileUsecase) UpdateData(ctx context.Context, Id uuid.UUID, payload *models.UpdateProfileDataPayload) error {
+func (uc *ProfileUsecase) UpdateData(ctx context.Context, Id uuid.UUID, payload *models.UpdateProfileDataPayload) (*models.Profile, error) {
 	if err := validator.New().Struct(payload); err != nil {
-		return err
+		return nil, err
 	}
 	payload.Sanitize()
 
-	profil, err := uc.repo.ReadProfile(ctx, Id)
+	profileInfo, err := uc.repo.ReadProfile(ctx, Id)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadProfile: %w", err)
 
-		return err
+		return nil, err
 	}
 
-	if profil.Phone == payload.Phone &&
-		hasher.CheckPass(profil.PasswordHash, payload.Password) {
-		return profile.ErrDoubleData
+	if profileInfo.Phone == payload.Phone &&
+		hasher.CheckPass(profileInfo.PasswordHash, payload.Password) {
+		return nil, profile.ErrDoubleData
 	}
 
-	profil.Phone = payload.Phone
-	profil.PasswordHash = hasher.HashPass(payload.Password)
+	profileInfo.Phone = payload.Phone
+	profileInfo.PasswordHash = hasher.HashPass(payload.Password)
 
-	err = uc.repo.UpdateProfile(ctx, profil)
+	err = uc.repo.UpdateProfile(ctx, profileInfo)
 	if err != nil {
 		err = fmt.Errorf("error happened in repoUser.UpdateProfile: %w", err)
 
-		return err
+		return nil, err
 	}
 
-	return nil
+	return profileInfo, nil
 }
 
-func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePhotoByte []byte, fileType string) error {
+func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePhotoByte []byte, fileType string) (*models.Profile, error) {
 	if !slices.Contains(acceptingFileTypes, fileType) {
-		return profile.ErrorForbiddenExtension
+		return nil, profile.ErrorForbiddenExtension
 	}
 
 	_, err := os.Stat(uc.photoPath)
@@ -87,10 +87,10 @@ func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePho
 		if os.IsNotExist(err) {
 			err = fmt.Errorf("photos upload file path [%s] is not exist, error: %w", uc.photoPath, err)
 
-			return err
+			return nil, err
 		}
 
-		return fmt.Errorf("bad photos file path [%s], error: %w", uc.photoPath, err)
+		return nil, fmt.Errorf("bad photos file path [%s], error: %w", uc.photoPath, err)
 	}
 
 	fileExtension := strings.TrimPrefix(fileType, "image/")
@@ -101,7 +101,7 @@ func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePho
 	if err != nil {
 		err = fmt.Errorf("error happened in create file: %w", err)
 
-		return err
+		return nil, err
 	}
 	defer file.Close()
 
@@ -109,15 +109,17 @@ func (uc *ProfileUsecase) UpdatePhoto(ctx context.Context, Id uuid.UUID, filePho
 	if err != nil {
 		err = fmt.Errorf("error happened in write to file: %w", err)
 
-		return err
+		return nil, err
 	}
 
 	err = uc.repo.UpdatePhoto(ctx, Id, photoName)
 	if err != nil {
 		err = fmt.Errorf("error happened in repoUser.UpdatePhoto: %w", err)
 
-		return err
+		return nil, err
 	}
 
-	return nil
+	profileInfo, err := uc.repo.ReadProfile(ctx, Id)
+
+	return profileInfo, nil
 }

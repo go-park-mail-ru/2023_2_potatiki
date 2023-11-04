@@ -1,6 +1,9 @@
 package http
 
 import (
+	"errors"
+	repoCart "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	"log/slog"
 	"net/http"
 
@@ -32,6 +35,7 @@ func NewOrderHandler(log *slog.Logger, uc order.OrderUsecase) OrderHandler {
 // @Produce json
 // @Success	200	{object} models.Order "New order info"
 // @Failure	401	"User unauthorized"
+// @Failure	404	"Cart not found"
 // @Failure	429
 // @Router	/api/order/create [post]
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -51,6 +55,11 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	order, err := h.uc.CreateOrder(r.Context(), userID)
 	if err != nil {
 		h.log.Error("failed to get cart", sl.Err(err))
+		if errors.Is(err, repoCart.ErrCartNotFound) || errors.Is(err, repo.ErrPoductNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
@@ -67,6 +76,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success	200	{object} models.Order "Current order info"
 // @Failure	401	"User unauthorized"
+// @Failure	404	"Order not found"
 // @Failure	429
 // @Router	/api/order/get_current [get]
 func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
@@ -86,6 +96,11 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 	order, err := h.uc.GetCurrentOrder(r.Context(), userID)
 	if err != nil {
 		h.log.Error("failed to get cart", sl.Err(err))
+		if errors.Is(err, repo.ErrOrderNotFound) || errors.Is(err, repo.ErrPoductsInOrderNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
@@ -102,6 +117,7 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success	200	{array} models.Order "All orders info"
 // @Failure	401	"User unauthorized"
+// @Failure	404	"Orders not found"
 // @Failure	429
 // @Router	/api/order/get_all [get]
 func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
@@ -121,6 +137,11 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 	orders, err := h.uc.GetOrders(r.Context(), userID)
 	if err != nil {
 		h.log.Error("failed to get cart", sl.Err(err))
+		if errors.Is(err, repo.ErrOrdersNotFound) || errors.Is(err, repo.ErrPoductsInOrderNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return

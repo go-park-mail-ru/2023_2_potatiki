@@ -27,6 +27,7 @@ func (uc *CartUsecase) GetCart(ctx context.Context, id uuid.UUID) (models.Cart, 
 	if errors.Is(err, repo.ErrCartNotFound) {
 		cart.Id, err = uc.repo.CreateCart(ctx, id)
 		cart.IsCurrent = true
+		cart.Products = make([]models.CartProduct, 0)
 		if err != nil {
 			err = fmt.Errorf("error happened in repo.GetCart: %w", err)
 

@@ -12,8 +12,8 @@ import (
 
 type ProfileUsecase interface {
 	GetProfile(context.Context, uuid.UUID) (*models.Profile, error)
-	UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) error
-	UpdateData(context.Context, uuid.UUID, *models.UpdateProfileDataPayload) error
+	UpdatePhoto(ctx context.Context, userID uuid.UUID, filePhotoByte []byte, fileType string) (*models.Profile, error)
+	UpdateData(context.Context, uuid.UUID, *models.UpdateProfileDataPayload) (*models.Profile, error)
 }
 
 type ProfileRepo interface {

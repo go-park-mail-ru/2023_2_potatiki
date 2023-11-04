@@ -35,7 +35,7 @@ func NewAuthHandler(log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 // @Produce json
 // @Param input body models.SignInPayload true "SignInPayload"
 // @Success	200	{object} models.Profile "Profile"
-// @Failure	400	{object} response.Response	"error messege"
+// @Failure	400	{object} responser.Response	"error messege"
 // @Failure	429
 // @Router	/api/auth/signin [post]
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
@@ -82,7 +82,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body models.SignUpPayload true "SignUpPayload"
 // @Success	200 {object} models.Profile "Profile"
-// @Failure	400	{object} response.Response	"error messege"
+// @Failure	400	{object} responser.Response	"error messege"
 // @Failure	429
 // @Router	/api/auth/signup [post]
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {

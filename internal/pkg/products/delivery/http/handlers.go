@@ -33,7 +33,7 @@ func NewProductsHandler(log *slog.Logger, uc products.ProductsUsecase) ProductHa
 // @Produce json
 // @Param id path string true "Product UUID"
 // @Success	200	{object} models.Product "Product info"
-// @Failure	400	{object} response.Response	"error messege"
+// @Failure	400	{object} responser.Response	"error messege"
 // @Failure	429
 // @Router	/api/products/{id} [get]
 func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
@@ -79,7 +79,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
 // @Success	200	{object} []models.Product "Products array"
-// @Failure	400	{object} response.Response	"error messege"
+// @Failure	400	{object} responser.Response	"error messege"
 // @Failure	429
 // @Router	/api/products/get_all [get]
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
@@ -136,7 +136,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
 // @Success	200	{object} []models.Product "Products by category id"
-// @Failure	400	{object} response.Response	"error messege"
+// @Failure	400	{object} responser.Response	"error messege"
 // @Failure	429
 // @Router	/api/products/category [get]
 func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {

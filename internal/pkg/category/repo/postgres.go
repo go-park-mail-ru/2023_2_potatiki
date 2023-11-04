@@ -33,7 +33,7 @@ func NewCategoryRepo(db pgxtype.Querier) *CategoryRepo {
 }
 
 func (r *CategoryRepo) ReadCategories(ctx context.Context) (models.CategoryTree, error) {
-	var categorySlice models.CategoryTree
+	categorySlice := make(models.CategoryTree, 0)
 	rows, err := r.db.Query(ctx, getCategories)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

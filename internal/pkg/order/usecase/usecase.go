@@ -56,11 +56,10 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, id uuid.UUID) (models.O
 }
 
 func (uc *OrderUsecase) GetCurrentOrder(ctx context.Context, userID uuid.UUID) (models.Order, error) {
-
 	orderID, err := uc.repoOrder.ReadOrderID(ctx, userID)
 	if err != nil {
 		if errors.Is(err, repo.ErrOrderNotFound) {
-			// TODO: implement
+			return models.Order{}, err
 		}
 		err = fmt.Errorf("error happened in repoOrder.ReadOrderID: %w", err)
 
@@ -70,7 +69,7 @@ func (uc *OrderUsecase) GetCurrentOrder(ctx context.Context, userID uuid.UUID) (
 	order, err := uc.repoOrder.ReadOrder(ctx, orderID)
 	if err != nil {
 		if errors.Is(err, repo.ErrPoductsInOrderNotFound) {
-			// TODO: implement
+			return models.Order{}, err
 		}
 		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
 
@@ -84,7 +83,7 @@ func (uc *OrderUsecase) GetOrders(ctx context.Context, userID uuid.UUID) ([]mode
 	ordersID, err := uc.repoOrder.ReadOrdersID(ctx, userID)
 	if err != nil {
 		if errors.Is(err, repo.ErrOrdersNotFound) {
-			// TODO: implement
+			return []models.Order{}, err
 		}
 		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
 
@@ -96,7 +95,7 @@ func (uc *OrderUsecase) GetOrders(ctx context.Context, userID uuid.UUID) ([]mode
 		order, err := uc.repoOrder.ReadOrder(ctx, orderID)
 		if err != nil {
 			if errors.Is(err, repo.ErrPoductsInOrderNotFound) {
-				// TODO: implement
+				return []models.Order{}, err
 			}
 			err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
 

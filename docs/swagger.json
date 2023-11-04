@@ -109,7 +109,7 @@
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -152,7 +152,7 @@
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -195,7 +195,7 @@
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "401": {
@@ -241,7 +241,7 @@
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "401": {
@@ -316,7 +316,7 @@
                     "400": {
                         "description": "invalid request",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -377,6 +377,9 @@
                     "401": {
                         "description": "User unauthorized"
                     },
+                    "404": {
+                        "description": "Cart not found"
+                    },
                     "429": {
                         "description": "Too Many Requests"
                     }
@@ -409,6 +412,9 @@
                     "401": {
                         "description": "User unauthorized"
                     },
+                    "404": {
+                        "description": "Orders not found"
+                    },
                     "429": {
                         "description": "Too Many Requests"
                     }
@@ -437,6 +443,9 @@
                     },
                     "401": {
                         "description": "User unauthorized"
+                    },
+                    "404": {
+                        "description": "Order not found"
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -492,7 +501,7 @@
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -542,7 +551,7 @@
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -583,7 +592,7 @@
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -626,7 +635,7 @@
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "401": {
@@ -713,7 +722,7 @@
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/response.Response"
+                            "$ref": "#/definitions/responser.Response"
                         }
                     },
                     "429": {
@@ -825,6 +834,9 @@
                     "items": {
                         "$ref": "#/definitions/models.OrderProduct"
                     }
+                },
+                "statusId": {
+                    "type": "integer"
                 }
             }
         },
@@ -974,7 +986,7 @@
                 }
             }
         },
-        "response.Response": {
+        "responser.Response": {
             "type": "object",
             "properties": {
                 "error": {},
