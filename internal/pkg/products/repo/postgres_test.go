@@ -24,11 +24,11 @@ func TestProductsRepo_ReadProducts(t *testing.T) {
 	ctl := gomock.NewController(t)
 	mockPool := pgxpoolmock.NewMockPgxPool(ctl)
 
-	columns := []string{"Id", "NameProduct", "Description", "Price", "ImgSrc", "Rating"}
+	columns := []string{"Id", "NameProduct", "Description", "Price", "ImgSrc", "Rating", "Category.Id", "Category.Name"}
 	id := uuid.UUID{}
 	repo := NewProductsRepo(mockPool)
 	pgxRows := pgxpoolmock.NewRows(columns).
-		AddRow(id, "", "", int64(0), "", float64(0)).ToPgxRows()
+		AddRow(id, "", "", int64(0), "", float64(0), int64(0), "").ToPgxRows()
 	mockPool.EXPECT().Query(gomock.Any(), getProducts, gomock.Any()).Return(pgxRows, nil)
 
 	products, err := repo.ReadProducts(context.Background(), 0, 10)
@@ -41,11 +41,11 @@ func TestProductsRepo_ReadProduct(t *testing.T) {
 	ctl := gomock.NewController(t)
 	mockPool := pgxpoolmock.NewMockPgxPool(ctl)
 
-	columns := []string{"Id", "NameProduct", "Description", "Price", "ImgSrc", "Rating"}
+	columns := []string{"Id", "NameProduct", "Description", "Price", "ImgSrc", "Rating", "Category.Id", "Category.Name"}
 	id := uuid.NewV4()
 	repo := NewProductsRepo(mockPool)
 	pgxRows := pgxpoolmock.NewRows(columns).
-		AddRow(id, "", "", int64(0), "", float64(0)).ToPgxRows()
+		AddRow(id, "", "", int64(0), "", float64(0), int64(0), "").ToPgxRows()
 	mockPool.EXPECT().QueryRow(gomock.Any(), getProduct, gomock.Any()).Return(pgxRows)
 	pgxRows.Next()
 
