@@ -48,6 +48,10 @@ import (
 	orderHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/http"
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	orderUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/usecase"
+
+	addressHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/delivery/http"
+	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
+	addressUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/usecase"
 )
 
 // @title ZuZu Backend API
@@ -137,6 +141,10 @@ func run() (err error) {
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo)
 	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
+
+	addressRepo := addressRepo.NewAddressRepo(db)
+	addressUsecase := addressUsecase.NewAddressUsecase(addressRepo)
+	addressHandler := addressHandler.NewAddressHandler(log, addressUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -232,6 +240,21 @@ func run() (err error) {
 
 		order.Handle("/get_all", authMW(http.HandlerFunc(orderHandler.GetOrders))).
 			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	address := r.PathPrefix("/address").Subrouter()
+	{
+		address.Handle("/add", authMW(http.HandlerFunc(addressHandler.AddAddress))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		address.Handle("/update", authMW(http.HandlerFunc(addressHandler.UpdateAddress))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		address.Handle("/delete", authMW(http.HandlerFunc(addressHandler.DeleteAddress))).
+			Methods(http.MethodDelete, http.MethodOptions)
+
+		address.Handle("/make_current", authMW(http.HandlerFunc(addressHandler.MakeCurrentAddress))).
+			Methods(http.MethodPost, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
 

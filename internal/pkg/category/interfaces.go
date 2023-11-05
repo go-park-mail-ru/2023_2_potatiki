@@ -6,7 +6,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 )
 
-//go:generate mockgen -source interfaces.go -destination ./mocks/products_mock.go -package mock
+//go:generate mockgen -source interfaces.go -destination ./mocks/category_mock.go -package mock
 
 type CategoryUsecase interface {
 	Categories(context.Context) (models.CategoryTree, error)

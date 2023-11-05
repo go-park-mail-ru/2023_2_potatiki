@@ -2,9 +2,9 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v4"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
@@ -53,7 +53,7 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 	err := r.db.QueryRow(ctx, getProduct, id).
 		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.ImgSrc, &pr.Rating, &pr.Category.Id, &pr.Category.Name)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Product{}, ErrPoductNotFound
 		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
@@ -68,7 +68,7 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 	productSlice := make([]models.Product, 0)
 	rows, err := r.db.Query(ctx, getProducts, count, paging)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Product{}, ErrPoductNotFound
 		}
 		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
@@ -104,7 +104,7 @@ func (r *ProductsRepo) ReadCategory(ctx context.Context, id int, paging, count i
 	rows, err := r.db.Query(ctx, getProductsByCategoryID, count, paging, id)
 	fmt.Println(count, paging, id)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Product{}, ErrPoductNotFound
 		}
 		err = fmt.Errorf("error happened in db.Query: %w", err)

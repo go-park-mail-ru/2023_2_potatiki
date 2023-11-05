@@ -7,7 +7,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-//go:generate mockgen -source interfaces.go -destination ./mocks/cart_mock.go -package mock
+//go:generate mockgen -source interfaces.go -destination ./mocks/order_mock.go -package mock
 
 type OrderUsecase interface {
 	CreateOrder(ctx context.Context, id uuid.UUID) (models.Order, error)

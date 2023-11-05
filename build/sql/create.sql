@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS cart
     profile_id UUID NOT NULL,
     is_current BOOLEAN,
     FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE
-);
+    );
 
 INSERT INTO cart (id, profile_id, is_current)
 VALUES
@@ -196,6 +196,21 @@ VALUES
 
     ( '7e6b3a7d-2e3b-4c0b-8c7c-4e7b3c8e0d3a', 'be2c8b1b-8d27-4142-a31a-ac6676cf678a', 9),
     ( '7e6b3a7d-2e3b-4c0b-8c7c-4e7b3c8e0d3a', 'be2c8b1b-8d27-4142-a31a-ac6676cf648a', 1);
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS address
+(
+    id UUID NOT NULL PRIMARY KEY,
+    profile_id UUID,
+    FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
+    city TEXT NOT NULL,
+    street TEXT NOT NULL,
+    house TEXT NOT NULL,
+    flat TEXT NOT NULL,
+    CONSTRAINT uq_address_city_street_house_flat UNIQUE (city, street, house, flat),
+    is_current BOOLEAN,
+    is_deleted BOOLEAN DEFAULT FALSE
+    );
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -210,7 +225,9 @@ CREATE TABLE IF NOT EXISTS order_info
     FOREIGN KEY (status_id) REFERENCES status(id) ON DELETE RESTRICT,
     promocode_id INT,
     CONSTRAINT uq_order_info_profile_id_promocode_id UNIQUE (profile_id, promocode_id),
-    FOREIGN KEY (promocode_id) REFERENCES promocode(id) ON DELETE RESTRICT
+    FOREIGN KEY (promocode_id) REFERENCES promocode(id) ON DELETE RESTRICT,
+    address_id UUID NOT NULL,
+    FOREIGN KEY (address_id) REFERENCES address(id) ON DELETE RESTRICT
     );
 
 
@@ -242,20 +259,6 @@ CREATE TABLE IF NOT EXISTS order_item
     CHECK (price > 0)
     );
 ------------------------------------------------------------------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS address
-(
-    id UUID NOT NULL PRIMARY KEY,
-    profile_id UUID,
-    FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,
-    city TEXT NOT NULL,
-    street TEXT NOT NULL,
-    house TEXT NOT NULL,
-    flat TEXT NOT NULL,
-    CONSTRAINT uq_address_city_street_house_flat UNIQUE (city, street, house, flat),
-    is_current BOOLEAN
-    );
-------------------------------------------------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS favorite
 (
     id UUID NOT NULL PRIMARY KEY,
@@ -266,3 +269,26 @@ CREATE TABLE IF NOT EXISTS favorite
     CONSTRAINT uq_favorite_profile_id_product_id UNIQUE (profile_id, product_id)
     );
 ------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION update_is_current()
+RETURNS TRIGGER AS $$
+BEGIN
+UPDATE address
+SET is_current = false
+WHERE profile_id = NEW.profile_id;
+RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER set_is_current_on_insert
+    BEFORE INSERT ON address
+    FOR EACH ROW
+    EXECUTE FUNCTION update_is_current();
+
+
+CREATE TRIGGER set_is_current_on_update
+    BEFORE UPDATE ON address
+    FOR EACH ROW
+    EXECUTE FUNCTION update_is_current();
+

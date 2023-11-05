@@ -85,6 +85,7 @@ erDiagram
 
   PROMOCODE ||--o{ ORDER : includes
   ORDER ||--o{ ORDER_ITEM : includes
+  ORDER ||--o{ ADDRESS : includes
 
   PRODUCT ||--o{ ORDER_ITEM: includes
   PRODUCT ||--o{ SHOPPING_CART_ITEM : includes
@@ -121,6 +122,7 @@ erDiagram
     uuid id PK
     uuid profile_id FK
     uuid promocode_id FK
+    uuid address_id FK
     int status FK
     timestampz creation_at
     timestampz delivery_at
@@ -147,6 +149,7 @@ erDiagram
     text house
     text flat
     bool is_current
+    bool is_deleted
   }
 
   CATEGORY {

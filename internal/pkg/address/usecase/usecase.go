@@ -1,0 +1,75 @@
+package usecase
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
+	uuid "github.com/satori/go.uuid"
+)
+
+type AddressUsecase struct {
+	repo address.AddressRepo
+}
+
+func NewAddressUsecase(repoAddress address.AddressRepo) *AddressUsecase {
+	return &AddressUsecase{
+		repo: repoAddress,
+	}
+}
+
+func (uc *AddressUsecase) AddAddress(ctx context.Context, userID uuid.UUID, addressInfo models.AddressInfo) (models.Address, error) {
+	address, err := uc.repo.CreateAddress(ctx, userID, addressInfo)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
+
+		return models.Address{}, err
+	}
+
+	return address, nil
+}
+
+func (uc *AddressUsecase) UpdateAddress(ctx context.Context, addressInfo models.Address) (models.Address, error) {
+	err := uc.repo.UpdateAddress(ctx, addressInfo)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
+
+		return models.Address{}, err
+	}
+
+	address, err := uc.repo.GetAddress(ctx, addressInfo.ProfileId, addressInfo.Id)
+	if err != nil {
+		if errors.Is(err, repo.ErrAddressNotFound) {
+			return models.Address{}, err
+		}
+		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
+
+		return models.Address{}, err
+	}
+
+	return address, nil
+}
+
+func (uc *AddressUsecase) DeleteAddress(ctx context.Context, addressInfo models.AddressDelete) error {
+	err := uc.repo.DeleteAddress(ctx, addressInfo)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
+
+		return err
+	}
+
+	return nil
+}
+
+func (uc *AddressUsecase) MakeCurrentAddress(ctx context.Context, addressInfo models.AddressMakeCurrent) error {
+	err := uc.repo.MakeCurrentAddress(ctx, addressInfo)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
+
+		return err
+	}
+
+	return nil
+}
