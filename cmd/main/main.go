@@ -255,6 +255,12 @@ func run() (err error) {
 
 		address.Handle("/make_current", authMW(http.HandlerFunc(addressHandler.MakeCurrentAddress))).
 			Methods(http.MethodPost, http.MethodOptions)
+
+		address.Handle("/get_current", authMW(http.HandlerFunc(addressHandler.GetCurrentAddress))).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		address.Handle("/get_all", authMW(http.HandlerFunc(addressHandler.GetAllAddresses))).
+			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
 

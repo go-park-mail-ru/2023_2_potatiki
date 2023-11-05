@@ -2,8 +2,10 @@ package http
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 	"io"
 	"log/slog"
 	"net/http"
@@ -203,4 +205,66 @@ func (h *AddressHandler) MakeCurrentAddress(w http.ResponseWriter, r *http.Reque
 
 	h.log.Debug("h.uc.MakeCurrentAddress")
 	resp.JSONStatus(w, http.StatusOK)
+}
+
+func (h *AddressHandler) GetCurrentAddress(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
+	)
+
+	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
+		resp.JSONStatus(w, http.StatusUnauthorized)
+
+		return
+	}
+
+	address, err := h.uc.GetCurrentAddress(r.Context(), userID)
+	if err != nil {
+		h.log.Error("failed to get address", sl.Err(err))
+		if errors.Is(err, repo.ErrAddressNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.log.Debug("h.uc.GetCurrentAddress", "address", address)
+	resp.JSON(w, http.StatusOK, address)
+}
+
+func (h *AddressHandler) GetAllAddresses(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
+	)
+
+	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
+		resp.JSONStatus(w, http.StatusUnauthorized)
+
+		return
+	}
+
+	addresses, err := h.uc.GetAllAddresses(r.Context(), userID)
+	if err != nil {
+		h.log.Error("failed to get addresses", sl.Err(err))
+		if errors.Is(err, repo.ErrAddressesNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.log.Debug("h.uc.GetAllAddresses", "addresses", addresses)
+	resp.JSON(w, http.StatusOK, addresses)
 }

@@ -13,7 +13,9 @@ type AddressUsecase interface {
 	AddAddress(context.Context, uuid.UUID, models.AddressInfo) (models.Address, error)
 	UpdateAddress(context.Context, models.Address) (models.Address, error)
 	DeleteAddress(context.Context, models.AddressDelete) error
-	MakeCurrentAddress(ctx context.Context, addressInfo models.AddressMakeCurrent) error
+	MakeCurrentAddress(context.Context, models.AddressMakeCurrent) error
+	GetCurrentAddress(context.Context, uuid.UUID) (models.Address, error)
+	GetAllAddresses(context.Context, uuid.UUID) ([]models.Address, error)
 }
 
 type AddressRepo interface {
@@ -21,5 +23,7 @@ type AddressRepo interface {
 	UpdateAddress(context.Context, models.Address) error
 	DeleteAddress(context.Context, models.AddressDelete) error
 	MakeCurrentAddress(context.Context, models.AddressMakeCurrent) error
-	GetAddress(context.Context, uuid.UUID, uuid.UUID) (models.Address, error)
+	ReadAddress(context.Context, uuid.UUID, uuid.UUID) (models.Address, error)
+	ReadCurrentAddress(context.Context, uuid.UUID) (models.Address, error)
+	ReadAllAddresses(context.Context, uuid.UUID) ([]models.Address, error)
 }

@@ -39,7 +39,7 @@ func (uc *AddressUsecase) UpdateAddress(ctx context.Context, addressInfo models.
 		return models.Address{}, err
 	}
 
-	address, err := uc.repo.GetAddress(ctx, addressInfo.ProfileId, addressInfo.Id)
+	address, err := uc.repo.ReadAddress(ctx, addressInfo.ProfileId, addressInfo.Id)
 	if err != nil {
 		if errors.Is(err, repo.ErrAddressNotFound) {
 			return models.Address{}, err
@@ -72,4 +72,32 @@ func (uc *AddressUsecase) MakeCurrentAddress(ctx context.Context, addressInfo mo
 	}
 
 	return nil
+}
+
+func (uc *AddressUsecase) GetCurrentAddress(ctx context.Context, userID uuid.UUID) (models.Address, error) {
+	address, err := uc.repo.ReadCurrentAddress(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repo.ErrAddressNotFound) {
+			return models.Address{}, err
+		}
+		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
+
+		return models.Address{}, err
+	}
+
+	return address, nil
+}
+
+func (uc *AddressUsecase) GetAllAddresses(ctx context.Context, userID uuid.UUID) ([]models.Address, error) {
+	address, err := uc.repo.ReadAllAddresses(ctx, userID)
+	if err != nil {
+		if errors.Is(err, repo.ErrAddressesNotFound) {
+			return []models.Address{}, err
+		}
+		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
+
+		return []models.Address{}, err
+	}
+
+	return address, nil
 }

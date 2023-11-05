@@ -65,18 +65,48 @@ func (mr *MockAddressUsecaseMockRecorder) DeleteAddress(arg0, arg1 interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAddress", reflect.TypeOf((*MockAddressUsecase)(nil).DeleteAddress), arg0, arg1)
 }
 
-// MakeCurrentAddress mocks base method.
-func (m *MockAddressUsecase) MakeCurrentAddress(ctx context.Context, addressInfo models.AddressMakeCurrent) error {
+// GetAllAddresses mocks base method.
+func (m *MockAddressUsecase) GetAllAddresses(arg0 context.Context, arg1 uuid.UUID) ([]models.Address, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "MakeCurrentAddress", ctx, addressInfo)
+	ret := m.ctrl.Call(m, "GetAllAddresses", arg0, arg1)
+	ret0, _ := ret[0].([]models.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllAddresses indicates an expected call of GetAllAddresses.
+func (mr *MockAddressUsecaseMockRecorder) GetAllAddresses(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllAddresses", reflect.TypeOf((*MockAddressUsecase)(nil).GetAllAddresses), arg0, arg1)
+}
+
+// GetCurrentAddress mocks base method.
+func (m *MockAddressUsecase) GetCurrentAddress(arg0 context.Context, arg1 uuid.UUID) (models.Address, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCurrentAddress", arg0, arg1)
+	ret0, _ := ret[0].(models.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCurrentAddress indicates an expected call of GetCurrentAddress.
+func (mr *MockAddressUsecaseMockRecorder) GetCurrentAddress(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCurrentAddress", reflect.TypeOf((*MockAddressUsecase)(nil).GetCurrentAddress), arg0, arg1)
+}
+
+// MakeCurrentAddress mocks base method.
+func (m *MockAddressUsecase) MakeCurrentAddress(arg0 context.Context, arg1 models.AddressMakeCurrent) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "MakeCurrentAddress", arg0, arg1)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // MakeCurrentAddress indicates an expected call of MakeCurrentAddress.
-func (mr *MockAddressUsecaseMockRecorder) MakeCurrentAddress(ctx, addressInfo interface{}) *gomock.Call {
+func (mr *MockAddressUsecaseMockRecorder) MakeCurrentAddress(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeCurrentAddress", reflect.TypeOf((*MockAddressUsecase)(nil).MakeCurrentAddress), ctx, addressInfo)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeCurrentAddress", reflect.TypeOf((*MockAddressUsecase)(nil).MakeCurrentAddress), arg0, arg1)
 }
 
 // UpdateAddress mocks base method.
@@ -146,21 +176,6 @@ func (mr *MockAddressRepoMockRecorder) DeleteAddress(arg0, arg1 interface{}) *go
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteAddress", reflect.TypeOf((*MockAddressRepo)(nil).DeleteAddress), arg0, arg1)
 }
 
-// GetAddress mocks base method.
-func (m *MockAddressRepo) GetAddress(arg0 context.Context, arg1, arg2 uuid.UUID) (models.Address, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetAddress", arg0, arg1, arg2)
-	ret0, _ := ret[0].(models.Address)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetAddress indicates an expected call of GetAddress.
-func (mr *MockAddressRepoMockRecorder) GetAddress(arg0, arg1, arg2 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAddress", reflect.TypeOf((*MockAddressRepo)(nil).GetAddress), arg0, arg1, arg2)
-}
-
 // MakeCurrentAddress mocks base method.
 func (m *MockAddressRepo) MakeCurrentAddress(arg0 context.Context, arg1 models.AddressMakeCurrent) error {
 	m.ctrl.T.Helper()
@@ -173,6 +188,51 @@ func (m *MockAddressRepo) MakeCurrentAddress(arg0 context.Context, arg1 models.A
 func (mr *MockAddressRepoMockRecorder) MakeCurrentAddress(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeCurrentAddress", reflect.TypeOf((*MockAddressRepo)(nil).MakeCurrentAddress), arg0, arg1)
+}
+
+// ReadAddress mocks base method.
+func (m *MockAddressRepo) ReadAddress(arg0 context.Context, arg1, arg2 uuid.UUID) (models.Address, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadAddress", arg0, arg1, arg2)
+	ret0, _ := ret[0].(models.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadAddress indicates an expected call of ReadAddress.
+func (mr *MockAddressRepoMockRecorder) ReadAddress(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAddress", reflect.TypeOf((*MockAddressRepo)(nil).ReadAddress), arg0, arg1, arg2)
+}
+
+// ReadAllAddresses mocks base method.
+func (m *MockAddressRepo) ReadAllAddresses(arg0 context.Context, arg1 uuid.UUID) ([]models.Address, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadAllAddresses", arg0, arg1)
+	ret0, _ := ret[0].([]models.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadAllAddresses indicates an expected call of ReadAllAddresses.
+func (mr *MockAddressRepoMockRecorder) ReadAllAddresses(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadAllAddresses", reflect.TypeOf((*MockAddressRepo)(nil).ReadAllAddresses), arg0, arg1)
+}
+
+// ReadCurrentAddress mocks base method.
+func (m *MockAddressRepo) ReadCurrentAddress(arg0 context.Context, arg1 uuid.UUID) (models.Address, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadCurrentAddress", arg0, arg1)
+	ret0, _ := ret[0].(models.Address)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadCurrentAddress indicates an expected call of ReadCurrentAddress.
+func (mr *MockAddressRepoMockRecorder) ReadCurrentAddress(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadCurrentAddress", reflect.TypeOf((*MockAddressRepo)(nil).ReadCurrentAddress), arg0, arg1)
 }
 
 // UpdateAddress mocks base method.

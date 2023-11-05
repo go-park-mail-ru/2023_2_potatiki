@@ -24,47 +24,25 @@ const (
 	makeCurrentAddress = `UPDATE address
 	SET is_current = true WHERE id = $1 AND profile_id = $2;`
 
-	getAddress = `SELECT city, street, house, flat, is_current
+	readAddress = `SELECT city, street, house, flat, is_current
 	FROM address
 	WHERE id = $1 AND profile_id = $2;
 	`
 
-	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4, $5);"
-
-	getProductInfo = `
-	SELECT p.name, p.description, p.price, p.imgsrc, p.rating, 
-    c.id AS category_id, c.name AS category_name
-	FROM product p
-	JOIN category c ON p.category_id = c.id
-	WHERE p.id = $1;
+	readCurrentAddress = `SELECT id, city, street, house, flat, is_current
+	FROM address
+	WHERE profile_id = $1 AND is_current = true;
 	`
 
-	getCurrentOrder = `
-	SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.price AS product_price, 
-	p.imgsrc AS product_imgsrc, p.rating AS product_rating, oi.quantity AS product_quantity, c.id AS category_id, 
-	c.name AS category_name, o.status_id AS status_id
-	FROM order_item oi
-	JOIN product p ON oi.product_id = p.id
-	JOIN order_info o ON oi.order_id = o.id
-	JOIN category c ON p.category_id = c.id
-	WHERE oi.order_id = $1;
-	`
-
-	getCurrentOrderID = "SELECT oi.id AS order_id " +
-		"FROM order_info oi " +
-		"WHERE oi.profile_id = $1 " +
-		"ORDER BY oi.creation_at DESC;"
-
-	getOrdersID = `
-	SELECT id AS order_id
-	FROM order_info
-	WHERE profile_id = $1
-	ORDER BY creation_at DESC;
+	readAddresses = `SELECT id, city, street, house, flat, is_current
+	FROM address
+	WHERE profile_id = $1 AND is_deleted = false;
 	`
 )
 
 var (
-	ErrAddressNotFound = errors.New("address not found")
+	ErrAddressNotFound   = errors.New("address not found")
+	ErrAddressesNotFound = errors.New("address not found")
 )
 
 type AddressRepo struct {
@@ -149,9 +127,9 @@ func (r *AddressRepo) MakeCurrentAddress(ctx context.Context, addressInfo models
 	return nil
 }
 
-func (r *AddressRepo) GetAddress(ctx context.Context, userID uuid.UUID, addressID uuid.UUID) (models.Address, error) {
+func (r *AddressRepo) ReadAddress(ctx context.Context, userID uuid.UUID, addressID uuid.UUID) (models.Address, error) {
 	address := models.Address{Id: addressID}
-	err := r.db.QueryRow(ctx, getAddress, addressID, userID).
+	err := r.db.QueryRow(ctx, readAddress, addressID, userID).
 		Scan(
 			&address.City,
 			&address.Street,
@@ -169,4 +147,61 @@ func (r *AddressRepo) GetAddress(ctx context.Context, userID uuid.UUID, addressI
 	}
 
 	return address, nil
+}
+
+func (r *AddressRepo) ReadCurrentAddress(ctx context.Context, userID uuid.UUID) (models.Address, error) {
+	address := models.Address{}
+	err := r.db.QueryRow(ctx, readCurrentAddress, userID).
+		Scan(
+			&address.Id,
+			&address.City,
+			&address.Street,
+			&address.House,
+			&address.Flat,
+			&address.IsCurrent,
+		)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return models.Address{}, ErrAddressNotFound
+		}
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
+
+		return models.Address{}, err
+	}
+
+	return address, nil
+}
+
+func (r *AddressRepo) ReadAllAddresses(ctx context.Context, userID uuid.UUID) ([]models.Address, error) {
+	rows, err := r.db.Query(ctx, readAddresses, userID)
+	defer rows.Close()
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Address{}, ErrAddressesNotFound
+		}
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Address{}, err
+	}
+
+	address := models.Address{}
+	addresses := make([]models.Address, 0)
+	for rows.Next() {
+		err = rows.Scan(
+			&address.Id,
+			&address.City,
+			&address.Street,
+			&address.House,
+			&address.Flat,
+			&address.IsCurrent,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Address{}, err
+		}
+		addresses = append(addresses, address)
+	}
+
+	return addresses, nil
 }

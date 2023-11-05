@@ -96,7 +96,7 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 
 	order, err := h.uc.GetCurrentOrder(r.Context(), userID)
 	if err != nil {
-		h.log.Error("failed to get cart", sl.Err(err))
+		h.log.Error("failed to get order", sl.Err(err))
 		if errors.Is(err, orderRepo.ErrOrderNotFound) || errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
 			resp.JSONStatus(w, http.StatusNotFound)
 

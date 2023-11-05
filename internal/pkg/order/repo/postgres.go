@@ -76,7 +76,6 @@ func NewOrderRepo(db pgxtype.Querier) *OrderRepo {
 	}
 }
 
-// TODO: Добавить добавление статуса в заказ
 func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID, statusID int) (models.Order, error) {
 	orderID := uuid.NewV4()
 	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour), statusID)
