@@ -7,7 +7,7 @@ import (
 )
 
 type Profile struct {
-	Id           uuid.UUID `json:"id"` //nolint:stylecheck
+	Id           uuid.UUID `json:"id"`
 	Login        string    `json:"login"`
 	Description  string    `json:"description,omitempty"`
 	ImgSrc       string    `json:"img"`

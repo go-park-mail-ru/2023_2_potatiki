@@ -1,4 +1,40 @@
 definitions:
+  models.Address:
+    properties:
+      addressId:
+        type: string
+      city:
+        type: string
+      flat:
+        type: string
+      house:
+        type: string
+      isCurrent:
+        type: boolean
+      street:
+        type: string
+    type: object
+  models.AddressDelete:
+    properties:
+      addressId:
+        type: string
+    type: object
+  models.AddressInfo:
+    properties:
+      city:
+        type: string
+      flat:
+        type: string
+      house:
+        type: string
+      street:
+        type: string
+    type: object
+  models.AddressMakeCurrent:
+    properties:
+      addressId:
+        type: string
+    type: object
   models.Cart:
     properties:
       products:
@@ -185,6 +221,154 @@ info:
   description: API server for ZuZu.
   title: ZuZu Backend API
 paths:
+  /api/address/add:
+    post:
+      consumes:
+      - application/json
+      description: Add Address
+      parameters:
+      - description: Address info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddressInfo'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Address full info
+          schema:
+            $ref: '#/definitions/models.Address'
+        "401":
+          description: User unauthorized
+        "429":
+          description: Too Many Requests
+      summary: AddAddress
+      tags:
+      - Address
+  /api/address/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Address
+      parameters:
+      - description: Address ID
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddressDelete'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Address deleted info
+        "401":
+          description: User unauthorized
+        "429":
+          description: Too Many Requests
+      summary: DeleteAddress
+      tags:
+      - Address
+  /api/address/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get All Addresses
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Address full info
+          schema:
+            items:
+              $ref: '#/definitions/models.Address'
+            type: array
+        "401":
+          description: User unauthorized
+        "404":
+          description: Addresses not found
+        "429":
+          description: Too Many Requests
+      summary: GetAllAddresses
+      tags:
+      - Address
+  /api/address/get_current:
+    get:
+      consumes:
+      - application/json
+      description: Get Current Address
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Address full info
+          schema:
+            $ref: '#/definitions/models.Address'
+        "401":
+          description: User unauthorized
+        "404":
+          description: Address not found
+        "429":
+          description: Too Many Requests
+      summary: GetCurrentAddress
+      tags:
+      - Address
+  /api/address/make_current:
+    post:
+      consumes:
+      - application/json
+      description: Make Current Address
+      parameters:
+      - description: Address ID
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.AddressMakeCurrent'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Address is made current
+        "401":
+          description: User unauthorized
+        "404":
+          description: Address not found
+        "429":
+          description: Too Many Requests
+      summary: MakeCurrentAddress
+      tags:
+      - Address
+  /api/address/update:
+    post:
+      consumes:
+      - application/json
+      description: Update Address
+      parameters:
+      - description: Address info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.Address'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Address info
+          schema:
+            $ref: '#/definitions/models.Address'
+        "401":
+          description: User unauthorized
+        "404":
+          description: Address not found
+        "429":
+          description: Too Many Requests
+      summary: UpdateAddress
+      tags:
+      - Address
   /api/auth/check_auth:
     get:
       consumes:
@@ -314,7 +498,7 @@ paths:
       tags:
       - Cart
   /api/cart/delete_product:
-    post:
+    delete:
       consumes:
       - application/json
       description: delete product from cart

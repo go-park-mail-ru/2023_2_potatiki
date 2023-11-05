@@ -16,7 +16,7 @@ const (
 	VALUES ($1, $2, $3, $4, $5, $6, $7);`
 
 	updateAddress = `UPDATE address
-	SET city = $1, street = $2, house = $3, flat = $4, is_current = $5 WHERE id = $6 AND profile_id = $7;`
+	SET city = $1, street = $2, house = $3, flat = $4, is_current = $5 WHERE id = $6 AND profile_id = $7;` // FIX
 
 	deleteAddress = `UPDATE address
 	SET is_deleted = true WHERE id = $1 AND profile_id = $2 AND is_current = false;`
@@ -41,8 +41,9 @@ const (
 )
 
 var (
-	ErrAddressNotFound   = errors.New("address not found")
-	ErrAddressesNotFound = errors.New("address not found")
+	ErrAddressNotFound        = errors.New("address not found")
+	ErrAddressesNotFound      = errors.New("address not found")
+	ErrCurrentAddressNotFound = errors.New("current address not found")
 )
 
 type AddressRepo struct {
@@ -114,7 +115,7 @@ func (r *AddressRepo) DeleteAddress(ctx context.Context, addressInfo models.Addr
 }
 
 func (r *AddressRepo) MakeCurrentAddress(ctx context.Context, addressInfo models.AddressMakeCurrent) error {
-	_, err := r.db.Exec(ctx, makeCurrentAddress,
+	result, err := r.db.Exec(ctx, makeCurrentAddress,
 		addressInfo.Id,
 		addressInfo.ProfileId,
 	)
@@ -122,6 +123,9 @@ func (r *AddressRepo) MakeCurrentAddress(ctx context.Context, addressInfo models
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
 		return err
+	}
+	if result.RowsAffected() == 0 {
+		return ErrCurrentAddressNotFound
 	}
 
 	return nil
@@ -201,6 +205,9 @@ func (r *AddressRepo) ReadAllAddresses(ctx context.Context, userID uuid.UUID) ([
 			return []models.Address{}, err
 		}
 		addresses = append(addresses, address)
+	}
+	if len(addresses) == 0 {
+		return []models.Address{}, ErrAddressesNotFound
 	}
 
 	return addresses, nil

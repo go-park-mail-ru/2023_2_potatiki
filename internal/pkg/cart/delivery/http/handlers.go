@@ -177,7 +177,7 @@ func (h *CartHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 // @Failure	400	{object} responser.Response	"error message"
 // @Failure	401
 // @Failure	429
-// @Router	/api/cart/delete_product [post]
+// @Router	/api/cart/delete_product [delete]
 func (h *CartHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),

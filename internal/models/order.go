@@ -3,7 +3,7 @@ package models
 import "github.com/satori/go.uuid"
 
 type Order struct {
-	Id       uuid.UUID      `json:"id"` //nolint:stylecheck
+	Id       uuid.UUID      `json:"id"`
 	Status   int            `json:"statusId"`
 	Products []OrderProduct `json:"products"`
 }

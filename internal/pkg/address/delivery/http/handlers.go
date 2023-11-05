@@ -29,17 +29,16 @@ func NewAddressHandler(log *slog.Logger, uc address.AddressUsecase) AddressHandl
 	}
 }
 
-// @Summary	CreateOrder
-// @Tags Order
-// @Description	Create Order using profile ID from cookies
+// @Summary	AddAddress
+// @Tags Address
+// @Description	Add Address
 // @Accept json
 // @Produce json
-// @Success	200	{object} models.Order "New order info"
+// @Param input body models.AddressInfo true "Address info"
+// @Success	200	{object} models.Address "Address full info"
 // @Failure	401	"User unauthorized"
-// @Failure	404	"Cart not found"
 // @Failure	429
-// @Router	/api/order/create [post]
-
+// @Router	/api/address/add [post]
 func (h *AddressHandler) AddAddress(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -81,6 +80,17 @@ func (h *AddressHandler) AddAddress(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, address)
 }
 
+// @Summary	UpdateAddress
+// @Tags Address
+// @Description	Update Address
+// @Accept json
+// @Produce json
+// @Param input body models.Address true "Address info"
+// @Success	200	{object} models.Address "Address info"
+// @Failure	401	"User unauthorized"
+// @Failure	404	"Address not found"
+// @Failure	429
+// @Router	/api/address/update [post]
 func (h *AddressHandler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -114,6 +124,11 @@ func (h *AddressHandler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 	address, err := h.uc.UpdateAddress(r.Context(), adressInfo)
 	if err != nil {
 		h.log.Error("failed to update address", sl.Err(err))
+		if errors.Is(err, repo.ErrAddressNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
@@ -123,6 +138,16 @@ func (h *AddressHandler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 	resp.JSON(w, http.StatusOK, address)
 }
 
+// @Summary	DeleteAddress
+// @Tags Address
+// @Description	Delete Address
+// @Accept json
+// @Produce json
+// @Param input body models.AddressDelete true "Address ID"
+// @Success	200	"Address deleted info"
+// @Failure	401	"User unauthorized"
+// @Failure	429
+// @Router	/api/address/delete [delete]
 func (h *AddressHandler) DeleteAddress(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -155,16 +180,27 @@ func (h *AddressHandler) DeleteAddress(w http.ResponseWriter, r *http.Request) {
 	adressInfo.ProfileId = userID
 	err = h.uc.DeleteAddress(r.Context(), adressInfo)
 	if err != nil {
-		h.log.Error("failed to update address", sl.Err(err))
+		h.log.Error("failed to delete address", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
 	}
 
-	h.log.Debug("h.uc.UpdateAddress")
+	h.log.Debug("h.uc.DeleteAddress")
 	resp.JSONStatus(w, http.StatusOK)
 }
 
+// @Summary	MakeCurrentAddress
+// @Tags Address
+// @Description	Make Current Address
+// @Accept json
+// @Produce json
+// @Param input body models.AddressMakeCurrent true "Address ID"
+// @Success	200	"Address is made current"
+// @Failure	401	"User unauthorized"
+// @Failure	404	"Address not found"
+// @Failure	429
+// @Router	/api/address/make_current [post]
 func (h *AddressHandler) MakeCurrentAddress(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -198,6 +234,11 @@ func (h *AddressHandler) MakeCurrentAddress(w http.ResponseWriter, r *http.Reque
 	err = h.uc.MakeCurrentAddress(r.Context(), adressInfo)
 	if err != nil {
 		h.log.Error("failed to make current address", sl.Err(err))
+		if errors.Is(err, repo.ErrCurrentAddressNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
@@ -207,6 +248,16 @@ func (h *AddressHandler) MakeCurrentAddress(w http.ResponseWriter, r *http.Reque
 	resp.JSONStatus(w, http.StatusOK)
 }
 
+// @Summary	GetCurrentAddress
+// @Tags Address
+// @Description	Get Current Address
+// @Accept json
+// @Produce json
+// @Success	200	{object} models.Address "Address full info"
+// @Failure	401	"User unauthorized"
+// @Failure	404	"Address not found"
+// @Failure	429
+// @Router	/api/address/get_current [get]
 func (h *AddressHandler) GetCurrentAddress(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
@@ -238,6 +289,16 @@ func (h *AddressHandler) GetCurrentAddress(w http.ResponseWriter, r *http.Reques
 	resp.JSON(w, http.StatusOK, address)
 }
 
+// @Summary	GetAllAddresses
+// @Tags Address
+// @Description	Get All Addresses
+// @Accept json
+// @Produce json
+// @Success	200	{array} models.Address "Address full info"
+// @Failure	401	"User unauthorized"
+// @Failure	404	"Addresses not found"
+// @Failure	429
+// @Router	/api/address/get_all [get]
 func (h *AddressHandler) GetAllAddresses(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),

@@ -18,6 +18,233 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/address/add": {
+            "post": {
+                "description": "Add Address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Address"
+                ],
+                "summary": "AddAddress",
+                "parameters": [
+                    {
+                        "description": "Address info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddressInfo"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Address full info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Address"
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/address/delete": {
+            "delete": {
+                "description": "Delete Address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Address"
+                ],
+                "summary": "DeleteAddress",
+                "parameters": [
+                    {
+                        "description": "Address ID",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddressDelete"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Address deleted info"
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/address/get_all": {
+            "get": {
+                "description": "Get All Addresses",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Address"
+                ],
+                "summary": "GetAllAddresses",
+                "responses": {
+                    "200": {
+                        "description": "Address full info",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Address"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "404": {
+                        "description": "Addresses not found"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/address/get_current": {
+            "get": {
+                "description": "Get Current Address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Address"
+                ],
+                "summary": "GetCurrentAddress",
+                "responses": {
+                    "200": {
+                        "description": "Address full info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Address"
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "404": {
+                        "description": "Address not found"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/address/make_current": {
+            "post": {
+                "description": "Make Current Address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Address"
+                ],
+                "summary": "MakeCurrentAddress",
+                "parameters": [
+                    {
+                        "description": "Address ID",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.AddressMakeCurrent"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Address is made current"
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "404": {
+                        "description": "Address not found"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/address/update": {
+            "post": {
+                "description": "Update Address",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Address"
+                ],
+                "summary": "UpdateAddress",
+                "parameters": [
+                    {
+                        "description": "Address info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.Address"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Address info",
+                        "schema": {
+                            "$ref": "#/definitions/models.Address"
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "404": {
+                        "description": "Address not found"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
         "/api/auth/check_auth": {
             "get": {
                 "security": [
@@ -217,7 +444,7 @@ const docTemplate = `{
             }
         },
         "/api/cart/delete_product": {
-            "post": {
+            "delete": {
                 "description": "delete product from cart",
                 "consumes": [
                     "application/json"
@@ -742,6 +969,62 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "models.Address": {
+            "type": "object",
+            "properties": {
+                "addressId": {
+                    "type": "string"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "flat": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "isCurrent": {
+                    "type": "boolean"
+                },
+                "street": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AddressDelete": {
+            "type": "object",
+            "properties": {
+                "addressId": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AddressInfo": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string"
+                },
+                "flat": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
+                "street": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.AddressMakeCurrent": {
+            "type": "object",
+            "properties": {
+                "addressId": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Cart": {
             "type": "object",
             "properties": {

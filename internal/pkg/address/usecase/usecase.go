@@ -66,6 +66,9 @@ func (uc *AddressUsecase) DeleteAddress(ctx context.Context, addressInfo models.
 func (uc *AddressUsecase) MakeCurrentAddress(ctx context.Context, addressInfo models.AddressMakeCurrent) error {
 	err := uc.repo.MakeCurrentAddress(ctx, addressInfo)
 	if err != nil {
+		if errors.Is(err, repo.ErrCurrentAddressNotFound) {
+			return err
+		}
 		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
 
 		return err

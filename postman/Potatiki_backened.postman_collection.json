@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "ee8c65e2-23ef-4b61-a061-271492935db0",
+		"_postman_id": "fc627d56-4116-447e-abb2-48cd2caf4c55",
 		"name": "Potatiki_backened",
-		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
-		"_exporter_id": "30722310"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "30122325"
 	},
 	"item": [
 		{
@@ -26,7 +26,17 @@
 								"src": "/home/scremyda/Загрузки/autopart1.jpg"
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/update-photo"
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-photo",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-photo"
+							]
+						}
 					},
 					"response": []
 				},
@@ -44,7 +54,17 @@
 								"src": ""
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/update-photo"
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-photo",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-photo"
+							]
+						}
 					},
 					"response": []
 				},
@@ -65,7 +85,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/8af2a131-a4eb-4a57-b745-46dbfb7e0e03"
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/8af2a131-a4eb-4a57-b745-46dbfb7e0e03",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"8af2a131-a4eb-4a57-b745-46dbfb7e0e03"
+							]
+						}
 					},
 					"response": []
 				},
@@ -89,7 +119,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/update-data"
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-data",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-data"
+							]
+						}
 					},
 					"response": []
 				},
@@ -110,7 +150,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/profile/update-data"
+						"url": {
+							"raw": "{{baseUrl}}/api/profile/update-data",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"profile",
+								"update-data"
+							]
+						}
 					},
 					"response": []
 				}
@@ -136,7 +186,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/check_auth"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/check_auth",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"check_auth"
+							]
+						}
 					},
 					"response": []
 				},
@@ -157,7 +217,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/logout"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/logout",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"logout"
+							]
+						}
 					},
 					"response": []
 				},
@@ -181,7 +251,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/signin"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signin"
+							]
+						}
 					},
 					"response": []
 				},
@@ -208,7 +288,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/signin"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signin",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signin"
+							]
+						}
 					},
 					"response": []
 				},
@@ -232,7 +322,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/signup"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
+						}
 					},
 					"response": []
 				},
@@ -253,7 +353,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/auth/signup"
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/signup",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"signup"
+							]
+						}
 					},
 					"response": []
 				}
@@ -361,7 +471,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/products/007749b5-7e07-4be8-8c91-8db273ace1c2"
+						"url": {
+							"raw": "{{baseUrl}}/api/products/007749b5-7e07-4be8-8c91-8db273ace1c2",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"products",
+								"007749b5-7e07-4be8-8c91-8db273ace1c2"
+							]
+						}
 					},
 					"response": []
 				}
@@ -387,7 +507,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/category/get_all"
+						"url": {
+							"raw": "{{baseUrl}}/api/category/get_all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"category",
+								"get_all"
+							]
+						}
 					},
 					"response": []
 				}
@@ -410,7 +540,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/order/create"
+						"url": {
+							"raw": "{{baseUrl}}/api/order/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"create"
+							]
+						}
 					},
 					"response": []
 				},
@@ -431,7 +571,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/order/get_current"
+						"url": {
+							"raw": "{{baseUrl}}/api/order/get_current",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"get_current"
+							]
+						}
 					},
 					"response": []
 				},
@@ -452,7 +602,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/order/get_all"
+						"url": {
+							"raw": "{{baseUrl}}/api/order/get_all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"get_all"
+							]
+						}
 					},
 					"response": []
 				}
@@ -475,7 +635,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/cart/update"
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								"update"
+							]
+						}
 					},
 					"response": []
 				},
@@ -496,7 +666,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/cart/summary"
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/summary",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								"summary"
+							]
+						}
 					},
 					"response": []
 				},
@@ -514,7 +694,17 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/cart/add_product"
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/add_product",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								"add_product"
+							]
+						}
 					},
 					"response": []
 				},
@@ -532,7 +722,196 @@
 								}
 							}
 						},
-						"url": "{{baseUrl}}/api/cart/delete_product"
+						"url": {
+							"raw": "{{baseUrl}}/api/cart/delete_product",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"cart",
+								"delete_product"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Address",
+			"item": [
+				{
+					"name": "add",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"city\": \"MyCity\",\n    \"street\": \"MyStreet\",\n    \"house\": \"MyHouse\",\n    \"flat\": \"MyFlat\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"addressId\": \"2669cf53-9a36-47ec-913f-0c09ec0d29a0\",\n    \"city\": \"QQQQ\",\n    \"street\": \"MyStreet\",\n    \"house\": \"MyHouse\",\n    \"flat\": \"MyFlat\",\n    \"isCurrent\": false\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make_current",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"addressId\": \"1adb7c5d-4987-420b-a728-b008c049bea3\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/make_current",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"make_current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_current",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/get_current",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"get_current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/get_all",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"get_all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"addressId\": \"2669cf53-9a36-47ec-913f-0c09ec0d29a0\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"delete"
+							]
+						}
 					},
 					"response": []
 				}
