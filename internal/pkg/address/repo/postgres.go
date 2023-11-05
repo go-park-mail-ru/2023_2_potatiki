@@ -41,9 +41,10 @@ const (
 )
 
 var (
-	ErrAddressNotFound        = errors.New("address not found")
-	ErrAddressesNotFound      = errors.New("address not found")
-	ErrCurrentAddressNotFound = errors.New("current address not found")
+	ErrAddressNotFound          = errors.New("address not found")
+	ErrAddressesNotFound        = errors.New("addresses not found")
+	ErrNoCurrentAddressNotFound = errors.New("addresses not found")
+	ErrCurrentAddressNotFound   = errors.New("current address not found")
 )
 
 type AddressRepo struct {
@@ -101,7 +102,7 @@ func (r *AddressRepo) UpdateAddress(ctx context.Context, addressInfo models.Addr
 }
 
 func (r *AddressRepo) DeleteAddress(ctx context.Context, addressInfo models.AddressDelete) error {
-	_, err := r.db.Exec(ctx, deleteAddress,
+	result, err := r.db.Exec(ctx, deleteAddress,
 		addressInfo.Id,
 		addressInfo.ProfileId,
 	)
@@ -109,6 +110,9 @@ func (r *AddressRepo) DeleteAddress(ctx context.Context, addressInfo models.Addr
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
 		return err
+	}
+	if result.RowsAffected() == 0 {
+		return ErrNoCurrentAddressNotFound
 	}
 
 	return nil

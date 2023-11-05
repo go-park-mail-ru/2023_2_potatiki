@@ -146,6 +146,7 @@ func (h *AddressHandler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 // @Param input body models.AddressDelete true "Address ID"
 // @Success	200	"Address deleted info"
 // @Failure	401	"User unauthorized"
+// @Failure	404	"Can`t delete current address"
 // @Failure	429
 // @Router	/api/address/delete [delete]
 func (h *AddressHandler) DeleteAddress(w http.ResponseWriter, r *http.Request) {
@@ -181,6 +182,11 @@ func (h *AddressHandler) DeleteAddress(w http.ResponseWriter, r *http.Request) {
 	err = h.uc.DeleteAddress(r.Context(), adressInfo)
 	if err != nil {
 		h.log.Error("failed to delete address", sl.Err(err))
+		if errors.Is(err, repo.ErrNoCurrentAddressNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return

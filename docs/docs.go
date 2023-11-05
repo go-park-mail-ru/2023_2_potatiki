@@ -89,6 +89,9 @@ const docTemplate = `{
                     "401": {
                         "description": "User unauthorized"
                     },
+                    "404": {
+                        "description": "Can` + "`" + `t delete current address"
+                    },
                     "429": {
                         "description": "Too Many Requests"
                     }

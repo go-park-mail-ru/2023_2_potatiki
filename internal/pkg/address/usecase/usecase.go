@@ -34,7 +34,7 @@ func (uc *AddressUsecase) AddAddress(ctx context.Context, userID uuid.UUID, addr
 func (uc *AddressUsecase) UpdateAddress(ctx context.Context, addressInfo models.Address) (models.Address, error) {
 	err := uc.repo.UpdateAddress(ctx, addressInfo)
 	if err != nil {
-		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
+		err = fmt.Errorf("error happened in repo.UpdateAddress: %w", err)
 
 		return models.Address{}, err
 	}
@@ -44,7 +44,7 @@ func (uc *AddressUsecase) UpdateAddress(ctx context.Context, addressInfo models.
 		if errors.Is(err, repo.ErrAddressNotFound) {
 			return models.Address{}, err
 		}
-		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
+		err = fmt.Errorf("error happened in repo.ReadAddress: %w", err)
 
 		return models.Address{}, err
 	}
@@ -55,7 +55,10 @@ func (uc *AddressUsecase) UpdateAddress(ctx context.Context, addressInfo models.
 func (uc *AddressUsecase) DeleteAddress(ctx context.Context, addressInfo models.AddressDelete) error {
 	err := uc.repo.DeleteAddress(ctx, addressInfo)
 	if err != nil {
-		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
+		if errors.Is(err, repo.ErrNoCurrentAddressNotFound) {
+			return err
+		}
+		err = fmt.Errorf("error happened in repo.DeleteAddress: %w", err)
 
 		return err
 	}
@@ -69,7 +72,7 @@ func (uc *AddressUsecase) MakeCurrentAddress(ctx context.Context, addressInfo mo
 		if errors.Is(err, repo.ErrCurrentAddressNotFound) {
 			return err
 		}
-		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
+		err = fmt.Errorf("error happened in repo.MakeCurrentAddress: %w", err)
 
 		return err
 	}
@@ -83,7 +86,7 @@ func (uc *AddressUsecase) GetCurrentAddress(ctx context.Context, userID uuid.UUI
 		if errors.Is(err, repo.ErrAddressNotFound) {
 			return models.Address{}, err
 		}
-		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
+		err = fmt.Errorf("error happened in repo.ReadCurrentAddress: %w", err)
 
 		return models.Address{}, err
 	}
@@ -97,7 +100,7 @@ func (uc *AddressUsecase) GetAllAddresses(ctx context.Context, userID uuid.UUID)
 		if errors.Is(err, repo.ErrAddressesNotFound) {
 			return []models.Address{}, err
 		}
-		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
+		err = fmt.Errorf("error happened in repo.ReadAllAddresses: %w", err)
 
 		return []models.Address{}, err
 	}
