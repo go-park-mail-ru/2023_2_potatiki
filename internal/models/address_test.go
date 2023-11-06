@@ -1,7 +1,7 @@
 package models
 
 //func TestAddress_MarshalJSON(t *testing.T) {
-//	type fields struct {
+//	type fieldsT struct {
 //		Id        uuid.UUID
 //		ProfileId uuid.UUID
 //		City      string
@@ -12,7 +12,7 @@ package models
 //	}
 //	tests := []struct {
 //		name    string
-//		fields  fields
+//		fields  fieldsT
 //		want    string
 //		wantErr bool
 //	}{

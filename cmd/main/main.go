@@ -232,8 +232,8 @@ func run() (err error) {
 
 	order := r.PathPrefix("/order").Subrouter()
 	{
-		order.Handle("/create", authMW(http.HandlerFunc(orderHandler.CreateOrder))).
-			Methods(http.MethodPost, http.MethodOptions)
+		order.Handle("/create", authMW(csrfMW(http.HandlerFunc(orderHandler.CreateOrder)))).
+			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
 
 		order.Handle("/get_current", authMW(http.HandlerFunc(orderHandler.GetCurrentOrder))).
 			Methods(http.MethodGet, http.MethodOptions)
@@ -244,17 +244,17 @@ func run() (err error) {
 
 	address := r.PathPrefix("/address").Subrouter()
 	{
-		address.Handle("/add", authMW(http.HandlerFunc(addressHandler.AddAddress))).
-			Methods(http.MethodPost, http.MethodOptions)
+		address.Handle("/add", authMW(csrfMW(http.HandlerFunc(addressHandler.AddAddress)))).
+			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
 
-		address.Handle("/update", authMW(http.HandlerFunc(addressHandler.UpdateAddress))).
-			Methods(http.MethodPost, http.MethodOptions)
+		address.Handle("/update", authMW(csrfMW(http.HandlerFunc(addressHandler.UpdateAddress)))).
+			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
 
-		address.Handle("/delete", authMW(http.HandlerFunc(addressHandler.DeleteAddress))).
-			Methods(http.MethodDelete, http.MethodOptions)
+		address.Handle("/delete", authMW(csrfMW(http.HandlerFunc(addressHandler.DeleteAddress)))).
+			Methods(http.MethodDelete, http.MethodGet, http.MethodOptions)
 
-		address.Handle("/make_current", authMW(http.HandlerFunc(addressHandler.MakeCurrentAddress))).
-			Methods(http.MethodPost, http.MethodOptions)
+		address.Handle("/make_current", authMW(csrfMW(http.HandlerFunc(addressHandler.MakeCurrentAddress)))).
+			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
 
 		address.Handle("/get_current", authMW(http.HandlerFunc(addressHandler.GetCurrentAddress))).
 			Methods(http.MethodGet, http.MethodOptions)

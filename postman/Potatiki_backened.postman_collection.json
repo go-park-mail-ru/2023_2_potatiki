@@ -275,7 +275,7 @@
 						"header": [
 							{
 								"key": "X-Csrf-Token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5MDkwfQ.SijBfaewVBDW_CnnL811dFY8RdYzIMP0gXusuysqVdY",
+								"value": "eyJhbGciOiJIUzI1NsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5MDkwfQ.SijBfaewVBDW_CnnL811dFY8RdYzIMP0gXusuysqVdY",
 								"type": "text"
 							}
 						],
@@ -530,6 +530,43 @@
 					"name": "create",
 					"request": {
 						"method": "POST",
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MzI2MDU2fQ.glB8X_AsUuUVFsPce505oxVEz6Ra4-Q--Mgut7tFMWI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/order/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"order",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
@@ -745,10 +782,47 @@
 					"name": "add",
 					"request": {
 						"method": "POST",
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MzI2MjAwfQ.FOQzugEYzDYbYgAw6C5AdkR171TGI5udZyyEADNAxzA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"city\": \"QQQQQQQ\",\n    \"street\": \"QQQQQQQQQ\",\n    \"house\": \"MyHousQe\",\n    \"flat\": \"MyFlatQ\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/add",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "add CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n    \"city\": \"MyCity\",\n    \"street\": \"MyStreet\",\n    \"house\": \"MyHouse\",\n    \"flat\": \"MyFlat\"\n}\n",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -773,10 +847,47 @@
 					"name": "update",
 					"request": {
 						"method": "POST",
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MzI2MjAwfQ.FOQzugEYzDYbYgAw6C5AdkR171TGI5udZyyEADNAxzA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"addressId\": \"74d3180d-5540-4fe6-906b-183cd4513deb\",\n    \"city\": \"QQQQ\",\n    \"street\": \"MyStreet\",\n    \"house\": \"MyHouse\",\n    \"flat\": \"MyFlat\",\n    \"IsCurrent\": true\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/update",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"update"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "update CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n    \"addressId\": \"2669cf53-9a36-47ec-913f-0c09ec0d29a0\",\n    \"city\": \"QQQQ\",\n    \"street\": \"MyStreet\",\n    \"house\": \"MyHouse\",\n    \"flat\": \"MyFlat\",\n    \"isCurrent\": false\n}\n",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -801,10 +912,47 @@
 					"name": "make_current",
 					"request": {
 						"method": "POST",
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MzI2NTA3fQ.sJGzssX0GTEEL58d90S6s78AKBTaKitEDpPZN0SfpRI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"addressId\": \"403fade5-780e-4073-8f58-5f21187e0c03\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/make_current",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"make_current"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "make_current CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n    \"addressId\": \"1adb7c5d-4987-420b-a728-b008c049bea3\"\n}\n",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -891,10 +1039,47 @@
 					"name": "delete",
 					"request": {
 						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MzI2NTU1fQ.VuE00z-c2qmeGNHKKv16PT6sq_vHIYD5R67VI5uDwwI",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "\n{\n    \"addressId\": \"1adb7c5d-4987-420b-a728-b008c049bea3\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/address/delete",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"address",
+								"delete"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "delete CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n    \"addressId\": \"2669cf53-9a36-47ec-913f-0c09ec0d29a0\"\n}\n",
+							"raw": "",
 							"options": {
 								"raw": {
 									"language": "json"
