@@ -1,4 +1,4 @@
-[![Build Status](https://github.com/jackc/pgx/actions/workflows/ci.yml/badge.svg)](https://github.com/go-park-mail-ru/2023_2_potatiki/actions/workflows/action-config.yaml)
+[![Build Status](https://github.com/go-park-mail-ru/2023_2_potatiki/actions/workflows/action-config.yaml/badge.svg)](https://github.com/go-park-mail-ru/2023_2_potatiki/actions/workflows/action-config.yaml)
 # 2023_2_Potatiki
 Проект Ozon команды "Potatiki" ♡
 
