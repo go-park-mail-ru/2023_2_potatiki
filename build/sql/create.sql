@@ -207,7 +207,6 @@ CREATE TABLE IF NOT EXISTS address
     street TEXT NOT NULL,
     house TEXT NOT NULL,
     flat TEXT NOT NULL,
-    CONSTRAINT uq_address_city_street_house_flat UNIQUE (city, street, house, flat),
     is_current BOOLEAN,
     is_deleted BOOLEAN DEFAULT FALSE
     );

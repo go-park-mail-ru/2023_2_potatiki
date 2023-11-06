@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	createOrder = "INSERT INTO order_info (id, profile_id, delivery_at, status_id) VALUES ($1, $2, $3, $4);"
+	createOrder = "INSERT INTO order_info (id, profile_id, delivery_at, status_id, address_id) VALUES ($1, $2, $3, $4, $5);"
 
 	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4, $5);"
 
@@ -29,11 +29,13 @@ const (
 	getCurrentOrder = `
 	SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.price AS product_price, 
 	p.imgsrc AS product_imgsrc, p.rating AS product_rating, oi.quantity AS product_quantity, c.id AS category_id, 
-	c.name AS category_name, o.status_id AS status_id
+	c.name AS category_name, o.status_id AS status_id,  a.id AS address_id, a.city AS address_city, 
+	a.street AS address_street, a.house AS address_house, a.flat AS address_flat, a.is_current as is_current
 	FROM order_item oi
 	JOIN product p ON oi.product_id = p.id
 	JOIN order_info o ON oi.order_id = o.id
 	JOIN category c ON p.category_id = c.id
+	JOIN address a ON o.address_id = a.id
 	WHERE oi.order_id = $1;
 	`
 
@@ -47,6 +49,12 @@ const (
 	FROM order_info
 	WHERE profile_id = $1
 	ORDER BY creation_at DESC;
+	`
+
+	SetCurrentAddressToOrder = `
+	UPDATE order_info
+	SET address_id = $1
+	WHERE id = $2;
 	`
 )
 
@@ -76,9 +84,9 @@ func NewOrderRepo(db pgxtype.Querier) *OrderRepo {
 	}
 }
 
-func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, userID uuid.UUID, statusID int) (models.Order, error) {
+func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, addressID uuid.UUID, userID uuid.UUID, statusID int) (models.Order, error) {
 	orderID := uuid.NewV4()
-	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour), statusID)
+	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour), statusID, addressID)
 	if err != nil {
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
@@ -149,7 +157,6 @@ func (r *OrderRepo) ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Or
 
 	var productOrder models.OrderProduct
 	var productsOrder []models.OrderProduct
-	var orderStatusID int
 	order := models.Order{Id: orderID, Products: productsOrder}
 	for rows.Next() {
 		err = rows.Scan(
@@ -162,7 +169,13 @@ func (r *OrderRepo) ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Or
 			&productOrder.Quantity,
 			&productOrder.Category.Id,
 			&productOrder.Category.Name,
-			&orderStatusID, // или лучше еще 1 запрос?
+			&order.Status,
+			&order.Address.Id,
+			&order.Address.City,
+			&order.Address.Street,
+			&order.Address.House,
+			&order.Address.Flat,
+			&order.Address.IsCurrent,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -171,7 +184,6 @@ func (r *OrderRepo) ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Or
 		}
 		order.Products = append(order.Products, productOrder)
 	}
-	order.Status = orderStatusID
 
 	return order, nil
 }

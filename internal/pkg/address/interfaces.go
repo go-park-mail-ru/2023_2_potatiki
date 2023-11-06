@@ -26,4 +26,5 @@ type AddressRepo interface {
 	ReadAddress(context.Context, uuid.UUID, uuid.UUID) (models.Address, error)
 	ReadCurrentAddress(context.Context, uuid.UUID) (models.Address, error)
 	ReadAllAddresses(context.Context, uuid.UUID) ([]models.Address, error)
+	ReadCurrentAddressID(context.Context, uuid.UUID) (uuid.UUID, error)
 }

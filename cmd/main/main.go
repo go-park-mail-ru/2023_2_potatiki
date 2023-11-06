@@ -138,13 +138,13 @@ func run() (err error) {
 	categoryUsecase := categoryUsecase.NewCategoryUsecase(categoryRepo)
 	categoryHandler := categoryHandler.NewCategoryHandler(log, categoryUsecase)
 
-	orderRepo := orderRepo.NewOrderRepo(db)
-	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo)
-	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
-
 	addressRepo := addressRepo.NewAddressRepo(db)
 	addressUsecase := addressUsecase.NewAddressUsecase(addressRepo)
 	addressHandler := addressHandler.NewAddressHandler(log, addressUsecase)
+
+	orderRepo := orderRepo.NewOrderRepo(db)
+	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
+	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//

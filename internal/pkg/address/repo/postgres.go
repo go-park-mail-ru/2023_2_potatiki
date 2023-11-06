@@ -38,6 +38,11 @@ const (
 	FROM address
 	WHERE profile_id = $1 AND is_deleted = false;
 	`
+
+	readCurrentAddressID = `SELECT id
+	FROM address
+	WHERE profile_id = $1 AND is_current = true;
+	`
 )
 
 var (
@@ -45,6 +50,7 @@ var (
 	ErrAddressesNotFound        = errors.New("addresses not found")
 	ErrNoCurrentAddressNotFound = errors.New("addresses not found")
 	ErrCurrentAddressNotFound   = errors.New("current address not found")
+	ErrCurrentAddressIDNotFound = errors.New("current address id not found")
 )
 
 type AddressRepo struct {
@@ -215,4 +221,19 @@ func (r *AddressRepo) ReadAllAddresses(ctx context.Context, userID uuid.UUID) ([
 	}
 
 	return addresses, nil
+}
+
+func (r *AddressRepo) ReadCurrentAddressID(ctx context.Context, userID uuid.UUID) (uuid.UUID, error) {
+	var addressID uuid.UUID
+	err := r.db.QueryRow(ctx, readCurrentAddressID, userID).Scan(&addressID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return uuid.UUID{}, ErrCurrentAddressIDNotFound
+		}
+		err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+		return uuid.UUID{}, err
+	}
+
+	return addressID, nil
 }

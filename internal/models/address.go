@@ -9,7 +9,7 @@ type Address struct {
 	Street    string    `json:"street"`
 	House     string    `json:"house"`
 	Flat      string    `json:"flat"`
-	IsCurrent bool      `json:"isCurrent"`
+	IsCurrent bool      `json:"addressIsCurrent"`
 }
 
 type AddressInfo struct {

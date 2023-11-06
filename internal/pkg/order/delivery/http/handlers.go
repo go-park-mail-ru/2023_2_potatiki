@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 	"log/slog"
 	"net/http"
 
@@ -36,7 +37,7 @@ func NewOrderHandler(log *slog.Logger, uc order.OrderUsecase) OrderHandler {
 // @Produce json
 // @Success	200	{object} models.Order "New order info"
 // @Failure	401	"User unauthorized"
-// @Failure	404	"Cart not found"
+// @Failure	404	{object} responser.Response	"something not found error message"
 // @Failure	429
 // @Router	/api/order/create [post]
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -55,9 +56,21 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 
 	order, err := h.uc.CreateOrder(r.Context(), userID)
 	if err != nil {
-		h.log.Error("failed to get cart", sl.Err(err))
-		if errors.Is(err, cartRepo.ErrCartNotFound) || errors.Is(err, orderRepo.ErrPoductNotFound) {
-			resp.JSONStatus(w, http.StatusNotFound)
+		h.log.Error("failed to get something", sl.Err(err))
+		if errors.Is(err, cartRepo.ErrCartNotFound) {
+			resp.JSON(w, http.StatusNotFound, resp.Err("cart not found"))
+
+			return
+		}
+
+		if errors.Is(err, orderRepo.ErrPoductNotFound) {
+			resp.JSON(w, http.StatusNotFound, resp.Err("product not found"))
+
+			return
+		}
+
+		if errors.Is(err, addressRepo.ErrAddressNotFound) {
+			resp.JSON(w, http.StatusNotFound, resp.Err("address not found"))
 
 			return
 		}
@@ -77,7 +90,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success	200	{object} models.Order "Current order info"
 // @Failure	401	"User unauthorized"
-// @Failure	404	"Order not found"
+// @Failure	404	{object} responser.Response	"something not found error message"
 // @Failure	429
 // @Router	/api/order/get_current [get]
 func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
@@ -97,8 +110,13 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 	order, err := h.uc.GetCurrentOrder(r.Context(), userID)
 	if err != nil {
 		h.log.Error("failed to get order", sl.Err(err))
-		if errors.Is(err, orderRepo.ErrOrderNotFound) || errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
-			resp.JSONStatus(w, http.StatusNotFound)
+		if errors.Is(err, orderRepo.ErrOrderNotFound) {
+			resp.JSON(w, http.StatusNotFound, resp.Err("order not found"))
+
+			return
+		}
+		if errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
+			resp.JSON(w, http.StatusNotFound, resp.Err("products in order not found"))
 
 			return
 		}
@@ -118,7 +136,7 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success	200	{array} models.Order "All orders info"
 // @Failure	401	"User unauthorized"
-// @Failure	404	"Orders not found"
+// @Failure 404	{object} responser.Response	"something not found error message"
 // @Failure	429
 // @Router	/api/order/get_all [get]
 func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
@@ -137,9 +155,14 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 
 	orders, err := h.uc.GetOrders(r.Context(), userID)
 	if err != nil {
-		h.log.Error("failed to get cart", sl.Err(err))
-		if errors.Is(err, orderRepo.ErrOrdersNotFound) || errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
-			resp.JSONStatus(w, http.StatusNotFound)
+		h.log.Error("failed to get order", sl.Err(err))
+		if errors.Is(err, orderRepo.ErrOrdersNotFound) {
+			resp.JSON(w, http.StatusNotFound, resp.Err("orders not found"))
+
+			return
+		}
+		if errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
+			resp.JSON(w, http.StatusNotFound, resp.Err("products in order not found"))
 
 			return
 		}

@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
+	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart"
@@ -14,19 +16,31 @@ import (
 )
 
 type OrderUsecase struct {
-	repoOrder order.OrderRepo
-	repoCart  cart.CartRepo
+	repoOrder   order.OrderRepo
+	repoCart    cart.CartRepo
+	repoAddress address.AddressRepo
 }
 
-func NewOrderUsecase(repoOrder order.OrderRepo, repoCart cart.CartRepo) *OrderUsecase {
+func NewOrderUsecase(repoOrder order.OrderRepo, repoCart cart.CartRepo, repoAddress address.AddressRepo) *OrderUsecase {
 	return &OrderUsecase{
-		repoOrder: repoOrder,
-		repoCart:  repoCart,
+		repoOrder:   repoOrder,
+		repoCart:    repoCart,
+		repoAddress: repoAddress,
 	}
 }
 
-func (uc *OrderUsecase) CreateOrder(ctx context.Context, id uuid.UUID) (models.Order, error) {
-	cart, err := uc.repoCart.ReadCart(ctx, id)
+func (uc *OrderUsecase) CreateOrder(ctx context.Context, userID uuid.UUID) (models.Order, error) {
+	address, err := uc.repoAddress.ReadCurrentAddress(ctx, userID)
+	if err != nil {
+		if errors.Is(err, addressRepo.ErrAddressNotFound) {
+			return models.Order{}, err
+		}
+		err = fmt.Errorf("error happened in repoAddress.ReadCurrentAddressID: %w", err)
+
+		return models.Order{}, err
+	}
+
+	cart, err := uc.repoCart.ReadCart(ctx, userID)
 	if err != nil {
 		if errors.Is(err, cartRepo.ErrCartNotFound) {
 			return models.Order{}, err
@@ -36,19 +50,20 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, id uuid.UUID) (models.O
 		return models.Order{}, err
 	}
 
-	err = uc.repoCart.DeleteCart(ctx, cart.Id)
-	if err != nil {
-		err = fmt.Errorf("error happened in repoCart.DeleteCart: %w", err)
-
-		return models.Order{}, err
-	}
-
-	order, err := uc.repoOrder.CreateOrder(ctx, cart, id, 1)
+	order, err := uc.repoOrder.CreateOrder(ctx, cart, address.Id, userID, 1)
 	if err != nil {
 		if errors.Is(err, orderRepo.ErrPoductNotFound) {
 			return models.Order{}, err
 		}
 		err = fmt.Errorf("error happened in repo.CreateOrder: %w", err)
+
+		return models.Order{}, err
+	}
+	order.Address = address
+
+	err = uc.repoCart.DeleteCart(ctx, cart.Id)
+	if err != nil {
+		err = fmt.Errorf("error happened in repoCart.DeleteCart: %w", err)
 
 		return models.Order{}, err
 	}
