@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS profile
     id uuid NOT NULL PRIMARY KEY,
     login text NOT NULL UNIQUE,
     description text,
-    imgsrc text NOT NULL DEFAULT 'user.svg',
+    imgsrc text NOT NULL DEFAULT 'default.png',
     phone text NOT NULL,
     passwordhash bytea NOT NULL
 );
