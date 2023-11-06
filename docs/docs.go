@@ -617,7 +617,10 @@ const docTemplate = `{
                         "description": "User unauthorized"
                     },
                     "404": {
-                        "description": "Cart not found"
+                        "description": "something not found error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.Response"
+                        }
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -652,7 +655,10 @@ const docTemplate = `{
                         "description": "User unauthorized"
                     },
                     "404": {
-                        "description": "Orders not found"
+                        "description": "something not found error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.Response"
+                        }
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -684,7 +690,10 @@ const docTemplate = `{
                         "description": "User unauthorized"
                     },
                     "404": {
-                        "description": "Order not found"
+                        "description": "something not found error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.Response"
+                        }
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -738,7 +747,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "error messege",
+                        "description": "error message",
                         "schema": {
                             "$ref": "#/definitions/responser.Response"
                         }
@@ -788,7 +797,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "error messege",
+                        "description": "error message",
                         "schema": {
                             "$ref": "#/definitions/responser.Response"
                         }
@@ -829,7 +838,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "error messege",
+                        "description": "error message",
                         "schema": {
                             "$ref": "#/definitions/responser.Response"
                         }
@@ -978,6 +987,9 @@ const docTemplate = `{
                 "addressId": {
                     "type": "string"
                 },
+                "addressIsCurrent": {
+                    "type": "boolean"
+                },
                 "city": {
                     "type": "string"
                 },
@@ -986,9 +998,6 @@ const docTemplate = `{
                 },
                 "house": {
                     "type": "string"
-                },
-                "isCurrent": {
-                    "type": "boolean"
                 },
                 "street": {
                     "type": "string"
@@ -1121,6 +1130,21 @@ const docTemplate = `{
         "models.Order": {
             "type": "object",
             "properties": {
+                "addressId": {
+                    "type": "string"
+                },
+                "addressIsCurrent": {
+                    "type": "boolean"
+                },
+                "city": {
+                    "type": "string"
+                },
+                "flat": {
+                    "type": "string"
+                },
+                "house": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1132,6 +1156,9 @@ const docTemplate = `{
                 },
                 "statusId": {
                     "type": "integer"
+                },
+                "street": {
+                    "type": "string"
                 }
             }
         },

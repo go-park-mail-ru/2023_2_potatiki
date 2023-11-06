@@ -3,14 +3,14 @@ definitions:
     properties:
       addressId:
         type: string
+      addressIsCurrent:
+        type: boolean
       city:
         type: string
       flat:
         type: string
       house:
         type: string
-      isCurrent:
-        type: boolean
       street:
         type: string
     type: object
@@ -95,6 +95,16 @@ definitions:
     type: object
   models.Order:
     properties:
+      addressId:
+        type: string
+      addressIsCurrent:
+        type: boolean
+      city:
+        type: string
+      flat:
+        type: string
+      house:
+        type: string
       id:
         type: string
       products:
@@ -103,6 +113,8 @@ definitions:
         type: array
       statusId:
         type: integer
+      street:
+        type: string
     type: object
   models.OrderProduct:
     properties:
@@ -610,7 +622,9 @@ paths:
         "401":
           description: User unauthorized
         "404":
-          description: Cart not found
+          description: something not found error message
+          schema:
+            $ref: '#/definitions/responser.Response'
         "429":
           description: Too Many Requests
       summary: CreateOrder
@@ -633,7 +647,9 @@ paths:
         "401":
           description: User unauthorized
         "404":
-          description: Orders not found
+          description: something not found error message
+          schema:
+            $ref: '#/definitions/responser.Response'
         "429":
           description: Too Many Requests
       summary: GetOrders
@@ -654,7 +670,9 @@ paths:
         "401":
           description: User unauthorized
         "404":
-          description: Order not found
+          description: something not found error message
+          schema:
+            $ref: '#/definitions/responser.Response'
         "429":
           description: Too Many Requests
       summary: GetCurrentOrder
@@ -679,7 +697,7 @@ paths:
           schema:
             $ref: '#/definitions/models.Product'
         "400":
-          description: error messege
+          description: error message
           schema:
             $ref: '#/definitions/responser.Response'
         "429":
@@ -717,7 +735,7 @@ paths:
               $ref: '#/definitions/models.Product'
             type: array
         "400":
-          description: error messege
+          description: error message
           schema:
             $ref: '#/definitions/responser.Response'
         "429":
@@ -750,7 +768,7 @@ paths:
               $ref: '#/definitions/models.Product'
             type: array
         "400":
-          description: error messege
+          description: error message
           schema:
             $ref: '#/definitions/responser.Response'
         "429":
