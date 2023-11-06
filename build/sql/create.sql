@@ -272,12 +272,15 @@ CREATE TABLE IF NOT EXISTS favorite
 CREATE OR REPLACE FUNCTION update_is_current()
 RETURNS TRIGGER AS $$
 BEGIN
+  IF NEW.is_current = true THEN
 UPDATE address
 SET is_current = false
-WHERE profile_id = NEW.profile_id;
+WHERE profile_id = NEW.profile_id AND id <> NEW.id;
+END IF;
 RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
 
 
 CREATE TRIGGER set_is_current_on_insert
