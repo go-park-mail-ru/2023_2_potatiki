@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"log/slog"
 	"os"
 	"slices"
 	"strings"
@@ -16,14 +15,12 @@ import (
 )
 
 type ProfileUsecase struct {
-	log       *slog.Logger
 	repo      profile.ProfileRepo
 	photoPath string
 }
 
-func NewProfileUsecase(log *slog.Logger, repo profile.ProfileRepo, cfg profile.ProfileConfig) *ProfileUsecase {
+func NewProfileUsecase(repo profile.ProfileRepo, cfg profile.ProfileConfig) *ProfileUsecase {
 	return &ProfileUsecase{
-		log:       log,
 		repo:      repo,
 		photoPath: cfg.GetPhotosFilePath(),
 	}

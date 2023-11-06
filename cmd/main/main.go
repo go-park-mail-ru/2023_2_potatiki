@@ -120,7 +120,7 @@ func run() (err error) {
 	//
 	// ============================Init layers============================ //
 	profileRepo := profileRepo.NewProfileRepo(db)
-	profileUsecase := profileUsecase.NewProfileUsecase(log, profileRepo, cfg)
+	profileUsecase := profileUsecase.NewProfileUsecase(profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
