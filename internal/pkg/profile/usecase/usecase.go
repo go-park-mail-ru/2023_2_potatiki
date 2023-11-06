@@ -50,7 +50,7 @@ func (uc *ProfileUsecase) UpdateData(ctx context.Context, Id uuid.UUID, payload 
 	if err := validator.New().Struct(payload); err != nil {
 		return nil, err
 	}
-	payload.Sanitize()
+
 	if payload.Phone != "" {
 		if (payload.Passwords.OldPass == "") !=
 			(payload.Passwords.NewPass == "") {
