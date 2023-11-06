@@ -22,7 +22,7 @@
 [Link to API].
 
 ### Deploy
-[Link to deploy](http://84.23.52.212:8083/).
+[Link to deploy](https://zuzu-market.ru/).
 
 ### UI/UX
 [Figma].
