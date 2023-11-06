@@ -16,7 +16,7 @@
 * [Valeria Kuritsyna] — interface design mentor.
 
 ### Backend repository
-[Link to backend repository](https://github.com/go-park-mail-ru/2023_2_potatiki).
+[Link to frontend repository](https://github.com/frontend-park-mail-ru/2023_2_Potatiki).
 
 ### API
 [Link to API].
