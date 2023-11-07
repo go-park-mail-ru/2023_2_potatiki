@@ -31,4 +31,5 @@ test:
 done: lint test swag run
 	git add .
 
+#gotests -all -w internal/pkg/cart/usecase/usecase.go
 
