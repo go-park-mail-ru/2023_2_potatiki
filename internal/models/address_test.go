@@ -1,5 +1,12 @@
 package models
 
+import (
+	"encoding/json"
+	"fmt"
+	uuid "github.com/satori/go.uuid"
+	"testing"
+)
+
 //func TestAddress_MarshalJSON(t *testing.T) {
 //	type fieldsT struct {
 //		Id        uuid.UUID
@@ -38,3 +45,14 @@ package models
 //		})
 //	}
 //}
+
+func Test1(t *testing.T) {
+	a := Order{
+		Id:       uuid.UUID{},
+		Status:   0,
+		Address:  Address{},
+		Products: nil,
+	}
+	b, _ := json.Marshal(a)
+	fmt.Println(string(b))
+}
