@@ -1,0 +1,30 @@
+#
+# Builder
+#
+
+FROM golang:1.21.0-alpine AS builder
+
+COPY . /github.com/go-park-mail-ru/2023_2_potatiki/
+WORKDIR /github.com/go-park-mail-ru/2023_2_potatiki/
+
+RUN go mod download
+RUN go clean --modcache
+RUN CGO_ENABLED=0 GOOS=linux go build -mod=readonly -o ./.bin ./cmd/main/main.go
+
+#
+# Runner
+#
+
+FROM scratch AS runner
+
+WORKDIR /docker-zuzu-main/
+
+COPY --from=builder /github.com/go-park-mail-ru/2023_2_potatiki/.bin .
+COPY --from=builder /github.com/go-park-mail-ru/2023_2_potatiki/config config/
+COPY --from=builder /usr/local/go/lib/time/zoneinfo.zip /
+
+ENV TZ="Europe/Moscow"
+ENV ZONEINFO=/zoneinfo.zip
+EXPOSE 80 443
+
+ENTRYPOINT ["./.bin"]

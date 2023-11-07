@@ -10,7 +10,7 @@ import (
 
 	models "github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	gomock "github.com/golang/mock/gomock"
-	uuid "github.com/google/uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 // MockProductsUsecase is a mock of ProductsUsecase interface.
@@ -34,6 +34,21 @@ func NewMockProductsUsecase(ctrl *gomock.Controller) *MockProductsUsecase {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockProductsUsecase) EXPECT() *MockProductsUsecaseMockRecorder {
 	return m.recorder
+}
+
+// GetCategory mocks base method.
+func (m *MockProductsUsecase) GetCategory(arg0 context.Context, arg1 int, arg2, arg3 int64) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCategory", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCategory indicates an expected call of GetCategory.
+func (mr *MockProductsUsecaseMockRecorder) GetCategory(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategory", reflect.TypeOf((*MockProductsUsecase)(nil).GetCategory), arg0, arg1, arg2, arg3)
 }
 
 // GetProduct mocks base method.
@@ -87,6 +102,21 @@ func NewMockProductsRepo(ctrl *gomock.Controller) *MockProductsRepo {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockProductsRepo) EXPECT() *MockProductsRepoMockRecorder {
 	return m.recorder
+}
+
+// ReadCategory mocks base method.
+func (m *MockProductsRepo) ReadCategory(arg0 context.Context, arg1 int, arg2, arg3 int64) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadCategory", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadCategory indicates an expected call of ReadCategory.
+func (mr *MockProductsRepoMockRecorder) ReadCategory(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadCategory", reflect.TypeOf((*MockProductsRepo)(nil).ReadCategory), arg0, arg1, arg2, arg3)
 }
 
 // ReadProduct mocks base method.

@@ -24,3 +24,6 @@ go.work
 *.idea
 *.bin
 *.tmp
+*.log
+*.sh
+photos/

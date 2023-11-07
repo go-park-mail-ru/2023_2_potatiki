@@ -2,10 +2,14 @@ package usecase
 
 import (
 	"context"
+	"errors"
+	"fmt"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
-	"github.com/google/uuid"
+	uuid "github.com/satori/go.uuid"
 )
 
 type ProductsUsecase struct {
@@ -21,15 +25,35 @@ func NewProductsUsecase(repo products.ProductsRepo) *ProductsUsecase {
 func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	product, err := uc.repo.ReadProduct(ctx, id)
 	if err != nil {
+		if errors.Is(err, repo.ErrPoductNotFound) {
+			// TODO: implement
+		}
+		err = fmt.Errorf("error happened in repo.ReadProduct: %w", err)
+
 		return models.Product{}, err
 	}
+
 	return product, nil
 }
 
 func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging int64, count int64) ([]models.Product, error) {
 	productsSlice, err := uc.repo.ReadProducts(ctx, paging, count)
 	if err != nil {
+		err = fmt.Errorf("error happened in repo.ReadProducts: %w", err)
+
 		return []models.Product{}, err
 	}
+
+	return productsSlice, nil
+}
+
+func (uc *ProductsUsecase) GetCategory(ctx context.Context, id int, paging, count int64) ([]models.Product, error) {
+	productsSlice, err := uc.repo.ReadCategory(ctx, id, paging, count)
+	if err != nil {
+		err = fmt.Errorf("error happened in repo.GetCategory: %w", err)
+
+		return []models.Product{}, err
+	}
+
 	return productsSlice, nil
 }
