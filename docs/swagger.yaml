@@ -833,7 +833,7 @@ paths:
       summary: UpdateProfileData
       tags:
       - Profile
-  /api/profile/update-photo/{id}:
+  /api/profile/update-photo:
     post:
       consumes:
       - application/json
