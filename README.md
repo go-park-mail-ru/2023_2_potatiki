@@ -15,7 +15,7 @@
 * [Leila Kochkarova](https://github.com/k-t-l-h) — backend mentor;
 * [Valeria Kuritsyna] — interface design mentor.
 
-### Backend repository
+### Frontend repository
 [Link to frontend repository](https://github.com/frontend-park-mail-ru/2023_2_Potatiki).
 
 ### API
