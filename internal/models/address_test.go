@@ -38,3 +38,14 @@ package models
 //		})
 //	}
 //}
+
+//func Test1(t *testing.T) {
+//	a := Order{
+//		Id:       uuid.UUID{},
+//		Status:   0,
+//		Address:  Address{},
+//		Products: nil,
+//	}
+//	b, _ := json.Marshal(a)
+//	fmt.Println(string(b))
+//}
