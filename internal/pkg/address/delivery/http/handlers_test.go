@@ -64,10 +64,8 @@ func TestAddressHandler_AddAddress(t *testing.T) {
 			mockUsecase := mock.NewMockAddressUsecase(ctrl)
 			tc.mockUsecaseFn(mockUsecase)
 
-			req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
+			req := httptest.NewRequest(http.MethodPost, "http://zuzu-market.ru/api/address/add",
 				strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))
-			//url := "/api/address/add"
-			//req := httptest.NewRequest("POST", url, nil)
 			w := httptest.NewRecorder()
 			ctx := tc.funcCtxUser(req.Context())
 
