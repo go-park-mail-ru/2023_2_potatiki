@@ -2,16 +2,19 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"reflect"
 	"testing"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category"
+	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/mocks"
+
+	"github.com/golang/mock/gomock"
 )
 
 func TestCategoryUsecase_Categories(t *testing.T) {
 	type fields struct {
-		repo category.CategoryRepo
+		repo *mock.MockCategoryRepo
 	}
 	type args struct {
 		ctx context.Context //nolint:containedctx
@@ -19,18 +22,44 @@ func TestCategoryUsecase_Categories(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
+		prepare func(f *fields)
+		uc      *CategoryUsecase
 		args    args
 		want    models.CategoryTree
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "TestProductsUsecase_UpdateData good",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().ReadCategories(gomock.Any()).Return(models.CategoryTree{}, nil)
+			},
+			args:    args{context.Background()},
+			want:    models.CategoryTree{},
+			wantErr: false,
+		},
+		{
+			name: "TestProductsUsecase_UpdateData bad",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().ReadCategories(gomock.Any()).Return(models.CategoryTree{}, errors.New("dummyError"))
+			},
+			args:    args{context.Background()},
+			want:    models.CategoryTree{},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			uc := &CategoryUsecase{
-				repo: tt.fields.repo,
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			f := fields{
+				repo: mock.NewMockCategoryRepo(ctrl),
 			}
-			got, err := uc.Categories(tt.args.ctx)
+			if tt.prepare != nil {
+				tt.prepare(&f)
+			}
+			tt.uc = NewCategoryUsecase(f.repo)
+
+			got, err := tt.uc.Categories(tt.args.ctx)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CategoryUsecase.Categories() error = %v, wantErr %v", err, tt.wantErr)
 				return
