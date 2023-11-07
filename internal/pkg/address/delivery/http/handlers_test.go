@@ -66,6 +66,8 @@ func TestAddressHandler_AddAddress(t *testing.T) {
 
 			req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
 				strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))
+			//url := "/api/address/add"
+			//req := httptest.NewRequest("POST", url, nil)
 			w := httptest.NewRecorder()
 			ctx := tc.funcCtxUser(req.Context())
 
