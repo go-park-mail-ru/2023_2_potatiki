@@ -235,6 +235,21 @@ func (mr *MockAddressRepoMockRecorder) ReadCurrentAddress(arg0, arg1 interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadCurrentAddress", reflect.TypeOf((*MockAddressRepo)(nil).ReadCurrentAddress), arg0, arg1)
 }
 
+// ReadCurrentAddressID mocks base method.
+func (m *MockAddressRepo) ReadCurrentAddressID(arg0 context.Context, arg1 uuid.UUID) (uuid.UUID, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadCurrentAddressID", arg0, arg1)
+	ret0, _ := ret[0].(uuid.UUID)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadCurrentAddressID indicates an expected call of ReadCurrentAddressID.
+func (mr *MockAddressRepoMockRecorder) ReadCurrentAddressID(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadCurrentAddressID", reflect.TypeOf((*MockAddressRepo)(nil).ReadCurrentAddressID), arg0, arg1)
+}
+
 // UpdateAddress mocks base method.
 func (m *MockAddressRepo) UpdateAddress(arg0 context.Context, arg1 models.Address) error {
 	m.ctrl.T.Helper()
