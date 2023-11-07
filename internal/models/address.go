@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	uuid "github.com/satori/go.uuid"
 	"html"
 )
@@ -14,6 +13,13 @@ type Address struct {
 	House     string    `json:"house"`
 	Flat      string    `json:"flat"`
 	IsCurrent bool      `json:"addressIsCurrent"`
+}
+
+func (b *Address) Sanitize() {
+	b.City = html.EscapeString(b.City)
+	b.Street = html.EscapeString(b.Street)
+	b.House = html.EscapeString(b.House)
+	b.Flat = html.EscapeString(b.Flat)
 }
 
 //func (u Address) MarshalJSON() ([]byte, error) {
@@ -33,15 +39,22 @@ type AddressInfo struct {
 	Flat   string `json:"flat"`
 }
 
-func (u AddressInfo) MarshalJSON() ([]byte, error) {
-	type addressInfo AddressInfo
-	b := addressInfo(u)
+func (b *AddressInfo) Sanitize() {
 	b.City = html.EscapeString(b.City)
 	b.Street = html.EscapeString(b.Street)
 	b.House = html.EscapeString(b.House)
 	b.Flat = html.EscapeString(b.Flat)
-	return json.Marshal(b)
 }
+
+//func (u AddressInfo) MarshalJSON() ([]byte, error) {
+//	type addressInfo AddressInfo
+//	b := addressInfo(u)
+//	b.City = html.EscapeString(b.City)
+//	b.Street = html.EscapeString(b.Street)
+//	b.House = html.EscapeString(b.House)
+//	b.Flat = html.EscapeString(b.Flat)
+//	return json.Marshal(b)
+//}
 
 type AddressDelete struct {
 	ProfileId uuid.UUID `json:"-"`

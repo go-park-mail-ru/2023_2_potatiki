@@ -1,9 +1,6 @@
 package models
 
-import (
-	"encoding/json"
-	"html"
-)
+import "html"
 
 type SignUpPayload struct {
 	Login    string `json:"login" validate:"required,min=6,max=30"`
@@ -11,27 +8,39 @@ type SignUpPayload struct {
 	Password string `json:"password" validate:"required,min=8,max=32"`
 }
 
-func (u SignUpPayload) MarshalJSON() ([]byte, error) {
-	type signUpPayload SignUpPayload
-	b := signUpPayload(u)
-	b.Login = html.EscapeString(b.Login)
-	b.Phone = html.EscapeString(b.Phone)
-	b.Password = html.EscapeString(b.Password)
-	return json.Marshal(b)
+func (p *SignUpPayload) Sanitize() {
+	p.Login = html.EscapeString(p.Login)
+	p.Phone = html.EscapeString(p.Phone)
+	p.Password = html.EscapeString(p.Password)
 }
+
+//func (u SignUpPayload) MarshalJSON() ([]byte, error) {
+//	type signUpPayload SignUpPayload
+//	b := signUpPayload(u)
+//	b.Login = html.EscapeString(b.Login)
+//	b.Phone = html.EscapeString(b.Phone)
+//	b.Password = html.EscapeString(b.Password)
+//	return json.Marshal(b)
+//}
 
 type SignInPayload struct {
 	Login    string `json:"login" validate:"required,min=6,max=30"`
 	Password string `json:"password" validate:"required,min=8,max=32"`
 }
 
-func (u SignInPayload) MarshalJSON() ([]byte, error) {
-	type signInPayload SignInPayload
-	b := signInPayload(u)
-	b.Login = html.EscapeString(b.Login)
-	b.Password = html.EscapeString(b.Password)
-	return json.Marshal(b)
+func (p *SignInPayload) Sanitize() {
+	p.Login = html.EscapeString(p.Login)
+	p.Password = html.EscapeString(p.Password)
+
 }
+
+//func (u SignInPayload) MarshalJSON() ([]byte, error) {
+//	type signInPayload SignInPayload
+//	b := signInPayload(u)
+//	b.Login = html.EscapeString(b.Login)
+//	b.Password = html.EscapeString(b.Password)
+//	return json.Marshal(b)
+//}
 
 type UpdateProfileDataPayload struct {
 	Passwords struct {
@@ -41,11 +50,17 @@ type UpdateProfileDataPayload struct {
 	Phone string `json:"phone" validate:"omitempty,e164"`
 }
 
-func (u UpdateProfileDataPayload) MarshalJSON() ([]byte, error) {
-	type updateProfileDataPayload UpdateProfileDataPayload
-	b := updateProfileDataPayload(u)
-	b.Phone = html.EscapeString(b.Phone)
-	b.Passwords.OldPass = html.EscapeString(b.Passwords.OldPass)
-	b.Passwords.NewPass = html.EscapeString(b.Passwords.NewPass)
-	return json.Marshal(b)
+func (p *UpdateProfileDataPayload) Sanitize() {
+	p.Phone = html.EscapeString(p.Phone)
+	p.Passwords.OldPass = html.EscapeString(p.Passwords.OldPass)
+	p.Passwords.NewPass = html.EscapeString(p.Passwords.NewPass)
 }
+
+//func (u UpdateProfileDataPayload) MarshalJSON() ([]byte, error) {
+//	type updateProfileDataPayload UpdateProfileDataPayload
+//	b := updateProfileDataPayload(u)
+//	b.Phone = html.EscapeString(b.Phone)
+//	b.Passwords.OldPass = html.EscapeString(b.Passwords.OldPass)
+//	b.Passwords.NewPass = html.EscapeString(b.Passwords.NewPass)
+//	return json.Marshal(b)
+//}
