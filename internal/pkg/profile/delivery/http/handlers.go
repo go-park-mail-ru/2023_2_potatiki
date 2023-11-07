@@ -148,7 +148,7 @@ func (h *ProfileHandler) UpdateProfileData(w http.ResponseWriter, r *http.Reques
 // @Failure	401
 // @Failure 413
 // @Failure	429
-// @Router	/api/profile/update-photo/{id} [post]
+// @Router	/api/profile/update-photo [post]
 func (h *ProfileHandler) UpdatePhoto(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
