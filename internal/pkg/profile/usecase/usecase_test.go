@@ -233,23 +233,17 @@ func TestProfileUsecase_UpdatePhoto(t *testing.T) {
 		want    *models.Profile
 		wantErr bool
 	}{
-		/*{
+		{
 			name: "TestProductsUsecase_UpdateData good",
 			prepare: func(f *fields) {
-				m := fstest.MapFS{
-					"photos/hello.png": {
-						Data: []byte("hello, world"),
-					},
-				}
-				m.Stat("photos/")
-				f.repo.EXPECT().UpdatePhoto(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), "image/png").Return(nil)
+				f.repo.EXPECT().UpdatePhoto(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), gomock.Any()).Return(nil)
 				f.repo.EXPECT().ReadProfile(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(&models.Profile{ImgSrc: "image/png"}, nil)
-				f.cfg.EXPECT().GetPhotosFilePath().Return("photos/")
+				f.cfg.EXPECT().GetPhotosFilePath().Return(t.TempDir())
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), []byte{1, 2, 3}, "image/png"},
 			want:    &models.Profile{ImgSrc: "image/png"},
 			wantErr: false,
-		},*/
+		},
 		{
 			name: "TestProductsUsecase_UpdateData bad",
 			prepare: func(f *fields) {

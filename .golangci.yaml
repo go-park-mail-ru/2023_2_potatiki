@@ -49,3 +49,4 @@ linters:
     - gosec #del!!!
     - gocritic #del!!!
     - dupl #del!!!
+    - containedctx #???
