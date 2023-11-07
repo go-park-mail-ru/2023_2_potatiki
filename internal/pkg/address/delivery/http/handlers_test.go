@@ -1,36 +1,79 @@
 package http
 
 import (
+	"context"
+	"errors"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
+	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/mocks"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
+	"github.com/golang/mock/gomock"
+	uuid "github.com/satori/go.uuid"
+	"github.com/stretchr/testify/assert"
 	"log/slog"
 	"net/http"
+	"net/http/httptest"
+	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
 func TestAddressHandler_AddAddress(t *testing.T) {
-	type fields struct {
-		log *slog.Logger
-		uc  address.AddressUsecase
-	}
-	type args struct {
-		w http.ResponseWriter
-		r *http.Request
-	}
-	tests := []struct {
-		name   string
-		fields fields
-		args   args
+	testCases := []struct {
+		name           string
+		userID         uuid.UUID
+		addressInfo    models.AddressInfo
+		mockUsecaseFn  func(*mock.MockAddressUsecase)
+		expectedStatus int
+		funcCtxUser    func(context.Context) context.Context
 	}{
-		// TODO: Add test cases.
+		{
+			name:        "SuccessfulAddAddress",
+			userID:      uuid.NewV4(),
+			addressInfo: models.AddressInfo{},
+			mockUsecaseFn: func(mockUsecase *mock.MockAddressUsecase) {
+				mockUsecase.EXPECT().AddAddress(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.Address{}, nil)
+			},
+			expectedStatus: http.StatusOK,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+		},
+		{
+			name:        "UnauthorizedUser",
+			userID:      uuid.NewV4(),
+			addressInfo: models.AddressInfo{},
+			mockUsecaseFn: func(mockUsecase *mock.MockAddressUsecase) {
+				mockUsecase.EXPECT().AddAddress(gomock.Any(), gomock.Any(), gomock.Any()).Return(models.Address{}, errors.New("internal server error"))
+			},
+			expectedStatus: http.StatusTooManyRequests,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			h := &AddressHandler{
-				log: tt.fields.log,
-				uc:  tt.fields.uc,
-			}
-			h.AddAddress(tt.args.w, tt.args.r)
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockUsecase := mock.NewMockAddressUsecase(ctrl)
+			tc.mockUsecaseFn(mockUsecase)
+
+			req := httptest.NewRequest(http.MethodPost, "http://example.com/foo",
+				strings.NewReader("{ \"login\": \"User\", \"password\": \"Dima@gmail.com\" }"))
+			w := httptest.NewRecorder()
+			ctx := tc.funcCtxUser(req.Context())
+
+			req = req.WithContext(ctx)
+			addressHandler := NewAddressHandler(logger.Set("local", os.Stdout), mockUsecase)
+			addressHandler.AddAddress(w, req)
+
+			assert.Equal(t, tc.expectedStatus, w.Code)
 		})
 	}
 }
