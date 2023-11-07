@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -16,6 +17,135 @@ import (
 	"github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
+
+func TestProductsHandler_Category(t *testing.T) {
+	testCases := []struct {
+		name           string
+		mockUsecaseFn  func(*mock.MockProductsUsecase)
+		expectedStatus int
+		funcCtxUser    func(context.Context) context.Context
+		param1         string
+		param2         string
+		param3         string
+	}{
+		{
+			name: "SuccessfulCategory",
+			mockUsecaseFn: func(mockUsecase *mock.MockProductsUsecase) {
+				mockUsecase.EXPECT().GetCategory(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+					Return([]models.Product{}, nil)
+			},
+			expectedStatus: http.StatusOK,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+			param1: "1",
+			param2: "2",
+			param3: "3",
+		},
+		{
+			name: "UnsuccessfulCategoryWithCorrectQuery",
+			mockUsecaseFn: func(mockUsecase *mock.MockProductsUsecase) {
+				mockUsecase.EXPECT().GetCategory(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+					Return([]models.Product{}, errors.New("error in get product by category"))
+			},
+			expectedStatus: http.StatusTooManyRequests,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+			param1: "1",
+			param2: "2",
+			param3: "3",
+		},
+		{
+			name:           "UnsuccessfulCategoryWithNotIntInPagingQuery",
+			mockUsecaseFn:  func(mockUsecase *mock.MockProductsUsecase) {},
+			expectedStatus: http.StatusBadRequest,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+			param1: "1",
+			param2: "qwerty",
+			param3: "",
+		},
+		{
+			name:           "UnsuccessfulCategoryWithNotIntInCountQuery",
+			mockUsecaseFn:  func(mockUsecase *mock.MockProductsUsecase) {},
+			expectedStatus: http.StatusBadRequest,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+			param1: "1",
+			param2: "2",
+			param3: "qwerty",
+		},
+		{
+			name:           "UnsuccessfulCategoryWithFirstQuery",
+			mockUsecaseFn:  func(mockUsecase *mock.MockProductsUsecase) {},
+			expectedStatus: http.StatusBadRequest,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+			param1: "",
+			param2: "",
+			param3: "",
+		},
+		{
+			name:           "UnsuccessfulCategoryWithSecondQuery",
+			mockUsecaseFn:  func(mockUsecase *mock.MockProductsUsecase) {},
+			expectedStatus: http.StatusBadRequest,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+			param1: "",
+			param2: "2",
+			param3: "",
+		},
+		{
+			name:           "UnsuccessfulCategoryWithThirdQuery",
+			mockUsecaseFn:  func(mockUsecase *mock.MockProductsUsecase) {},
+			expectedStatus: http.StatusBadRequest,
+			funcCtxUser: func(ctx context.Context) context.Context {
+				id := uuid.NewV4()
+				return context.WithValue(ctx, "zuzu-t", id)
+			},
+			param1: "",
+			param2: "",
+			param3: "3",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			mockUsecase := mock.NewMockProductsUsecase(ctrl)
+			tc.mockUsecaseFn(mockUsecase)
+
+			req := httptest.NewRequest(http.MethodGet, "http://zuzu-market.ru/api/address/get_current", nil)
+
+			q := req.URL.Query()
+			q.Add("category_id", tc.param1)
+			q.Add("paging", tc.param2)
+			q.Add("count", tc.param3)
+			req.URL.RawQuery = q.Encode()
+			w := httptest.NewRecorder()
+			ctx := tc.funcCtxUser(req.Context())
+
+			req = req.WithContext(ctx)
+			addressHandler := NewProductsHandler(logger.Set("local", os.Stdout), mockUsecase)
+			addressHandler.Category(w, req)
+
+			assert.Equal(t, tc.expectedStatus, w.Code)
+		})
+	}
+}
 
 func TestProduct(t *testing.T) {
 	ctrl := gomock.NewController(t)

@@ -244,16 +244,16 @@ func run() (err error) {
 
 	address := r.PathPrefix("/address").Subrouter()
 	{
-		address.Handle("/add", authMW(csrfMW(http.HandlerFunc(addressHandler.AddAddress)))).
+		address.Handle("/add", authMW(http.HandlerFunc(addressHandler.AddAddress))).
 			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
 
-		address.Handle("/update", authMW(csrfMW(http.HandlerFunc(addressHandler.UpdateAddress)))).
+		address.Handle("/update", authMW(http.HandlerFunc(addressHandler.UpdateAddress))).
 			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
 
-		address.Handle("/delete", authMW(csrfMW(http.HandlerFunc(addressHandler.DeleteAddress)))).
+		address.Handle("/delete", authMW(http.HandlerFunc(addressHandler.DeleteAddress))).
 			Methods(http.MethodDelete, http.MethodGet, http.MethodOptions)
 
-		address.Handle("/make_current", authMW(csrfMW(http.HandlerFunc(addressHandler.MakeCurrentAddress)))).
+		address.Handle("/make_current", authMW(http.HandlerFunc(addressHandler.MakeCurrentAddress))).
 			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
 
 		address.Handle("/get_current", authMW(http.HandlerFunc(addressHandler.GetCurrentAddress))).

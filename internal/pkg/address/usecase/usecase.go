@@ -21,6 +21,8 @@ func NewAddressUsecase(repoAddress address.AddressRepo) *AddressUsecase {
 }
 
 func (uc *AddressUsecase) AddAddress(ctx context.Context, userID uuid.UUID, addressInfo models.AddressInfo) (models.Address, error) {
+	addressInfo.Sanitize()
+
 	address, err := uc.repo.CreateAddress(ctx, userID, addressInfo)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.CreateAddress: %w", err)
@@ -32,6 +34,8 @@ func (uc *AddressUsecase) AddAddress(ctx context.Context, userID uuid.UUID, addr
 }
 
 func (uc *AddressUsecase) UpdateAddress(ctx context.Context, addressInfo models.Address) (models.Address, error) {
+	addressInfo.Sanitize()
+
 	err := uc.repo.UpdateAddress(ctx, addressInfo)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.UpdateAddress: %w", err)
