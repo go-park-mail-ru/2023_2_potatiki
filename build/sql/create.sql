@@ -174,8 +174,14 @@ VALUES
      'Ноутбук Lenovo IdeaPad 3 15ITL6 i5 1135G7/12Gb/1Tb HDD + 256Gb SSD/noDVD/GeForce MX350 2Gb/15.6" ' ||
      'IPS FHD/noOS/Grey (82H801B6RK) Для управления предусмотрена клавиатура с английской и русской раскладкой.', 5.00, 5),
 
-    ('007749b5-7e07-4be8-8c91-8db273ace4c4', 'Apple MacBook Air 13 2021', 120990, 'macbook.png', '13-inch high-performance laptop', 4.75, 5),
+    ('007749b5-7e07-4be8-8c91-8db273ace4c4', 'Apple iPad Pro (2022) 11" Wi-Fi 256 ГБ, серебристый', 120990,
+     'Ipadpro2022.jpg',
+     'Работайте, учитесь или отдыхайте с Apple iPad Pro 2022 Wi-Fi Cell.' ||
+     ' Планшетный компьютер имеет 11-дюймовый дисплей Multi‑Touch со светодиодной подсветкой' ||
+     ' и технологией IPS и объем памяти 128 ГБ.', 4.75, 3),
+
     ('007749b5-7e07-4be8-8c91-8db273ace4c5', 'Apple MacBook Air 15 2022', 108990, 'macbook.png', '15-inch professional laptop', 5.00, 5),
+
     ('007749b5-7e07-4be8-8c91-8db273ace4c6', 'Apple MacBook Air 13 2023', 98990, 'macbook.png', '13-inch lightweight laptop', 4.65, 5),
     ('550e8400-e29b-41d4-a716-446655440100', 'Apple MacBook Air 13', 89999, 'macbook.png', '13-inch lightweight laptop', 4.5, 5),
     ('be2c8b1b-8d27-4142-a31a-ac6676cf648a', 'Apple MacBook Pro 15', 189999, 'macbook.png', '15-inch professional laptop', 4.85, 5),
