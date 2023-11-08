@@ -64,11 +64,11 @@ func Test_jwtManager_DecodeAuthToken(t *testing.T) {
 
 			got, err := tt.uc.DecodeAuthToken(tt.args.tokenString)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("ProfileUsecase.DecodeAuthToken() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("jwtManager.DecodeAuthToken() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !tt.wantErr && !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ProfileUsecase.DecodeAuthToken() = %v, want %v", got, tt.want)
+				t.Errorf("jwtManager.DecodeAuthToken() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -144,9 +144,7 @@ func Test_jwtManager_EncodeCSRFToken(t *testing.T) {
 
 func Test_jwtManager_DecodeCSRFToken(t *testing.T) {
 	type fields struct {
-		ttl    time.Duration
-		secret string
-		issuer string
+		cfg *mock.MockConfiger
 	}
 	type args struct {
 		tokenString string
@@ -154,25 +152,41 @@ func Test_jwtManager_DecodeCSRFToken(t *testing.T) {
 	tests := []struct {
 		name    string
 		fields  fields
+		prepare func(f *fields)
+		uc      *jwtManager
 		args    args
-		want    string
+		want    uuid.UUID
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Test_jwtManager_DecodeCSRFToken good",
+			prepare: func(f *fields) {
+				f.cfg.EXPECT().GetIssuer().Return("csrf")
+				f.cfg.EXPECT().GetSecret().Return("your-256-bit-secret")
+				f.cfg.EXPECT().GetTTL().Return(time.Hour * 6)
+			},
+			args:    args{"fwpMeJf36POk6yJV_adQssw5c"},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			j := &jwtManager{
-				ttl:    tt.fields.ttl,
-				secret: tt.fields.secret,
-				issuer: tt.fields.issuer,
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+			f := fields{
+				cfg: mock.NewMockConfiger(ctrl),
 			}
-			got, err := j.DecodeCSRFToken(tt.args.tokenString)
+			if tt.prepare != nil {
+				tt.prepare(&f)
+			}
+			tt.uc = New(f.cfg)
+
+			got, err := tt.uc.DecodeCSRFToken(tt.args.tokenString)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("jwtManager.DecodeCSRFToken() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if got != tt.want {
+			if !tt.wantErr && !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("jwtManager.DecodeCSRFToken() = %v, want %v", got, tt.want)
 			}
 		})
