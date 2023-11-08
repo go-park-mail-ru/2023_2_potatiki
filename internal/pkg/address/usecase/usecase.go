@@ -8,6 +8,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
+	"github.com/go-playground/validator/v10"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -21,7 +22,10 @@ func NewAddressUsecase(repoAddress address.AddressRepo) *AddressUsecase {
 	}
 }
 
-func (uc *AddressUsecase) AddAddress(ctx context.Context, userID uuid.UUID, addressInfo models.AddressInfo) (models.Address, error) {
+func (uc *AddressUsecase) AddAddress(ctx context.Context, userID uuid.UUID, addressInfo models.AddressPayload) (models.Address, error) {
+	if err := validator.New().Struct(addressInfo); err != nil {
+		return models.Address{}, err
+	}
 	addressInfo.Sanitize()
 
 	address, err := uc.repo.CreateAddress(ctx, userID, addressInfo)

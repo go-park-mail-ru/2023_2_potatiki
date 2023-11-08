@@ -64,3 +64,26 @@ func (p *UpdateProfileDataPayload) Sanitize() {
 //	b.Passwords.NewPass = html.EscapeString(b.Passwords.NewPass)
 //	return json.Marshal(b)
 //}
+type AddressPayload struct {
+	City   string `json:"city" validate:"omitempty,max=32"`
+	Street string `json:"street" validate:"omitempty,max=32"`
+	House  string `json:"house" validate:"omitempty,max=32"`
+	Flat   string `json:"flat" validate:"omitempty,max=32"`
+}
+
+func (b *AddressPayload) Sanitize() {
+	b.City = html.EscapeString(b.City)
+	b.Street = html.EscapeString(b.Street)
+	b.House = html.EscapeString(b.House)
+	b.Flat = html.EscapeString(b.Flat)
+}
+
+//func (u AddressPayload) MarshalJSON() ([]byte, error) {
+//	type addressInfo AddressPayload
+//	b := addressInfo(u)
+//	b.City = html.EscapeString(b.City)
+//	b.Street = html.EscapeString(b.Street)
+//	b.House = html.EscapeString(b.House)
+//	b.Flat = html.EscapeString(b.Flat)
+//	return json.Marshal(b)
+//}

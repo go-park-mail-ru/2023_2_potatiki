@@ -1,8 +1,9 @@
 package models
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"html"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 type Address struct {
@@ -25,30 +26,6 @@ func (b *Address) Sanitize() {
 //func (u Address) MarshalJSON() ([]byte, error) {
 //	type address Address
 //	b := address(u)
-//	b.City = html.EscapeString(b.City)
-//	b.Street = html.EscapeString(b.Street)
-//	b.House = html.EscapeString(b.House)
-//	b.Flat = html.EscapeString(b.Flat)
-//	return json.Marshal(b)
-//}
-
-type AddressInfo struct {
-	City   string `json:"city"`
-	Street string `json:"street"`
-	House  string `json:"house"`
-	Flat   string `json:"flat"`
-}
-
-func (b *AddressInfo) Sanitize() {
-	b.City = html.EscapeString(b.City)
-	b.Street = html.EscapeString(b.Street)
-	b.House = html.EscapeString(b.House)
-	b.Flat = html.EscapeString(b.Flat)
-}
-
-//func (u AddressInfo) MarshalJSON() ([]byte, error) {
-//	type addressInfo AddressInfo
-//	b := addressInfo(u)
 //	b.City = html.EscapeString(b.City)
 //	b.Street = html.EscapeString(b.Street)
 //	b.House = html.EscapeString(b.House)

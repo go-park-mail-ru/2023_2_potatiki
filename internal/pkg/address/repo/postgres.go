@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/jackc/pgx/v4"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
@@ -63,7 +64,7 @@ func NewAddressRepo(db pgxtype.Querier) *AddressRepo {
 	}
 }
 
-func (r *AddressRepo) CreateAddress(ctx context.Context, userID uuid.UUID, addressInfo models.AddressInfo) (models.Address, error) {
+func (r *AddressRepo) CreateAddress(ctx context.Context, userID uuid.UUID, addressInfo models.AddressPayload) (models.Address, error) {
 	addressID := uuid.NewV4()
 	_, err := r.db.Exec(ctx, createAddress, addressID, userID,
 		addressInfo.City,
