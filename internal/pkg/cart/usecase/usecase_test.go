@@ -293,10 +293,14 @@ func TestCartUsecase_UpdateCart(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repo.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, repo.ErrCartNotFound)
 				f.repo.EXPECT().CreateCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), nil)
+				f.repo.EXPECT().UpdateCart(gomock.Any(),
+					models.Cart{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"),
+						ProfileId: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), IsCurrent: true}).
+					Return(models.Cart{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
+
 			},
-			args: args{context.Background(), models.Cart{ProfileId: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}},
-			want: models.Cart{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"),
-				ProfileId: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), IsCurrent: true},
+			args:    args{context.Background(), models.Cart{ProfileId: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}},
+			want:    models.Cart{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
 			wantErr: false,
 		},
 	}
