@@ -74,24 +74,26 @@ func (uc *CartUsecase) DeleteProduct(ctx context.Context, cart models.Cart, prod
 	}
 	return cart, err
 }
-
 func (uc *CartUsecase) UpdateCart(ctx context.Context, cart models.Cart) (models.Cart, error) {
 	_, err := uc.repo.ReadCart(ctx, cart.ProfileId)
-	if err != nil {
-		if errors.Is(err, repo.ErrCartNotFound) {
-			cart.Id, err = uc.repo.CreateCart(ctx, cart.ProfileId)
-			cart.IsCurrent = true
-			if err != nil {
-				return models.Cart{}, fmt.Errorf("error happened in repo.CreateCart: %w", err)
-			}
-			return cart, nil
+	if errors.Is(err, repo.ErrCartNotFound) {
+		cart.Id, err = uc.repo.CreateCart(ctx, cart.ProfileId)
+		cart.IsCurrent = true
+		if err != nil {
+			return models.Cart{}, err
 		}
-		return models.Cart{}, fmt.Errorf("error happened in repo.ReadCart: %w", err)
+	}
+
+	if err != nil {
+		return models.Cart{}, err
 	}
 
 	cart, err = uc.repo.UpdateCart(ctx, cart)
 	if err != nil {
-		return models.Cart{}, fmt.Errorf("error happened in repo.UpdateCart: %w", err)
+		err = fmt.Errorf("error happened in repo.UpdateCart: %w", err)
+
+		return models.Cart{}, err
 	}
+
 	return cart, nil
 }
