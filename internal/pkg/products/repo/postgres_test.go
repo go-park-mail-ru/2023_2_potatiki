@@ -40,7 +40,7 @@ func TestProductsRepo_ReadCategory(t *testing.T) {
 			id:      2,
 			paging:  4,
 			count:   6,
-			err:     ErrPoductNotFound,
+			err:     ErrProductNotFound,
 		},
 	}
 

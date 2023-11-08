@@ -25,7 +25,7 @@ func NewProductsUsecase(repo products.ProductsRepo) *ProductsUsecase {
 func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	product, err := uc.repo.ReadProduct(ctx, id)
 	if err != nil {
-		if errors.Is(err, repo.ErrPoductNotFound) {
+		if errors.Is(err, repo.ErrProductNotFound) {
 			// TODO: implement
 		}
 		err = fmt.Errorf("error happened in repo.ReadProduct: %w", err)

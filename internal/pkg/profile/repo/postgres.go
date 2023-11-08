@@ -2,7 +2,9 @@ package repo
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v4"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
@@ -15,6 +17,10 @@ const (
 	addProfile         = "INSERT INTO profile(id, login, description, imgsrc, phone, passwordhash) VALUES($1, $2, $3, $4, $5, $6);"
 	updateProfileInfo  = "UPDATE profile SET phone=$1, passwordhash=$2 WHERE id=$3;"
 	updateProfilePhoto = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
+)
+
+var (
+	ErrProfileNotFound = errors.New("profile not found")
 )
 
 type ProfileRepo struct {
@@ -32,7 +38,6 @@ func (r *ProfileRepo) CreateProfile(ctx context.Context, p *models.Profile) erro
 		p.Id, p.Login, p.Description, p.ImgSrc, p.Phone, p.PasswordHash)
 
 	if err != nil {
-		// !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
 		return err
@@ -45,6 +50,9 @@ func (r *ProfileRepo) ReadProfile(ctx context.Context, Id uuid.UUID) (*models.Pr
 	p := &models.Profile{Id: Id}
 	if err := r.db.QueryRow(ctx, profileById, Id).
 		Scan(&p.Login, &p.Description, &p.ImgSrc, &p.Phone, &p.PasswordHash); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return &models.Profile{}, ErrProfileNotFound
+		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
 		return &models.Profile{}, err
@@ -56,6 +64,9 @@ func (r *ProfileRepo) GetProfileIdByLogin(ctx context.Context, login string) (uu
 	row := r.db.QueryRow(ctx, profileIdByLogin, login)
 	var Id uuid.UUID
 	if err := row.Scan(&Id); err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return uuid.UUID{}, ErrProfileNotFound
+		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
 		return uuid.UUID{}, err
