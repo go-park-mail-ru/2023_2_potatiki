@@ -55,7 +55,7 @@ CREATE TABLE IF NOT EXISTS category
 
 INSERT INTO category
 VALUES
-    (1, 'Товары', NULL),
+    (1, 'Все товары', NULL),
     (2, 'Ноутбуки, планшеты и электронные книги', 1),
     (3, 'Планшеты', 2),
     (4, 'Электронные книги', 2),
@@ -137,13 +137,43 @@ CREATE TABLE IF NOT EXISTS product
 
 INSERT INTO product (id, name, price, imgsrc, description, rating, category_id)
 VALUES
-    ('550e8400-e29b-41d4-a716-446655440000', 'Apple MacBook Air 13 2020', 89999, 'macbook.png', '13-inch lightweight laptop', 4.5, 5),
-    ('be2c8b1b-8d27-4142-a31a-ac6676cf678a', 'Apple MacBook Pro 15 2020', 189999, 'macbook.png', '15-inch professional laptop', 4.85, 5),
-    ('007749b5-7e07-4be8-8c91-8db273ace4c1', 'Apple MacBook Pro 16 2020', 219999, 'macbook.png', '16-inch high-performance laptop', 4.95, 5),
-    ('0d1261e6-3d6f-4eb2-8acd-38fbb8611c5d', 'Apple MacBook Pro 14 2020', 149999, 'macbook.png', '14-inch professional laptop', 4.75, 5),
-    ('3fdc3e65-589d-4aea-be26-5d011dbf7dbd', 'Apple MacBook Pro 13 2020', 99999, 'macbook.png', '13-inch professional laptop', 4.65, 5),
-    ('007749b5-7e07-4be8-8c91-8db273ace4c2', 'Apple MacBook Air 15 2020', 137990, 'macbook.png', '15-inch high-performance laptop', 4.95, 5),
-    ('007749b5-7e07-4be8-8c91-8db273ace4c3', 'Apple MacBook Air 13 2022', 118990, 'macbook.png', '13-inch high-performance laptop', 5.00, 5),
+    ('550e8400-e29b-41d4-a716-446655440000', 'Apple MacBook Air 15 (M2, 8C CPU/10C GPU, 2023), 8 ГБ, 512 ГБ SSD, «полуночный черный»',
+     189990, 'MacbookAir15.png',
+     'Apple MacBook Air 15 — ноутбук, объединивший в себе инновационные технологии, большой четкий дисплей,' ||
+     ' высокую производительность, небольшие габариты и отличную эргономику. Это первая модель из линейки Air,' ||
+     ' которая получила экран диагональю 15 дюймов.', 4.7, 5),
+    
+    ('be2c8b1b-8d27-4142-a31a-ac6676cf678a', 'Apple MacBook Pro 14" (M3 Max 14C CPU, 30C GPU, 2023) 36 ГБ, 1 ТБ SSD, серебристый',
+     229999, 'MacbookPro14M3Grey.jpg',
+     'Apple MacBook Pro — мощный и легкий ноутбук, предназначенный для профессиональной деятельности. ' ||
+     'В устройстве объединили бескомпромиссную мощь, четкий и яркий дисплей, продуманную эргономику и инновационные ' ||
+     'технологии. Корпус выполнен в строгом дизайне.', 4.85, 5),
+
+    ('007749b5-7e07-4be8-8c91-8db273ace4c1', 'Apple MacBook Pro 16" (M2 Max 12C CPU, 30C GPU, 2023) 64 ГБ, 1 ТБ SSD, «серый космос»',
+     249999, 'MacbookPro16M2MaxGrey.jpeg', 'Apple MacBook Pro — мощный и легкий ноутбук, предназначенный для профессиональной деятельности. ' ||
+    'В устройстве объединили бескомпромиссную мощь, четкий и яркий дисплей, продуманную эргономику и инновационные ' ||
+    'технологии. Корпус выполнен в строгом дизайне.', 4.95, 5),
+
+    ('0d1261e6-3d6f-4eb2-8acd-38fbb8611c5d', '14 Ультрабук HUAWEI MateBook D 14 NbD-WDI9 серый (53013FCE)',
+     79999, 'HUAWEIMateBookD14.jpg',
+     'Ноутбук HUAWEI MateBook D 14 i5-1155G7 BoDE-WFH9 SpaceGray — устройство в корпусе из алюминиевого сплава,' ||
+     ' которое работает на базе ОС Windows 11. Для управления предусмотрена клавиатура с английской и русской раскладкой. ' ||
+     'Веб-камера разрешением на 1 Мп дает возможность принимать участие в видеоконференциях. ', 4.75, 5),
+
+    ('3fdc3e65-589d-4aea-be26-5d011dbf7dbd', 'Asus TUF Gaming A15 FX506HE-HN012 (90NR0704-M02050)',
+     99999, 'AsusTUFGamingA15.jpg', 'Игровой ноутбук Asus TUF Gaming A15 FX506HE-HN012 i5 11400H/8Gb/512Gb SSD/15.6" ' ||
+    'FHD IPS 144Ghz/RTX 3050Ti 4Gb/DOS/Graphite Black. Для управления предусмотрена клавиатура с английской и русской раскладкой.', 4.65, 5),
+
+    ('007749b5-7e07-4be8-8c91-8db273ace4c2', 'MSI Modern 14 C12M-249XBY-BB31215U8GXXDXX (Modern 14 C12M-249XBY-BB31215U8GXXDXX)',
+     52990, 'MSIModern14.jpg',
+     'Ноутбук MSI Modern 14 C12M-249XBY-BB31215U8GXXDXX 14" FHD IPS i3-1215U/8Gb/SSD 256Gb/Iris ' ||
+     'Xe/DOS/Classic Black (Modern 14 C12M-249XBY-BB31215U8GXXDXX) Для управления предусмотрена клавиатура с английской и русской раскладкой.', 4.95, 5),
+
+    ('007749b5-7e07-4be8-8c91-8db273ace4c3', 'Ноутбук Lenovo IdeaPad 3 15ITL6 (82H801B6RK)', 118990,
+     'lenovo3.jpg',
+     'Ноутбук Lenovo IdeaPad 3 15ITL6 i5 1135G7/12Gb/1Tb HDD + 256Gb SSD/noDVD/GeForce MX350 2Gb/15.6" ' ||
+     'IPS FHD/noOS/Grey (82H801B6RK) Для управления предусмотрена клавиатура с английской и русской раскладкой.', 5.00, 5),
+
     ('007749b5-7e07-4be8-8c91-8db273ace4c4', 'Apple MacBook Air 13 2021', 120990, 'macbook.png', '13-inch high-performance laptop', 4.75, 5),
     ('007749b5-7e07-4be8-8c91-8db273ace4c5', 'Apple MacBook Air 15 2022', 108990, 'macbook.png', '15-inch professional laptop', 5.00, 5),
     ('007749b5-7e07-4be8-8c91-8db273ace4c6', 'Apple MacBook Air 13 2023', 98990, 'macbook.png', '13-inch lightweight laptop', 4.65, 5),

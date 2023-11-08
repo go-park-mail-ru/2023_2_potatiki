@@ -8,7 +8,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-//go:generate mockgen -source interfaces.go -destination ./mocks/auth_mock.go -package mock
+//go:generate mockgen -source interfaces.go -destination ./mocks/profile_mock.go -package mock
 
 type ProfileUsecase interface {
 	GetProfile(context.Context, uuid.UUID) (*models.Profile, error)

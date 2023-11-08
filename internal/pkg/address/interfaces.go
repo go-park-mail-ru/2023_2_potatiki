@@ -10,7 +10,7 @@ import (
 //go:generate mockgen -source interfaces.go -destination ./mocks/address_mock.go -package mock
 
 type AddressUsecase interface {
-	AddAddress(context.Context, uuid.UUID, models.AddressInfo) (models.Address, error)
+	AddAddress(context.Context, uuid.UUID, models.AddressPayload) (models.Address, error)
 	UpdateAddress(context.Context, models.Address) (models.Address, error)
 	DeleteAddress(context.Context, models.AddressDelete) error
 	MakeCurrentAddress(context.Context, models.AddressMakeCurrent) error
@@ -19,7 +19,7 @@ type AddressUsecase interface {
 }
 
 type AddressRepo interface {
-	CreateAddress(context.Context, uuid.UUID, models.AddressInfo) (models.Address, error)
+	CreateAddress(context.Context, uuid.UUID, models.AddressPayload) (models.Address, error)
 	UpdateAddress(context.Context, models.Address) error
 	DeleteAddress(context.Context, models.AddressDelete) error
 	MakeCurrentAddress(context.Context, models.AddressMakeCurrent) error

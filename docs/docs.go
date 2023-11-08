@@ -895,7 +895,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/profile/update-photo/{id}": {
+        "/api/profile/update-photo": {
             "post": {
                 "description": "Update profile photo",
                 "consumes": [

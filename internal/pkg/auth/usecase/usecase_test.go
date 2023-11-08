@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"errors"
+	"reflect"
 	"testing"
 	"time"
 
@@ -135,4 +136,32 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 	assert.NotNil(t, err)
 	assert.NotNil(t, profile)
 	assert.Empty(t, token)
+}
+
+func TestAuthUsecase_CheckAuth(t *testing.T) {
+	type args struct {
+		ctx context.Context
+		Id  uuid.UUID
+	}
+	tests := []struct {
+		name    string
+		uc      *AuthUsecase
+		args    args
+		want    *models.Profile
+		wantErr bool
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := tt.uc.CheckAuth(tt.args.ctx, tt.args.Id)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("AuthUsecase.CheckAuth() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("AuthUsecase.CheckAuth() = %v, want %v", got, tt.want)
+			}
+		})
+	}
 }

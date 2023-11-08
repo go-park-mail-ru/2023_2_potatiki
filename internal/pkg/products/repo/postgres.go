@@ -35,7 +35,7 @@ const (
 )
 
 var (
-	ErrPoductNotFound = errors.New("product not found")
+	ErrProductNotFound = errors.New("product not found")
 )
 
 type ProductsRepo struct {
@@ -54,7 +54,7 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.ImgSrc, &pr.Rating, &pr.Category.Id, &pr.Category.Name)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return models.Product{}, ErrPoductNotFound
+			return models.Product{}, ErrProductNotFound
 		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
@@ -69,7 +69,7 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 	rows, err := r.db.Query(ctx, getProducts, count, paging)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return []models.Product{}, ErrPoductNotFound
+			return []models.Product{}, ErrProductNotFound
 		}
 		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
 
@@ -102,10 +102,9 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 func (r *ProductsRepo) ReadCategory(ctx context.Context, id int, paging, count int64) ([]models.Product, error) {
 	productSlice := make([]models.Product, 0)
 	rows, err := r.db.Query(ctx, getProductsByCategoryID, count, paging, id)
-	fmt.Println(count, paging, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return []models.Product{}, ErrPoductNotFound
+			return []models.Product{}, ErrProductNotFound
 		}
 		err = fmt.Errorf("error happened in db.Query: %w", err)
 

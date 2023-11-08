@@ -37,7 +37,7 @@ func (m *MockAddressUsecase) EXPECT() *MockAddressUsecaseMockRecorder {
 }
 
 // AddAddress mocks base method.
-func (m *MockAddressUsecase) AddAddress(arg0 context.Context, arg1 uuid.UUID, arg2 models.AddressInfo) (models.Address, error) {
+func (m *MockAddressUsecase) AddAddress(arg0 context.Context, arg1 uuid.UUID, arg2 models.AddressPayload) (models.Address, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "AddAddress", arg0, arg1, arg2)
 	ret0, _ := ret[0].(models.Address)
@@ -148,7 +148,7 @@ func (m *MockAddressRepo) EXPECT() *MockAddressRepoMockRecorder {
 }
 
 // CreateAddress mocks base method.
-func (m *MockAddressRepo) CreateAddress(arg0 context.Context, arg1 uuid.UUID, arg2 models.AddressInfo) (models.Address, error) {
+func (m *MockAddressRepo) CreateAddress(arg0 context.Context, arg1 uuid.UUID, arg2 models.AddressPayload) (models.Address, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateAddress", arg0, arg1, arg2)
 	ret0, _ := ret[0].(models.Address)
