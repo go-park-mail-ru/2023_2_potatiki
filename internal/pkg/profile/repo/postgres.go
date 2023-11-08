@@ -38,7 +38,7 @@ func (r *ProfileRepo) CreateProfile(ctx context.Context, p *models.Profile) erro
 		p.Id, p.Login, p.Description, p.ImgSrc, p.Phone, p.PasswordHash)
 
 	if err != nil {
-		err = fmt.Errorf("error happened in rows.Scan: %w", err)
+		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
 		return err
 	}
