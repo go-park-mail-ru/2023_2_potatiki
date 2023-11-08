@@ -92,25 +92,31 @@ func TestAddressUsecase_UpdateAddress(t *testing.T) {
 		want    models.Address
 		wantErr bool
 	}{
-		/*{
+		{
 			name: "TestAddressUsecase_UpdateAddress good",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().CreateAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), models.AddressPayload{}).Return(models.Address{}, nil)
-
+				f.repo.EXPECT().UpdateAddress(gomock.Any(), models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"),
+					ProfileId: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}).Return(nil)
+				f.repo.EXPECT().ReadAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).
+					Return(models.Address{}, nil)
 			},
-			args:    args{context.Background(), models.Address{}},
+			args: args{context.Background(), models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"),
+				ProfileId: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}},
 			want:    models.Address{},
 			wantErr: false,
 		},
 		{
 			name: "TestAddressUsecase_UpdateAddress bad",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().CreateAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), models.AddressPayload{}).Return(models.Address{}, errors.New("dummyError"))
-
+				f.repo.EXPECT().UpdateAddress(gomock.Any(), models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"),
+					ProfileId: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}).Return(nil)
+				f.repo.EXPECT().ReadAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).
+					Return(models.Address{}, errors.New("dummyError"))
 			},
-			args:    args{context.Background(), models.Address{}},
+			args: args{context.Background(), models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"),
+				ProfileId: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}},
 			wantErr: true,
-		},*/
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -152,7 +158,22 @@ func TestAddressUsecase_DeleteAddress(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "TestAddressUsecase_DeleteAddress good",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().DeleteAddress(gomock.Any(), models.AddressDelete{}).Return(nil)
+			},
+			args:    args{context.Background(), models.AddressDelete{}},
+			wantErr: false,
+		},
+		{
+			name: "TestAddressUsecase_DeleteAddress bad",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().DeleteAddress(gomock.Any(), models.AddressDelete{}).Return(errors.New("dummyError"))
+			},
+			args:    args{context.Background(), models.AddressDelete{}},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -189,7 +210,22 @@ func TestAddressUsecase_MakeCurrentAddress(t *testing.T) {
 		args    args
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "TestAddressUsecase_MakeCurrentAddress good",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().MakeCurrentAddress(gomock.Any(), models.AddressMakeCurrent{}).Return(nil)
+			},
+			args:    args{context.Background(), models.AddressMakeCurrent{}},
+			wantErr: false,
+		},
+		{
+			name: "TestAddressUsecase_MakeCurrentAddress bad",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().MakeCurrentAddress(gomock.Any(), models.AddressMakeCurrent{}).Return(errors.New("dummyError"))
+			},
+			args:    args{context.Background(), models.AddressMakeCurrent{}},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -227,7 +263,22 @@ func TestAddressUsecase_GetCurrentAddress(t *testing.T) {
 		want    models.Address
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "TestAddressUsecase_GetCurrentAddress good",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{}, nil)
+			},
+			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
+			wantErr: false,
+		},
+		{
+			name: "TestAddressUsecase_GetCurrentAddress bad",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{}, errors.New("dummyError"))
+			},
+			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -270,7 +321,23 @@ func TestAddressUsecase_GetAllAddresses(t *testing.T) {
 		want    []models.Address
 		wantErr bool
 	}{
-		// TODO: Add test cases.
+		{
+			name: "TestAddressUsecase_GetAllAddresses good",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().ReadAllAddresses(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return([]models.Address{}, nil)
+			},
+			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
+			want:    []models.Address{},
+			wantErr: false,
+		},
+		{
+			name: "TestAddressUsecase_GetAllAddresses bad",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().ReadAllAddresses(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return([]models.Address{}, errors.New("dummyError"))
+			},
+			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
+			wantErr: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
