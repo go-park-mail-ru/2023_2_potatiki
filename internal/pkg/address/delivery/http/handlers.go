@@ -3,12 +3,13 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 	"io"
 	"log/slog"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
@@ -59,7 +60,7 @@ func (h *AddressHandler) AddAddress(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
-	addressInfo := models.AddressInfo{}
+	addressInfo := models.AddressPayload{}
 	err = json.Unmarshal(body, &addressInfo)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
