@@ -67,7 +67,6 @@ func (r *ProfileRepo) GetProfileIdByLogin(ctx context.Context, login string) (uu
 func (r *ProfileRepo) UpdateProfile(ctx context.Context, p *models.Profile) error {
 	_, err := r.db.Exec(ctx, updateProfileInfo, p.Phone, p.PasswordHash, p.Id)
 	if err != nil {
-		// !errcheck.Is(err, sql.ErrNoRows) будут проверять на рк
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
 		return err
