@@ -102,7 +102,6 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 func (r *ProductsRepo) ReadCategory(ctx context.Context, id int, paging, count int64) ([]models.Product, error) {
 	productSlice := make([]models.Product, 0)
 	rows, err := r.db.Query(ctx, getProductsByCategoryID, count, paging, id)
-	fmt.Println(count, paging, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Product{}, ErrPoductNotFound
