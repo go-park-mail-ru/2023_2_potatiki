@@ -56,23 +56,27 @@ CREATE TABLE IF NOT EXISTS category
 INSERT INTO category
 VALUES
     (1, 'Все товары', NULL),
-    (2, 'Ноутбуки и планшеты', 1),
-    (3, 'Планшеты', 2),
-    (4, 'Ноутбуки', 2),
-    (5, 'Бытовая техника', 1),
-    (6, 'Холодильники', 5),
-    (7, 'Стиральные машины', 5),
-    (8, 'Пылесосы', 5),
-    (9, 'Мебель', 1),
-    (91, 'Стулья', 9),
-    (92, 'Рабочие столы', 9),
-    (93, 'Диваны', 9),
-    (94, 'Кресла', 9),
-    (10, 'Канцелярия', 1),
-    (101, 'Тетради', 10),
-    (102, 'Письменные принадлежности', 10),
-    (103, 'Пеналы', 10),
-    (104, 'Клей', 10);
+	    (2, 'Ноутбуки и планшеты', 1),
+	    (3, 'Планшеты', 2),
+	    (4, 'Ноутбуки', 2),
+	    (5, 'Бытовая техника', 1),
+	    (6, 'Холодильники', 5),
+	    (7, 'Стиральные машины', 5),
+	    (8, 'Пылесосы', 5),
+		(9, 'Мебель', 1),
+		(91, 'Стулья', 9),
+		(92, 'Рабочие столы', 9),
+		(93, 'Диваны', 9),
+		(94, 'Кресла', 9),
+		(10, 'Канцелярия', 1),
+		(101, 'Тетради', 10),
+		(102, 'Письменные принадлежности', 10),
+		(103, 'Пеналы', 10),
+		(104, 'Клей', 10),
+		(11, 'Товары для геймеров', 1),
+		(111, 'Nintendo', 11),
+		(112, 'Xbox', 11),
+		(113, 'PlayStation', 11);
 
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -852,3 +856,60 @@ INSERT INTO product (id, name, price, imgsrc, description, rating, category_id)
     ('1ab4e291-8aa4-43da-8ac4-53ee94b9e60b', 'Клей-карандаш Каждый день 9 г 876639', 17, '104-1ab4e291-8aa4-43da-8ac4-53ee94b9e60b.jpg', 'Самый лучший среди товаров на рынке Клей-карандаш Каждый день 9 г 876639', 4.28, 104),
     ('e21d076c-e9b3-45c4-8abf-51fa6b6cd9c8', 'Клей-карандаш Lamark 40 г', 99, '104-e21d076c-e9b3-45c4-8abf-51fa6b6cd9c8.jpg', 'Самый лучший среди товаров на рынке Клей-карандаш Lamark 40 г', 4.95, 104),
     ('57901384-1f05-42d9-93cf-62638e818ed8', 'Клей-карандаш OfficeSpace, дисплей, 15 грамм', 149, '104-57901384-1f05-42d9-93cf-62638e818ed8.jpg', 'Самый лучший среди товаров на рынке Клей-карандаш OfficeSpace, дисплей, 15 грамм', 4.79, 104);
+
+INSERT INTO product (id, name, price, imgsrc, description, rating, category_id)
+	VALUES
+
+    ('1a1ff45d-5f9c-4f24-a819-4335029cd4e9', 'Игра Legend of Zelda: Breath of the Wild для Nintendo Switch', 5990, '111-1a1ff45d-5f9c-4f24-a819-4335029cd4e9.jpg', 'Самый лучший среди товаров на рынке Игра Legend of Zelda: Breath of the Wild для Nintendo Switch', 4.95, 111),
+    ('800310c2-bd9e-41e4-823b-28c1ed43a33f', 'Игра Super Mario Party для Nintendo Switch', 6280, '111-800310c2-bd9e-41e4-823b-28c1ed43a33f.jpg', 'Самый лучший среди товаров на рынке Игра Super Mario Party для Nintendo Switch', 4.95, 111),
+    ('9dcb6943-3c55-4876-9122-99fdf5610666', 'Игра Super Mario Odyssey для Nintendo Switch', 5940, '111-9dcb6943-3c55-4876-9122-99fdf5610666.jpg', 'Самый лучший среди товаров на рынке Игра Super Mario Odyssey для Nintendo Switch', 4.95, 111),
+    ('b8e8c0d7-3920-4766-9449-67ecfaf5ffd3', 'Игра Labo Toy-Con 02 Robot Kit для Nintendo Switch', 3490, '111-b8e8c0d7-3920-4766-9449-67ecfaf5ffd3.jpg', 'Самый лучший среди товаров на рынке Игра Labo Toy-Con 02 Robot Kit для Nintendo Switch', 4.95, 111),
+    ('7ee4ac45-9850-437f-9a99-f66b94854d0d', 'Игра Xenoblade Chronicles 2: TTGC для Nintendo Switch', 5480, '111-7ee4ac45-9850-437f-9a99-f66b94854d0d.jpg', 'Самый лучший среди товаров на рынке Игра Xenoblade Chronicles 2: TTGC для Nintendo Switch', 4.95, 111),
+    ('86adb1dc-a911-46b4-839a-bd00944f6ba8', 'Игра WWE 2K18 для Nintendo Switch', 5090, '111-86adb1dc-a911-46b4-839a-bd00944f6ba8.jpg', 'Самый лучший среди товаров на рынке Игра WWE 2K18 для Nintendo Switch', 4.95, 111),
+    ('3b026fdb-ab23-4908-be89-7776d6531bed', 'Игра Captain Toad: Treasure Tracker для Nintendo Switch', 5140, '111-3b026fdb-ab23-4908-be89-7776d6531bed.jpg', 'Самый лучший среди товаров на рынке Игра Captain Toad: Treasure Tracker для Nintendo Switch', 4.95, 111),
+    ('2aa07f7f-4cb5-4c55-91c5-f6f669c77c07', 'Игра Splatoon 2 для Nintendo Switch', 3950, '111-2aa07f7f-4cb5-4c55-91c5-f6f669c77c07.jpg', 'Самый лучший среди товаров на рынке Игра Splatoon 2 для Nintendo Switch', 4.95, 111),
+    ('53f4805c-5578-41ad-8e99-094ace9ab320', 'Игра FIFA World Cup 2018 для Nintendo Switch', 3999, '111-53f4805c-5578-41ad-8e99-094ace9ab320.jpg', 'Самый лучший среди товаров на рынке Игра FIFA World Cup 2018 для Nintendo Switch', 4.95, 111),
+    ('25c91ba5-07d3-4880-860c-950931cf207d', 'Игра Mario Kart 7 для Nintendo 3DS', 2680, '111-25c91ba5-07d3-4880-860c-950931cf207d.jpg', 'Самый лучший среди товаров на рынке Игра Mario Kart 7 для Nintendo 3DS', 4.95, 111),
+    ('68adac3a-a691-4af3-b9e9-14fd2dd60e24', 'Игра LEGO Marvel Super Heroes 2 для Nintendo Switch', 4150, '111-68adac3a-a691-4af3-b9e9-14fd2dd60e24.jpg', 'Самый лучший среди товаров на рынке Игра LEGO Marvel Super Heroes 2 для Nintendo Switch', 4.95, 111),
+    ('c27ad4c5-04f8-4c49-90b4-e18dcd35c36e', 'Игра Mario Tennis Aces для Nintendo Switch', 6360, '111-c27ad4c5-04f8-4c49-90b4-e18dcd35c36e.jpg', 'Самый лучший среди товаров на рынке Игра Mario Tennis Aces для Nintendo Switch', 4.95, 111),
+    ('d6ad0657-deca-48a4-837e-2c54cbcbbcce', 'Игра FIFA 19 Стандартное издание для Nintendo Switch', 2999, '111-d6ad0657-deca-48a4-837e-2c54cbcbbcce.jpg', 'Самый лучший среди товаров на рынке Игра FIFA 19 Стандартное издание для Nintendo Switch', 4.95, 111),
+    ('8c3824ea-ccc5-4f58-bf1b-7ad2a3d52436', 'Игра Dragon Ball Fighter Z для Nintendo Switch', 3490, '111-8c3824ea-ccc5-4f58-bf1b-7ad2a3d52436.jpg', 'Самый лучший среди товаров на рынке Игра Dragon Ball Fighter Z для Nintendo Switch', 4.95, 111);
+
+INSERT INTO product (id, name, price, imgsrc, description, rating, category_id)
+	VALUES
+
+    ('6f182a7c-f946-4e90-9f0c-022c21bd9d1c', 'Геймпад Sony DualShock 4 v2 для Playstation 4 Black (CUH-ZCT2E)', 5450, '113-6f182a7c-f946-4e90-9f0c-022c21bd9d1c.jpg', 'Самый лучший среди товаров на рынке Геймпад Sony DualShock 4 v2 для Playstation 4 Black (CUH-ZCT2E)', 4.95, 113),
+    ('94333253-5a41-4ddc-8725-bbb23f6feb13', 'Игра Red Dead Redemption 2 для PlayStation 4', 2980, '113-94333253-5a41-4ddc-8725-bbb23f6feb13.jpg', 'Самый лучший среди товаров на рынке Игра Red Dead Redemption 2 для PlayStation 4', 4.95, 113),
+    ('2c217273-e9de-4df2-ae1c-2423c4c94758', 'Игра Grand Theft Auto V для PlayStation 4', 2388, '113-2c217273-e9de-4df2-ae1c-2423c4c94758.jpg', 'Самый лучший среди товаров на рынке Игра Grand Theft Auto V для PlayStation 4', 4.95, 113),
+    ('c34a56d6-766f-496f-a968-4baa228708ed', 'Геймпад Sony DualShock 4 v2 для Playstation 4 Red (CUH-ZCT2E)', 5450, '113-c34a56d6-766f-496f-a968-4baa228708ed.jpg', 'Самый лучший среди товаров на рынке Геймпад Sony DualShock 4 v2 для Playstation 4 Red (CUH-ZCT2E)', 4.95, 113),
+    ('6b8e158b-bfdf-433d-917c-0dae0d11a2ab', 'Геймпад Sony DualShock 4 v2 для Playstation 4 White (CUH-ZCT2E)', 5450, '113-6b8e158b-bfdf-433d-917c-0dae0d11a2ab.jpg', 'Самый лучший среди товаров на рынке Геймпад Sony DualShock 4 v2 для Playstation 4 White (CUH-ZCT2E)', 4.95, 113),
+    ('5e6f33f8-3811-4156-b83e-bdb2d8b6e155', 'Геймпад Sony DualShock 4 v2 для Playstation 4 Blue (CUH-ZCT2E)', 5450, '113-5e6f33f8-3811-4156-b83e-bdb2d8b6e155.jpg', 'Самый лучший среди товаров на рынке Геймпад Sony DualShock 4 v2 для Playstation 4 Blue (CUH-ZCT2E)', 4.95, 113),
+    ('c94a282a-19e8-4120-81a1-e90ed3039076', 'Игровая приставка Sony Playstation 4 Pro 1TB (CUH-7208B) Black', 59999, '113-c94a282a-19e8-4120-81a1-e90ed3039076.jpg', 'Самый лучший среди товаров на рынке Игровая приставка Sony Playstation 4 Pro 1TB (CUH-7208B) Black', 4.95, 113),
+    ('ecbf0b14-19b8-4a3d-a677-9a57098c6e2a', 'Игра Assassin's Creed Истоки для PlayStation 4', 2680, '113-ecbf0b14-19b8-4a3d-a677-9a57098c6e2a.jpg', 'Самый лучший среди товаров на рынке Игра Assassin's Creed Истоки для PlayStation 4', 4.95, 113),
+    ('32350324-c930-42f4-b290-2d90e313854e', 'Игра Mortal Kombat XL для PlayStation 4', 2480, '113-32350324-c930-42f4-b290-2d90e313854e.jpg', 'Самый лучший среди товаров на рынке Игра Mortal Kombat XL для PlayStation 4', 4.95, 113),
+    ('0de9dde8-8d99-447c-8cef-53a0cf43da70', 'Игра LEGO DC Super-Villains для PlayStation 4', 2450, '113-0de9dde8-8d99-447c-8cef-53a0cf43da70.jpg', 'Самый лучший среди товаров на рынке Игра LEGO DC Super-Villains для PlayStation 4', 4.95, 113),
+    ('d1037bf1-d168-40e8-b392-9225ce65e5f0', 'Игра Assassin's Creed: Одиссея для PlayStation 4', 2950, '113-d1037bf1-d168-40e8-b392-9225ce65e5f0.jpg', 'Самый лучший среди товаров на рынке Игра Assassin's Creed: Одиссея для PlayStation 4', 4.95, 113),
+    ('8d2a7664-d600-4584-8661-b0d0c7572e36', 'Игра Horizon Zero Dawn Complete Edition для PlayStation 4', 1950, '113-8d2a7664-d600-4584-8661-b0d0c7572e36.jpg', 'Самый лучший среди товаров на рынке Игра Horizon Zero Dawn Complete Edition для PlayStation 4', 4.95, 113),
+    ('c3e2c734-8c1b-486e-b406-cf04b3e44975', 'Игра Shadow of the Tomb Raider для PlayStation 4', 2490, '113-c3e2c734-8c1b-486e-b406-cf04b3e44975.jpg', 'Самый лучший среди товаров на рынке Игра Shadow of the Tomb Raider для PlayStation 4', 4.95, 113),
+    ('b3fbdf1d-891b-4c46-829a-c5484663c2ed', 'Игра Resident Evil 7 (VR) для PlayStation 4', 2490, '113-b3fbdf1d-891b-4c46-829a-c5484663c2ed.jpg', 'Самый лучший среди товаров на рынке Игра Resident Evil 7 (VR) для PlayStation 4', 4.95, 113),
+    ('ff1320f6-0c83-4158-ab67-938fe2d4f4b9', 'Игра Far Cry 5 для PlayStation 4', 2545, '113-ff1320f6-0c83-4158-ab67-938fe2d4f4b9.jpg', 'Самый лучший среди товаров на рынке Игра Far Cry 5 для PlayStation 4', 4.95, 113);
+
+
+INSERT INTO product (id, name, price, imgsrc, description, rating, category_id)
+	VALUES
+
+    ('8b10e288-b408-439d-a8eb-add27fad0199', 'Игра Red Dead Redemption 2 для Xbox One', 3155, '112-8b10e288-b408-439d-a8eb-add27fad0199.jpg', 'Самый лучший среди товаров на рынке Игра Red Dead Redemption 2 для Xbox One', 4.95, 112),
+    ('e276c8ab-29ae-4f82-b3dc-f9a96585da99', 'Игра Forza Horizon 4 для Xbox One', 4499, '112-e276c8ab-29ae-4f82-b3dc-f9a96585da99.jpg', 'Самый лучший среди товаров на рынке Игра Forza Horizon 4 для Xbox One', 4.95, 112),
+    ('e50bc9b4-8b55-4a11-92cb-183a323235a9', 'Игра Spyro Reignited Trilogy для Xbox One', 2850, '112-e50bc9b4-8b55-4a11-92cb-183a323235a9.jpg', 'Самый лучший среди товаров на рынке Игра Spyro Reignited Trilogy для Xbox One', 4.95, 112),
+    ('be16c2d7-9ce5-4ad8-a796-f9a12fa58e0f', 'Геймпад Microsoft для Xbox One/PC Minecraft Creeper (WL3-00057)', 7401, '112-be16c2d7-9ce5-4ad8-a796-f9a12fa58e0f.jpg', 'Самый лучший среди товаров на рынке Геймпад Microsoft для Xbox One/PC Minecraft Creeper (WL3-00057)', 4.95, 112),
+    ('7c83f0b1-223a-41f8-8ee0-c625a9dde777', 'Игра Crash Bandicoot Nsane Trilogy для Microsoft Xbox One', 3450, '112-7c83f0b1-223a-41f8-8ee0-c625a9dde777.jpg', 'Самый лучший среди товаров на рынке Игра Crash Bandicoot Nsane Trilogy для Microsoft Xbox One', 4.95, 112),
+    ('df9d95ba-0634-4b89-818a-f6950e6b2919', 'Игра Метро: Исход Издание первого дня для Xbox One', 2840, '112-df9d95ba-0634-4b89-818a-f6950e6b2919.jpg', 'Самый лучший среди товаров на рынке Игра Метро: Исход Издание первого дня для Xbox One', 4.95, 112),
+    ('c621f87b-4f98-4397-9bed-ede5b08a0276', 'Игра Hitman 2 для Xbox One', 2480, '112-c621f87b-4f98-4397-9bed-ede5b08a0276.jpg', 'Самый лучший среди товаров на рынке Игра Hitman 2 для Xbox One', 4.95, 112),
+    ('022a198a-c758-4b66-ad26-18707de36e13', 'Игра Grand Theft Auto V для Xbox One', 3422, '112-022a198a-c758-4b66-ad26-18707de36e13.jpg', 'Самый лучший среди товаров на рынке Игра Grand Theft Auto V для Xbox One', 4.95, 112),
+    ('cbc7376d-2fd7-4f1d-8d03-7bb9d9d0a17c', 'Игра Pro Evolution Soccer 2015 для Xbox One', 1490, '112-cbc7376d-2fd7-4f1d-8d03-7bb9d9d0a17c.jpg', 'Самый лучший среди товаров на рынке Игра Pro Evolution Soccer 2015 для Xbox One', 4.95, 112),
+    ('e0b971f0-6269-4355-9455-9c83d4258979', 'Игра Scream Ride для Xbox One', 1192, '112-e0b971f0-6269-4355-9455-9c83d4258979.jpg', 'Самый лучший среди товаров на рынке Игра Scream Ride для Xbox One', 4.95, 112),
+    ('b1e47efc-93d9-41b1-8d8c-efe42a84964e', 'Игра XCOM 2 для Xbox One', 2580, '112-b1e47efc-93d9-41b1-8d8c-efe42a84964e.jpg', 'Самый лучший среди товаров на рынке Игра XCOM 2 для Xbox One', 4.95, 112),
+    ('82ddec76-7086-40d1-880d-02c11613a95f', 'Игра Far Cry 5 для Xbox One', 2580, '112-82ddec76-7086-40d1-880d-02c11613a95f.jpg', 'Самый лучший среди товаров на рынке Игра Far Cry 5 для Xbox One', 4.95, 112),
+    ('f54a19c7-8cb6-4f97-a6b7-b0e3aa8c906f', 'Игра Destiny 2 для Microsoft Xbox One', 2690, '112-f54a19c7-8cb6-4f97-a6b7-b0e3aa8c906f.jpg', 'Самый лучший среди товаров на рынке Игра Destiny 2 для Microsoft Xbox One', 4.95, 112),
+    ('b0b9fcd7-83c7-4eb6-84d5-3274f6ba29a5', 'Игра FIFA 2018 для Xbox One', 2999, '112-b0b9fcd7-83c7-4eb6-84d5-3274f6ba29a5.jpg', 'Самый лучший среди товаров на рынке Игра FIFA 2018 для Xbox One', 4.95, 112),
+    ('572ab9da-0014-466e-a18a-9a99c6a2f715', 'Игра Monster Hunter: World для Xbox One', 2890, '112-572ab9da-0014-466e-a18a-9a99c6a2f715.jpg', 'Самый лучший среди товаров на рынке Игра Monster Hunter: World для Xbox One', 4.95, 112);
