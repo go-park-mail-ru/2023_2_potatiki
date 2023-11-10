@@ -126,7 +126,7 @@ VALUES
 CREATE TABLE IF NOT EXISTS product
 (
     id uuid NOT NULL PRIMARY KEY,
-    name text NOT NULL UNIQUE ,
+    name text NOT NULL,
     description text NOT NULL,
     price INT NOT NULL,
     imgsrc text NOT NULL,
