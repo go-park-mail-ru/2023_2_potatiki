@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+option go_package = "./protomodels";
+
+message Hello {
+  string line = 1;
+}
+
+service AuthService {
+  rpc SayHello(Hello) returns(Hello);
+}
