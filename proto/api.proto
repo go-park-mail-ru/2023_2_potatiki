@@ -6,6 +6,6 @@ message Hello {
   string line = 1;
 }
 
-service AuthService {
+service AuthServiceTest {
   rpc SayHello(Hello) returns(Hello);
 }

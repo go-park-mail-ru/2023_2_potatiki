@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
 	"io"
 	"log/slog"
 	"net/http"
@@ -17,14 +18,16 @@ import (
 )
 
 type AuthHandler struct {
-	log *slog.Logger
-	uc  auth.AuthUsecase
+	client generatedAuth.AuthServiceClient
+	log    *slog.Logger
+	uc     auth.AuthUsecase
 }
 
-func NewAuthHandler(log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
+func NewAuthHandler(cl generatedAuth.AuthServiceClient, log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 	return &AuthHandler{
-		log: log,
-		uc:  uc,
+		client: cl,
+		log:    log,
+		uc:     uc,
 	}
 }
 
@@ -51,8 +54,8 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 	defer r.Body.Close()
 
-	u := &models.SignInPayload{}
-	err = json.Unmarshal(body, u)
+	userInfo := &models.SignInPayload{}
+	err = json.Unmarshal(body, userInfo)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -60,8 +63,10 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, token, exp, err := h.uc.SignIn(r.Context(), u)
-
+	profileAndCookie, err := h.client.SignIn(r.Context(), &generatedAuth.SignInPayload{
+		Login:    userInfo.Login,
+		Password: userInfo.Password,
+	})
 	if err != nil {
 		h.log.Error("failed to signin", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
@@ -69,10 +74,18 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.log.Debug("got profile", slog.Any("profile", profile.Id))
+	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.ProfileInfo.Id))
 
-	http.SetCookie(w, authmw.MakeTokenCookie(token, exp))
-	resp.JSON(w, http.StatusOK, profile)
+	expiresTime, err := time.Parse(time.RFC3339, profileAndCookie.CookieInfo.Expires)
+	if err != nil {
+		h.log.Error("failed to parse time from grpc", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.CookieInfo.Token, expiresTime))
+	resp.JSON(w, http.StatusOK, profileAndCookie.ProfileInfo)
 }
 
 // @Summary	SignUp

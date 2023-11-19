@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
 )
@@ -20,6 +21,28 @@ func NewGrpcAuthHandler(uc auth.AuthUsecase) *GrpcAuthHandler {
 	}
 }
 
-func (h GrpcAuthHandler) SignIn(ctx context.Context, in *generatedAuth.SignInPayload) (*generatedAuth.Profile, error) {
-	return nil, nil
+func (h GrpcAuthHandler) SignIn(ctx context.Context, in *generatedAuth.SignInPayload) (*generatedAuth.ProfileAndCookie, error) {
+	userSignIn := models.SignInPayload{
+		Login:    in.Login,
+		Password: in.Password,
+	}
+
+	profile, token, expires, err := h.uc.SignIn(ctx, &userSignIn)
+	if err != nil {
+		return &generatedAuth.ProfileAndCookie{}, err
+	}
+
+	return &generatedAuth.ProfileAndCookie{
+		ProfileInfo: &generatedAuth.Profile{
+			Id:          profile.Id.String(),
+			Login:       profile.Login,
+			Description: profile.Description,
+			ImgSrc:      profile.ImgSrc,
+			Phone:       profile.Phone,
+		},
+		CookieInfo: &generatedAuth.Cookie{
+			Token:   token,
+			Expires: expires.String(),
+		},
+	}, nil
 }

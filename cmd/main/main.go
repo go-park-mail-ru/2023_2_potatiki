@@ -4,6 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
 	"net/http"
 	"os"
@@ -79,7 +82,9 @@ func run() (err error) {
 
 		return err
 	}
-	defer func() { err = errors.Join(err, logFile.Close()) }()
+	defer func() {
+		err = errors.Join(err, logFile.Close())
+	}()
 
 	log := logger.Set(cfg.Enviroment, logFile)
 
@@ -118,13 +123,30 @@ func run() (err error) {
 	// ----------------------------Database---------------------------- //
 	//
 	//
+	// ===============================Grpc============================== //
+	authConn, err := grpc.Dial(
+		"0.0.0.0:8010",
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Error("fail grpc.Dial auth", sl.Err(err))
+		err = fmt.Errorf("error happened in grpc.Dial auth: %w", err)
+
+		return err
+	}
+	defer authConn.Close()
+	// -------------------------------Grpc------------------------------- //
+	//
+	//
 	// ============================Init layers============================ //
+
+	authClient := generatedAuth.NewAuthServiceClient(authConn)
+
 	profileRepo := profileRepo.NewProfileRepo(db)
 	profileUsecase := profileUsecase.NewProfileUsecase(profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
-	authHandler := authHandler.NewAuthHandler(log, authUsecase)
+	authHandler := authHandler.NewAuthHandler(authClient, log, authUsecase)
 
 	cartRepo := cartRepo.NewCartRepo(db)
 	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)

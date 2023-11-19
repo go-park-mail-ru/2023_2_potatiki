@@ -19,89 +19,89 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_SayHello_FullMethodName = "/AuthService/SayHello"
+	AuthServiceTest_SayHello_FullMethodName = "/AuthServiceTest/SayHello"
 )
 
-// AuthServiceClient is the client API for AuthService service.
+// AuthServiceTestClient is the client API for AuthServiceTest service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
-type AuthServiceClient interface {
+type AuthServiceTestClient interface {
 	SayHello(ctx context.Context, in *Hello, opts ...grpc.CallOption) (*Hello, error)
 }
 
-type authServiceClient struct {
+type authServiceTestClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewAuthServiceClient(cc grpc.ClientConnInterface) AuthServiceClient {
-	return &authServiceClient{cc}
+func NewAuthServiceTestClient(cc grpc.ClientConnInterface) AuthServiceTestClient {
+	return &authServiceTestClient{cc}
 }
 
-func (c *authServiceClient) SayHello(ctx context.Context, in *Hello, opts ...grpc.CallOption) (*Hello, error) {
+func (c *authServiceTestClient) SayHello(ctx context.Context, in *Hello, opts ...grpc.CallOption) (*Hello, error) {
 	out := new(Hello)
-	err := c.cc.Invoke(ctx, AuthService_SayHello_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, AuthServiceTest_SayHello_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// AuthServiceServer is the server API for AuthService service.
-// All implementations must embed UnimplementedAuthServiceServer
+// AuthServiceTestServer is the server API for AuthServiceTest service.
+// All implementations must embed UnimplementedAuthServiceTestServer
 // for forward compatibility
-type AuthServiceServer interface {
+type AuthServiceTestServer interface {
 	SayHello(context.Context, *Hello) (*Hello, error)
-	mustEmbedUnimplementedAuthServiceServer()
+	mustEmbedUnimplementedAuthServiceTestServer()
 }
 
-// UnimplementedAuthServiceServer must be embedded to have forward compatible implementations.
-type UnimplementedAuthServiceServer struct {
+// UnimplementedAuthServiceTestServer must be embedded to have forward compatible implementations.
+type UnimplementedAuthServiceTestServer struct {
 }
 
-func (UnimplementedAuthServiceServer) SayHello(context.Context, *Hello) (*Hello, error) {
+func (UnimplementedAuthServiceTestServer) SayHello(context.Context, *Hello) (*Hello, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SayHello not implemented")
 }
-func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
+func (UnimplementedAuthServiceTestServer) mustEmbedUnimplementedAuthServiceTestServer() {}
 
-// UnsafeAuthServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to AuthServiceServer will
+// UnsafeAuthServiceTestServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to AuthServiceTestServer will
 // result in compilation errors.
-type UnsafeAuthServiceServer interface {
-	mustEmbedUnimplementedAuthServiceServer()
+type UnsafeAuthServiceTestServer interface {
+	mustEmbedUnimplementedAuthServiceTestServer()
 }
 
-func RegisterAuthServiceServer(s grpc.ServiceRegistrar, srv AuthServiceServer) {
-	s.RegisterService(&AuthService_ServiceDesc, srv)
+func RegisterAuthServiceTestServer(s grpc.ServiceRegistrar, srv AuthServiceTestServer) {
+	s.RegisterService(&AuthServiceTest_ServiceDesc, srv)
 }
 
-func _AuthService_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _AuthServiceTest_SayHello_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Hello)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(AuthServiceServer).SayHello(ctx, in)
+		return srv.(AuthServiceTestServer).SayHello(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: AuthService_SayHello_FullMethodName,
+		FullMethod: AuthServiceTest_SayHello_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(AuthServiceServer).SayHello(ctx, req.(*Hello))
+		return srv.(AuthServiceTestServer).SayHello(ctx, req.(*Hello))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
+// AuthServiceTest_ServiceDesc is the grpc.ServiceDesc for AuthServiceTest service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var AuthService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "AuthService",
-	HandlerType: (*AuthServiceServer)(nil),
+var AuthServiceTest_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "AuthServiceTest",
+	HandlerType: (*AuthServiceTestServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "SayHello",
-			Handler:    _AuthService_SayHello_Handler,
+			Handler:    _AuthServiceTest_SayHello_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
