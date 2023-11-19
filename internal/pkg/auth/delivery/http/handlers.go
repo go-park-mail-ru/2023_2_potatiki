@@ -23,6 +23,8 @@ type AuthHandler struct {
 	uc     auth.AuthUsecase
 }
 
+const customTimeFormat = "2006-01-02 15:04:05.999999999 -0700 UTC"
+
 func NewAuthHandler(cl generatedAuth.AuthServiceClient, log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 	return &AuthHandler{
 		client: cl,
@@ -76,9 +78,9 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.ProfileInfo.Id))
 
-	expiresTime, err := time.Parse(time.RFC3339, profileAndCookie.CookieInfo.Expires)
+	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.CookieInfo.Expires)
 	if err != nil {
-		h.log.Error("failed to parse time from grpc", sl.Err(err))
+		h.log.Error("failed to parse time from auth signin", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
@@ -110,8 +112,8 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
-	u := &models.SignUpPayload{}
-	err = json.Unmarshal(body, u)
+	userInfo := &models.SignUpPayload{}
+	err = json.Unmarshal(body, userInfo)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -119,7 +121,11 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profile, token, exp, err := h.uc.SignUp(r.Context(), u)
+	profileAndCookie, err := h.client.SignUp(r.Context(), &generatedAuth.SignUpPayload{
+		Login:    userInfo.Login,
+		Password: userInfo.Password,
+		Phone:    userInfo.Phone,
+	})
 	if err != nil {
 		h.log.Error("failed to signup", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
@@ -127,9 +133,18 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, authmw.MakeTokenCookie(token, exp))
-	h.log.Debug("got profile", slog.Any("profile", profile.Id))
-	resp.JSON(w, http.StatusOK, profile)
+	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.ProfileInfo.Id))
+
+	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.CookieInfo.Expires)
+	if err != nil {
+		h.log.Error("failed to parse time from auth signup", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.CookieInfo.Token, expiresTime))
+	resp.JSON(w, http.StatusOK, profileAndCookie.ProfileInfo)
 }
 
 // @Summary	Logout
@@ -173,7 +188,9 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("check auth success", "id", id)
 
-	profile, err := h.uc.CheckAuth(r.Context(), id)
+	profile, err := h.client.CheckAuth(r.Context(), &generatedAuth.UserID{
+		ID: id.String(),
+	})
 	if err != nil {
 		h.log.Error("failed to CheckAuth", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)

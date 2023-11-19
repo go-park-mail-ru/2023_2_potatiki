@@ -25,6 +25,18 @@ message Cookie {
   string Expires = 2;
 }
 
+message SignUpPayload {
+  string Login = 1;
+  string Password = 2;
+  string Phone = 3;
+}
+
+message UserID {
+  string ID = 1;
+}
+
 service AuthService {
   rpc SignIn(SignInPayload) returns (ProfileAndCookie) {}
+  rpc SignUp(SignUpPayload) returns (ProfileAndCookie) {}
+  rpc CheckAuth(UserID) returns (Profile) {}
 }

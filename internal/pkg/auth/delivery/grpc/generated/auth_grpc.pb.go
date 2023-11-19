@@ -19,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AuthService_SignIn_FullMethodName = "/AuthService/SignIn"
+	AuthService_SignIn_FullMethodName    = "/AuthService/SignIn"
+	AuthService_SignUp_FullMethodName    = "/AuthService/SignUp"
+	AuthService_CheckAuth_FullMethodName = "/AuthService/CheckAuth"
 )
 
 // AuthServiceClient is the client API for AuthService service.
@@ -27,6 +29,8 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthServiceClient interface {
 	SignIn(ctx context.Context, in *SignInPayload, opts ...grpc.CallOption) (*ProfileAndCookie, error)
+	SignUp(ctx context.Context, in *SignUpPayload, opts ...grpc.CallOption) (*ProfileAndCookie, error)
+	CheckAuth(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*Profile, error)
 }
 
 type authServiceClient struct {
@@ -46,11 +50,31 @@ func (c *authServiceClient) SignIn(ctx context.Context, in *SignInPayload, opts 
 	return out, nil
 }
 
+func (c *authServiceClient) SignUp(ctx context.Context, in *SignUpPayload, opts ...grpc.CallOption) (*ProfileAndCookie, error) {
+	out := new(ProfileAndCookie)
+	err := c.cc.Invoke(ctx, AuthService_SignUp_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authServiceClient) CheckAuth(ctx context.Context, in *UserID, opts ...grpc.CallOption) (*Profile, error) {
+	out := new(Profile)
+	err := c.cc.Invoke(ctx, AuthService_CheckAuth_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthServiceServer is the server API for AuthService service.
 // All implementations must embed UnimplementedAuthServiceServer
 // for forward compatibility
 type AuthServiceServer interface {
 	SignIn(context.Context, *SignInPayload) (*ProfileAndCookie, error)
+	SignUp(context.Context, *SignUpPayload) (*ProfileAndCookie, error)
+	CheckAuth(context.Context, *UserID) (*Profile, error)
 	mustEmbedUnimplementedAuthServiceServer()
 }
 
@@ -60,6 +84,12 @@ type UnimplementedAuthServiceServer struct {
 
 func (UnimplementedAuthServiceServer) SignIn(context.Context, *SignInPayload) (*ProfileAndCookie, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SignIn not implemented")
+}
+func (UnimplementedAuthServiceServer) SignUp(context.Context, *SignUpPayload) (*ProfileAndCookie, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SignUp not implemented")
+}
+func (UnimplementedAuthServiceServer) CheckAuth(context.Context, *UserID) (*Profile, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckAuth not implemented")
 }
 func (UnimplementedAuthServiceServer) mustEmbedUnimplementedAuthServiceServer() {}
 
@@ -92,6 +122,42 @@ func _AuthService_SignIn_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthService_SignUp_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SignUpPayload)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).SignUp(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_SignUp_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).SignUp(ctx, req.(*SignUpPayload))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthService_CheckAuth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserID)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthServiceServer).CheckAuth(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthService_CheckAuth_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthServiceServer).CheckAuth(ctx, req.(*UserID))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthService_ServiceDesc is the grpc.ServiceDesc for AuthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +168,14 @@ var AuthService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SignIn",
 			Handler:    _AuthService_SignIn_Handler,
+		},
+		{
+			MethodName: "SignUp",
+			Handler:    _AuthService_SignUp_Handler,
+		},
+		{
+			MethodName: "CheckAuth",
+			Handler:    _AuthService_CheckAuth_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

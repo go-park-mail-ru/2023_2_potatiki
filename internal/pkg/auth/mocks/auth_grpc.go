@@ -36,15 +36,35 @@ func (m *MockAuthServiceClient) EXPECT() *MockAuthServiceClientMockRecorder {
 	return m.recorder
 }
 
+// CheckAuth mocks base method.
+func (m *MockAuthServiceClient) CheckAuth(ctx context.Context, in *generated.UserID, opts ...grpc.CallOption) (*generated.Profile, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "CheckAuth", varargs...)
+	ret0, _ := ret[0].(*generated.Profile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckAuth indicates an expected call of CheckAuth.
+func (mr *MockAuthServiceClientMockRecorder) CheckAuth(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckAuth", reflect.TypeOf((*MockAuthServiceClient)(nil).CheckAuth), varargs...)
+}
+
 // SignIn mocks base method.
-func (m *MockAuthServiceClient) SignIn(ctx context.Context, in *generated.SignInPayload, opts ...grpc.CallOption) (*generated.Profile, error) {
+func (m *MockAuthServiceClient) SignIn(ctx context.Context, in *generated.SignInPayload, opts ...grpc.CallOption) (*generated.ProfileAndCookie, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx, in}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
 	ret := m.ctrl.Call(m, "SignIn", varargs...)
-	ret0, _ := ret[0].(*generated.Profile)
+	ret0, _ := ret[0].(*generated.ProfileAndCookie)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -54,6 +74,26 @@ func (mr *MockAuthServiceClientMockRecorder) SignIn(ctx, in interface{}, opts ..
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx, in}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignIn", reflect.TypeOf((*MockAuthServiceClient)(nil).SignIn), varargs...)
+}
+
+// SignUp mocks base method.
+func (m *MockAuthServiceClient) SignUp(ctx context.Context, in *generated.SignUpPayload, opts ...grpc.CallOption) (*generated.ProfileAndCookie, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, in}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "SignUp", varargs...)
+	ret0, _ := ret[0].(*generated.ProfileAndCookie)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SignUp indicates an expected call of SignUp.
+func (mr *MockAuthServiceClientMockRecorder) SignUp(ctx, in interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, in}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockAuthServiceClient)(nil).SignUp), varargs...)
 }
 
 // MockAuthServiceServer is a mock of AuthServiceServer interface.
@@ -79,11 +119,26 @@ func (m *MockAuthServiceServer) EXPECT() *MockAuthServiceServerMockRecorder {
 	return m.recorder
 }
 
+// CheckAuth mocks base method.
+func (m *MockAuthServiceServer) CheckAuth(arg0 context.Context, arg1 *generated.UserID) (*generated.Profile, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckAuth", arg0, arg1)
+	ret0, _ := ret[0].(*generated.Profile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CheckAuth indicates an expected call of CheckAuth.
+func (mr *MockAuthServiceServerMockRecorder) CheckAuth(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckAuth", reflect.TypeOf((*MockAuthServiceServer)(nil).CheckAuth), arg0, arg1)
+}
+
 // SignIn mocks base method.
-func (m *MockAuthServiceServer) SignIn(arg0 context.Context, arg1 *generated.SignInPayload) (*generated.Profile, error) {
+func (m *MockAuthServiceServer) SignIn(arg0 context.Context, arg1 *generated.SignInPayload) (*generated.ProfileAndCookie, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "SignIn", arg0, arg1)
-	ret0, _ := ret[0].(*generated.Profile)
+	ret0, _ := ret[0].(*generated.ProfileAndCookie)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -92,6 +147,21 @@ func (m *MockAuthServiceServer) SignIn(arg0 context.Context, arg1 *generated.Sig
 func (mr *MockAuthServiceServerMockRecorder) SignIn(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignIn", reflect.TypeOf((*MockAuthServiceServer)(nil).SignIn), arg0, arg1)
+}
+
+// SignUp mocks base method.
+func (m *MockAuthServiceServer) SignUp(arg0 context.Context, arg1 *generated.SignUpPayload) (*generated.ProfileAndCookie, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SignUp", arg0, arg1)
+	ret0, _ := ret[0].(*generated.ProfileAndCookie)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// SignUp indicates an expected call of SignUp.
+func (mr *MockAuthServiceServerMockRecorder) SignUp(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SignUp", reflect.TypeOf((*MockAuthServiceServer)(nil).SignUp), arg0, arg1)
 }
 
 // mustEmbedUnimplementedAuthServiceServer mocks base method.
