@@ -18,10 +18,6 @@ import (
 	"os"
 )
 
-//type Server struct {
-//	protomodels.AuthServiceServer
-//}
-
 func main() {
 	if err := run(); err != nil {
 		os.Exit(1)
