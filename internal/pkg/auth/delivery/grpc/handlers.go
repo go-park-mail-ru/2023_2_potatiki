@@ -12,6 +12,7 @@ import (
 
 type GrpcAuthHandler struct {
 	uc auth.AuthUsecase
+	// TODO: ADd logger
 
 	generatedAuth.AuthServiceServer
 }
@@ -31,7 +32,7 @@ func (h GrpcAuthHandler) SignIn(ctx context.Context, in *generatedAuth.SignInPay
 
 	profile, token, expires, err := h.uc.SignIn(ctx, &userSignIn)
 	if err != nil {
-		return &generatedAuth.ProfileAndCookie{}, err
+		return &generatedAuth.ProfileAndCookie{}, err //TODO: add err in model
 	}
 
 	return &generatedAuth.ProfileAndCookie{

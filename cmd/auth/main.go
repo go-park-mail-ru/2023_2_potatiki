@@ -91,11 +91,7 @@ func run() (err error) {
 
 	generatedAuth.RegisterAuthServiceServer(server, service)
 
-	err = server.Serve(listener)
-	if err != nil {
-		return err
-	}
-	return err
+	return server.Serve(listener)
 }
 
 //func main1() {
