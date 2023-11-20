@@ -93,26 +93,3 @@ func run() (err error) {
 
 	return server.Serve(listener)
 }
-
-//func main1() {
-//
-//	listener, err := net.Listen("tcp", "0.0.0.0:8010")
-//	if err != nil {
-//		return err
-//	}
-//
-//	server := grpc.NewServer()
-//
-//	protomodels.RegisterAuthServiceServer(server, &Server{})
-//
-//	err = server.Serve(listener)
-//	if err != nil {
-//		log.Fatal(err)
-//	}
-//
-//}
-//
-//func (s *Server) SayHello(context.Context, *protomodels.Hello) (*protomodels.Hello, error) {
-//
-//	return &protomodels.Hello{Line: "Hello world"}, nil
-//}
