@@ -37,7 +37,6 @@ services:
       - "pg_stat_statements.max=10000"
       - "-c"
       - "pg_stat_statements.track=all"
-      
     
     environment:
       PGDATA: "/var/lib/postgresql/data/pgdata" # storing db files
@@ -49,6 +48,7 @@ services:
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'
+      #- './build/sql/dict/:/usr/share/postgresql/15/tsearch_data/'
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
