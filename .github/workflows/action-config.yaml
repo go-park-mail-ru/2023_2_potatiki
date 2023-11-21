@@ -130,6 +130,9 @@ jobs:
 
             # Pull image DockerHub
             docker pull $REGISTRY/$IMAGE_NAME:latest
+            
+            # docker-entrypoint
+            chmod 777 ./build/sql
 
             # Restart docker-compose
             docker system prune -f

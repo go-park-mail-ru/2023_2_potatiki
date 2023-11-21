@@ -20,6 +20,18 @@ DROP TABLE IF EXISTS favorite;
 
 DROP TABLE IF EXISTS status;
 
+--- setup ru_RU dictionary ---
+CREATE TEXT SEARCH DICTIONARY russian_ispell (
+    TEMPLATE = ispell,
+    DictFile = russian,
+    AffFile = russian,
+    Stopwords = russian
+);
+CREATE TEXT SEARCH CONFIGURATION ru (COPY=russian);
+ALTER TEXT SEARCH CONFIGURATION ru
+    ALTER MAPPING FOR hword, hword_part, word
+    WITH russian_ispell, russian_stem;
+--- setup ru_RU dictionary ---
 
 CREATE TABLE IF NOT EXISTS profile
 (
@@ -146,6 +158,34 @@ CREATE TABLE IF NOT EXISTS product
     CHECK (rating >= 0),
     CHECK (price > 0)
     );
+
+
+--- DICTIONARY ---------------------------------------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION make_tsvector(name TEXT, description TEXT)
+    RETURNS tsvector AS
+$$
+BEGIN
+    RETURN (
+                    setweight(to_tsvector('ru', name), 'A') ||
+                    setweight(to_tsvector('ru', description), 'B') ||
+                    setweight(to_tsvector('english', name), 'C') ||
+                    setweight(to_tsvector('english', description), 'D')
+        );
+END
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION make_tsrank(param TEXT, phrase TEXT, lang regconfig)
+    RETURNS tsvector AS
+$$
+BEGIN
+    RETURN ts_rank(to_tsvector(lang, param), plainto_tsquery(lang, phrase));
+END
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+CREATE INDEX product_name_idx ON product (LOWER(name) varchar_pattern_ops);
+CREATE INDEX product_description_idx ON product (LOWER(description) varchar_pattern_ops);
+--- DICTIONARY ---------------------------------------------------------------------------------------------------------
+
 
 INSERT INTO product (id, name, price, imgsrc, description, rating, category_id)
 VALUES
