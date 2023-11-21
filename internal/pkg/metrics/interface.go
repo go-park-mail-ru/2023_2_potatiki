@@ -15,11 +15,11 @@ type Metric struct {
 }
 
 func NewMetrics() *Metric {
-	total := prometheus.NewCounter(prometheus.CounterOpts{Name: "HTTP_Requests_Total"})
+	total := prometheus.NewCounter(prometheus.CounterOpts{Name: "http_requests_total"})
 	prometheus.MustRegister(total)
 
 	label := []string{"status_code", "path"}
-	totalErrors := prometheus.NewCounterVec(prometheus.CounterOpts{Name: "HTTP_Requests_Total_Errors"}, label)
+	totalErrors := prometheus.NewCounterVec(prometheus.CounterOpts{Name: "http_requests_errors_total"}, label)
 	prometheus.MustRegister(totalErrors)
 
 	return &Metric{

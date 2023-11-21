@@ -25,6 +25,7 @@ linters:
     - errname
     - maintidx #???
     - stylecheck #???
+    - promlinter #???
     - funlen #del
     - staticcheck #del
     - sqlclosecheck #del
