@@ -41,6 +41,10 @@ import (
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
 
+	searchHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/delivery/http"
+	searchRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/repo"
+	searchUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/usecase"
+
 	profileHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/delivery/http"
 	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
 	profileUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/usecase"
@@ -133,6 +137,10 @@ func run() (err error) {
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
 	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
+
+	searchRepo := searchRepo.NewSearchRepo(db)
+	searchUsecase := searchUsecase.NewSearchUsecase(searchRepo, productsRepo)
+	searchHandler := searchHandler.NewSearchHandler(log, searchUsecase)
 
 	categoryRepo := categoryRepo.NewCategoryRepo(db)
 	categoryUsecase := categoryUsecase.NewCategoryUsecase(categoryRepo)
@@ -260,6 +268,12 @@ func run() (err error) {
 			Methods(http.MethodGet, http.MethodOptions)
 
 		address.Handle("/get_all", authMW(http.HandlerFunc(addressHandler.GetAllAddresses))).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	search := r.PathPrefix("/search").Subrouter()
+	{
+		search.HandleFunc("/", searchHandler.SearchProducts).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//

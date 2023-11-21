@@ -65,7 +65,7 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 }
 
 func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int64) ([]models.Product, error) {
-	productSlice := make([]models.Product, 0)
+	productSlice := make([]models.Product, 0, count)
 	rows, err := r.db.Query(ctx, getProducts, count, paging)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
