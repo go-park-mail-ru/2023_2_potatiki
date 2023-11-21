@@ -4,7 +4,9 @@ services:
 
   postgres:
     container_name: ${DB_HOST}
-    image: postgres:latest
+    build:
+      context: ./build
+      dockerfile: postgres.Dockerfile # FROM postgres:latest && RUN chmod 777 /usr/share/postgresql/16/tsearch_data
     restart: always
     command: 
       - "postgres"
