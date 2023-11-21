@@ -952,3 +952,30 @@ INSERT INTO product (id, name, price, imgsrc, description, rating, category_id)
     ('f54a19c7-8cb6-4f97-a6b7-b0e3aa8c906f', 'Игра Destiny 2 для Microsoft Xbox One', 2690, '112-f54a19c7-8cb6-4f97-a6b7-b0e3aa8c906f.jpg', 'Самый лучший среди товаров на рынке Игра Destiny 2 для Microsoft Xbox One', 4.95, 112),
     ('b0b9fcd7-83c7-4eb6-84d5-3274f6ba29a5', 'Игра FIFA 2018 для Xbox One', 2999, '112-b0b9fcd7-83c7-4eb6-84d5-3274f6ba29a5.jpg', 'Самый лучший среди товаров на рынке Игра FIFA 2018 для Xbox One', 4.95, 112),
     ('572ab9da-0014-466e-a18a-9a99c6a2f715', 'Игра Monster Hunter: World для Xbox One', 2890, '112-572ab9da-0014-466e-a18a-9a99c6a2f715.jpg', 'Самый лучший среди товаров на рынке Игра Monster Hunter: World для Xbox One', 4.95, 112);
+
+
+CREATE INDEX product_name_idx ON product (LOWER(name) varchar_pattern_ops);
+CREATE INDEX product_description_idx ON product (LOWER(description) varchar_pattern_ops);
+
+
+CREATE OR REPLACE FUNCTION make_tsvector(name TEXT, description TEXT)
+    RETURNS tsvector AS
+$$
+BEGIN
+RETURN (
+        setweight(to_tsvector('russian', name), 'A') ||
+        setweight(to_tsvector('russian', description), 'B') ||
+        setweight(to_tsvector('english', name), 'C') ||
+        setweight(to_tsvector('english', description), 'D')
+    );
+END
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION make_tsrank(param TEXT, phrase TEXT, lang regconfig)
+    RETURNS tsvector AS
+$$
+BEGIN
+RETURN ts_rank(to_tsvector(lang, param), plainto_tsquery(lang, phrase));
+END
+$$ LANGUAGE 'plpgsql' IMMUTABLE;
+

@@ -10,12 +10,22 @@ import (
 )
 
 const (
-	getProducts = `SELECT p.id, p.name, p.description, p.price, p.imgsrc, p.rating, p.category_id,
-    c.name AS category_name
+	getProductsByName = `
+	SELECT p.id,
+	   p.name,
+	   p.description,
+	   p.price,
+	   p.imgsrc,
+	   p.rating,
+	   p.category_id,
+	   c.name AS category_name
 	FROM product p
-	JOIN category c ON p.category_id = c.id
-	ORDER BY p.id
-	LIMIT $1 OFFSET $2;`
+		 JOIN category c ON p.category_id = c.id
+	WHERE make_tsvector(p.name, p.description)
+	@@
+	  (plainto_tsquery('english', $1))
+	OR lower(p.name) LIKE lower($1)
+	LIMIT 10;`
 )
 
 var (
@@ -33,10 +43,10 @@ func NewSearchRepo(db pgxtype.Querier) *SearchRepo {
 }
 
 func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string) ([]models.Product, error) {
-	paging := 30
+
 	count := 10
 	productSlice := make([]models.Product, 0, count)
-	rows, err := r.db.Query(ctx, getProducts, count, paging)
+	rows, err := r.db.Query(ctx, getProductsByName, productName)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Product{}, ErrProductNotFound
