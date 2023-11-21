@@ -85,7 +85,7 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
           rm: true
-          source: docker-compose.yaml, build/sql/create.sql
+          source: docker-compose.yaml, build
           target: ~/${{ env.FOLDER_COMPOSE }}
 
 
@@ -132,7 +132,7 @@ jobs:
             docker pull $REGISTRY/$IMAGE_NAME:latest
             
             # docker-entrypoint
-            chmod 777 ./build/sql
+            #chmod -R 777 build
 
             # Restart docker-compose
             docker system prune -f
