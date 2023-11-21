@@ -23,6 +23,7 @@ linters:
     - goimports
     - gochecknoglobals
     - errname
+    - maintidx #???
     - stylecheck #???
     - funlen #del
     - staticcheck #del

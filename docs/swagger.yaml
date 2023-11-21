@@ -19,20 +19,24 @@ definitions:
       addressId:
         type: string
     type: object
-  models.AddressInfo:
-    properties:
-      city:
-        type: string
-      flat:
-        type: string
-      house:
-        type: string
-      street:
-        type: string
-    type: object
   models.AddressMakeCurrent:
     properties:
       addressId:
+        type: string
+    type: object
+  models.AddressPayload:
+    properties:
+      city:
+        maxLength: 32
+        type: string
+      flat:
+        maxLength: 32
+        type: string
+      house:
+        maxLength: 32
+        type: string
+      street:
+        maxLength: 32
         type: string
     type: object
   models.Cart:
@@ -244,7 +248,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.AddressInfo'
+          $ref: '#/definitions/models.AddressPayload'
       produces:
       - application/json
       responses:
@@ -861,4 +865,33 @@ paths:
       summary: UpdatePhoto
       tags:
       - Profile
+  /api/search/:
+    get:
+      consumes:
+      - application/json
+      description: Search products by name
+      parameters:
+      - description: Search products by name
+        in: query
+        name: product
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products array
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.Response'
+        "429":
+          description: Too Many Requests
+      summary: SearchProducts
+      tags:
+      - Search
 swagger: "2.0"

@@ -37,16 +37,17 @@ func (uc *SearchUsecase) SearchProducts(ctx context.Context, productName string)
 
 			return []models.Product{}, err
 		}
-	} else {
-		productsSlice, err = uc.repoSearch.ReadProductsByName(ctx, productName)
-		if err != nil {
-			if errors.Is(err, repo.ErrProductNotFound) {
-				return []models.Product{}, err
-			}
-			err = fmt.Errorf("error happened in repoSearch.SearchProducts: %w", err)
 
+		return productsSlice, nil
+	}
+	productsSlice, err = uc.repoSearch.ReadProductsByName(ctx, productName)
+	if err != nil {
+		if errors.Is(err, repo.ErrProductNotFound) {
 			return []models.Product{}, err
 		}
+		err = fmt.Errorf("error happened in repoSearch.SearchProducts: %w", err)
+
+		return []models.Product{}, err
 	}
 
 	return productsSlice, nil

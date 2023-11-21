@@ -16,7 +16,7 @@
 						"header": [
 							{
 								"key": "X-Csrf-Token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5NTAzfQ.4SpCazezU61cgQxVvKaikCg583Sat5xSlTgX--rt89M",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5NDA3MTI5fQ.1Wd6S2g26XwT5jNS8JluFt-oL1tJy0IDol6QzGT-1yA",
 								"type": "text"
 							}
 						],
@@ -309,13 +309,13 @@
 						"header": [
 							{
 								"key": "X-Csrf-Token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MTA5NDUzfQ.Fe0vHigszr-FG4KPhoy8yaz0nScNg9e_mzmopWoB5iY",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MzY4ODQ2fQ.4arbtuzmE31YcH_NoSENtZgG4NXYsn3lcoBRc3hhChc",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"login\": \"MrDjeb\",\r\n    \"phone\": \"+78234567890\", \r\n    \"password\": \"1234567819\" \r\n}",
+							"raw": "{\r\n    \"login\": \"MrDjebQQQ\",\r\n    \"phone\": \"+78234567890\", \r\n    \"password\": \"1234567819QQQQQQQQQQQQQQQQQQQQQQQQQQQQQ\" \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -856,7 +856,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "\n{\n    \"addressId\": \"74d3180d-5540-4fe6-906b-183cd4513deb\",\n    \"city\": \"QQQQ\",\n    \"street\": \"MyStreet\",\n    \"house\": \"MyHouse\",\n    \"flat\": \"MyFlat\",\n    \"IsCurrent\": true\n}\n",
+							"raw": "\n{\n    \"addressId\": \"74d3180d-5540-4fe6-906b-183cd4513deb\",\n    \"city\": \"QQQQ\",\n    \"street\": \"MyStreet\",\n    \"house\": \"MyHouse\",\n    \"flat\": \"MyFlat\",\n    \"addressIsCurrent\": true\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -1095,6 +1095,48 @@
 								"api",
 								"address",
 								"delete"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "search_products",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/search/?product=fridge",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"search",
+								""
+							],
+							"query": [
+								{
+									"key": "product",
+									"value": "fridge"
+								}
 							]
 						}
 					},
