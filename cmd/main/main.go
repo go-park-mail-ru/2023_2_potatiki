@@ -5,7 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
+	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/generated"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
 	"net/http"
 	"os"
@@ -124,7 +127,21 @@ func run() (err error) {
 	// ----------------------------Database---------------------------- //
 	//
 	//
+	// ===============================Grpc============================== //
+	orderConn, err := grpc.Dial(
+		"0.0.0.0:8020",
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Error("fail grpc.Dial order", sl.Err(err))
+		err = fmt.Errorf("error happened in grpc.Dial order: %w", err)
+
+		return err
+	}
+	defer orderConn.Close()
+	// -------------------------------Grpc------------------------------- //
 	// ============================Init layers============================ //
+	orderClient := generatedOrder.NewOrderServiceClient(orderConn)
+
 	profileRepo := profileRepo.NewProfileRepo(db)
 	profileUsecase := profileUsecase.NewProfileUsecase(profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
@@ -154,7 +171,7 @@ func run() (err error) {
 
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
-	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
+	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//

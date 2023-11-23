@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option go_package = "internal/pkg/order/delivery/grpc/generated";
+
+message ProfilePayload {
+  string Id = 1;
+}
+
+message OrderResponse {
+  Order Order = 1;
+  string Error = 2;
+}
+
+message OrdersResponse {
+  repeated Order Orders = 1;
+  string Error = 2;
+}
+
+message Order {
+  string Id = 1;
+  int64 Status = 2;
+  Address Address = 3;
+  repeated Product Products = 4;
+}
+
+message OrderProduct {
+  string Quantity = 1;
+  Product Product = 2;
+}
+
+message Address {
+  string Id = 1;
+  string ProfileId = 2;
+  string City = 3;
+  string Street = 4;
+  string House = 5;
+  string Flat = 6;
+  bool IsCurrent = 7;
+}
+
+message Product {
+  string Id = 1;
+  string Name = 2;
+  string Description = 3;
+  int64 Price = 4;
+  string ImgSrc = 5;
+  float Rating = 6;
+  Category Category = 7;
+}
+
+message Category {
+  int64 Id = 1;
+  string Name = 2;
+  int64 Parent = 3;
+}
+
+service OrderService {
+  rpc CreateOrder(ProfilePayload) returns (OrderResponse) {}
+  rpc GetOrders(ProfilePayload) returns (OrdersResponse) {}
+}

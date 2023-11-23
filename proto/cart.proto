@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option go_package = "internal/pkg/cart/delivery/grpc/generated";
+
+message CartProduct {
+  string Quantity = 1;
+  repeated order.Product Product = 2;
+}
+
+message Cart {
+  string Id = 1;
+  string ProfileId = 2;
+  bool isCurrent = 3;
+  repeated CartProduct Products = 4;
+}
+
+message CartProductUpdate {
+  string Quantity = 1;
+  string Id = 2;
+}
+
+message CartUpdate {
+  string Id = 1;
+  string ProfileId = 2;
+  bool isCurrent = 3;
+  repeated CartProductUpdate Products = 4;
+}
+
+message CartProductDelete {
+  string Id = 1;
+}
