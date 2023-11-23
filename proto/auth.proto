@@ -7,15 +7,36 @@ message SignInPayload {
   string Password = 2;
 }
 
+message ProfileAndCookie {
+  Profile ProfileInfo = 1;
+  Cookie CookieInfo = 2;
+}
+
 message Profile {
   string Id = 1;
   string Login = 2;
   string Description = 3;
   string ImgSrc = 4;
   string Phone = 5;
-  bytes PasswordHash = 6;
+}
+
+message Cookie {
+  string Token = 1;
+  string Expires = 2;
+}
+
+message SignUpPayload {
+  string Login = 1;
+  string Password = 2;
+  string Phone = 3;
+}
+
+message UserID {
+  string ID = 1;
 }
 
 service AuthService {
-  rpc SignIn(SignInPayload) returns (Profile) {}
+  rpc SignIn(SignInPayload) returns (ProfileAndCookie) {}
+  rpc SignUp(SignUpPayload) returns (ProfileAndCookie) {}
+  rpc CheckAuth(UserID) returns (Profile) {}
 }
