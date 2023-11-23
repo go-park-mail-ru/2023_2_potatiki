@@ -170,7 +170,7 @@ func run() (err error) {
 		http.Error(w, "Not Found", http.StatusNotFound)
 	})
 
-	r.PathPrefix("/prometheus").Handler(promhttp.Handler())
+	r.PathPrefix("/metrics").Handler(promhttp.Handler())
 
 	r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
 		httpSwagger.DeepLinking(true),

@@ -4,6 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -24,7 +25,7 @@ type Config struct {
 //
 // Requests with errors are logged using slog.Error().
 // Requests without errors are logged using slog.Info().
-func New(mt metrics.Metrics, logger *slog.Logger) mux.MiddlewareFunc {
+func New(mt metrics.MetricHTTP, logger *slog.Logger) mux.MiddlewareFunc {
 	return NewWithConfig(mt, logger, Config{
 		DefaultLevel:     slog.LevelInfo,
 		ClientErrorLevel: slog.LevelWarn,
@@ -51,10 +52,9 @@ func (r *ResponseWrapper) Write(bytes []byte) (int, error) {
 	return r.ResponseWriter.Write(bytes) //nolint:wrapcheck
 }
 
-func NewWithConfig(mt metrics.Metrics, log *slog.Logger, config Config) mux.MiddlewareFunc { //nolint:cyclop
+func NewWithConfig(mt metrics.MetricHTTP, log *slog.Logger, config Config) mux.MiddlewareFunc { //nolint:cyclop
 	return func(next http.Handler) http.Handler { // TODO: del
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			start := time.Now()
 
 			wrapper := &ResponseWrapper{
 				ResponseWriter: w,
@@ -69,7 +69,10 @@ func NewWithConfig(mt metrics.Metrics, log *slog.Logger, config Config) mux.Midd
 
 			// ctx := context.WithValue(r.Context(), "request-id", requestID)
 			r.Header.Set(RequestIDCtx, requestID)
+
+			start := time.Now()
 			next.ServeHTTP(wrapper, r)
+			duration := time.Since(start)
 
 			status := wrapper.Status
 			byteLen := wrapper.bytesLen
@@ -89,23 +92,26 @@ func NewWithConfig(mt metrics.Metrics, log *slog.Logger, config Config) mux.Midd
 			if config.WithRequestID {
 				attributes = append(attributes, slog.String("request-id", requestID))
 			}
+			// r.Response.Status
 
 			switch {
 			case status >= http.StatusInternalServerError:
-				mt.IncreaseWithErr("500", r.URL.Path)
+				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path)
 				log.LogAttrs(r.Context(), config.ServerErrorLevel, "Server Error", attributes...)
 			case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
-				mt.IncreaseWithErr("400", r.URL.Path)
+				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path)
 				log.LogAttrs(r.Context(), config.ClientErrorLevel, "Client Error", attributes...)
 			case status >= http.StatusMultipleChoices && status < http.StatusBadRequest:
-				mt.IncreaseWithErr("300", r.URL.Path)
+				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path)
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Redirection", attributes...)
 			case status >= http.StatusOK && status < http.StatusMultipleChoices:
-				mt.Increase()
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Success", attributes...)
 			default:
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Informational", attributes...)
 			}
+			mt.IncreaseHits(r.URL.Path)
+			mt.AddDurationToHistogram(r.URL.Path, duration)
+			mt.AddDurationToSummary(strconv.Itoa(status), r.URL.Path, duration)
 		})
 	}
 }
