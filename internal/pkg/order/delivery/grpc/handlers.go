@@ -48,17 +48,20 @@ func (h GrpcOrderHandler) CreateOrder(ctx context.Context, in *generatedOrder.Pr
 	}
 
 	for _, p := range order.Products {
-		orderResponse.Order.Products = append(orderResponse.Order.Products, &generatedOrder.Product{
-			Id:          p.Id.String(),
-			Name:        p.Name,
-			Description: p.Description,
-			Price:       p.Price,
-			ImgSrc:      p.ImgSrc,
-			Rating:      p.Rating,
-			Category: &generatedOrder.Category{
-				Id:     p.Category.Id,
-				Name:   p.Category.Name,
-				Parent: p.Category.Parent,
+		orderResponse.Order.Products = append(orderResponse.Order.Products, &generatedOrder.OrderProduct{
+			Quantity: p.Quantity,
+			Product: &generatedOrder.Product{
+				Id:          p.Id.String(),
+				Name:        p.Name,
+				Description: p.Description,
+				Price:       p.Price,
+				ImgSrc:      p.ImgSrc,
+				Rating:      p.Rating,
+				Category: &generatedOrder.Category{
+					Id:     p.Category.Id,
+					Name:   p.Category.Name,
+					Parent: p.Category.Parent,
+				},
 			},
 		})
 	}
@@ -99,17 +102,20 @@ func (h GrpcOrderHandler) GetOrders(ctx context.Context, in *generatedOrder.Prof
 		}
 
 		for _, p := range o.Products {
-			order.Products = append(order.Products, &generatedOrder.Product{
-				Id:          p.Id.String(),
-				Name:        p.Name,
-				Description: p.Description,
-				Price:       p.Price,
-				ImgSrc:      p.ImgSrc,
-				Rating:      p.Rating,
-				Category: &generatedOrder.Category{
-					Id:     p.Category.Id,
-					Name:   p.Category.Name,
-					Parent: p.Category.Parent,
+			order.Products = append(order.Products, &generatedOrder.OrderProduct{
+				Quantity: p.Quantity,
+				Product: &generatedOrder.Product{
+					Id:          p.Id.String(),
+					Name:        p.Name,
+					Description: p.Description,
+					Price:       p.Price,
+					ImgSrc:      p.ImgSrc,
+					Rating:      p.Rating,
+					Category: &generatedOrder.Category{
+						Id:     p.Category.Id,
+						Name:   p.Category.Name,
+						Parent: p.Category.Parent,
+					},
 				},
 			})
 		}

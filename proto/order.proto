@@ -20,11 +20,11 @@ message Order {
   string Id = 1;
   int64 Status = 2;
   Address Address = 3;
-  repeated Product Products = 4;
+  repeated OrderProduct Products = 4;
 }
 
 message OrderProduct {
-  string Quantity = 1;
+  int64 Quantity = 1;
   Product Product = 2;
 }
 

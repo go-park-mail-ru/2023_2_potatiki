@@ -2,6 +2,7 @@ package http
 
 import (
 	"errors"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/generated"
 	"log/slog"
 	"net/http"
@@ -89,9 +90,52 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		//}
 		return
 	}
+	orderProto := orderResponse.Order
+	addressProto := orderProto.Address
+	productsProto := orderProto.Products
+	orderId, _ := uuid.FromString(orderProto.Id)
+	addressId, _ := uuid.FromString(orderProto.Address.Id)
+	profileId, _ := uuid.FromString(orderProto.Address.ProfileId)
+	orderModel := models.Order{
+		Id:     orderId,
+		Status: orderProto.Status,
+		Address: models.Address{
+			Id:        addressId,
+			ProfileId: profileId,
+			City:      addressProto.City,
+			Street:    addressProto.Street,
+			House:     addressProto.House,
+			Flat:      addressProto.Flat,
+			IsCurrent: addressProto.IsCurrent,
+		},
+	}
 
-	h.log.Debug("h.uc.CreateOrder", "order", orderResponse.Order)
-	resp.JSON(w, http.StatusOK, orderResponse.Order)
+	var productsSlice []models.OrderProduct
+	for _, orderProduct := range productsProto {
+		product := orderProduct.Product
+		productId, _ := uuid.FromString(product.Id)
+		productsSlice = append(productsSlice, models.OrderProduct{
+			Quantity: orderProduct.Quantity,
+			Product: models.Product{
+				Id:          productId,
+				Name:        product.Name,
+				Description: product.Description,
+				Price:       product.Price,
+				ImgSrc:      product.ImgSrc,
+				Rating:      product.Rating,
+				Category: models.Category{
+					Id:     product.Category.Id,
+					Name:   product.Category.Name,
+					Parent: product.Category.Parent,
+				},
+			},
+		})
+	}
+
+	orderModel.Products = productsSlice
+
+	h.log.Debug("h.uc.CreateOrder", "order", orderModel)
+	resp.JSON(w, http.StatusOK, orderModel)
 }
 
 // @Summary	GetCurrentOrder
@@ -191,6 +235,55 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.log.Debug("h.uc.GetOrders", "orders", ordersResponse.Orders)
-	resp.JSON(w, http.StatusOK, ordersResponse.Orders)
+	var ordersSlice []models.Order
+
+	for _, orderProto := range ordersResponse.Orders {
+		addressProto := orderProto.Address
+		productsProto := orderProto.Products
+		orderId, _ := uuid.FromString(orderProto.Id)
+		addressId, _ := uuid.FromString(orderProto.Address.Id)
+		profileId, _ := uuid.FromString(orderProto.Address.ProfileId)
+		orderModel := models.Order{
+			Id:     orderId,
+			Status: orderProto.Status,
+			Address: models.Address{
+				Id:        addressId,
+				ProfileId: profileId,
+				City:      addressProto.City,
+				Street:    addressProto.Street,
+				House:     addressProto.House,
+				Flat:      addressProto.Flat,
+				IsCurrent: addressProto.IsCurrent,
+			},
+		}
+
+		var productsSlice []models.OrderProduct
+		for _, orderProduct := range productsProto {
+			product := orderProduct.Product
+			productId, _ := uuid.FromString(product.Id)
+			productsSlice = append(productsSlice, models.OrderProduct{
+				Quantity: orderProduct.Quantity,
+				Product: models.Product{
+					Id:          productId,
+					Name:        product.Name,
+					Description: product.Description,
+					Price:       product.Price,
+					ImgSrc:      product.ImgSrc,
+					Rating:      product.Rating,
+					Category: models.Category{
+						Id:     product.Category.Id,
+						Name:   product.Category.Name,
+						Parent: product.Category.Parent,
+					},
+				},
+			})
+		}
+
+		orderModel.Products = productsSlice
+
+		ordersSlice = append(ordersSlice, orderModel)
+	}
+
+	h.log.Debug("h.uc.GetOrders", "orders", ordersSlice)
+	resp.JSON(w, http.StatusOK, ordersSlice)
 }
