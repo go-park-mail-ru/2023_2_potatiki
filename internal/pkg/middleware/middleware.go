@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"runtime/debug"
 
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
 
@@ -29,6 +30,7 @@ func Recover(log *slog.Logger) mux.MiddlewareFunc {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			defer func() {
 				if err := recover(); err != nil {
+					debug.PrintStack()
 					log.Error("Handle panic, recovered",
 						slog.String("recover error", fmt.Sprintf("%v", err)),
 						slog.String("url", r.URL.Path))

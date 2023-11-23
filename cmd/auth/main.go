@@ -104,11 +104,11 @@ func run() (err error) {
 	go func() {
 		err := httpSrv.ListenAndServe()
 		if err != nil {
-			fmt.Println(err)
+			log.Error("fail httpSrv.ListenAndServe", sl.Err(err))
 		}
 	}()
 
-	fmt.Println("auth running on: ", listener.Addr())
+	log.Info("auth running on: ", listener.Addr())
 
 	return server.Serve(listener)
 }

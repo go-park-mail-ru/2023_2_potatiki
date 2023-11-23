@@ -184,6 +184,7 @@ func run() (err error) {
 	mt := metrics.NewMetrics()
 
 	r.Use(middleware.Recover(log), middleware.CORSMiddleware, logmw.New(mt, log))
+	// r.Use(middleware.CORSMiddleware, logmw.New(mt, log))
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
