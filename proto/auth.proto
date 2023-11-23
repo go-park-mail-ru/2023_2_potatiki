@@ -10,6 +10,7 @@ message SignInPayload {
 message ProfileAndCookie {
   Profile ProfileInfo = 1;
   Cookie CookieInfo = 2;
+  string Error = 3;
 }
 
 message Profile {
@@ -18,6 +19,7 @@ message Profile {
   string Description = 3;
   string ImgSrc = 4;
   string Phone = 5;
+  string Error = 6;
 }
 
 message Cookie {

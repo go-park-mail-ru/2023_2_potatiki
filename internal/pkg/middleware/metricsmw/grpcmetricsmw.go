@@ -1,4 +1,4 @@
-package metrcismw
+package metricsmw
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 )
 
 type GrpcMiddleware struct {
-	metrics metrics.MetricsGRPC // интерфейс
+	metrics metrics.MetricsGRPC
 }
 
 func NewGrpcMiddleware(metrics metrics.MetricsGRPC) *GrpcMiddleware {
@@ -17,9 +17,7 @@ func NewGrpcMiddleware(metrics metrics.MetricsGRPC) *GrpcMiddleware {
 	}
 }
 
-// конструктор
 // Отзывы (гет, создать)
-// TODO: засунуть сюда mt := NewMetrics
 func (m *GrpcMiddleware) ServerMetricsInterceptor(ctx context.Context,
 	req interface{},
 	info *grpc.UnaryServerInfo,
@@ -29,14 +27,11 @@ func (m *GrpcMiddleware) ServerMetricsInterceptor(ctx context.Context,
 	h, err := handler(ctx, req)
 	tm := time.Since(start)
 
-	//m.metric.With(prometheus.Labels{
-	//	URL:         "",
-	//	ServiceName: m.name,
-	//	StatusCode:  "OK",
-	//	Method:      info.FullMethod,
-	//	FullTime:    tm.String(),
-	//}).Inc()
-	m.metrics.IncreaseHits("/path")
+	m.metrics.IncreaseMetric("", info.FullMethod, tm.String())
+	if err != nil {
+		m.metrics.IncreaseErr(info.FullMethod)
+	}
+	m.metrics.IncreaseHits(info.FullMethod)
 	//m.durations.With(prometheus.Labels{URL: info.FullMethod}).Observe(tm.Seconds())
 	//
 	//m.counter.With(prometheus.Labels{URL: info.FullMethod}).Inc()

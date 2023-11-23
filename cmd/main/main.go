@@ -4,14 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-<<<<<<< HEAD
+	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-=======
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
->>>>>>> AuthMicroservice
 	"log/slog"
 	"net/http"
 	"os"
@@ -35,8 +32,6 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
-	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
-
 	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
 	cartUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/usecase"
@@ -154,8 +149,7 @@ func run() (err error) {
 	profileUsecase := profileUsecase.NewProfileUsecase(profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
-	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
-	authHandler := authHandler.NewAuthHandler(authClient, log, authUsecase)
+	authHandler := authHandler.NewAuthHandler(authClient, log)
 
 	cartRepo := cartRepo.NewCartRepo(db)
 	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)

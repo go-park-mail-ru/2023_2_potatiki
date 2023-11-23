@@ -8,13 +8,18 @@ import (
 	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
+	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
 	"log/slog"
 	"net"
+	"net/http"
 	"os"
 )
 
@@ -76,16 +81,34 @@ func run() (err error) {
 	profileRepo := profileRepo.NewProfileRepo(db)
 
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
-	service := grpcAuth.NewGrpcAuthHandler(authUsecase)
+	service := grpcAuth.NewGrpcAuthHandler(authUsecase, log)
 
 	listener, err := net.Listen("tcp", "0.0.0.0:8010")
 	if err != nil {
 		return err
 	}
 
-	server := grpc.NewServer()
+	grpcMetrics := metrics.NewGRPCMetrics(metrics.ServiceAuthName)
+	metricsMw := metricsmw.NewGrpcMiddleware(grpcMetrics)
+
+	server := grpc.NewServer(grpc.UnaryInterceptor(metricsMw.ServerMetricsInterceptor))
 
 	generatedAuth.RegisterAuthServiceServer(server, service)
+
+	r := mux.NewRouter().PathPrefix("/api").Subrouter()
+	r.PathPrefix("/metrics").Handler(promhttp.Handler())
+
+	http.Handle("/", r)
+	httpSrv := http.Server{Handler: r, Addr: "0.0.0.0:8011"}
+
+	go func() {
+		err := httpSrv.ListenAndServe()
+		if err != nil {
+			fmt.Println(err)
+		}
+	}()
+
+	fmt.Println("auth running on: ", listener.Addr())
 
 	return server.Serve(listener)
 }

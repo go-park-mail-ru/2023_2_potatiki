@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
@@ -20,16 +19,14 @@ import (
 type AuthHandler struct {
 	client generatedAuth.AuthServiceClient
 	log    *slog.Logger
-	uc     auth.AuthUsecase
 }
 
 const customTimeFormat = "2006-01-02 15:04:05.999999999 -0700 UTC"
 
-func NewAuthHandler(cl generatedAuth.AuthServiceClient, log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
+func NewAuthHandler(cl generatedAuth.AuthServiceClient, log *slog.Logger) *AuthHandler {
 	return &AuthHandler{
 		client: cl,
 		log:    log,
-		uc:     uc,
 	}
 }
 
@@ -69,7 +66,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		Login:    userInfo.Login,
 		Password: userInfo.Password,
 	})
-	if err != nil {
+	if len(profileAndCookie.Error) != 0 || err != nil {
 		h.log.Error("failed to signin", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
 
@@ -86,8 +83,23 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	idUuid, err := uuid.FromString(profileAndCookie.ProfileInfo.Id)
+	if err != nil {
+		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+	profile := models.Profile{
+		Id:          idUuid,
+		Login:       profileAndCookie.ProfileInfo.Login,
+		Description: profileAndCookie.ProfileInfo.Description,
+		ImgSrc:      profileAndCookie.ProfileInfo.ImgSrc,
+		Phone:       profileAndCookie.ProfileInfo.Phone,
+	}
+
 	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.CookieInfo.Token, expiresTime))
-	resp.JSON(w, http.StatusOK, profileAndCookie.ProfileInfo)
+	resp.JSON(w, http.StatusOK, profile)
 }
 
 // @Summary	SignUp
@@ -126,7 +138,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		Password: userInfo.Password,
 		Phone:    userInfo.Phone,
 	})
-	if err != nil {
+	if len(profileAndCookie.Error) != 0 || err != nil {
 		h.log.Error("failed to signup", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
 
@@ -143,8 +155,23 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	idUuid, err := uuid.FromString(profileAndCookie.ProfileInfo.Id)
+	if err != nil {
+		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+	profile := models.Profile{
+		Id:          idUuid,
+		Login:       profileAndCookie.ProfileInfo.Login,
+		Description: profileAndCookie.ProfileInfo.Description,
+		ImgSrc:      profileAndCookie.ProfileInfo.ImgSrc,
+		Phone:       profileAndCookie.ProfileInfo.Phone,
+	}
+
 	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.CookieInfo.Token, expiresTime))
-	resp.JSON(w, http.StatusOK, profileAndCookie.ProfileInfo)
+	resp.JSON(w, http.StatusOK, profile)
 }
 
 // @Summary	Logout
@@ -191,13 +218,28 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	profile, err := h.client.CheckAuth(r.Context(), &generatedAuth.UserID{
 		ID: id.String(),
 	})
-	if err != nil {
+	if len(profile.Error) != 0 || err != nil {
 		h.log.Error("failed to CheckAuth", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
 	}
 
+	idUuid, err := uuid.FromString(profile.Id)
+	if err != nil {
+		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+	profileModel := models.Profile{
+		Id:          idUuid,
+		Login:       profile.Login,
+		Description: profile.Description,
+		ImgSrc:      profile.ImgSrc,
+		Phone:       profile.Phone,
+	}
+
 	h.log.Debug("got profile", slog.Any("profile", profile.Id))
-	resp.JSON(w, http.StatusOK, profile)
+	resp.JSON(w, http.StatusOK, profileModel)
 }

@@ -25,7 +25,7 @@ type Config struct {
 //
 // Requests with errors are logged using slog.Error().
 // Requests without errors are logged using slog.Info().
-func New(mt metrics.MetricHTTP, logger *slog.Logger) mux.MiddlewareFunc {
+func New(mt *metrics.MetricHTTP, logger *slog.Logger) mux.MiddlewareFunc {
 	return NewWithConfig(mt, logger, Config{
 		DefaultLevel:     slog.LevelInfo,
 		ClientErrorLevel: slog.LevelWarn,
@@ -52,7 +52,7 @@ func (r *ResponseWrapper) Write(bytes []byte) (int, error) {
 	return r.ResponseWriter.Write(bytes) //nolint:wrapcheck
 }
 
-func NewWithConfig(mt metrics.MetricHTTP, log *slog.Logger, config Config) mux.MiddlewareFunc { //nolint:cyclop
+func NewWithConfig(mt *metrics.MetricHTTP, log *slog.Logger, config Config) mux.MiddlewareFunc { //nolint:cyclop
 	return func(next http.Handler) http.Handler { // TODO: del
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
