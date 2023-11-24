@@ -3,8 +3,9 @@ name: CI
 on:
   push:
     branches:
-      - RK3
-      - main
+      - Metrics
+#      - RK3
+#      - main
 
 env:
   REGISTRY: "mrdjeb"

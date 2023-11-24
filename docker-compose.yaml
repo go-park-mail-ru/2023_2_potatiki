@@ -100,6 +100,24 @@ services:
     networks:
       - zuzu-network
 
+  auth:
+    build:
+      context: ./build
+      dockerfile: Dockerfile.multistage.auth
+    env_file:
+      - ./.env
+    restart: always
+    ports:
+      - '8011:8011'
+      - '8010:8010'
+    volumes:
+      - ./.env:/docker-zuzu-main/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
+
 volumes:
   zuzu-db-data:
   pgadmin-data:
