@@ -89,7 +89,7 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	h.log.Debug("uc.CreateComment", "comment created")
+	h.log.Debug("uc.CreateComment", "comment created", commentPayload)
 	resp.JSONStatus(w, http.StatusOK)
 }
 
