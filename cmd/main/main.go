@@ -58,6 +58,10 @@ import (
 	addressHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/delivery/http"
 	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 	addressUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/usecase"
+
+	commentsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/delivery/http"
+	commentsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/repo"
+	commentsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/usecase"
 )
 
 // @title ZuZu Backend API
@@ -155,6 +159,10 @@ func run() (err error) {
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
 	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
+
+	commentsRepo := commentsRepo.NewCommentsRepo(db)
+	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
+	commentsHandler := commentsHandler.NewCommentsHandler(log, commentsUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -280,6 +288,15 @@ func run() (err error) {
 	search := r.PathPrefix("/search").Subrouter()
 	{
 		search.HandleFunc("/", searchHandler.SearchProducts).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	comments := r.PathPrefix("/comments").Subrouter()
+	{
+		comments.Handle("/create", authMW(csrfMW(http.HandlerFunc(commentsHandler.CreateComment)))).
+			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
+
+		comments.HandleFunc("/get_all", commentsHandler.GetProductComments).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//

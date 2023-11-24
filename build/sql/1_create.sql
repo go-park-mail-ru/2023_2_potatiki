@@ -20,6 +20,8 @@ DROP TABLE IF EXISTS favorite;
 
 DROP TABLE IF EXISTS status;
 
+DROP TABLE IF EXISTS comment;
+
 --- setup ru_RU dictionary ---
 CREATE TEXT SEARCH DICTIONARY russian_ispell (
     TEMPLATE = ispell,
@@ -111,8 +113,18 @@ CREATE TABLE IF NOT EXISTS product
     CHECK (rating >= 0),
     CHECK (price > 0)
     );
-
-
+------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE comment
+(
+    id uuid NOT NULL PRIMARY KEY,
+    productID uuid REFERENCES product (id) ON DELETE CASCADE,
+    userID uuid REFERENCES profile (id) ON DELETE CASCADE,
+    pros text NOT NULL,
+    cons text NOT NULL,
+    comment text NOT NULL,
+    rating NUMERIC(3, 2) NOT NULL,
+    CHECK (rating >= 0)
+);
 --- DICTIONARY ---------------------------------------------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION make_tsvector(name TEXT, description TEXT)
     RETURNS tsvector AS
