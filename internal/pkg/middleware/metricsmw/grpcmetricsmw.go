@@ -17,7 +17,6 @@ func NewGrpcMiddleware(metrics metrics.MetricsGRPC) *GrpcMiddleware {
 	}
 }
 
-// Отзывы (гет, создать)
 func (m *GrpcMiddleware) ServerMetricsInterceptor(ctx context.Context,
 	req interface{},
 	info *grpc.UnaryServerInfo,
@@ -28,13 +27,16 @@ func (m *GrpcMiddleware) ServerMetricsInterceptor(ctx context.Context,
 	tm := time.Since(start)
 
 	m.metrics.IncreaseMetric("", info.FullMethod, tm.String())
+
 	if err != nil {
 		m.metrics.IncreaseErr(info.FullMethod)
 	}
+
+	m.metrics.AddDurationToHistogram(info.FullMethod, tm)
+
+	m.metrics.AddDurationToSummary("", info.FullMethod, tm)
+
 	m.metrics.IncreaseHits(info.FullMethod)
-	//m.durations.With(prometheus.Labels{URL: info.FullMethod}).Observe(tm.Seconds())
-	//
-	//m.counter.With(prometheus.Labels{URL: info.FullMethod}).Inc()
 
 	return h, err
 

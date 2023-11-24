@@ -41,7 +41,7 @@ func (h GrpcAuthHandler) SignIn(ctx context.Context, in *generatedAuth.SignInPay
 	if err != nil {
 		h.log.Error("failed in uc.SignIn", sl.Err(err))
 
-		return &generatedAuth.ProfileAndCookie{Error: err.Error()}, nil
+		return &generatedAuth.ProfileAndCookie{Error: err.Error()}, err
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 
@@ -76,7 +76,7 @@ func (h GrpcAuthHandler) SignUp(ctx context.Context, in *generatedAuth.SignUpPay
 	if err != nil {
 		h.log.Error("failed in uc.SignUp", sl.Err(err))
 
-		return &generatedAuth.ProfileAndCookie{Error: err.Error()}, nil
+		return &generatedAuth.ProfileAndCookie{Error: err.Error()}, err
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 
@@ -105,14 +105,14 @@ func (h GrpcAuthHandler) CheckAuth(ctx context.Context, in *generatedAuth.UserID
 	if err != nil {
 		h.log.Error("failed to get uuid from string", sl.Err(err))
 
-		return &generatedAuth.Profile{Error: err.Error()}, nil
+		return &generatedAuth.Profile{Error: err.Error()}, err
 	}
 
 	profile, err := h.uc.CheckAuth(ctx, userID)
 	if err != nil {
 		h.log.Error("failed in uc.CheckAuth", sl.Err(err))
 
-		return &generatedAuth.Profile{Error: err.Error()}, nil
+		return &generatedAuth.Profile{Error: err.Error()}, err
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 
