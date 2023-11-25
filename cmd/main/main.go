@@ -64,6 +64,10 @@ import (
 	addressHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/delivery/http"
 	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 	addressUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/usecase"
+
+	surveyHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey/delivery/http"
+	surveyRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey/repo"
+	surveyUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey/usecase"
 )
 
 // @title ZuZu Backend API
@@ -191,6 +195,10 @@ func run() (err error) {
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
 	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
+
+	surveyRepo := surveyRepo.NewSurveyRepo(db)
+	surveyUsecase := surveyUsecase.NewSurveyUsecase(surveyRepo)
+	surveyHandler := surveyHandler.NewSurveyHandler(log, surveyUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -317,6 +325,18 @@ func run() (err error) {
 	{
 		search.HandleFunc("/", searchHandler.SearchProducts).
 			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	survey := r.PathPrefix("/survey").Subrouter()
+	{
+		survey.Handle("/get", authMW(http.HandlerFunc(surveyHandler.GetSurvey))).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		survey.HandleFunc("/stat/{id:[0-9a-fA-F-]+}", surveyHandler.GetStat).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		survey.Handle("/response", authMW(http.HandlerFunc(surveyHandler.SaveResponse))).
+			Methods(http.MethodPost, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
 
