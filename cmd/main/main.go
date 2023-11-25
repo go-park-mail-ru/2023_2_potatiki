@@ -313,7 +313,7 @@ func run() (err error) {
 
 	survey := r.PathPrefix("/survey").Subrouter()
 	{
-		survey.HandleFunc("/get", surveyHandler.GetSurvey).
+		survey.Handle("/get", authMW(http.HandlerFunc(surveyHandler.GetSurvey))).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//

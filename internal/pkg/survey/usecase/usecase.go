@@ -34,7 +34,7 @@ func NewSurveyUsecase(repo survey.SurveyRepo) *SurveyUsecase {
 //
 //}
 
-func (uc *SurveyUsecase) GetSurvey(ctx context.Context, surveyID uuid.UUID) (models.Survey, error) {
+func (uc *SurveyUsecase) GetSurvey(ctx context.Context, surveyID uuid.UUID, userID uuid.UUID) (models.Survey, error) {
 	survey, err := uc.repo.ReadSurvey(ctx, surveyID)
 	if err != nil {
 		//if errors.Is(err, repo.ErrProductNotFound) {
@@ -44,6 +44,17 @@ func (uc *SurveyUsecase) GetSurvey(ctx context.Context, surveyID uuid.UUID) (mod
 
 		return models.Survey{}, err
 	}
+
+	resultID, err := uc.repo.CreateResult(ctx, surveyID, userID)
+	if err != nil {
+		//if errors.Is(err, repo.ErrProductNotFound) {
+		//	return err
+		//}
+		err = fmt.Errorf("error happened in repo.CreateResult: %w", err)
+
+		return models.Survey{}, err
+	}
+	survey.ResultID = resultID
 
 	return survey, nil
 

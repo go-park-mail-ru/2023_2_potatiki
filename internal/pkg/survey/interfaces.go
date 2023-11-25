@@ -10,11 +10,12 @@ import (
 
 type SurveyUsecase interface {
 	// SaveSurvey(context.Context, models.Survey)
-	GetSurvey(context.Context, uuid.UUID) (models.Survey, error)
+	GetSurvey(context.Context, uuid.UUID, uuid.UUID) (models.Survey, error)
 }
 
 type SurveyRepo interface {
 	ReadSurvey(context.Context, uuid.UUID) (models.Survey, error)
+	CreateResult(context.Context, uuid.UUID, uuid.UUID) (uuid.UUID, error)
 	// WriteSurvey(context.Context, models.Survey) error
 	// ReadCompletedSurveys(context.Context, uuid.UUID) (models.SurveysCompleted, error)
 }

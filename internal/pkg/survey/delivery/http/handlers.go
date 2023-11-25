@@ -1,6 +1,7 @@
 package http
 
 import (
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
@@ -71,6 +72,13 @@ func (h *SurveyHandler) GetSurvey(w http.ResponseWriter, r *http.Request) {
 		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
 	)
 	// count - обязателен
+	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
+		resp.JSONStatus(w, http.StatusUnauthorized)
+
+		return
+	}
 
 	surveyIDString := r.URL.Query().Get("surveyID")
 	surveyID, err := uuid.FromString(surveyIDString)
@@ -81,7 +89,7 @@ func (h *SurveyHandler) GetSurvey(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	survey, err := h.uc.GetSurvey(r.Context(), surveyID)
+	survey, err := h.uc.GetSurvey(r.Context(), surveyID, userID)
 	if err != nil {
 		h.log.Error("failed to get survey", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
