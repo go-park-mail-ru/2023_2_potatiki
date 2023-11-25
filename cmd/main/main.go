@@ -133,7 +133,7 @@ func run() (err error) {
 	//
 	//
 	// ===============================Grpc============================== //
-	authConn, err := grpc.Dial(fmt.Sprintf("0.0.0.0:%d", cfg.AuthPort),
+	authConn, err := grpc.Dial(fmt.Sprintf("zuzu-auth:%d", cfg.AuthPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Error("fail grpc.Dial auth", sl.Err(err))
