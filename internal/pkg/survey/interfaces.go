@@ -9,11 +9,12 @@ import (
 //go:generate mockgen -source interfaces.go -destination ./mocks/survey_mock.go -package mock
 
 type SurveyUsecase interface {
-	// SaveSurvey(context.Context, models.Survey)
+	SaveResponse(context.Context, models.SurveyResponse) error
 	GetSurvey(context.Context, uuid.UUID, uuid.UUID) (models.Survey, error)
 }
 
 type SurveyRepo interface {
+	SaveResults(context.Context, models.SurveyResponse) error
 	ReadSurvey(context.Context, uuid.UUID) (models.Survey, error)
 	CreateResult(context.Context, uuid.UUID, uuid.UUID) (uuid.UUID, error)
 	// WriteSurvey(context.Context, models.Survey) error

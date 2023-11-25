@@ -15,10 +15,9 @@ const (
 	INSERT INTO results (id, user_id, survey_id) VALUES ($1, $2, $3);
 	`
 
-	getCompletedSurveys = `
-	SELECT answer
-	FROM survey
-	WHERE user_id = $1;`
+	createResponse = `
+	INSERT INTO answer (id, question, result_id, answer) VALUES ($1, $2, $3, $4);
+	`
 
 	getSurveyInfo = `
 	SELECT id as survey_id, name
@@ -60,6 +59,22 @@ func (r *SurveyRepo) CreateResult(ctx context.Context, survey_id uuid.UUID, user
 		return uuid.UUID{}, err
 	}
 	return resultID, nil
+}
+
+func (r *SurveyRepo) SaveResults(ctx context.Context, surveyResponse models.SurveyResponse) error {
+	responseID := uuid.NewV4()
+	_, err := r.db.Exec(ctx, createResponse,
+		responseID,
+		surveyResponse.QuestionID,
+		surveyResponse.ResultID,
+		surveyResponse.Answer,
+	)
+	if err != nil {
+		err = fmt.Errorf("error happened in db.Exec: %w", err)
+
+		return err
+	}
+	return nil
 }
 
 func (r *SurveyRepo) ReadSurvey(ctx context.Context, surveyID uuid.UUID) (models.Survey, error) {

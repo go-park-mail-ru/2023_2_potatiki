@@ -315,6 +315,8 @@ func run() (err error) {
 	{
 		survey.Handle("/get", authMW(http.HandlerFunc(surveyHandler.GetSurvey))).
 			Methods(http.MethodGet, http.MethodOptions)
+		survey.Handle("/response", authMW(http.HandlerFunc(surveyHandler.SaveResponse))).
+			Methods(http.MethodPost, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
 
