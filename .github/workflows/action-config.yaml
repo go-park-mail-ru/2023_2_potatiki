@@ -62,7 +62,7 @@ jobs:
           context: ./build
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          file: ./Dockerfile.multistage.main
+          file: Dockerfile.multistage.main
           build-args: |
               IMAGE_NAME=${{ env.IMAGE_NAME }}
               REGISTRY=${{ env.REGISTRY }}
@@ -74,7 +74,7 @@ jobs:
           context: ./build
           push: true
           tags: ${{ env.REGISTRY }}/zuzu-auth-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/zuzu-auth-web:latest
-          file: ./Dockerfile.multistage.auth
+          file: Dockerfile.multistage.auth
           build-args: |
               IMAGE_NAME=zuzu-auth-web
               REGISTRY=${{ env.REGISTRY }}
