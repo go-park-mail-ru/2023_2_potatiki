@@ -2,29 +2,31 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
+	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
 	uuid "github.com/satori/go.uuid"
+	"google.golang.org/grpc"
 )
 
 //go:generate mockgen -source=./generated/auth_grpc.pb.go -destination=../../mocks/auth_grpc.go -package=mock
 
-type GrpcAuthHandler struct {
-	uc auth.AuthUsecase
-	// TODO: ADd logger
+type serverAPI struct {
+	log *slog.Logger
+	uc  auth.AuthUsecase
 
-	generatedAuth.AuthServiceServer
+	//gen.ProductsServer
+	gen.UnimplementedAuthServer
 }
 
-func NewGrpcAuthHandler(uc auth.AuthUsecase) *GrpcAuthHandler {
-	return &GrpcAuthHandler{
-		uc: uc,
-	}
+func Register(gRPCServer *grpc.Server, log *slog.Logger, uc auth.AuthUsecase) {
+	gen.RegisterAuthServer(gRPCServer, &serverAPI{log: log, uc: uc})
 }
 
-func (h GrpcAuthHandler) SignIn(ctx context.Context, in *generatedAuth.SignInPayload) (*generatedAuth.ProfileAndCookie,
-	error) {
+func (h serverAPI) SignIn(ctx context.Context, in *gen.SignInRequest) (*gen.SignInResponse, error) {
 	userSignIn := models.SignInPayload{
 		Login:    in.Login,
 		Password: in.Password,
@@ -32,26 +34,23 @@ func (h GrpcAuthHandler) SignIn(ctx context.Context, in *generatedAuth.SignInPay
 
 	profile, token, expires, err := h.uc.SignIn(ctx, &userSignIn)
 	if err != nil {
-		return &generatedAuth.ProfileAndCookie{}, err //TODO: add err in model
+		return &gen.SignInResponse{}, err //TODO: add err in model
 	}
 
-	return &generatedAuth.ProfileAndCookie{
-		ProfileInfo: &generatedAuth.Profile{
+	return &gen.SignInResponse{
+		Profile: &gmodels.Profile{
 			Id:          profile.Id.String(),
 			Login:       profile.Login,
 			Description: profile.Description,
 			ImgSrc:      profile.ImgSrc,
 			Phone:       profile.Phone,
 		},
-		CookieInfo: &generatedAuth.Cookie{
-			Token:   token,
-			Expires: expires.String(),
-		},
+		Token:   token,
+		Expires: expires.String(),
 	}, nil
 }
 
-func (h GrpcAuthHandler) SignUp(ctx context.Context, in *generatedAuth.SignUpPayload) (*generatedAuth.ProfileAndCookie,
-	error) {
+func (h serverAPI) SignUp(ctx context.Context, in *gen.SignUpRequest) (*gen.SignUpResponse, error) {
 	userSignUp := models.SignUpPayload{
 		Login:    in.Login,
 		Password: in.Password,
@@ -60,41 +59,41 @@ func (h GrpcAuthHandler) SignUp(ctx context.Context, in *generatedAuth.SignUpPay
 
 	profile, token, expires, err := h.uc.SignUp(ctx, &userSignUp)
 	if err != nil {
-		return &generatedAuth.ProfileAndCookie{}, err
+		return &gen.SignUpResponse{}, err
 	}
 
-	return &generatedAuth.ProfileAndCookie{
-		ProfileInfo: &generatedAuth.Profile{
+	return &gen.SignUpResponse{
+		Profile: &gmodels.Profile{
 			Id:          profile.Id.String(),
 			Login:       profile.Login,
 			Description: profile.Description,
 			ImgSrc:      profile.ImgSrc,
 			Phone:       profile.Phone,
 		},
-		CookieInfo: &generatedAuth.Cookie{
-			Token:   token,
-			Expires: expires.String(),
-		},
+
+		Token:   token,
+		Expires: expires.String(),
 	}, nil
 }
 
-func (h GrpcAuthHandler) CheckAuth(ctx context.Context, in *generatedAuth.UserID) (*generatedAuth.Profile,
-	error) {
+func (h serverAPI) CheckAuth(ctx context.Context, in *gen.CheckAuthRequst) (*gen.CheckAuthResponse, error) {
 	userID, err := uuid.FromString(in.ID)
 	if err != nil {
-		return &generatedAuth.Profile{}, err
+		return &gen.CheckAuthResponse{}, err
 	}
 
 	profile, err := h.uc.CheckAuth(ctx, userID)
 	if err != nil {
-		return &generatedAuth.Profile{}, err
+		return &gen.CheckAuthResponse{}, err
 	}
 
-	return &generatedAuth.Profile{
-		Id:          profile.Id.String(),
-		Login:       profile.Login,
-		Description: profile.Description,
-		ImgSrc:      profile.ImgSrc,
-		Phone:       profile.Phone,
+	return &gen.CheckAuthResponse{
+		Profile: &gmodels.Profile{
+			Id:          profile.Id.String(),
+			Login:       profile.Login,
+			Description: profile.Description,
+			ImgSrc:      profile.ImgSrc,
+			Phone:       profile.Phone,
+		},
 	}, nil
 }

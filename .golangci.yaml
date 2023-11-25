@@ -23,7 +23,9 @@ linters:
     - goimports
     - gochecknoglobals
     - errname
+    - maintidx #???
     - stylecheck #???
+    - promlinter #???
     - funlen #del
     - staticcheck #del
     - sqlclosecheck #del

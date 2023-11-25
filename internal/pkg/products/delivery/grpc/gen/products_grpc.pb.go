@@ -4,7 +4,7 @@
 // - protoc             v4.25.1
 // source: products.proto
 
-package products
+package gen
 
 import (
 	context "context"

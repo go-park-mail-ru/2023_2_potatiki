@@ -11,7 +11,7 @@ import (
 	"syscall"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
-	grpcProducts "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grps"
+	grpcProducts "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
 
@@ -43,7 +43,7 @@ func run() (err error) {
 	log := logger.Set(cfg.Enviroment, logFile)
 
 	log.Info(
-		"starting zuzu-main",
+		"starting zuzu-products",
 		slog.String("env", cfg.Enviroment),
 		slog.String("addr", cfg.Address),
 		slog.String("log_file_path", cfg.LogFilePath),
@@ -71,13 +71,12 @@ func run() (err error) {
 	// ----------------------------Database---------------------------- //
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
-	grpcProducts.NewProductsHandler(log, productsUsecase)
 
 	gRPCServer := grpc.NewServer()
-	grpcProducts.Register(gRPCServer, productsUsecase)
+	grpcProducts.Register(gRPCServer, log, productsUsecase)
 
 	go func() {
-		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", 8011))
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", 8013))
 		if err != nil {
 			log.Error("listen returned err: ", sl.Err(err))
 		}

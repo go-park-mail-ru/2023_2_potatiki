@@ -1,7 +1,7 @@
 syntax = "proto3";
 package products;
-option go_package = "internal.pkg.products;products";
-import "models.proto";
+option go_package = "./internal/pkg/products/delivery/grpc/gen/;gen";
+import "gmodels/gmodels.proto";
 
 service Products {
   rpc GetProduct (ProductRequest) returns (ProductResponse);
@@ -14,7 +14,7 @@ message ProductRequest {
 }
 
 message ProductResponse {
-  Product product = 1; 
+  gmodels.Product product = 1; 
 }
 
 message ProductsRequest {
@@ -23,7 +23,7 @@ message ProductsRequest {
 }
 
 message ProductsResponse {
-  repeated Product products = 1; 
+  repeated gmodels.Product products = 1; 
 }
 
 message CategoryRequest {
@@ -33,5 +33,5 @@ message CategoryRequest {
 }
 
 message CategoryResponse {
-  repeated Product products = 1; 
+  repeated gmodels.Product products = 1; 
 }

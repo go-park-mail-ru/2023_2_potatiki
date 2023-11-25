@@ -4,18 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os/signal"
+	"syscall"
+
 	grpcAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
+
+	"log/slog"
+	"net"
+	"os"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"google.golang.org/grpc"
-	"log/slog"
-	"net"
-	"os"
 )
 
 func main() {
@@ -41,7 +45,7 @@ func run() (err error) {
 	log := logger.Set(cfg.Enviroment, logFile)
 
 	log.Info(
-		"starting zuzu-main",
+		"starting zuzu-auth",
 		slog.String("env", cfg.Enviroment),
 		slog.String("addr", cfg.Address),
 		slog.String("log_file_path", cfg.LogFilePath),
@@ -73,19 +77,30 @@ func run() (err error) {
 		return err
 	}
 	// ----------------------------Database---------------------------- //
+
 	profileRepo := profileRepo.NewProfileRepo(db)
-
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
-	service := grpcAuth.NewGrpcAuthHandler(authUsecase)
 
-	listener, err := net.Listen("tcp", "0.0.0.0:8010")
-	if err != nil {
-		return err
-	}
+	gRPCServer := grpc.NewServer()
+	grpcAuth.Register(gRPCServer, log, authUsecase)
 
-	server := grpc.NewServer()
+	go func() {
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", 8011))
+		if err != nil {
+			log.Error("listen returned err: ", sl.Err(err))
+		}
+		log.Info("grpc server started", slog.String("addr", listener.Addr().String()))
+		if err := gRPCServer.Serve(listener); err != nil {
+			log.Error("serve returned err: ", sl.Err(err))
+		}
+	}()
 
-	generatedAuth.RegisterAuthServiceServer(server, service)
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
 
-	return server.Serve(listener)
+	<-stop
+
+	gRPCServer.GracefulStop()
+	log.Info("Gracefully stopped")
+	return nil
 }

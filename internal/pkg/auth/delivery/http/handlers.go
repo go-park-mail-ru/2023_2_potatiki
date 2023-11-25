@@ -2,11 +2,12 @@ package http
 
 import (
 	"encoding/json"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
 	"io"
 	"log/slog"
 	"net/http"
 	"time"
+
+	grpcAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
@@ -18,14 +19,14 @@ import (
 )
 
 type AuthHandler struct {
-	client generatedAuth.AuthServiceClient
+	client grpcAuth.AuthClient
 	log    *slog.Logger
 	uc     auth.AuthUsecase
 }
 
 const customTimeFormat = "2006-01-02 15:04:05.999999999 -0700 UTC"
 
-func NewAuthHandler(cl generatedAuth.AuthServiceClient, log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
+func NewAuthHandler(cl grpcAuth.AuthClient, log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
 	return &AuthHandler{
 		client: cl,
 		log:    log,
@@ -65,7 +66,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profileAndCookie, err := h.client.SignIn(r.Context(), &generatedAuth.SignInPayload{
+	profileAndCookie, err := h.client.SignIn(r.Context(), &grpcAuth.SignInRequest{
 		Login:    userInfo.Login,
 		Password: userInfo.Password,
 	})
@@ -76,9 +77,9 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.ProfileInfo.Id))
+	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.Profile.Id))
 
-	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.CookieInfo.Expires)
+	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.Expires)
 	if err != nil {
 		h.log.Error("failed to parse time from auth signin", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -86,8 +87,8 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.CookieInfo.Token, expiresTime))
-	resp.JSON(w, http.StatusOK, profileAndCookie.ProfileInfo)
+	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.Token, expiresTime))
+	resp.JSON(w, http.StatusOK, profileAndCookie.Profile)
 }
 
 // @Summary	SignUp
@@ -121,7 +122,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profileAndCookie, err := h.client.SignUp(r.Context(), &generatedAuth.SignUpPayload{
+	profileAndCookie, err := h.client.SignUp(r.Context(), &grpcAuth.SignUpRequest{
 		Login:    userInfo.Login,
 		Password: userInfo.Password,
 		Phone:    userInfo.Phone,
@@ -133,9 +134,9 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.ProfileInfo.Id))
+	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.Profile.Id))
 
-	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.CookieInfo.Expires)
+	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.Expires)
 	if err != nil {
 		h.log.Error("failed to parse time from auth signup", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -143,8 +144,8 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.CookieInfo.Token, expiresTime))
-	resp.JSON(w, http.StatusOK, profileAndCookie.ProfileInfo)
+	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.Token, expiresTime))
+	resp.JSON(w, http.StatusOK, profileAndCookie.Profile)
 }
 
 // @Summary	Logout
@@ -188,7 +189,7 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("check auth success", "id", id)
 
-	profile, err := h.client.CheckAuth(r.Context(), &generatedAuth.UserID{
+	profile, err := h.client.CheckAuth(r.Context(), &grpcAuth.CheckAuthRequst{
 		ID: id.String(),
 	})
 	if err != nil {
@@ -198,6 +199,6 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	h.log.Debug("got profile", slog.Any("profile", profile.Id))
+	h.log.Debug("got profile", slog.Any("profile", profile.Profile.Id))
 	resp.JSON(w, http.StatusOK, profile)
 }

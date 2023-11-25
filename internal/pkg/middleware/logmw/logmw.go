@@ -1,6 +1,7 @@
 package logmw
 
 import (
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"log/slog"
 	"net/http"
 	"time"
@@ -23,8 +24,8 @@ type Config struct {
 //
 // Requests with errors are logged using slog.Error().
 // Requests without errors are logged using slog.Info().
-func New(logger *slog.Logger) mux.MiddlewareFunc {
-	return NewWithConfig(logger, Config{
+func New(mt metrics.Metrics, logger *slog.Logger) mux.MiddlewareFunc {
+	return NewWithConfig(mt, logger, Config{
 		DefaultLevel:     slog.LevelInfo,
 		ClientErrorLevel: slog.LevelWarn,
 		ServerErrorLevel: slog.LevelError,
@@ -50,7 +51,7 @@ func (r *ResponseWrapper) Write(bytes []byte) (int, error) {
 	return r.ResponseWriter.Write(bytes) //nolint:wrapcheck
 }
 
-func NewWithConfig(log *slog.Logger, config Config) mux.MiddlewareFunc { //nolint:cyclop
+func NewWithConfig(mt metrics.Metrics, log *slog.Logger, config Config) mux.MiddlewareFunc { //nolint:cyclop
 	return func(next http.Handler) http.Handler { // TODO: del
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			start := time.Now()
@@ -91,12 +92,16 @@ func NewWithConfig(log *slog.Logger, config Config) mux.MiddlewareFunc { //nolin
 
 			switch {
 			case status >= http.StatusInternalServerError:
+				mt.IncreaseWithErr("500", r.URL.Path)
 				log.LogAttrs(r.Context(), config.ServerErrorLevel, "Server Error", attributes...)
 			case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
+				mt.IncreaseWithErr("400", r.URL.Path)
 				log.LogAttrs(r.Context(), config.ClientErrorLevel, "Client Error", attributes...)
 			case status >= http.StatusMultipleChoices && status < http.StatusBadRequest:
+				mt.IncreaseWithErr("300", r.URL.Path)
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Redirection", attributes...)
 			case status >= http.StatusOK && status < http.StatusMultipleChoices:
+				mt.Increase()
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Success", attributes...)
 			default:
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Informational", attributes...)

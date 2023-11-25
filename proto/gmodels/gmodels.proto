@@ -1,0 +1,77 @@
+syntax = "proto3";
+option go_package = "github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels;gmodels";
+package gmodels;
+
+message Profile {
+  string Id = 1;
+  string Login = 2;
+  string Description = 3;
+  string ImgSrc = 4;
+  string Phone = 5;
+}
+
+
+message Product {
+  string Id = 1;
+  string Name = 2;
+  string Description = 3;
+  int64 Price = 4;
+  string ImgSrc = 5;
+  float Rating = 6;
+  Category Category = 7;
+}
+message Category {
+  int64 Id = 1;
+  string Name = 2;
+  int64 Parent = 3;
+}
+
+message Cart {
+  string Id = 1;
+  string ProfileId = 2;
+  bool isCurrent = 3;
+  repeated CartProduct Products = 4;
+}
+
+message CartProduct {
+  string Quantity = 1;
+  repeated Product Product = 2;
+}
+
+message CartUpdate {
+  string Id = 1;
+  string ProfileId = 2;
+  bool isCurrent = 3;
+  repeated CartProductUpdate Products = 4;
+}
+
+message CartProductUpdate {
+  string Quantity = 1;
+  string Id = 2;
+}
+
+message CartProductDelete {
+  string Id = 1;
+}
+
+message Order {
+  string Id = 1;
+  int64 Status = 2;
+  Address Address = 3;
+  repeated OrderProduct Products = 4;
+}
+
+message OrderProduct {
+  int64 Quantity = 1;
+  Product Product = 2;
+}
+
+message Address {
+  string Id = 1;
+  string ProfileId = 2;
+  string City = 3;
+  string Street = 4;
+  string House = 5;
+  string Flat = 6;
+  bool IsCurrent = 7;
+}

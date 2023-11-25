@@ -29,7 +29,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AddressInfo"
+                            "$ref": "#/definitions/models.AddressPayload"
                         }
                     }
                 ],
@@ -969,6 +969,50 @@
                     }
                 }
             }
+        },
+        "/api/search/": {
+            "get": {
+                "description": "Search products by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "SearchProducts",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Search products by name",
+                        "name": "product",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Products array",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1003,28 +1047,32 @@
                 }
             }
         },
-        "models.AddressInfo": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string"
-                },
-                "flat": {
-                    "type": "string"
-                },
-                "house": {
-                    "type": "string"
-                },
-                "street": {
-                    "type": "string"
-                }
-            }
-        },
         "models.AddressMakeCurrent": {
             "type": "object",
             "properties": {
                 "addressId": {
                     "type": "string"
+                }
+            }
+        },
+        "models.AddressPayload": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "flat": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "house": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "street": {
+                    "type": "string",
+                    "maxLength": 32
                 }
             }
         },

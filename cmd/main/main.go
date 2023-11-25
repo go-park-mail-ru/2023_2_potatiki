@@ -4,15 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	"github.com/gorilla/mux"
@@ -29,6 +31,9 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
+	grpcAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
+	grpcOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
+
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
 
@@ -43,6 +48,10 @@ import (
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
+
+	searchHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/delivery/http"
+	searchRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/repo"
+	searchUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/usecase"
 
 	profileHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/delivery/http"
 	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
@@ -125,7 +134,7 @@ func run() (err error) {
 	//
 	// ===============================Grpc============================== //
 	authConn, err := grpc.Dial(
-		"0.0.0.0:8010",
+		"0.0.0.0:8011",
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Error("fail grpc.Dial auth", sl.Err(err))
@@ -134,12 +143,25 @@ func run() (err error) {
 		return err
 	}
 	defer authConn.Close()
+
+	orderConn, err := grpc.Dial(
+		"0.0.0.0:8012",
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Error("fail grpc.Dial order", sl.Err(err))
+		err = fmt.Errorf("error happened in grpc.Dial order: %w", err)
+
+		return err
+	}
+	defer orderConn.Close()
+
 	// -------------------------------Grpc------------------------------- //
 	//
 	//
 	// ============================Init layers============================ //
 
-	authClient := generatedAuth.NewAuthServiceClient(authConn)
+	authClient := grpcAuth.NewAuthClient(authConn)
+	orderClient := grpcOrder.NewOrderClient(orderConn)
 
 	profileRepo := profileRepo.NewProfileRepo(db)
 	profileUsecase := profileUsecase.NewProfileUsecase(profileRepo, cfg)
@@ -156,6 +178,10 @@ func run() (err error) {
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
 	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
 
+	searchRepo := searchRepo.NewSearchRepo(db)
+	searchUsecase := searchUsecase.NewSearchUsecase(searchRepo, productsRepo)
+	searchHandler := searchHandler.NewSearchHandler(log, searchUsecase)
+
 	categoryRepo := categoryRepo.NewCategoryRepo(db)
 	categoryUsecase := categoryUsecase.NewCategoryUsecase(categoryRepo)
 	categoryHandler := categoryHandler.NewCategoryHandler(log, categoryUsecase)
@@ -166,7 +192,7 @@ func run() (err error) {
 
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
-	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
+	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -174,11 +200,15 @@ func run() (err error) {
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
-	r.Use(middleware.Recover(log), middleware.CORSMiddleware, logmw.New(log))
+	mt := metrics.NewMetrics()
+
+	r.Use(middleware.Recover(log), middleware.CORSMiddleware, logmw.New(mt, log))
 
 	r.NotFoundHandler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Not Found", http.StatusNotFound)
 	})
+
+	r.PathPrefix("/prometheus").Handler(promhttp.Handler())
 
 	r.PathPrefix("/swagger/").Handler(httpSwagger.Handler(
 		httpSwagger.DeepLinking(true),
@@ -282,6 +312,12 @@ func run() (err error) {
 			Methods(http.MethodGet, http.MethodOptions)
 
 		address.Handle("/get_all", authMW(http.HandlerFunc(addressHandler.GetAllAddresses))).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	search := r.PathPrefix("/search").Subrouter()
+	{
+		search.HandleFunc("/", searchHandler.SearchProducts).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//

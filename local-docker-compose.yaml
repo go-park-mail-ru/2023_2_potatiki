@@ -5,24 +5,26 @@ services:
 
   zuzu-postgres:
     container_name: zuzu-postgres
-    image: postgres:latest # last stable 15.3 for 22/6/2023, equal to latest
+    build:
+      context: ./build
+      dockerfile: postgres.Dockerfile # FROM postgres:latest && RUN chmod 777 /usr/share/postgresql/16/tsearch_data
     restart: always
-    command: #echo "psql -U ${POSTGRES_USER} -d ${POSTGRES_DB} -c "CREATE EXTENSION IF NOT EXISTS "uuid-ossp";"" > start.sh
+    command: 
       - "postgres"
       - "-c"
-      - "max_connections=50"
+      - "max_connections=5"
       - "-c"
-      - "shared_buffers=1GB"
+      - "shared_buffers=100MB"
       - "-c"
-      - "effective_cache_size=4GB"
+      - "effective_cache_size=0.5GB"
       - "-c"
       - "work_mem=16MB"
       - "-c"
-      - "maintenance_work_mem=512MB"
+      - "maintenance_work_mem=64MB"
       - "-c"
       - "random_page_cost=1.1"
       - "-c"
-      - "temp_file_limit=10GB"
+      - "temp_file_limit=1GB"
       - "-c"
       - "log_min_duration_statement=200ms"
       - "-c"
@@ -37,18 +39,16 @@ services:
       - "pg_stat_statements.max=10000"
       - "-c"
       - "pg_stat_statements.track=all"
-      
-    
     environment:
       PGDATA: "/var/lib/postgresql/data/pgdata" # storing db files
     env_file:
       - ./.env
     ports:
       - ${DB_PORT}:5432
-
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'
+      #- './build/sql/dict/:/usr/share/postgresql/16/tsearch_data/'
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s

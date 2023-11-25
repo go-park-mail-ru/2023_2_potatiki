@@ -35,7 +35,7 @@ func NewAddressHandler(log *slog.Logger, uc address.AddressUsecase) AddressHandl
 // @Description	Add Address
 // @Accept json
 // @Produce json
-// @Param input body models.AddressInfo true "Address info"
+// @Param input body models.AddressPayload true "Address info"
 // @Success	200	{object} models.Address "Address full info"
 // @Failure	401	"User unauthorized"
 // @Failure	429
