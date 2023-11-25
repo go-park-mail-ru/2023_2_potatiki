@@ -143,7 +143,7 @@ func run() (err error) {
 	}
 	defer authConn.Close()
 
-	orderConn, err := grpc.Dial(fmt.Sprintf("0.0.0.0:%d", cfg.OrderPort),
+	orderConn, err := grpc.Dial(fmt.Sprintf("zuzu-order:%d", cfg.OrderPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Error("fail grpc.Dial order", sl.Err(err))
