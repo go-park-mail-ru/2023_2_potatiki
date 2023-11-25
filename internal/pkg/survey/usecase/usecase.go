@@ -19,23 +19,22 @@ func NewSurveyUsecase(repo survey.SurveyRepo) *SurveyUsecase {
 	}
 }
 
-//func (uc *SurveyUsecase) SaveSurvey(ctx context.Context, surveyInfo models.Survey) error {
-//	err := uc.repo.WriteSurvey(ctx, surveyInfo)
-//	surveyInfo.ID = uuid.NewV4()
-//	if err != nil {
-//		//if errors.Is(err, repo.ErrProductNotFound) {
-//		//	return err
-//		//}
-//		err = fmt.Errorf("error happened in repo.WriteSurvey: %w", err)
-//
-//		return err
-//	}
-//
-//	return nil
-//
-//}
+func (uc *SurveyUsecase) SaveResponse(ctx context.Context, surveyInfo models.SurveyResponse) error {
+	err := uc.repo.SaveResults(ctx, surveyInfo)
+	if err != nil {
+		//if errors.Is(err, repo.ErrProductNotFound) {
+		//	return err
+		//}
+		err = fmt.Errorf("error happened in repo.SaveResults: %w", err)
 
-func (uc *SurveyUsecase) GetSurvey(ctx context.Context, surveyID uuid.UUID) (models.Survey, error) {
+		return err
+	}
+
+	return nil
+
+}
+
+func (uc *SurveyUsecase) GetSurvey(ctx context.Context, surveyID uuid.UUID, userID uuid.UUID) (models.Survey, error) {
 	survey, err := uc.repo.ReadSurvey(ctx, surveyID)
 	if err != nil {
 		//if errors.Is(err, repo.ErrProductNotFound) {
@@ -45,6 +44,17 @@ func (uc *SurveyUsecase) GetSurvey(ctx context.Context, surveyID uuid.UUID) (mod
 
 		return models.Survey{}, err
 	}
+
+	resultID, err := uc.repo.CreateResult(ctx, surveyID, userID)
+	if err != nil {
+		//if errors.Is(err, repo.ErrProductNotFound) {
+		//	return err
+		//}
+		err = fmt.Errorf("error happened in repo.CreateResult: %w", err)
+
+		return models.Survey{}, err
+	}
+	survey.ResultID = resultID
 
 	return survey, nil
 

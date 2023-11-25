@@ -12,14 +12,13 @@ import (
 )
 
 const (
-	writeSurvey = `
-	INSERT INTO survey (id, user_id, type, answer) VALUES ($1, $2, $3, $4);
+	createResult = `
+	INSERT INTO results (id, user_id, survey_id) VALUES ($1, $2, $3);
 	`
 
-	getCompletedSurveys = `
-	SELECT answer
-	FROM survey
-	WHERE user_id = $1;`
+	createResponse = `
+	INSERT INTO answer (id, question, result_id, answer) VALUES ($1, $2, $3, $4);
+	`
 
 	getSurveyInfo = `
 	SELECT id as survey_id, name
@@ -53,20 +52,36 @@ func NewSurveyRepo(db pgxtype.Querier) *SurveyRepo {
 	}
 }
 
-//func (r *SurveyRepo) WriteSurvey(ctx context.Context, surveyInfo models.Survey) error {
-//	_, err := r.db.Exec(ctx, writeSurvey,
-//		surveyInfo.ID,
-//		surveyInfo.UserID,
-//		surveyInfo.Type,
-//		surveyInfo.Answer,
-//	)
-//	if err != nil {
-//		err = fmt.Errorf("error happened in db.Exec: %w", err)
-//
-//		return err
-//	}
-//	return nil
-//}
+func (r *SurveyRepo) CreateResult(ctx context.Context, survey_id uuid.UUID, user_id uuid.UUID) (uuid.UUID, error) {
+	resultID := uuid.NewV4()
+	_, err := r.db.Exec(ctx, createResult,
+		resultID,
+		user_id,
+		survey_id,
+	)
+	if err != nil {
+		err = fmt.Errorf("error happened in db.Exec: %w", err)
+
+		return uuid.UUID{}, err
+	}
+	return resultID, nil
+}
+
+func (r *SurveyRepo) SaveResults(ctx context.Context, surveyResponse models.SurveyResponse) error {
+	responseID := uuid.NewV4()
+	_, err := r.db.Exec(ctx, createResponse,
+		responseID,
+		surveyResponse.QuestionID,
+		surveyResponse.ResultID,
+		surveyResponse.Answer,
+	)
+	if err != nil {
+		err = fmt.Errorf("error happened in db.Exec: %w", err)
+
+		return err
+	}
+	return nil
+}
 
 func (r *SurveyRepo) ReadSurvey(ctx context.Context, surveyID uuid.UUID) (models.Survey, error) {
 	survey := models.Survey{}

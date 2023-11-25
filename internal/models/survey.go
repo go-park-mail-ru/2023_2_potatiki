@@ -9,6 +9,7 @@ type SurveysCompleted struct {
 type Survey struct {
 	ID        uuid.UUID `json:"surveyID"`
 	Name      string    `json:"surveyName"`
+	ResultID  uuid.UUID `json:"resultID"`
 	Questions []Question
 }
 
@@ -26,6 +27,13 @@ type QuestionType struct {
 type Answer struct {
 	ID     int `json:"-"`
 	Answer int `json:"-"`
+}
+
+type SurveyResponse struct {
+	QuestionID uuid.UUID `json:"questionID"`
+	ResultID   uuid.UUID `json:"resultID"`
+	Answer     int       `json:"answer"`
+	UserID     uuid.UUID `json:"-"`
 }
 
 type Stat struct {
