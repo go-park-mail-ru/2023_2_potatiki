@@ -34,7 +34,7 @@ const (
 	getAnswersByQuestion = `
 	SELECT id, question, result_id, answer
 	FROM answer
-	WHERE question = $1';`
+	WHERE question = $1;`
 )
 
 var (
