@@ -59,10 +59,10 @@ jobs:
       - name: Build and push main
         uses: docker/build-push-action@v4
         with:
-          context: ./build
+          context: .
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          file: Dockerfile.multistage.main
+          file: ./build/Dockerfile.multistage.main
           build-args: |
               IMAGE_NAME=${{ env.IMAGE_NAME }}
               REGISTRY=${{ env.REGISTRY }}
@@ -71,10 +71,10 @@ jobs:
       - name: Build and push auth
         uses: docker/build-push-action@v4
         with:
-          context: ./build
+          context: .
           push: true
           tags: ${{ env.REGISTRY }}/zuzu-auth-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/zuzu-auth-web:latest
-          file: Dockerfile.multistage.auth
+          file: ./build/Dockerfile.multistage.auth
           build-args: |
               IMAGE_NAME=zuzu-auth-web
               REGISTRY=${{ env.REGISTRY }}
