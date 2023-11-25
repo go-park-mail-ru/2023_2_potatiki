@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+option go_package = "github.com/go-park-mail-ru/2023_2_potatiki/internal/models/proto";
+
+package models;
+
+message Profile {
+  string Id = 1;
+  string Login = 2;
+  string Description = 3;
+  string ImgSrc = 4;
+  string Phone = 5;
+}
+
+message Product{
+	string Id = 1;      
+	string Name = 2;      
+	string Description = 3;   
+	int64 Price = 4;
+	string ImgSrc = 5;
+	float Rating = 6;
+	Category Category = 7;
+}
+
+message Category{
+  int64 Id = 1;     
+	string Name = 2;  
+	int64 Parent = 3; 
+}

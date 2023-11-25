@@ -1,6 +1,7 @@
 syntax = "proto3";
-
+package auth;
 option go_package = "internal/pkg/auth/delivery/grpc/generated";
+import "models.proto";
 
 message SignInPayload {
   string Login = 1;
@@ -10,14 +11,6 @@ message SignInPayload {
 message ProfileAndCookie {
   Profile ProfileInfo = 1;
   Cookie CookieInfo = 2;
-}
-
-message Profile {
-  string Id = 1;
-  string Login = 2;
-  string Description = 3;
-  string ImgSrc = 4;
-  string Phone = 5;
 }
 
 message Cookie {
