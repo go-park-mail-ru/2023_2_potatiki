@@ -1,6 +1,8 @@
 package models
 
-import "html"
+import (
+	"html"
+)
 
 type SignUpPayload struct {
 	Login    string `json:"login" validate:"required,min=6,max=30"`
