@@ -32,8 +32,7 @@ const (
 	WHERE q.id_survey = $1;`
 
 	getAnswersByQuestion = `
-	SELECT id, question, result_id, answer
-	FROM answer
+	SELECT id, answer FROM answer
 	WHERE question = $1;`
 )
 
