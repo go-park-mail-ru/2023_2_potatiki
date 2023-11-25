@@ -24,6 +24,13 @@ type QuestionType struct {
 }
 
 type Answer struct {
-	ID     int    `json:"-"`
-	Answer string `json:"-"`
+	ID     int `json:"-"`
+	Answer int `json:"-"`
 }
+
+type Stat struct {
+	QuestionName string  `json:"questionName"`
+	StatValue    float64 `json:"statValue"`
+}
+
+type Statistics []Stat

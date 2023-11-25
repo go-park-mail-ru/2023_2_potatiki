@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
 	"github.com/jackc/pgx/v4"
@@ -30,6 +31,11 @@ const (
 	FROM question q
 	JOIN question_type qt ON q.type = qt.id
 	WHERE q.id_survey = $1;`
+
+	getAnswersByQuestion = `
+	SELECT id, question, result_id, answer
+	FROM answer
+	WHERE question = $1';`
 )
 
 var (
@@ -103,4 +109,30 @@ func (r *SurveyRepo) ReadSurvey(ctx context.Context, surveyID uuid.UUID) (models
 
 	survey.Questions = questionsSlice
 	return survey, nil
+}
+
+func (r *SurveyRepo) GetAnswers(ctx context.Context, questionID uuid.UUID) ([]models.Answer, error) {
+	answers := make([]models.Answer, 0)
+	rows, err := r.db.Query(ctx, getAnswersByQuestion, questionID)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Answer{}, ErrSurveyNotFound
+		}
+		return []models.Answer{}, fmt.Errorf("error happened in row.Scan: %w", err)
+	}
+
+	ans := models.Answer{}
+	for rows.Next() {
+		err = rows.Scan(
+			&ans.ID,
+			&ans.Answer,
+		)
+		if err != nil {
+			return []models.Answer{}, fmt.Errorf("error happened in rows.Scan: %w", err)
+		}
+		answers = append(answers, ans)
+	}
+	defer rows.Close()
+
+	return answers, nil
 }

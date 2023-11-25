@@ -1,13 +1,15 @@
 package http
 
 import (
+	"log/slog"
+	"net/http"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
+	"github.com/gorilla/mux"
 	uuid "github.com/satori/go.uuid"
-	"log/slog"
-	"net/http"
 )
 
 type SurveyHandler struct {
@@ -91,4 +93,38 @@ func (h *SurveyHandler) GetSurvey(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("got survey", "len", len(survey.Questions))
 	resp.JSON(w, http.StatusOK, survey)
+}
+
+func (h *SurveyHandler) GetStat(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
+	)
+
+	vars := mux.Vars(r)
+	idStr, ok := vars["id"]
+	if !ok || idStr == "" {
+		h.log.Error("id is empty")
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
+		return
+	}
+	surveyID, err := uuid.FromString(idStr)
+	if err != nil {
+		h.log.Error("surveyID is invali", sl.Err(err))
+		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
+
+		return
+	}
+
+	statistics, err := h.uc.GetStat(r.Context(), surveyID)
+	if err != nil {
+		h.log.Error("failed to get answers", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.log.Debug("got survey", "len", len(statistics))
+	resp.JSON(w, http.StatusOK, statistics)
 }

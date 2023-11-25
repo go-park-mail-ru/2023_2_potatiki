@@ -4,17 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	"github.com/gorilla/mux"
@@ -314,6 +315,9 @@ func run() (err error) {
 	survey := r.PathPrefix("/survey").Subrouter()
 	{
 		survey.HandleFunc("/get", surveyHandler.GetSurvey).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		survey.HandleFunc("/stat/{id:[0-9a-fA-F-]+}", surveyHandler.GetStat).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//

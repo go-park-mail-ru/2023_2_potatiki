@@ -8,8 +8,6 @@ DROP TABLE IF EXISTS answer;
 
 DROP TABLE IF EXISTS results;
 
-
-
 CREATE TABLE IF NOT EXISTS survey
 (
     id uuid NOT NULL PRIMARY KEY,
