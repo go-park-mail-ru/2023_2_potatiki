@@ -85,7 +85,7 @@ func run() (err error) {
 	grpcAuth.Register(gRPCServer, log, authUsecase)
 
 	go func() {
-		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", 8011))
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.AuthPort))
 		if err != nil {
 			log.Error("listen returned err: ", sl.Err(err))
 		}

@@ -3,8 +3,7 @@ name: CI
 on:
   push:
     branches:
-      - RK3
-      - main
+      - ProductsMicroservice
 
 env:
   REGISTRY: "mrdjeb"
@@ -57,15 +56,27 @@ jobs:
       - name: Set env
         run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | head -c 8)" >> $GITHUB_ENV
 
-      - name: Build and push
+      - name: Build and push main
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./build
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
-          file: ./build/Dockerfile.multistage.main
+          file: ./Dockerfile.multistage.main
           build-args: |
               IMAGE_NAME=${{ env.IMAGE_NAME }}
+              REGISTRY=${{ env.REGISTRY }}
+              GITHUB_SHA_SHORT=${{ env.GITHUB_SHA_SHORT }}
+      
+      - name: Build and push auth
+        uses: docker/build-push-action@v4
+        with:
+          context: ./build
+          push: true
+          tags: ${{ env.REGISTRY }}/zuzu-auth-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/zuzu-auth-web:latest
+          file: ./Dockerfile.multistage.auth
+          build-args: |
+              IMAGE_NAME=zuzu-auth-web
               REGISTRY=${{ env.REGISTRY }}
               GITHUB_SHA_SHORT=${{ env.GITHUB_SHA_SHORT }}
 
@@ -130,6 +141,7 @@ jobs:
 
             # Pull image DockerHub
             docker pull $REGISTRY/$IMAGE_NAME:latest
+            docker pull $REGISTRY/zuzu-auth-web:latest
             
             # docker-entrypoint
             #chmod -R 777 build

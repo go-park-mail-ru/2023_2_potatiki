@@ -80,7 +80,7 @@ func run() (err error) {
 	grpcOrder.Register(gRPCServer, log, orderUsecase)
 
 	go func() {
-		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", 8012))
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.OrderPort))
 		if err != nil {
 			log.Error("listen returned err: ", sl.Err(err))
 		}
