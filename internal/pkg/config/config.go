@@ -16,6 +16,7 @@ type Config struct {
 	HTTPServer `yaml:"httpServer"`
 	AuthJWT    `yaml:"authJwt"`
 	CSRFJWT    `yaml:"csrfJwt"`
+	Grpc       `yaml:"grpc"`
 
 	Database
 	Enviroment     string `env:"ENVIROMENT" env-default:"prod" env-description:"avalible: local, dev, prod"`
@@ -34,6 +35,10 @@ type AuthJWT struct {
 	JwtAccess            string        `env:"AUTH_JWT_SECRET_KEY" env-required:"true"`
 	AccessExpirationTime time.Duration `yaml:"accessExpirationTime" yaml-defualt:"6h"`
 	Issuer               string
+}
+type Grpc struct {
+	AuthPort  int `yaml:"authPort" yaml-defualt:"8011"`
+	OrderPort int `yaml:"orderPort" yaml-defualt:"8012"`
 }
 
 func (a AuthJWT) GetTTL() time.Duration {

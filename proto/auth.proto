@@ -1,21 +1,41 @@
 syntax = "proto3";
+package auth;
+option go_package = "./internal/pkg/auth/delivery/grpc/gen/;gen";
+import "gmodels/gmodels.proto";
 
-option go_package = "internal/pkg/auth/delivery/grpc/generated";
+service Auth {
+  rpc SignIn(SignInRequest) returns (SignInResponse) {}
+  rpc SignUp(SignUpRequest) returns (SignUpResponse) {}
+  rpc CheckAuth(CheckAuthRequst) returns (CheckAuthResponse) {}
+}
 
-message SignInPayload {
+message SignInRequest {
   string Login = 1;
   string Password = 2;
 }
 
-message Profile {
-  string Id = 1;
-  string Login = 2;
-  string Description = 3;
-  string ImgSrc = 4;
-  string Phone = 5;
-  bytes PasswordHash = 6;
+message SignInResponse {
+  gmodels.Profile Profile = 1;
+  string Token = 2;
+  string Expires = 3;
 }
 
-service AuthService {
-  rpc SignIn(SignInPayload) returns (Profile) {}
+message SignUpRequest {
+  string Login = 1;
+  string Password = 2;
+  string Phone = 3;
+}
+
+message SignUpResponse {
+  gmodels.Profile Profile = 1;
+  string Token = 2;
+  string Expires = 3;
+}
+
+message CheckAuthRequst {
+  string ID = 1;
+}
+
+message CheckAuthResponse {
+  gmodels.Profile Profile = 1;
 }

@@ -4,14 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	"github.com/gorilla/mux"
@@ -27,6 +30,9 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/jwter"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
+
+	grpcAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
+	grpcOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
@@ -89,7 +95,9 @@ func run() (err error) {
 
 		return err
 	}
-	defer func() { err = errors.Join(err, logFile.Close()) }()
+	defer func() {
+		err = errors.Join(err, logFile.Close())
+	}()
 
 	log := logger.Set(cfg.Enviroment, logFile)
 
@@ -128,13 +136,41 @@ func run() (err error) {
 	// ----------------------------Database---------------------------- //
 	//
 	//
+	// ===============================Grpc============================== //
+	authConn, err := grpc.Dial(fmt.Sprintf("zuzu-auth:%d", cfg.AuthPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Error("fail grpc.Dial auth", sl.Err(err))
+		err = fmt.Errorf("error happened in grpc.Dial auth: %w", err)
+
+		return err
+	}
+	defer authConn.Close()
+
+	orderConn, err := grpc.Dial(fmt.Sprintf("zuzu-order:%d", cfg.OrderPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Error("fail grpc.Dial order", sl.Err(err))
+		err = fmt.Errorf("error happened in grpc.Dial order: %w", err)
+
+		return err
+	}
+	defer orderConn.Close()
+
+	// -------------------------------Grpc------------------------------- //
+	//
+	//
 	// ============================Init layers============================ //
+
+	authClient := grpcAuth.NewAuthClient(authConn)
+	orderClient := grpcOrder.NewOrderClient(orderConn)
+
 	profileRepo := profileRepo.NewProfileRepo(db)
 	profileUsecase := profileUsecase.NewProfileUsecase(profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
-	authHandler := authHandler.NewAuthHandler(log, authUsecase)
+	authHandler := authHandler.NewAuthHandler(authClient, log, authUsecase)
 
 	cartRepo := cartRepo.NewCartRepo(db)
 	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
@@ -158,7 +194,7 @@ func run() (err error) {
 
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
-	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
+	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
 
 	commentsRepo := commentsRepo.NewCommentsRepo(db)
 	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)

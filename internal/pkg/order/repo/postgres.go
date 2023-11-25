@@ -84,7 +84,7 @@ func NewOrderRepo(db pgxtype.Querier) *OrderRepo {
 	}
 }
 
-func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, addressID uuid.UUID, userID uuid.UUID, statusID int) (models.Order, error) {
+func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, addressID uuid.UUID, userID uuid.UUID, statusID int64) (models.Order, error) {
 	orderID := uuid.NewV4()
 	_, err := r.db.Exec(ctx, createOrder, orderID, userID, time.Now().Add(24*time.Hour), statusID, addressID)
 	if err != nil {
