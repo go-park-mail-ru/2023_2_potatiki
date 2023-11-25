@@ -26,8 +26,6 @@ func (m *GrpcMiddleware) ServerMetricsInterceptor(ctx context.Context,
 	h, err := handler(ctx, req)
 	tm := time.Since(start)
 
-	m.metrics.IncreaseMetric("", info.FullMethod, tm.String())
-
 	if err != nil {
 		m.metrics.IncreaseErr(info.FullMethod)
 	}

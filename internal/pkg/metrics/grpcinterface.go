@@ -1,7 +1,6 @@
 package metrics
 
 import (
-	"fmt"
 	"github.com/prometheus/client_golang/prometheus"
 	"time"
 )
@@ -11,7 +10,6 @@ const (
 )
 
 type MetricsGRPC interface {
-	IncreaseMetric(string, string, string)
 	IncreaseHits(string)
 	IncreaseErr(string)
 	AddDurationToHistogram(string, time.Duration)
@@ -19,7 +17,6 @@ type MetricsGRPC interface {
 }
 
 type MetricGRPC struct {
-	metric            *prometheus.GaugeVec
 	totalHits         *prometheus.CounterVec
 	totalErrors       *prometheus.CounterVec
 	durationHistogram *prometheus.HistogramVec
@@ -28,12 +25,12 @@ type MetricGRPC struct {
 }
 
 func NewGRPCMetrics(serverName string) *MetricGRPC {
-	labelGauge := []string{"path", "service_name", "method", "full_time"}
-	gauge := prometheus.NewGaugeVec(prometheus.GaugeOpts{
-		Name: serverName,
-		Help: fmt.Sprintf("SLO for service %s", serverName),
-	}, labelGauge)
-	prometheus.MustRegister(gauge)
+	//labelGauge := []string{"path", "service_name", "method", "full_time"}
+	//gauge := prometheus.NewGaugeVec(prometheus.GaugeOpts{
+	//	Name: serverName,
+	//	Help: fmt.Sprintf("SLO for service %s", serverName),
+	//}, labelGauge)
+	//prometheus.MustRegister(gauge)
 
 	labelHits := []string{"path", "service_name"}
 	totalHits := prometheus.NewCounterVec(prometheus.CounterOpts{
@@ -53,7 +50,6 @@ func NewGRPCMetrics(serverName string) *MetricGRPC {
 	durationHistogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "durations_stats_histogram",
 		Help: "durations_stats_histogram",
-		// Buckets: prometheus.LinearBuckets(0, 1, 10),
 	}, labelHistogram)
 	prometheus.MustRegister(durationHistogram)
 
@@ -80,9 +76,6 @@ func NewGRPCMetrics(serverName string) *MetricGRPC {
 	}
 }
 
-func (m *MetricGRPC) IncreaseMetric(path, method, duration string) {
-	m.metric.WithLabelValues(path, m.name, method, duration).Inc()
-}
 func (m *MetricGRPC) IncreaseHits(path string) {
 	m.totalHits.WithLabelValues(path, m.name).Inc()
 }

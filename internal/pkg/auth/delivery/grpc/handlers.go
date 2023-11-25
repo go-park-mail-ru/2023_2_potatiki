@@ -65,7 +65,6 @@ func (h GrpcAuthHandler) SignUp(ctx context.Context, in *generatedAuth.SignUpPay
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
-
 	userSignUp := models.SignUpPayload{
 		Login:    in.Login,
 		Password: in.Password,

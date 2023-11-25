@@ -118,6 +118,25 @@ services:
     networks:
       - zuzu-network
 
+
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    command:
+      - '--path.rootfs=/host'
+    network_mode: host
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - '/:/host:ro,rslave'
+
+  grafana:
+    image: grafana/grafana-enterprise
+    container_name: grafana
+    restart: unless-stopped
+    network_mode: host
+
+
 volumes:
   zuzu-db-data:
   pgadmin-data:
