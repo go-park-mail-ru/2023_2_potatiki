@@ -25,8 +25,8 @@ type QuestionType struct {
 }
 
 type Answer struct {
-	ID     int `json:"-"`
-	Answer int `json:"-"`
+	ID     uuid.UUID `json:"-"`
+	Answer int       `json:"-"`
 }
 
 type SurveyResponse struct {

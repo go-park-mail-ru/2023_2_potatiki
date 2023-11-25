@@ -70,7 +70,7 @@ func (uc *SurveyUsecase) GetStat(ctx context.Context, surveyID uuid.UUID) (model
 
 		return models.Statistics{}, err
 	}
-	statistics := make([]models.Stat, len(survey.Questions))
+	statistics := make([]models.Stat, 0, len(survey.Questions))
 	for _, q := range survey.Questions {
 		answers, err := uc.repo.GetAnswers(ctx, q.ID)
 		if err != nil {
