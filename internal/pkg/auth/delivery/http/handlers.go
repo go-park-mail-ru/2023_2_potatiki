@@ -87,8 +87,23 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	idUuid, err := uuid.FromString(profileAndCookie.Profile.Id)
+	if err != nil {
+		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+	profile := models.Profile{
+		Id:          idUuid,
+		Login:       profileAndCookie.Profile.Login,
+		Description: profileAndCookie.Profile.Description,
+		ImgSrc:      profileAndCookie.Profile.ImgSrc,
+		Phone:       profileAndCookie.Profile.Phone,
+	}
+
 	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.Token, expiresTime))
-	resp.JSON(w, http.StatusOK, profileAndCookie.Profile)
+	resp.JSON(w, http.StatusOK, profile)
 }
 
 // @Summary	SignUp
@@ -144,8 +159,24 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	idUuid, err := uuid.FromString(profileAndCookie.Profile.Id)
+	if err != nil {
+		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+	profile := models.Profile{
+		Id:          idUuid,
+		Login:       profileAndCookie.Profile.Login,
+		Description: profileAndCookie.Profile.Description,
+		ImgSrc:      profileAndCookie.Profile.ImgSrc,
+		Phone:       profileAndCookie.Profile.Phone,
+	}
+
 	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.Token, expiresTime))
-	resp.JSON(w, http.StatusOK, profileAndCookie.Profile)
+	resp.JSON(w, http.StatusOK, profile)
+
 }
 
 // @Summary	Logout
@@ -199,6 +230,21 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	idUuid, err := uuid.FromString(profile.Profile.Id)
+	if err != nil {
+		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+	profileModel := models.Profile{
+		Id:          idUuid,
+		Login:       profile.Profile.Login,
+		Description: profile.Profile.Description,
+		ImgSrc:      profile.Profile.ImgSrc,
+		Phone:       profile.Profile.Phone,
+	}
+
 	h.log.Debug("got profile", slog.Any("profile", profile.Profile.Id))
-	resp.JSON(w, http.StatusOK, profile)
+	resp.JSON(w, http.StatusOK, profileModel)
 }
