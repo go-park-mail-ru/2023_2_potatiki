@@ -818,6 +818,18 @@ const docTemplate = `{
                         "name": "count",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "(Use ASC/DESC) Sort products by rating",
+                        "name": "ratingBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "(Use ASC/DESC) Sort products by price",
+                        "name": "priceBy",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -868,6 +880,18 @@ const docTemplate = `{
                         "name": "count",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "(Use ASC/DESC) Sort products by rating",
+                        "name": "ratingBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "(Use ASC/DESC) Sort products by price",
+                        "name": "priceBy",
+                        "in": "query"
                     }
                 ],
                 "responses": {

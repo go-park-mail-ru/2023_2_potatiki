@@ -42,6 +42,57 @@ const (
 	OFFSET
 		$2;
 	`
+	getProductsASCRating = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		COALESCE(AVG(cm.rating), 0) ASC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsDESCRating = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		COALESCE(AVG(cm.rating), 0) DESC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
 
 	getProductsASCRatingDESCPrice = `
 	SELECT
@@ -95,6 +146,58 @@ const (
 		$2;
 	`
 
+	getProductsDESCPrice = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+		p.price DESC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsASCPrice = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+		p.price ASC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
 	getProductsDESCRatingASCPrice = `
 	SELECT
 		p.id AS product_id,
@@ -128,6 +231,60 @@ const (
 	//WHERE p.category_id = $3
 	//ORDER BY p.id
 	//LIMIT $1 OFFSET $2;`
+
+	getProducts = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.creation_at ASC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsByCategoryID = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.creation_at ASC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
 
 	getProductsByCategoryIDASCRatingPrice = `
 	SELECT
@@ -185,6 +342,62 @@ const (
 		$2;
 	`
 
+	getProductsByCategoryIDASCRating = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		COALESCE(AVG(cm.rating), 0) ASC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsByCategoryIDDESCRating = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		COALESCE(AVG(cm.rating), 0) DESC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
 	getProductsByCategoryIDDESCRatingPrice = `
 	SELECT
 		p.id AS product_id,
@@ -207,6 +420,62 @@ const (
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
    	p.price DESC, COALESCE(AVG(cm.rating), 0) DESC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsByCategoryIDDESCPrice = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.price DESC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsByCategoryIDASCPrice = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.price ASC
 	LIMIT
 		$1
 	OFFSET
@@ -282,14 +551,34 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging, count int64, ra
 	if ratingBy == "ASC" {
 		if priceBy == "ASC" {
 			rows, err = r.db.Query(ctx, getProductsASCRatingPrice, count, paging)
-		} else {
+		}
+		if priceBy == "DESC" {
 			rows, err = r.db.Query(ctx, getProductsASCRatingDESCPrice, count, paging)
 		}
-	} else {
+		if len(priceBy) == 0 {
+			rows, err = r.db.Query(ctx, getProductsASCRating, count, paging)
+		}
+	}
+	if ratingBy == "DESC" {
 		if priceBy == "DESC" {
 			rows, err = r.db.Query(ctx, getProductsDESCRatingPrice, count, paging)
-		} else {
+		}
+		if priceBy == "ASC" {
 			rows, err = r.db.Query(ctx, getProductsDESCRatingASCPrice, count, paging)
+		}
+		if len(priceBy) == 0 {
+			rows, err = r.db.Query(ctx, getProductsDESCRating, count, paging)
+		}
+	}
+	if len(ratingBy) == 0 {
+		if priceBy == "DESC" {
+			rows, err = r.db.Query(ctx, getProductsDESCPrice, count, paging)
+		}
+		if priceBy == "ASC" {
+			rows, err = r.db.Query(ctx, getProductsASCPrice, count, paging)
+		}
+		if len(priceBy) == 0 {
+			rows, err = r.db.Query(ctx, getProducts, count, paging)
 		}
 	}
 	if err != nil {
@@ -334,14 +623,35 @@ func (r *ProductsRepo) ReadCategory(ctx context.Context, id int, paging, count i
 	if ratingBy == "ASC" {
 		if priceBy == "ASC" {
 			rows, err = r.db.Query(ctx, getProductsByCategoryIDASCRatingPrice, count, paging, id)
-		} else {
+		}
+		if priceBy == "DESC" {
 			rows, err = r.db.Query(ctx, getProductsByCategoryIDASCRatingDESCPrice, count, paging, id)
 		}
-	} else {
+		if len(priceBy) == 0 {
+			rows, err = r.db.Query(ctx, getProductsByCategoryIDASCRating, count, paging, id)
+		}
+	}
+	if ratingBy == "DESC" {
 		if priceBy == "DESC" {
 			rows, err = r.db.Query(ctx, getProductsByCategoryIDDESCRatingPrice, count, paging, id)
-		} else {
+		}
+		if priceBy == "ASC" {
 			rows, err = r.db.Query(ctx, getProductsByCategoryIDDESCRatingASCPrice, count, paging, id)
+		}
+		if len(priceBy) == 0 {
+			rows, err = r.db.Query(ctx, getProductsByCategoryIDDESCRating, count, paging, id)
+		}
+	}
+
+	if len(ratingBy) == 0 {
+		if priceBy == "DESC" {
+			rows, err = r.db.Query(ctx, getProductsByCategoryIDDESCPrice, count, paging)
+		}
+		if priceBy == "ASC" {
+			rows, err = r.db.Query(ctx, getProductsByCategoryIDASCPrice, count, paging)
+		}
+		if len(priceBy) == 0 {
+			rows, err = r.db.Query(ctx, getProductsByCategoryID, count, paging, id)
 		}
 	}
 	if err != nil {

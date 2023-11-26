@@ -108,7 +108,10 @@ CREATE TABLE IF NOT EXISTS product
     price INT NOT NULL,
     imgsrc text NOT NULL,
     category_id INT,
+    rating NUMERIC(3, 2) NOT NULL,
     FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE RESTRICT,
+    creation_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    CHECK (rating >= 0),
     CHECK (price > 0)
     );
 ------------------------------------------------------------------------------------------------------------------------

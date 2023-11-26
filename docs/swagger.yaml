@@ -816,6 +816,14 @@ paths:
         name: count
         required: true
         type: integer
+      - description: (Use ASC/DESC) Sort products by rating
+        in: query
+        name: ratingBy
+        type: string
+      - description: (Use ASC/DESC) Sort products by price
+        in: query
+        name: priceBy
+        type: string
       produces:
       - application/json
       responses:
@@ -849,6 +857,14 @@ paths:
         name: count
         required: true
         type: integer
+      - description: (Use ASC/DESC) Sort products by rating
+        in: query
+        name: ratingBy
+        type: string
+      - description: (Use ASC/DESC) Sort products by price
+        in: query
+        name: priceBy
+        type: string
       produces:
       - application/json
       responses:

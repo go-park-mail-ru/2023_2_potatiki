@@ -78,6 +78,8 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
+// @Param ratingBy query string false "(Use ASC/DESC) Sort products by rating"
+// @Param priceBy query string false "(Use ASC/DESC) Sort products by price"
 // @Success	200	{object} []models.Product "Products array"
 // @Failure	400	{object} responser.Response	"error message"
 // @Failure	429
@@ -89,9 +91,6 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	)
 	// count - обязателен
 	// paging - ситуативно(тот же offset)
-
-	// 2 параметра sortBy && ratingBy (дефолтный параметр) - ситуативные
-	// по умолчанию по убыванию(самые дорогие и популярные) desc asc - лежит в них. Если ничего то desc
 
 	var (
 		paging int64
@@ -142,6 +141,8 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 // @Param category_id query int true "Category ID"
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
+// @Param ratingBy query string false "(Use ASC/DESC) Sort products by rating"
+// @Param priceBy query string false "(Use ASC/DESC) Sort products by price"
 // @Success	200	{object} []models.Product "Products by category id"
 // @Failure	400	{object} responser.Response	"error message"
 // @Failure	429

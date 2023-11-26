@@ -38,12 +38,6 @@ func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models
 
 func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging, count int64, ratingBy, sortingBy string) (
 	[]models.Product, error) {
-	if ratingBy != "ASC" {
-		ratingBy = "DESC"
-	}
-	if sortingBy != "ASC" {
-		sortingBy = "DESC"
-	}
 
 	productsSlice, err := uc.repo.ReadProducts(ctx, paging, count, ratingBy, sortingBy)
 	if err != nil {
@@ -57,12 +51,7 @@ func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging, count int64,
 
 func (uc *ProductsUsecase) GetCategory(ctx context.Context, id int, paging, count int64, ratingBy, sortingBy string) (
 	[]models.Product, error) {
-	if ratingBy != "ASC" {
-		ratingBy = "DESC"
-	}
-	if sortingBy != "ASC" {
-		sortingBy = "DESC"
-	}
+
 	productsSlice, err := uc.repo.ReadCategory(ctx, id, paging, count, ratingBy, sortingBy)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.GetCategory: %w", err)
