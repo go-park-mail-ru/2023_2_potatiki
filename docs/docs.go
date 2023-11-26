@@ -627,6 +627,9 @@ const docTemplate = `{
                     "406": {
                         "description": "Comment is invalid"
                     },
+                    "413": {
+                        "description": "User already gas commented this product"
+                    },
                     "429": {
                         "description": "Too Many Requests"
                     }

@@ -11,11 +11,14 @@ import (
 )
 
 const (
-	getProduct = `SELECT p.id, p.name, p.description, p.price, p.imgsrc,  p.category_id,
-   c.name AS category_name
+	getProduct = `SELECT p.id, p.name, p.description, p.price, p.imgsrc, COALESCE(AVG(cm.rating), 0) AS average_rating,
+       p.category_id, c.name AS category_name
 	FROM product p
 	JOIN category c ON p.category_id = c.id
-	WHERE p.id = $1;`
+	LEFT JOIN comment cm ON p.id = cm.productID
+	WHERE p.id = $1
+	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name;
+	`
 
 	getProductsASCRatingPrice = `
 	SELECT
@@ -528,7 +531,7 @@ func NewProductsRepo(db pgxtype.Querier) *ProductsRepo {
 func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	pr := models.Product{}
 	err := r.db.QueryRow(ctx, getProduct, id).
-		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.ImgSrc, &pr.Category.Id, &pr.Category.Name)
+		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.ImgSrc, &pr.Rating, &pr.Category.Id, &pr.Category.Name)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Product{}, ErrProductNotFound

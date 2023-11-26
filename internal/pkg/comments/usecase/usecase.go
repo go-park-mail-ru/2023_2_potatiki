@@ -10,6 +10,10 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+var (
+	ErrManyCommentsToProduct = errors.New("many comments to one product")
+)
+
 type CommentsUsecase struct {
 	repo comments.CommentsRepo
 }
@@ -21,7 +25,16 @@ func NewCommentsUsecase(repoComments comments.CommentsRepo) *CommentsUsecase {
 }
 
 func (uc *CommentsUsecase) CreateComment(ctx context.Context, commentPayload models.CommentPayload) error {
-	err := uc.repo.MakeComment(ctx, commentPayload)
+	count, err := uc.repo.ReadCountOfCommentsToProduct(ctx, commentPayload.UserID, commentPayload.ProductID)
+	if !errors.Is(err, repo.ErrCommentNotFound) && err != nil {
+		err = fmt.Errorf("error happened in repo.MakeComment: %w", err)
+
+		return err
+	}
+	if count > 0 {
+		return ErrManyCommentsToProduct
+	}
+	err = uc.repo.MakeComment(ctx, commentPayload)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.MakeComment: %w", err)
 

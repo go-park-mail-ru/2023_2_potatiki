@@ -6,6 +6,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/repo"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/usecase"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
@@ -38,6 +39,7 @@ func NewCommentsHandler(log *slog.Logger, uc comments.CommentsUsecase) *Comments
 // @Success	200 "Comment created"
 // @Failure	401	"User unauthorized"
 // @Failure	406 "Comment is invalid"
+// @Failure	413 "User already gas commented this product"
 // @Failure	429
 // @Router	/api/comments/create [post]
 func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) {
@@ -84,6 +86,11 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 	err = h.uc.CreateComment(r.Context(), commentPayload)
 	if err != nil {
 		h.log.Error("failed in uc.CreateComment", sl.Err(err))
+		if errors.Is(err, usecase.ErrManyCommentsToProduct) {
+			resp.JSONStatus(w, http.StatusRequestEntityTooLarge)
+
+			return
+		}
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return

@@ -14,6 +14,7 @@ type CommentsUsecase interface {
 }
 
 type CommentsRepo interface {
+	ReadCountOfCommentsToProduct(context.Context, uuid.UUID, uuid.UUID) (int, error)
 	MakeComment(context.Context, models.CommentPayload) error
 	ReadProductComments(context.Context, uuid.UUID) ([]models.Comment, error)
 }

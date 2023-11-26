@@ -18,6 +18,13 @@ const (
 	getComments = `
 	SELECT id, productID,  pros, cons, comment, rating FROM comment WHERE productID = $1;
 	`
+
+	countOfCommentsToProduct = `
+	SELECT COUNT(*) AS comment_count
+	FROM comment
+	WHERE userID = $1
+	  AND productID = $2;
+	`
 )
 
 var (
@@ -32,6 +39,22 @@ func NewCommentsRepo(db pgxtype.Querier) *CommentsRepo {
 	return &CommentsRepo{
 		db: db,
 	}
+}
+
+func (r *CommentsRepo) ReadCountOfCommentsToProduct(ctx context.Context, userID, productID uuid.UUID) (int, error) {
+	countComments := 0
+	err := r.db.QueryRow(ctx, countOfCommentsToProduct, userID, productID).
+		Scan(&countComments)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return countComments, ErrCommentNotFound
+		}
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
+
+		return countComments, err
+	}
+
+	return countComments, nil
 }
 
 func (r *CommentsRepo) MakeComment(ctx context.Context, commentPayload models.CommentPayload) error {
