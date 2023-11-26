@@ -90,13 +90,16 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	// count - обязателен
 	// paging - ситуативно(тот же offset)
 
+	// 2 параметра sortBy && ratingBy (дефолтный параметр) - ситуативные
+	// по умолчанию по убыванию(самые дорогие и популярные) desc asc - лежит в них. Если ничего то desc
+
 	var (
 		paging int64
 		count  int64
 		err    error
 	)
 	pagingStr := r.URL.Query().Get("paging")
-	if pagingStr != "" {
+	if len(pagingStr) != 0 {
 		paging, err = strconv.ParseInt(pagingStr, 10, 64)
 		if err != nil {
 			h.log.Error("paging is invalid", sl.Err(err))
@@ -115,7 +118,11 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	products, err := h.uc.GetProducts(r.Context(), paging, count)
+	ratingBy := r.URL.Query().Get("ratingBy")
+
+	sortingBy := r.URL.Query().Get("sortingBy")
+
+	products, err := h.uc.GetProducts(r.Context(), paging, count, ratingBy, sortingBy)
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
