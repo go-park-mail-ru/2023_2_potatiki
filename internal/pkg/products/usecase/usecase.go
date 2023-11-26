@@ -38,7 +38,7 @@ func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models
 
 func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging, count int64, ratingBy, sortingBy string) (
 	[]models.Product, error) {
-
+	// 3 методы репы + проверка на точно DESC и ASC
 	productsSlice, err := uc.repo.ReadProducts(ctx, paging, count, ratingBy, sortingBy)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadProducts: %w", err)

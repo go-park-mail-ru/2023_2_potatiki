@@ -45,6 +45,32 @@ const (
 	OFFSET
 		$2;
 	`
+
+	getProductsTest = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   	p.price %S, COALESCE(AVG(cm.rating), 0) %S
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
 	getProductsASCRating = `
 	SELECT
 		p.id AS product_id,
@@ -551,6 +577,7 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging, count int64, ra
 		rows pgx.Rows
 		err  error
 	)
+	// query := fmt.Sprintf(getProductsTest, ratingBy, priceBy)
 	if ratingBy == "ASC" {
 		if priceBy == "ASC" {
 			rows, err = r.db.Query(ctx, getProductsASCRatingPrice, count, paging)
