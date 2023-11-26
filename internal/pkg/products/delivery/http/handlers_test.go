@@ -14,7 +14,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/golang/mock/gomock"
 	"github.com/gorilla/mux"
-	"github.com/satori/go.uuid"
+	uuid "github.com/satori/go.uuid"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -139,7 +139,7 @@ func TestProductsHandler_Category(t *testing.T) {
 			ctx := tc.funcCtxUser(req.Context())
 
 			req = req.WithContext(ctx)
-			addressHandler := NewProductsHandler(logger.Set("local", os.Stdout), mockUsecase)
+			addressHandler := NewProductsHandler(logger.Set("local", os.Stdout))
 			addressHandler.Category(w, req)
 
 			assert.Equal(t, tc.expectedStatus, w.Code)
