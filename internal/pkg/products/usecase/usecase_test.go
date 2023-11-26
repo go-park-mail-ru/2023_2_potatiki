@@ -78,6 +78,8 @@ func TestProductsUsecase_GetProducts(t *testing.T) {
 		ctx    context.Context //nolint:containedctx
 		paging int64
 		count  int64
+		arg1   string
+		arg2   string
 	}
 	tests := []struct {
 		name    string
@@ -90,18 +92,18 @@ func TestProductsUsecase_GetProducts(t *testing.T) {
 		{
 			name: "TestProductsUsecase_GetProducts good",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1)).Return([]models.Product{}, nil)
+				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1), gomock.Any(), gomock.Any()).Return([]models.Product{}, nil)
 			},
-			args:    args{context.Background(), 1, 1},
+			args:    args{context.Background(), 1, 1, "DESC", "DESC"},
 			want:    []models.Product{},
 			wantErr: false,
 		},
 		{
 			name: "TestProductsUsecase_GetProducts bad",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1)).Return(nil, fmt.Errorf("dummyErr"))
+				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("dummyErr"))
 			},
-			args:    args{context.Background(), 1, 1},
+			args:    args{context.Background(), 1, 1, "DESC", "DESC"},
 			wantErr: true,
 		},
 	}
@@ -117,7 +119,7 @@ func TestProductsUsecase_GetProducts(t *testing.T) {
 			}
 			tt.uc = NewProductsUsecase(f.repo)
 
-			got, err := tt.uc.GetProducts(tt.args.ctx, tt.args.paging, tt.args.count)
+			got, err := tt.uc.GetProducts(tt.args.ctx, tt.args.paging, tt.args.count, tt.args.arg1, tt.args.arg2)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductsUsecase.GetProduct() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -138,6 +140,8 @@ func TestProductsUsecase_GetCategory(t *testing.T) {
 		id     int
 		paging int64
 		count  int64
+		arg1   string
+		arg2   string
 	}
 	tests := []struct {
 		name    string
@@ -150,18 +154,18 @@ func TestProductsUsecase_GetCategory(t *testing.T) {
 		{
 			name: "TestProductsUsecase_GetCategory good",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().ReadCategory(gomock.Any(), 1, int64(1), int64(1)).Return([]models.Product{}, nil)
+				f.repo.EXPECT().ReadCategory(gomock.Any(), 1, int64(1), int64(1), gomock.Any(), gomock.Any()).Return([]models.Product{}, nil)
 			},
-			args:    args{context.Background(), 1, 1, 1},
+			args:    args{context.Background(), 1, 1, 1, "DESC", "DESC"},
 			want:    []models.Product{},
 			wantErr: false,
 		},
 		{
 			name: "TestProductsUsecase_GetCategory bad",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().ReadCategory(gomock.Any(), 1, int64(1), int64(1)).Return(nil, fmt.Errorf("dummyErr"))
+				f.repo.EXPECT().ReadCategory(gomock.Any(), 1, int64(1), int64(1), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("dummyErr"))
 			},
-			args:    args{context.Background(), 1, 1, 1},
+			args:    args{context.Background(), 1, 1, 1, "DESC", "DESC"},
 			wantErr: true,
 		},
 	}
@@ -177,7 +181,7 @@ func TestProductsUsecase_GetCategory(t *testing.T) {
 			}
 			tt.uc = NewProductsUsecase(f.repo)
 
-			got, err := tt.uc.GetCategory(tt.args.ctx, tt.args.id, tt.args.paging, tt.args.count)
+			got, err := tt.uc.GetCategory(tt.args.ctx, tt.args.id, tt.args.paging, tt.args.count, tt.args.arg1, tt.args.arg2)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ProductsUsecase.GetCategory() error = %v, wantErr %v", err, tt.wantErr)
 				return

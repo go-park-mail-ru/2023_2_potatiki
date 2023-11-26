@@ -21,8 +21,14 @@ linters:
     - gofumpt
     - godot
     - goimports
+    - typecheck
     - gochecknoglobals
+    - goconst
+    - nestif
     - errname
+    - nilerr
+    - dupword
+    - protogetter
     - maintidx #???
     - stylecheck #???
     - promlinter #???

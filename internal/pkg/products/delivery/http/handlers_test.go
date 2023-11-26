@@ -31,7 +31,7 @@ func TestProductsHandler_Category(t *testing.T) {
 		{
 			name: "SuccessfulCategory",
 			mockUsecaseFn: func(mockUsecase *mock.MockProductsUsecase) {
-				mockUsecase.EXPECT().GetCategory(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+				mockUsecase.EXPECT().GetCategory(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return([]models.Product{}, nil)
 			},
 			expectedStatus: http.StatusOK,
@@ -46,7 +46,7 @@ func TestProductsHandler_Category(t *testing.T) {
 		{
 			name: "UnsuccessfulCategoryWithCorrectQuery",
 			mockUsecaseFn: func(mockUsecase *mock.MockProductsUsecase) {
-				mockUsecase.EXPECT().GetCategory(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
+				mockUsecase.EXPECT().GetCategory(gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).
 					Return([]models.Product{}, errors.New("error in get product by category"))
 			},
 			expectedStatus: http.StatusTooManyRequests,
@@ -213,7 +213,7 @@ func TestProducts(t *testing.T) {
 
 	uc := mock.NewMockProductsUsecase(ctrl)
 	id := uuid.NewV4()
-	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1)).Return(
+	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1), gomock.Any(), gomock.Any()).Return(
 		[]models.Product{{
 			Id:          id,
 			Name:        "123",
@@ -240,7 +240,7 @@ func TestProductsBad(t *testing.T) {
 	uc := mock.NewMockProductsUsecase(ctrl)
 	id := uuid.NewV4()
 
-	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1)).Return(nil, errors.New("some error"))
+	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1), gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo",
 		strings.NewReader(

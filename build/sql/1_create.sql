@@ -107,10 +107,8 @@ CREATE TABLE IF NOT EXISTS product
     description text NOT NULL,
     price INT NOT NULL,
     imgsrc text NOT NULL,
-    rating NUMERIC(3, 2) NOT NULL,
     category_id INT,
     FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE RESTRICT,
-    CHECK (rating >= 0),
     CHECK (price > 0)
     );
 ------------------------------------------------------------------------------------------------------------------------

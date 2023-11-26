@@ -24,11 +24,9 @@ func NewSearchUsecase(repoSearch search.SearchRepo, repoProducts products.Produc
 
 func (uc *SearchUsecase) SearchProducts(ctx context.Context, productName string) ([]models.Product, error) {
 	var err error
-	paging := int64(0)
-	count := int64(10)
 	var productsSlice []models.Product
 	if productName == "" {
-		productsSlice, err = uc.repoProducts.ReadProducts(ctx, paging, count)
+		productsSlice, err = uc.repoProducts.ReadProducts(ctx, 0, 10, "DESC", "DESC")
 		if err != nil {
 			if errors.Is(err, repo.ErrProductNotFound) {
 				return []models.Product{}, err

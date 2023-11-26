@@ -120,7 +120,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 
 	ratingBy := r.URL.Query().Get("ratingBy")
 
-	sortingBy := r.URL.Query().Get("sortingBy")
+	sortingBy := r.URL.Query().Get("priceBy")
 
 	products, err := h.uc.GetProducts(r.Context(), paging, count, ratingBy, sortingBy)
 	if err != nil {
@@ -188,7 +188,11 @@ func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	products, err := h.uc.GetCategory(r.Context(), id, paging, count)
+	ratingBy := r.URL.Query().Get("ratingBy")
+
+	sortingBy := r.URL.Query().Get("priceBy")
+
+	products, err := h.uc.GetCategory(r.Context(), id, paging, count, ratingBy, sortingBy)
 	if err != nil {
 		h.log.Error("failed to get products by category", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
