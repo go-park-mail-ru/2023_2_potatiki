@@ -48,7 +48,7 @@ type AuthJWT struct {
 type GRPC struct {
 	AuthPort            int    `env:"GRPC_AUTH_PORT" env-defualt:"8011"`
 	OrderPort           int    `env:"GRPC_ORDER_PORT" env-defualt:"8012"`
-	ProductPort         int    `env:"GRPC_PRODUCTS_PORT" env-defualt:"8013"`
+	ProductsPort        int    `env:"GRPC_PRODUCTS_PORT" env-defualt:"8013"`
 	AuthContainerIP     string `env:"GRPC_AUTH_CONTAINER_IP" env-defualt:"zuzu-auth"`
 	OrderContainerIP    string `env:"GRPC_ORDER_CONTAINER_IP" env-defualt:"zuzu-order"`
 	ProductsContainerIP string `env:"GRPC_PRODUCTS_CONTAINER_IP" env-defualt:"zuzu-products"`

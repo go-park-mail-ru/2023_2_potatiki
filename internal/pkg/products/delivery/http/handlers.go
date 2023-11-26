@@ -6,8 +6,9 @@ import (
 
 	"log/slog"
 
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
 	"github.com/gorilla/mux"
@@ -15,14 +16,14 @@ import (
 )
 
 type ProductHandler struct {
-	log *slog.Logger
-	uc  products.ProductsUsecase
+	client gen.ProductsClient
+	log    *slog.Logger
 }
 
-func NewProductsHandler(log *slog.Logger, uc products.ProductsUsecase) ProductHandler {
+func NewProductsHandler(client gen.ProductsClient, log *slog.Logger) ProductHandler {
 	return ProductHandler{
-		log: log,
-		uc:  uc,
+		client: client,
+		log:    log,
 	}
 }
 
@@ -59,14 +60,34 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product, err := h.uc.GetProduct(r.Context(), id)
+	gproduct, err := h.client.GetProduct(r.Context(),
+		&gen.ProductRequest{Id: id.String()})
 	if err != nil { // TODO: check not found
 		h.log.Error("failed to get product", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
 	}
+	productID, err := uuid.FromString(gproduct.Product.Id)
+	if err != nil {
+		h.log.Error("failed to cast product ID", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+		return
+	}
 
+	product := models.Product{
+		Id:          productID,
+		Name:        gproduct.Product.Name,
+		Description: gproduct.Product.Description,
+		Price:       gproduct.Product.Price,
+		ImgSrc:      gproduct.Product.ImgSrc,
+		Rating:      gproduct.Product.Rating,
+		Category: models.Category{
+			Id:     gproduct.Product.Category.Id,
+			Name:   gproduct.Product.Category.Name,
+			Parent: gproduct.Product.Category.Parent,
+		},
+	}
 	h.log.Debug("got product", slog.String("product", product.Name))
 	resp.JSON(w, http.StatusOK, product)
 }
@@ -111,16 +132,41 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		h.log.Error("count is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
-
 		return
 	}
 
-	products, err := h.uc.GetProducts(r.Context(), paging, count)
+	response, err := h.client.GetProducts(r.Context(),
+		&gen.ProductsRequest{Paging: paging, Count: count})
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
-
 		return
+	}
+	gproducts := response.Products
+
+	products := make([]models.Product, len(gproducts))
+	for i, gproduct := range gproducts {
+		productID, err := uuid.FromString(gproduct.Id)
+		if err != nil {
+			h.log.Error("failed to cast product ID", sl.Err(err))
+			resp.JSONStatus(w, http.StatusTooManyRequests)
+			return
+		}
+
+		product := models.Product{
+			Id:          productID,
+			Name:        gproduct.Name,
+			Description: gproduct.Description,
+			Price:       gproduct.Price,
+			ImgSrc:      gproduct.ImgSrc,
+			Rating:      gproduct.Rating,
+			Category: models.Category{
+				Id:     gproduct.Category.Id,
+				Name:   gproduct.Category.Name,
+				Parent: gproduct.Category.Parent,
+			},
+		}
+		products[i] = product
 	}
 
 	h.log.Debug("got products", "len", len(products))
@@ -181,12 +227,40 @@ func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	products, err := h.uc.GetCategory(r.Context(), id, paging, count)
+	response, err := h.client.GetCategory(r.Context(),
+		&gen.CategoryRequest{Id: int32(id), Paging: paging, Count: count})
 	if err != nil {
 		h.log.Error("failed to get products by category", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
+	}
+
+	gproducts := response.Products
+
+	products := make([]models.Product, len(gproducts))
+	for i, gproduct := range gproducts {
+		productID, err := uuid.FromString(gproduct.Id)
+		if err != nil {
+			h.log.Error("failed to cast product ID", sl.Err(err))
+			resp.JSONStatus(w, http.StatusTooManyRequests)
+			return
+		}
+
+		product := models.Product{
+			Id:          productID,
+			Name:        gproduct.Name,
+			Description: gproduct.Description,
+			Price:       gproduct.Price,
+			ImgSrc:      gproduct.ImgSrc,
+			Rating:      gproduct.Rating,
+			Category: models.Category{
+				Id:     gproduct.Category.Id,
+				Name:   gproduct.Category.Name,
+				Parent: gproduct.Category.Parent,
+			},
+		}
+		products[i] = product
 	}
 
 	h.log.Debug("got products by category", "len", len(products))

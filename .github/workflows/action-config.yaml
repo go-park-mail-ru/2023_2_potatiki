@@ -95,6 +95,18 @@ jobs:
               REGISTRY=${{ env.REGISTRY }}
               GITHUB_SHA_SHORT=${{ env.GITHUB_SHA_SHORT }}
 
+      - name: Build and push products
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web:latest
+          file: ./build/Dockerfile.multistage.products
+          build-args: |
+              IMAGE_NAME=${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web
+              REGISTRY=${{ env.REGISTRY }}
+              GITHUB_SHA_SHORT=${{ env.GITHUB_SHA_SHORT }}
+
   deploy:
     runs-on: ubuntu-latest
     needs: build_and_push
@@ -160,10 +172,6 @@ jobs:
             # <==========!==========>
             # Log in to DockerHub
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-
-            # Pull image DockerHub
-            docker pull $REGISTRY/$IMAGE_NAME:latest
-            docker pull $REGISTRY/zuzu-auth-web:latest
             
             # docker-entrypoint
             #chmod -R 777 build

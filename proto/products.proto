@@ -4,9 +4,9 @@ option go_package = "./internal/pkg/products/delivery/grpc/gen/;gen";
 import "gmodels/gmodels.proto";
 
 service Products {
-  rpc GetProduct (ProductRequest) returns (ProductResponse);
-  rpc GetProducts (ProductsRequest) returns (ProductsResponse);
-  rpc GetCategory (CategoryRequest) returns (CategoryResponse);
+  rpc GetProduct(ProductRequest) returns(ProductResponse) {}
+  rpc GetProducts(ProductsRequest) returns (ProductsResponse) {} 
+  rpc GetCategory(CategoryRequest) returns (CategoryResponse) {}
 }
 
 message ProductRequest {

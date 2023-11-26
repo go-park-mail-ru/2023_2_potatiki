@@ -45,7 +45,7 @@ func run() (err error) {
 	log.Info(
 		"starting "+cfg.GRPC.ProductsContainerIP,
 		slog.String("env", cfg.Enviroment),
-		slog.String("addr", fmt.Sprintf("%s:%d", cfg.GRPC.ProductsContainerIP, cfg.GRPC.ProductPort)),
+		slog.String("addr", fmt.Sprintf("%s:%d", cfg.GRPC.ProductsContainerIP, cfg.GRPC.ProductsPort)),
 		slog.String("log_file_path", cfg.LogFilePath),
 	)
 	log.Debug("debug messages are enabled")

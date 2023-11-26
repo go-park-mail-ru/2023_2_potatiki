@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	grpcOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 
@@ -20,12 +20,12 @@ import (
 )
 
 type OrderHandler struct {
-	client grpcOrder.OrderClient
+	client gen.OrderClient
 	log    *slog.Logger
 	uc     order.OrderUsecase
 }
 
-func NewOrderHandler(cl grpcOrder.OrderClient, log *slog.Logger, uc order.OrderUsecase) *OrderHandler {
+func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase) *OrderHandler {
 	return &OrderHandler{
 		client: cl,
 		log:    log,
@@ -58,7 +58,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//order, err := h.uc.CreateOrder(r.Context(), userID)
-	orderResponse, err := h.client.CreateOrder(r.Context(), &grpcOrder.CreateOrderRequest{
+	orderResponse, err := h.client.CreateOrder(r.Context(), &gen.CreateOrderRequest{
 		Id: userID.String(),
 	})
 	if err != nil {
@@ -209,7 +209,7 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ordersResponse, err := h.client.GetOrders(r.Context(), &grpcOrder.OrdersRequest{
+	ordersResponse, err := h.client.GetOrders(r.Context(), &gen.OrdersRequest{
 		Id: userID.String(),
 	})
 	if err != nil {

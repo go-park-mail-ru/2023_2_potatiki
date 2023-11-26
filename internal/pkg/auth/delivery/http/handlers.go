@@ -7,10 +7,8 @@ import (
 	"net/http"
 	"time"
 
-	grpcAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
@@ -19,18 +17,16 @@ import (
 )
 
 type AuthHandler struct {
-	client grpcAuth.AuthClient
+	client gen.AuthClient
 	log    *slog.Logger
-	uc     auth.AuthUsecase
 }
 
 const customTimeFormat = "2006-01-02 15:04:05.999999999 -0700 UTC"
 
-func NewAuthHandler(cl grpcAuth.AuthClient, log *slog.Logger, uc auth.AuthUsecase) *AuthHandler {
+func NewAuthHandler(cl gen.AuthClient, log *slog.Logger) *AuthHandler {
 	return &AuthHandler{
 		client: cl,
 		log:    log,
-		uc:     uc,
 	}
 }
 
@@ -66,7 +62,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profileAndCookie, err := h.client.SignIn(r.Context(), &grpcAuth.SignInRequest{
+	profileAndCookie, err := h.client.SignIn(r.Context(), &gen.SignInRequest{
 		Login:    userInfo.Login,
 		Password: userInfo.Password,
 	})
@@ -137,7 +133,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profileAndCookie, err := h.client.SignUp(r.Context(), &grpcAuth.SignUpRequest{
+	profileAndCookie, err := h.client.SignUp(r.Context(), &gen.SignUpRequest{
 		Login:    userInfo.Login,
 		Password: userInfo.Password,
 		Phone:    userInfo.Phone,
@@ -220,7 +216,7 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("check auth success", "id", id)
 
-	profile, err := h.client.CheckAuth(r.Context(), &grpcAuth.CheckAuthRequst{
+	profile, err := h.client.CheckAuth(r.Context(), &gen.CheckAuthRequst{
 		ID: id.String(),
 	})
 	if err != nil {

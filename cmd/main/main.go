@@ -31,11 +31,8 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
-	grpcAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
-	grpcOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
-
+	authGrpc "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
-	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
 
 	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
@@ -45,9 +42,9 @@ import (
 	categoryRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/repo"
 	categoryUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/usecase"
 
+	productsGrpc "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
-	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
 
 	searchHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/delivery/http"
 	searchRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/repo"
@@ -64,6 +61,7 @@ import (
 	addressHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/delivery/http"
 	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 	addressUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/usecase"
+	orderGrpc "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 
 	surveyHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey/delivery/http"
 	surveyRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey/repo"
@@ -157,28 +155,35 @@ func run() (err error) {
 	}
 	defer orderConn.Close()
 
+	productConn, err := grpc.Dial(fmt.Sprintf("%s:%d", cfg.GRPC.ProductsContainerIP, cfg.GRPC.ProductsPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Error("fail grpc.Dial product", sl.Err(err))
+		err = fmt.Errorf("error happened in grpc.Dial product: %w", err)
+
+		return err
+	}
+	defer orderConn.Close()
+
 	// -------------------------------Grpc------------------------------- //
 	//
 	//
 	// ============================Init layers============================ //
 
-	authClient := grpcAuth.NewAuthClient(authConn)
-	orderClient := grpcOrder.NewOrderClient(orderConn)
-
 	profileRepo := profileRepo.NewProfileRepo(db)
 	profileUsecase := profileUsecase.NewProfileUsecase(profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
-	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
-	authHandler := authHandler.NewAuthHandler(authClient, log, authUsecase)
+	authClient := authGrpc.NewAuthClient(authConn)
+	authHandler := authHandler.NewAuthHandler(authClient, log)
 
 	cartRepo := cartRepo.NewCartRepo(db)
 	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
 	cartHandler := cartHandler.NewCartHandler(log, cartUsecase)
 
+	productsClient := productsGrpc.NewProductsClient(productConn)
 	productsRepo := productsRepo.NewProductsRepo(db)
-	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
-	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
+	productsHandler := productsHandler.NewProductsHandler(productsClient, log)
 
 	searchRepo := searchRepo.NewSearchRepo(db)
 	searchUsecase := searchUsecase.NewSearchUsecase(searchRepo, productsRepo)
@@ -194,6 +199,7 @@ func run() (err error) {
 
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
+	orderClient := orderGrpc.NewOrderClient(orderConn)
 	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
 
 	surveyRepo := surveyRepo.NewSurveyRepo(db)

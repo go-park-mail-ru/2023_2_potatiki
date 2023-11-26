@@ -132,6 +132,22 @@ services:
     networks:
       - zuzu-network
 
+  zuzu-products:
+    env_file:
+        - ./.env
+    container_name: ${GRPC_PRODUCTS_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_PRODUCTS_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
+    restart: always
+    expose:
+      - "${GRPC_PRODUCTS_PORT}"
+    volumes:
+      - ./.env:/docker-${GRPC_PRODUCTS_CONTAINER_IP}/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
+
 volumes:
   zuzu-db-data:
   pgadmin-data:
