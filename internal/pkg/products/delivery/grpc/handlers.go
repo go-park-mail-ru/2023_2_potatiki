@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
 	uuid "github.com/satori/go.uuid"
 	"google.golang.org/grpc"
@@ -36,6 +37,7 @@ func (h serverAPI) GetProduct(ctx context.Context,
 
 	product, err := h.uc.GetProduct(ctx, id)
 	if err != nil {
+		h.log.Error("failed to get product", sl.Err(err))
 		return nil, status.Error(codes.Internal, "failed to get product")
 	}
 
@@ -61,6 +63,7 @@ func (h serverAPI) GetProducts(ctx context.Context,
 
 	products, err := h.uc.GetProducts(ctx, in.Paging, in.Count, "", "")
 	if err != nil {
+		h.log.Error("failed to get products", sl.Err(err))
 		return nil, status.Error(codes.Internal, "failed to get products")
 	}
 
