@@ -20,6 +20,7 @@ linters:
     - gci
     - gofumpt
     - godot
+    - cyclop
     - goimports
     - typecheck
     - gochecknoglobals
