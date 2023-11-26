@@ -43,11 +43,10 @@ func run() (err error) {
 	log := logger.Set(cfg.Enviroment, logFile)
 
 	log.Info(
-		"starting zuzu-products",
+		"starting "+cfg.GRPC.ProductsContainerIP,
 		slog.String("env", cfg.Enviroment),
-		slog.String("addr", cfg.Address),
+		slog.String("addr", fmt.Sprintf("%s:%d", cfg.GRPC.ProductsContainerIP, cfg.GRPC.ProductPort)),
 		slog.String("log_file_path", cfg.LogFilePath),
-		slog.String("photos_file_path", cfg.PhotosFilePath),
 	)
 	log.Debug("debug messages are enabled")
 

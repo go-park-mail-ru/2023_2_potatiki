@@ -7,7 +7,4 @@ authJwt:
   accessExpirationTime: 6h
 csrfJwt:
   accessExpirationTime: 6h
-grpc:
-  authPort: 8011
-  orderPort: 8012
   

@@ -29,7 +29,7 @@ func main() {
 }
 
 func run() (err error) {
-	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme.
+	cfg := config.MustLoad()
 
 	logFile, err := os.OpenFile(cfg.LogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
@@ -45,11 +45,10 @@ func run() (err error) {
 	log := logger.Set(cfg.Enviroment, logFile)
 
 	log.Info(
-		"starting zuzu-auth",
+		"starting "+cfg.GRPC.AuthContainerIP,
 		slog.String("env", cfg.Enviroment),
-		slog.String("addr", cfg.Address),
+		slog.String("addr", fmt.Sprintf("%s:%d", cfg.GRPC.AuthContainerIP, cfg.GRPC.AuthPort)),
 		slog.String("log_file_path", cfg.LogFilePath),
-		slog.String("photos_file_path", cfg.PhotosFilePath),
 	)
 	log.Debug("debug messages are enabled")
 
@@ -85,7 +84,7 @@ func run() (err error) {
 	grpcAuth.Register(gRPCServer, log, authUsecase)
 
 	go func() {
-		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.AuthPort))
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.AuthPort))
 		if err != nil {
 			log.Error("listen returned err: ", sl.Err(err))
 		}

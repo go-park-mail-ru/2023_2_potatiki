@@ -137,7 +137,7 @@ func run() (err error) {
 	//
 	//
 	// ===============================Grpc============================== //
-	authConn, err := grpc.Dial(fmt.Sprintf("zuzu-auth:%d", cfg.AuthPort),
+	authConn, err := grpc.Dial(fmt.Sprintf("%s:%d", cfg.GRPC.AuthContainerIP, cfg.GRPC.AuthPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Error("fail grpc.Dial auth", sl.Err(err))
@@ -147,7 +147,7 @@ func run() (err error) {
 	}
 	defer authConn.Close()
 
-	orderConn, err := grpc.Dial(fmt.Sprintf("zuzu-order:%d", cfg.OrderPort),
+	orderConn, err := grpc.Dial(fmt.Sprintf("%s:%d", cfg.GRPC.OrderContainerIP, cfg.GRPC.OrderPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Error("fail grpc.Dial order", sl.Err(err))
