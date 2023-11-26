@@ -17,7 +17,6 @@ import (
 type serverAPI struct {
 	log *slog.Logger
 	uc  auth.AuthUsecase
-
 	//gen.ProductsServer
 	gen.UnimplementedAuthServer
 }

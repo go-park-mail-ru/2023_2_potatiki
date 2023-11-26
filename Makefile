@@ -12,6 +12,11 @@ run: build_
 rund: build_
 	./.bin &
 
+runa: build_
+	go run ./cmd/auth/main.go
+	go run ./cmd/order/main.go
+	./.bin
+
 lint:
 	golangci-lint run
 

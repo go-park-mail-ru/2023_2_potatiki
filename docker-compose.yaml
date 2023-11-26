@@ -103,13 +103,45 @@ services:
   zuzu-auth:
     env_file:
         - ./.env
-    container_name: zuzu-auth
-    image: ${REGISTRY}/zuzu-auth-web:${GITHUB_SHA_SHORT}
+    container_name: ${GRPC_AUTH_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_AUTH_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
     restart: always
-    ports:
-      - '8011:8011'
+    expose:
+      - "${GRPC_AUTH_PORT}"
     volumes:
-      - ./.env:/docker-zuzu-auth/.env
+      - ./.env:/docker-${GRPC_AUTH_CONTAINER_IP}/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
+
+  zuzu-order:
+    env_file:
+        - ./.env
+    container_name: ${GRPC_ORDER_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_ORDER_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
+    restart: always
+    expose:
+      - "${GRPC_ORDER_PORT}"
+    volumes:
+      - ./.env:/docker-${GRPC_ORDER_CONTAINER_IP}/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
+
+  zuzu-products:
+    env_file:
+        - ./.env
+    container_name: ${GRPC_PRODUCTS_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_PRODUCTS_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
+    restart: always
+    expose:
+      - "${GRPC_PRODUCTS_PORT}"
+    volumes:
+      - ./.env:/docker-${GRPC_PRODUCTS_CONTAINER_IP}/.env
       - zuzu-logs:/var/lib/zuzu/logs
     depends_on:
       - postgres

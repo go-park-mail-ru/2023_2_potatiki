@@ -11,6 +11,9 @@ env:
   CONTAINER_NAME: "zuzu-main"
   FOLDER_COMPOSE: "zuzu-main-deploy"
   PHOTOS_FILE_PATH: "photos/"
+  GRPC_AUTH_CONTAINER_IP: "zuzu-auth"
+  GRPC_ORDER_CONTAINER_IP: "zuzu-order"
+  GRPC_PRODUCTS_CONTAINER_IP: "zuzu-products"
   GITHUB_SHA_SHORT:
 
 
@@ -73,10 +76,34 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ env.REGISTRY }}/zuzu-auth-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/zuzu-auth-web:latest
+          tags: ${{ env.REGISTRY }}/${{ env.GRPC_AUTH_CONTAINER_IP }}-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.GRPC_AUTH_CONTAINER_IP }}-web:latest
           file: ./build/Dockerfile.multistage.auth
           build-args: |
-              IMAGE_NAME=zuzu-auth-web
+              IMAGE_NAME=${{ env.GRPC_AUTH_CONTAINER_IP }}-web
+              REGISTRY=${{ env.REGISTRY }}
+              GITHUB_SHA_SHORT=${{ env.GITHUB_SHA_SHORT }}
+
+      - name: Build and push order
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.GRPC_ORDER_CONTAINER_IP }}-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.GRPC_ORDER_CONTAINER_IP }}-web:latest
+          file: ./build/Dockerfile.multistage.order
+          build-args: |
+              IMAGE_NAME=${{ env.GRPC_ORDER_CONTAINER_IP }}-web
+              REGISTRY=${{ env.REGISTRY }}
+              GITHUB_SHA_SHORT=${{ env.GITHUB_SHA_SHORT }}
+
+      - name: Build and push products
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web:latest
+          file: ./build/Dockerfile.multistage.products
+          build-args: |
+              IMAGE_NAME=${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web
               REGISTRY=${{ env.REGISTRY }}
               GITHUB_SHA_SHORT=${{ env.GITHUB_SHA_SHORT }}
 
@@ -107,7 +134,7 @@ jobs:
           port: ${{ secrets.PORT }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSHKEY }}
-          envs: REGISTRY, IMAGE_NAME, CONTAINER_NAME, GITHUB_SHA, FOLDER_COMPOSE, PHOTOS_FILE_PATH
+          envs: REGISTRY, IMAGE_NAME, CONTAINER_NAME, GITHUB_SHA, FOLDER_COMPOSE, PHOTOS_FILE_PATH, GRPC_AUTH_CONTAINER_IP, GRPC_ORDER_CONTAINER_IP, GRPC_PRODUCTS_CONTAINER_IP
           script: |
             sudo bash
             cd $(echo $FOLDER_COMPOSE)
@@ -129,6 +156,13 @@ jobs:
             IMAGE_NAME=${{ env.IMAGE_NAME }}
             REGISTRY=${{ env.REGISTRY }}
             CONTAINER_NAME=${{ env.CONTAINER_NAME }}
+
+            GRPC_AUTH_PORT=8011
+            GRPC_ORDER_PORT=8012
+            GRPC_PRODUCTS_PORT=8013
+            GRPC_AUTH_CONTAINER_IP=${{ env.GRPC_AUTH_CONTAINER_IP }}
+            GRPC_ORDER_CONTAINER_IP=${{ env.GRPC_ORDER_CONTAINER_IP }}
+            GRPC_PRODUCTS_CONTAINER_IP=${{ env.GRPC_PRODUCTS_CONTAINER_IP }}
             EOF
             echo "GITHUB_SHA_SHORT=`echo $GITHUB_SHA | head -c8`" >> .env
 
@@ -138,10 +172,6 @@ jobs:
             # <==========!==========>
             # Log in to DockerHub
             echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin
-
-            # Pull image DockerHub
-            docker pull $REGISTRY/$IMAGE_NAME:latest
-            docker pull $REGISTRY/zuzu-auth-web:latest
             
             # docker-entrypoint
             #chmod -R 777 build

@@ -44,11 +44,10 @@ func run() (err error) {
 	log := logger.Set(cfg.Enviroment, logFile)
 
 	log.Info(
-		"starting zuzu-order",
+		"starting "+cfg.GRPC.OrderContainerIP,
 		slog.String("env", cfg.Enviroment),
-		slog.String("addr", cfg.Address),
+		slog.String("addr", fmt.Sprintf("%s:%d", cfg.GRPC.OrderContainerIP, cfg.GRPC.OrderPort)),
 		slog.String("log_file_path", cfg.LogFilePath),
-		slog.String("photos_file_path", cfg.PhotosFilePath),
 	)
 	log.Debug("debug messages are enabled")
 
@@ -80,7 +79,7 @@ func run() (err error) {
 	grpcOrder.Register(gRPCServer, log, orderUsecase)
 
 	go func() {
-		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.OrderPort))
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.OrderPort))
 		if err != nil {
 			log.Error("listen returned err: ", sl.Err(err))
 		}
