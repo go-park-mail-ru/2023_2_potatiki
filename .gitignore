@@ -28,4 +28,4 @@ go.work
 
 photos/
 metrics/grafana
-metrics/prometheus/prometheus-data
+metrics/prometheus
