@@ -5,6 +5,7 @@ services:
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
+    user: root
     env_file:
       - ./.env
     volumes:
