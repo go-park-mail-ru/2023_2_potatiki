@@ -1,0 +1,72 @@
+version: "3.9"
+# to run: docker compose -f "docker-compose-metrics.yaml" up -d
+
+services:
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    env_file:
+      - ./.env
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ${PROMETHEUS_DIR}:/prometheus/
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    hostname: prssssometheus
+    ports:
+      - "9090:9090"
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - default
+
+  node_exporter:
+    depends_on:
+      - prometheus
+    image: quay.io/prometheus/node-exporter:latest
+    container_name: node_exporter
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - --path.procfs=/host/proc
+      - --path.sysfs=/host/sys
+      - --collector.filesystem.ignored-mount-points
+      - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
+    hostname: node_exporter
+    ports:
+      - "9100:9100"
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - default
+    
+  grafana:
+    depends_on:
+      - prometheus
+    image: grafana/grafana-enterprise
+    user: root
+    container_name: grafana
+    env_file:
+      - ./.env
+    volumes:
+      - ${GRAFANA_DIR}:/var/lib/grafana/
+      - ${GRAFANA_DIR}provisioning/:/etc/grafana/provisioning/
+    hostname: grafana
+    ports:
+      - "3000:3000"
+    restart: unless-stopped
+    environment:
+      TZ: "Europe/Moscow"
+    networks:
+      - default
+
+networks:
+  default:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16

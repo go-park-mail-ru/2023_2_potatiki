@@ -4,12 +4,18 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	generatedProduct "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
 	"log/slog"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
+	generatedProduct "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
+	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 
@@ -72,12 +78,24 @@ func run() (err error) {
 	// ----------------------------Database---------------------------- //
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
+	productsHandler := grpcProducts.NewGrpcProductsHandler(productsUsecase, log)
 
-	service := grpcProducts.NewGrpcProductHandler(productsUsecase, log)
+	grpcMetrics := metrics.NewMetricGRPC(metrics.ServiceAuthName)
+	metricsMw := metricsmw.NewGrpcMiddleware(grpcMetrics)
+	gRPCServer := grpc.NewServer(grpc.UnaryInterceptor(metricsMw.ServerMetricsInterceptor))
 
-	gRPCServer := grpc.NewServer()
+	generatedProduct.RegisterProductsServer(gRPCServer, productsHandler)
 
-	generatedProduct.RegisterProductsServer(gRPCServer, service)
+	r := mux.NewRouter().PathPrefix("/api").Subrouter()
+	r.PathPrefix("/metrics").Handler(promhttp.Handler())
+	http.Handle("/", r)
+	httpSrv := http.Server{Handler: r, Addr: fmt.Sprintf(":%d", cfg.GRPC.ProductsPort-100)}
+	go func() {
+		if err := httpSrv.ListenAndServe(); err != nil {
+			log.Error("fail httpSrv.ListenAndServe", sl.Err(err))
+		}
+	}()
+	log.Info("metrics handler started", slog.String("addr", httpSrv.Addr))
 
 	go func() {
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", 8013))

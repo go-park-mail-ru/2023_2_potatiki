@@ -17,21 +17,21 @@ import (
 
 //go:generate mockgen -source=./generated/products_grpc.pb.go -destination=../../mocks/products_grpc.go -package=mock
 
-type GrpcProductHandler struct {
+type GrpcProductsHandler struct {
 	uc  products.ProductsUsecase
 	log *slog.Logger
 
 	generatedProduct.ProductsServer
 }
 
-func NewGrpcProductHandler(uc products.ProductsUsecase, log *slog.Logger) *GrpcProductHandler {
-	return &GrpcProductHandler{
+func NewGrpcProductsHandler(uc products.ProductsUsecase, log *slog.Logger) *GrpcProductsHandler {
+	return &GrpcProductsHandler{
 		uc:  uc,
 		log: log,
 	}
 }
 
-func (h GrpcProductHandler) GetProduct(ctx context.Context,
+func (h GrpcProductsHandler) GetProduct(ctx context.Context,
 	in *gen.ProductRequest) (*gen.ProductResponse, error) {
 	id, err := uuid.FromString(in.Id)
 	if err != nil {
@@ -61,7 +61,7 @@ func (h GrpcProductHandler) GetProduct(ctx context.Context,
 	return &gen.ProductResponse{Product: gproduct}, nil
 }
 
-func (h GrpcProductHandler) GetProducts(ctx context.Context,
+func (h GrpcProductsHandler) GetProducts(ctx context.Context,
 	in *gen.ProductsRequest) (*gen.ProductsResponse, error) {
 
 	products, err := h.uc.GetProducts(ctx, in.Paging, in.Count, in.RatingBy, in.PriceBy)
@@ -90,7 +90,7 @@ func (h GrpcProductHandler) GetProducts(ctx context.Context,
 	return &gen.ProductsResponse{Products: gproducts}, nil
 }
 
-func (h GrpcProductHandler) GetCategory(ctx context.Context,
+func (h GrpcProductsHandler) GetCategory(ctx context.Context,
 	in *gen.CategoryRequest) (*gen.CategoryResponse, error) {
 
 	products, err := h.uc.GetCategory(ctx, int(in.Id), in.Paging, in.Count, in.RatingBy, in.PriceBy)

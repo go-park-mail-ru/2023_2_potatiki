@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -14,6 +15,8 @@ import (
 	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
 	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
+	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
@@ -81,15 +84,24 @@ func run() (err error) {
 
 	profileRepo := profileRepo.NewProfileRepo(db)
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
-
 	authHandler := grpcAuth.NewGrpcAuthHandler(authUsecase, log)
 
 	grpcMetrics := metrics.NewMetricGRPC(metrics.ServiceAuthName)
 	metricsMw := metricsmw.NewGrpcMiddleware(grpcMetrics)
-
 	gRPCServer := grpc.NewServer(grpc.UnaryInterceptor(metricsMw.ServerMetricsInterceptor))
 
 	generatedAuth.RegisterAuthServer(gRPCServer, authHandler)
+
+	r := mux.NewRouter().PathPrefix("/api").Subrouter()
+	r.PathPrefix("/metrics").Handler(promhttp.Handler())
+	http.Handle("/", r)
+	httpSrv := http.Server{Handler: r, Addr: fmt.Sprintf(":%d", cfg.GRPC.AuthPort-100)}
+	go func() {
+		if err := httpSrv.ListenAndServe(); err != nil {
+			log.Error("fail httpSrv.ListenAndServe", sl.Err(err))
+		}
+	}()
+	log.Info("metrics handler started", slog.String("addr", httpSrv.Addr))
 
 	go func() {
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.AuthPort))
