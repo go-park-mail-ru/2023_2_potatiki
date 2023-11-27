@@ -2,8 +2,10 @@ package grpc
 
 import (
 	"context"
-	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 	"log/slog"
+
+	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
@@ -26,14 +28,18 @@ func NewGrpcOrderHandler(uc order.OrderUsecase, log *slog.Logger) *GrpcOrderHand
 }
 
 func (h GrpcOrderHandler) CreateOrder(ctx context.Context, in *gen.CreateOrderRequest) (*gen.CreateOrderResponse, error) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+
 	userId, err := uuid.FromString(in.Id)
 	if err != nil {
-
+		h.log.Error("failed to get uuid from string", sl.Err(err))
 		return &gen.CreateOrderResponse{Error: err.Error()}, nil
 	}
 	order, err := h.uc.CreateOrder(ctx, userId)
 	if err != nil {
-
+		h.log.Error("failed in h.uc.CreateOrder", sl.Err(err))
 		return &gen.CreateOrderResponse{Error: err.Error()}, nil
 	}
 
@@ -79,14 +85,18 @@ func (h GrpcOrderHandler) CreateOrder(ctx context.Context, in *gen.CreateOrderRe
 }
 
 func (h GrpcOrderHandler) GetOrders(ctx context.Context, in *gen.OrdersRequest) (*gen.OrdersResponse, error) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+
 	userId, err := uuid.FromString(in.Id)
 	if err != nil {
-
+		h.log.Error("failed to get uuid from string", sl.Err(err))
 		return &gen.OrdersResponse{Error: err.Error()}, nil
 	}
 	orders, err := h.uc.GetOrders(ctx, userId)
 	if err != nil {
-
+		h.log.Error("failed in h.uc.GetOrders", sl.Err(err))
 		return &gen.OrdersResponse{Error: err.Error()}, nil
 	}
 

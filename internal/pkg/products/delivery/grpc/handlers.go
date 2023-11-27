@@ -33,8 +33,13 @@ func NewGrpcProductsHandler(uc products.ProductsUsecase, log *slog.Logger) *Grpc
 
 func (h GrpcProductsHandler) GetProduct(ctx context.Context,
 	in *gen.ProductRequest) (*gen.ProductResponse, error) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
+
 	id, err := uuid.FromString(in.Id)
 	if err != nil {
+		h.log.Error("failed to get uuid from string", sl.Err(err))
 		return nil, status.Error(codes.InvalidArgument, "invalid ID, fail to cast uuid")
 	}
 
@@ -63,6 +68,9 @@ func (h GrpcProductsHandler) GetProduct(ctx context.Context,
 
 func (h GrpcProductsHandler) GetProducts(ctx context.Context,
 	in *gen.ProductsRequest) (*gen.ProductsResponse, error) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
 
 	products, err := h.uc.GetProducts(ctx, in.Paging, in.Count, in.RatingBy, in.PriceBy)
 	if err != nil {
@@ -92,10 +100,14 @@ func (h GrpcProductsHandler) GetProducts(ctx context.Context,
 
 func (h GrpcProductsHandler) GetCategory(ctx context.Context,
 	in *gen.CategoryRequest) (*gen.CategoryResponse, error) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+	)
 
 	products, err := h.uc.GetCategory(ctx, int(in.Id), in.Paging, in.Count, in.RatingBy, in.PriceBy)
 	if err != nil {
-		return nil, status.Error(codes.Internal, "failed to get products")
+		h.log.Error("failed in h.uc.GetCategory", sl.Err(err))
+		return nil, status.Error(codes.Internal, "failed to h.uc.GetCategory")
 	}
 
 	gproducts := make([]*gmodels.Product, len(products))
