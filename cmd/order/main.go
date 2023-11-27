@@ -74,13 +74,9 @@ func run() (err error) {
 	addressRepo := addressRepo.NewAddressRepo(db)
 	cartRepo := cartRepo.NewCartRepo(db)
 	orderRepo := orderRepo.NewOrderRepo(db)
-
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
-
 	service := grpcOrder.NewGrpcOrderHandler(orderUsecase, log)
-
 	gRPCServer := grpc.NewServer()
-
 	generatedOrder.RegisterOrderServer(gRPCServer, service)
 
 	go func() {

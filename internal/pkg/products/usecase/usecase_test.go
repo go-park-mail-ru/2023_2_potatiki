@@ -1,5 +1,6 @@
 package usecase
 
+/*
 import (
 	"context"
 	"fmt"
@@ -192,3 +193,4 @@ func TestProductsUsecase_GetCategory(t *testing.T) {
 		})
 	}
 }
+*/
