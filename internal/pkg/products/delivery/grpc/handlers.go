@@ -2,32 +2,34 @@ package grpc
 
 import (
 	"context"
+	uuid "github.com/satori/go.uuid"
 	"log/slog"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
+	generatedProduct "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
-	uuid "github.com/satori/go.uuid"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 //go:generate mockgen -source=./generated/products_grpc.pb.go -destination=../../mocks/products_grpc.go -package=mock
 
-type serverAPI struct {
-	log *slog.Logger
+type GrpcProductHandler struct {
 	uc  products.ProductsUsecase
+	log *slog.Logger
 
-	//gen.ProductsServer
-	gen.UnimplementedProductsServer
+	generatedProduct.ProductsServer
 }
 
-func Register(gRPCServer *grpc.Server, log *slog.Logger, uc products.ProductsUsecase) {
-	gen.RegisterProductsServer(gRPCServer, &serverAPI{log: log, uc: uc})
+func NewGrpcProductHandler(uc products.ProductsUsecase, log *slog.Logger) *GrpcProductHandler {
+	return &GrpcProductHandler{
+		uc:  uc,
+		log: log,
+	}
 }
 
-func (h serverAPI) GetProduct(ctx context.Context,
+func (h GrpcProductHandler) GetProduct(ctx context.Context,
 	in *gen.ProductRequest) (*gen.ProductResponse, error) {
 	id, err := uuid.FromString(in.Id)
 	if err != nil {
@@ -56,7 +58,7 @@ func (h serverAPI) GetProduct(ctx context.Context,
 	return &gen.ProductResponse{Product: gproduct}, nil
 }
 
-func (h serverAPI) GetProducts(ctx context.Context,
+func (h GrpcProductHandler) GetProducts(ctx context.Context,
 	in *gen.ProductsRequest) (*gen.ProductsResponse, error) {
 
 	products, err := h.uc.GetProducts(ctx, in.Paging, in.Count, in.RatingBy, in.PriceBy)
@@ -84,7 +86,7 @@ func (h serverAPI) GetProducts(ctx context.Context,
 	return &gen.ProductsResponse{Products: gproducts}, nil
 }
 
-func (h serverAPI) GetCategory(ctx context.Context,
+func (h GrpcProductHandler) GetCategory(ctx context.Context,
 	in *gen.CategoryRequest) (*gen.CategoryResponse, error) {
 
 	products, err := h.uc.GetCategory(ctx, int(in.Id), in.Paging, in.Count, in.RatingBy, in.PriceBy)

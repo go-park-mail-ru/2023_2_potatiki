@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	generatedProduct "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
 	"log/slog"
 	"net"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"syscall"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
+
 	grpcProducts "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
 	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
@@ -71,8 +73,11 @@ func run() (err error) {
 	productsRepo := productsRepo.NewProductsRepo(db)
 	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
 
+	service := grpcProducts.NewGrpcProductHandler(productsUsecase, log)
+
 	gRPCServer := grpc.NewServer()
-	grpcProducts.Register(gRPCServer, log, productsUsecase)
+
+	generatedProduct.RegisterProductsServer(gRPCServer, service)
 
 	go func() {
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", 8013))

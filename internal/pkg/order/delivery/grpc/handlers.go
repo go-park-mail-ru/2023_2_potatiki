@@ -2,28 +2,30 @@ package grpc
 
 import (
 	"context"
+	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 	"log/slog"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
 	uuid "github.com/satori/go.uuid"
-	"google.golang.org/grpc"
 )
 
-type serverAPI struct {
+type GrpcOrderHandler struct {
 	log *slog.Logger
 	uc  order.OrderUsecase
 
-	//gen.ProductsServer
-	gen.UnimplementedOrderServer
+	generatedOrder.OrderServer
 }
 
-func Register(gRPCServer *grpc.Server, log *slog.Logger, uc order.OrderUsecase) {
-	gen.RegisterOrderServer(gRPCServer, &serverAPI{log: log, uc: uc})
+func NewGrpcOrderHandler(uc order.OrderUsecase, log *slog.Logger) *GrpcOrderHandler {
+	return &GrpcOrderHandler{
+		uc:  uc,
+		log: log,
+	}
 }
 
-func (h serverAPI) CreateOrder(ctx context.Context, in *gen.CreateOrderRequest) (*gen.CreateOrderResponse, error) {
+func (h GrpcOrderHandler) CreateOrder(ctx context.Context, in *gen.CreateOrderRequest) (*gen.CreateOrderResponse, error) {
 	userId, err := uuid.FromString(in.Id)
 	if err != nil {
 
@@ -76,7 +78,7 @@ func (h serverAPI) CreateOrder(ctx context.Context, in *gen.CreateOrderRequest) 
 	return &orderResponse, nil
 }
 
-func (h serverAPI) GetOrders(ctx context.Context, in *gen.OrdersRequest) (*gen.OrdersResponse, error) {
+func (h GrpcOrderHandler) GetOrders(ctx context.Context, in *gen.OrdersRequest) (*gen.OrdersResponse, error) {
 	userId, err := uuid.FromString(in.Id)
 	if err != nil {
 

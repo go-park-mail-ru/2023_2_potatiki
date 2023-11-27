@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	"os/signal"
 	"syscall"
 
@@ -80,8 +81,11 @@ func run() (err error) {
 	profileRepo := profileRepo.NewProfileRepo(db)
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
 
+	service := grpcAuth.NewGrpcAuthHandler(authUsecase, log)
+
 	gRPCServer := grpc.NewServer()
-	grpcAuth.Register(gRPCServer, log, authUsecase)
+
+	generatedAuth.RegisterAuthServer(gRPCServer, service)
 
 	go func() {
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.AuthPort))
