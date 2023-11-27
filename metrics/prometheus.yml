@@ -15,22 +15,22 @@ scrape_configs:
   - job_name: "main"
     metrics_path: /api/metrics
     static_configs:
-      - targets: ["host.docker.internal:8096"]
+      - targets: [ 'zuzu-main:8096' ]
 
   - job_name: "auth"
     metrics_path: /api/metrics
     static_configs:
-      - targets: ["host.docker.internal:7911"]
+      - targets: ["zuzu-auth:7911"]
 
   - job_name: "order"
     metrics_path: /api/metrics
     static_configs:
-      - targets: ["host.docker.internal:7912"]
+      - targets: [ 'zuzu-order:7912' ]
 
   - job_name: "products"
     metrics_path: /api/metrics
     static_configs:
-      - targets: ["host.docker.internal:7913"]
+      - targets: [ 'zuzu-products:7913' ]
 
 
 

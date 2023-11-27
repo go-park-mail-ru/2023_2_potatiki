@@ -1,6 +1,6 @@
 version: "3.9"
 # to run: docker compose -f "docker-compose-metrics.yaml" up -d
-
+# ssh -L 9191:localhost:8050 -i C:/Users/MrDjeb/.ssh/2023-2-Potatiki-zjfoNUqB.pem ubuntu@84.23.52.21
 services:
   prometheus:
     image: prom/prometheus:latest
@@ -13,14 +13,14 @@ services:
       - ${PROMETHEUS_DIR}:/prometheus/
     command:
       - --config.file=/etc/prometheus/prometheus.yml
-    hostname: prssssometheus
+    hostname: prometheus
     ports:
       - "8050:9090"
     restart: unless-stopped
     environment:
       TZ: "Europe/Moscow"
     networks:
-      - default
+      - zuzu-network
 
   node_exporter:
     depends_on:
@@ -43,7 +43,7 @@ services:
     environment:
       TZ: "Europe/Moscow"
     networks:
-      - default
+      - zuzu-network
     
   grafana:
     depends_on:
@@ -63,11 +63,9 @@ services:
     environment:
       TZ: "Europe/Moscow"
     networks:
-      - default
+      - zuzu-network
 
 networks:
-  default:
-    ipam:
-      driver: default
-      config:
-        - subnet: 172.28.0.0/16
+  zuzu-network:
+    name: zuzu-network
+    external: true
