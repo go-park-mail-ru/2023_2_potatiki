@@ -5,12 +5,12 @@ global:
 scrape_configs:
   - job_name: "prometheus"
     static_configs:
-      - targets: [ 'localhost:8051' ]
+      - targets: [ 'localhost:9090' ]
       
   - job_name: "node_exporter"
     metrics_path: /metrics
     static_configs:
-      - targets: [ 'node_exporter:8052' ]
+      - targets: [ 'node_exporter:9100' ]
 
   - job_name: "main"
     metrics_path: /api/metrics
