@@ -59,7 +59,7 @@ func (h serverAPI) GetProduct(ctx context.Context,
 func (h serverAPI) GetProducts(ctx context.Context,
 	in *gen.ProductsRequest) (*gen.ProductsResponse, error) {
 
-	products, err := h.uc.GetProducts(ctx, in.Paging, in.Count, "", "")
+	products, err := h.uc.GetProducts(ctx, in.Paging, in.Count, in.RatingBy, in.PriceBy)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get products")
 	}
@@ -87,7 +87,7 @@ func (h serverAPI) GetProducts(ctx context.Context,
 func (h serverAPI) GetCategory(ctx context.Context,
 	in *gen.CategoryRequest) (*gen.CategoryResponse, error) {
 
-	products, err := h.uc.GetCategory(ctx, int(in.Id), in.Paging, in.Count, "", "")
+	products, err := h.uc.GetCategory(ctx, int(in.Id), in.Paging, in.Count, in.RatingBy, in.PriceBy)
 	if err != nil {
 		return nil, status.Error(codes.Internal, "failed to get products")
 	}

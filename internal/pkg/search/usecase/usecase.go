@@ -26,7 +26,7 @@ func (uc *SearchUsecase) SearchProducts(ctx context.Context, productName string)
 	var err error
 	var productsSlice []models.Product
 	if productName == "" {
-		productsSlice, err = uc.repoProducts.ReadProducts(ctx, 0, 10, "DESC", "DESC")
+		productsSlice, err = uc.repoProducts.ReadProducts(ctx, 0, 10)
 		if err != nil {
 			if errors.Is(err, repo.ErrProductNotFound) {
 				return []models.Product{}, err

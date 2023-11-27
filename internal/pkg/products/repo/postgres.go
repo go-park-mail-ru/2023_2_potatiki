@@ -20,7 +20,7 @@ const (
 	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name;
 	`
 
-	getProductsASCRatingPrice = `
+	getProductsByRatingPrice = `
 	SELECT
 		p.id AS product_id,
 		p.name AS product_name,
@@ -39,14 +39,14 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
-   	p.price ASC, COALESCE(AVG(cm.rating), 0) ASC
+   		p.price %s, COALESCE(AVG(cm.rating), 0) %s
 	LIMIT
 		$1
 	OFFSET
 		$2;
 	`
 
-	getProductsTest = `
+	getProductsByPrice = `
 	SELECT
 		p.id AS product_id,
 		p.name AS product_name,
@@ -65,39 +65,14 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
-   	p.price %S, COALESCE(AVG(cm.rating), 0) %S
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-	getProductsASCRating = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   		COALESCE(AVG(cm.rating), 0) ASC
+   		p.price %s
 	LIMIT
 		$1
 	OFFSET
 		$2;
 	`
 
-	getProductsDESCRating = `
+	getProductsByRating = `
 	SELECT
 		p.id AS product_id,
 		p.name AS product_name,
@@ -116,150 +91,12 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
-   		COALESCE(AVG(cm.rating), 0) DESC
+   		COALESCE(AVG(cm.rating), 0) %s
 	LIMIT
 		$1
 	OFFSET
 		$2;
 	`
-
-	getProductsASCRatingDESCPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   	COALESCE(AVG(cm.rating), 0) ASC, p.price DESC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsDESCRatingPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   	p.price DESC, COALESCE(AVG(cm.rating), 0) DESC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsDESCPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-		p.price DESC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsASCPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-		p.price ASC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsDESCRatingASCPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   	p.price ASC, COALESCE(AVG(cm.rating), 0) DESC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	//getProductsByCategoryID = `SELECT p.id, p.name, p.description, p.price, p.imgsrc,  p.category_id,
-	//c.name AS category_name
-	//FROM product p
-	//JOIN category c ON p.category_id = c.id
-	//WHERE p.category_id = $3
-	//ORDER BY p.id
-	//LIMIT $1 OFFSET $2;`
 
 	getProducts = `
 	SELECT
@@ -280,7 +117,7 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
-   		p.creation_at ASC
+   		p.creation_at DESC
 	LIMIT
 		$1
 	OFFSET
@@ -308,14 +145,14 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
-   		p.creation_at ASC
+   		p.creation_at DESC
 	LIMIT
 		$1
 	OFFSET
 		$2;
 	`
 
-	getProductsByCategoryIDASCRatingPrice = `
+	getProductsCategoryByRatingPrice = `
 	SELECT
 		p.id AS product_id,
 		p.name AS product_name,
@@ -336,14 +173,14 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
-   	p.price ASC, COALESCE(AVG(cm.rating), 0) ASC
+   		p.price %s, COALESCE(AVG(cm.rating), 0) %s
 	LIMIT
 		$1
 	OFFSET
 		$2;
 	`
 
-	getProductsByCategoryIDASCRatingDESCPrice = `
+	getProductsCategoryByRating = `
 	SELECT
 		p.id AS product_id,
 		p.name AS product_name,
@@ -364,14 +201,14 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
-   	COALESCE(AVG(cm.rating), 0) ASC, p.price DESC
+		COALESCE(AVG(cm.rating), 0) %s
 	LIMIT
 		$1
 	OFFSET
 		$2;
 	`
 
-	getProductsByCategoryIDASCRating = `
+	getProductsCategoryByPrice = `
 	SELECT
 		p.id AS product_id,
 		p.name AS product_name,
@@ -392,147 +229,7 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
 	ORDER BY
-   		COALESCE(AVG(cm.rating), 0) ASC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsByCategoryIDDESCRating = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	WHERE
-	    p.category_id = $3
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   		COALESCE(AVG(cm.rating), 0) DESC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsByCategoryIDDESCRatingPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	WHERE
-	    p.category_id = $3
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   	p.price DESC, COALESCE(AVG(cm.rating), 0) DESC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsByCategoryIDDESCPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	WHERE
-	    p.category_id = $3
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   		p.price DESC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsByCategoryIDASCPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	WHERE
-	    p.category_id = $3
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   		p.price ASC
-	LIMIT
-		$1
-	OFFSET
-		$2;
-	`
-
-	getProductsByCategoryIDDESCRatingASCPrice = `
-	SELECT
-		p.id AS product_id,
-		p.name AS product_name,
-		p.description,
-		p.price,
-		p.imgsrc,
-		COALESCE(AVG(cm.rating), 0) AS average_rating,
-		p.category_id,
-		c.name AS category_name
-	FROM
-		product p
-	JOIN
-		category c ON p.category_id = c.id
-	LEFT JOIN
-		comment cm ON p.id = cm.productID
-	WHERE
-	    p.category_id = $3
-	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
-	ORDER BY
-   	p.price ASC, COALESCE(AVG(cm.rating), 0) DESC
+		p.price %s
 	LIMIT
 		$1
 	OFFSET
@@ -570,47 +267,11 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 	return pr, nil
 }
 
-func (r *ProductsRepo) ReadProducts(ctx context.Context, paging, count int64, ratingBy, priceBy string) (
+func (r *ProductsRepo) ReadProducts(ctx context.Context, paging, count int64) (
 	[]models.Product, error) {
 	productSlice := make([]models.Product, 0, count)
-	var (
-		rows pgx.Rows
-		err  error
-	)
-	// query := fmt.Sprintf(getProductsTest, ratingBy, priceBy)
-	if ratingBy == "ASC" {
-		if priceBy == "ASC" {
-			rows, err = r.db.Query(ctx, getProductsASCRatingPrice, count, paging)
-		}
-		if priceBy == "DESC" {
-			rows, err = r.db.Query(ctx, getProductsASCRatingDESCPrice, count, paging)
-		}
-		if len(priceBy) == 0 {
-			rows, err = r.db.Query(ctx, getProductsASCRating, count, paging)
-		}
-	}
-	if ratingBy == "DESC" {
-		if priceBy == "DESC" {
-			rows, err = r.db.Query(ctx, getProductsDESCRatingPrice, count, paging)
-		}
-		if priceBy == "ASC" {
-			rows, err = r.db.Query(ctx, getProductsDESCRatingASCPrice, count, paging)
-		}
-		if len(priceBy) == 0 {
-			rows, err = r.db.Query(ctx, getProductsDESCRating, count, paging)
-		}
-	}
-	if len(ratingBy) == 0 {
-		if priceBy == "DESC" {
-			rows, err = r.db.Query(ctx, getProductsDESCPrice, count, paging)
-		}
-		if priceBy == "ASC" {
-			rows, err = r.db.Query(ctx, getProductsASCPrice, count, paging)
-		}
-		if len(priceBy) == 0 {
-			rows, err = r.db.Query(ctx, getProducts, count, paging)
-		}
-	}
+
+	rows, err := r.db.Query(ctx, getProducts, count, paging)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Product{}, ErrProductNotFound
@@ -643,47 +304,241 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging, count int64, ra
 	return productSlice, nil
 }
 
-func (r *ProductsRepo) ReadCategory(ctx context.Context, id int, paging, count int64, ratingBy, priceBy string) (
+func (r *ProductsRepo) ReadProductsByPrice(ctx context.Context, paging, count int64, priceBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0, count)
+
+	query := fmt.Sprintf(getProductsByPrice, priceBy) //спросить про %S
+	rows, err := r.db.Query(ctx, query, count, paging)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsByRating(ctx context.Context, paging, count int64, ratingBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0, count)
+
+	query := fmt.Sprintf(getProductsByRating, ratingBy) //спросить про %S
+	rows, err := r.db.Query(ctx, query, count, paging)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsByRatingPrice(ctx context.Context, paging, count int64, ratingBy, priceBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0, count)
+
+	query := fmt.Sprintf(getProductsByRatingPrice, priceBy, ratingBy) //спросить про %S
+	rows, err := r.db.Query(ctx, query, count, paging)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsCategoryByRatingPrice(ctx context.Context, id int, paging, count int64, ratingBy, priceBy string) (
 	[]models.Product, error) {
 	productSlice := make([]models.Product, 0)
-	var (
-		rows pgx.Rows
-		err  error
-	)
-	if ratingBy == "ASC" {
-		if priceBy == "ASC" {
-			rows, err = r.db.Query(ctx, getProductsByCategoryIDASCRatingPrice, count, paging, id)
-		}
-		if priceBy == "DESC" {
-			rows, err = r.db.Query(ctx, getProductsByCategoryIDASCRatingDESCPrice, count, paging, id)
-		}
-		if len(priceBy) == 0 {
-			rows, err = r.db.Query(ctx, getProductsByCategoryIDASCRating, count, paging, id)
-		}
-	}
-	if ratingBy == "DESC" {
-		if priceBy == "DESC" {
-			rows, err = r.db.Query(ctx, getProductsByCategoryIDDESCRatingPrice, count, paging, id)
-		}
-		if priceBy == "ASC" {
-			rows, err = r.db.Query(ctx, getProductsByCategoryIDDESCRatingASCPrice, count, paging, id)
-		}
-		if len(priceBy) == 0 {
-			rows, err = r.db.Query(ctx, getProductsByCategoryIDDESCRating, count, paging, id)
-		}
-	}
 
-	if len(ratingBy) == 0 {
-		if priceBy == "DESC" {
-			rows, err = r.db.Query(ctx, getProductsByCategoryIDDESCPrice, count, paging)
+	query := fmt.Sprintf(getProductsCategoryByRatingPrice, priceBy, ratingBy)
+	rows, err := r.db.Query(ctx, query, count, paging, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
 		}
-		if priceBy == "ASC" {
-			rows, err = r.db.Query(ctx, getProductsByCategoryIDASCPrice, count, paging)
-		}
-		if len(priceBy) == 0 {
-			rows, err = r.db.Query(ctx, getProductsByCategoryID, count, paging, id)
-		}
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Product{}, err
 	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsCategoryByRating(ctx context.Context, id int, paging, count int64, ratingBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0)
+
+	query := fmt.Sprintf(getProductsCategoryByRating, ratingBy)
+	rows, err := r.db.Query(ctx, query, count, paging, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsCategoryByPrice(ctx context.Context, id int, paging, count int64, priceBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0)
+
+	query := fmt.Sprintf(getProductsCategoryByPrice, priceBy)
+	rows, err := r.db.Query(ctx, query, count, paging, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsCategory(ctx context.Context, id int, paging, count int64) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0)
+
+	rows, err := r.db.Query(ctx, getProductsByCategoryID, count, paging, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Product{}, ErrProductNotFound
