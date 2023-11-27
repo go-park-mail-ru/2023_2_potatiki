@@ -15,7 +15,7 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
     hostname: prssssometheus
     ports:
-      - "9090:9090"
+      - "8050:9090"
     restart: unless-stopped
     environment:
       TZ: "Europe/Moscow"
@@ -38,7 +38,7 @@ services:
       - ^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)
     hostname: node_exporter
     ports:
-      - "9100:9100"
+      - "8051:9100"
     restart: unless-stopped
     environment:
       TZ: "Europe/Moscow"
@@ -58,7 +58,7 @@ services:
       - ${GRAFANA_DIR}provisioning/:/etc/grafana/provisioning/
     hostname: grafana
     ports:
-      - "3000:3000"
+      - "8052:3000"
     restart: unless-stopped
     environment:
       TZ: "Europe/Moscow"
