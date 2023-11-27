@@ -10,9 +10,11 @@ import (
 	"os/signal"
 	"syscall"
 
+	grpcOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc"
+	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
+
 	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
-	grpcOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc"
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	orderUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/usecase"
 
@@ -75,8 +77,11 @@ func run() (err error) {
 
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
 
+	service := grpcOrder.NewGrpcOrderHandler(orderUsecase, log)
+
 	gRPCServer := grpc.NewServer()
-	grpcOrder.Register(gRPCServer, log, orderUsecase)
+
+	generatedOrder.RegisterOrderServer(gRPCServer, service)
 
 	go func() {
 		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.OrderPort))

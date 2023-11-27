@@ -7,25 +7,28 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
+	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
 	uuid "github.com/satori/go.uuid"
-	"google.golang.org/grpc"
 )
 
 //go:generate mockgen -source=./generated/auth_grpc.pb.go -destination=../../mocks/auth_grpc.go -package=mock
 
-type serverAPI struct {
-	log *slog.Logger
+type GrpcAuthHandler struct {
 	uc  auth.AuthUsecase
-	//gen.ProductsServer
-	gen.UnimplementedAuthServer
+	log *slog.Logger
+
+	generatedAuth.AuthServer
 }
 
-func Register(gRPCServer *grpc.Server, log *slog.Logger, uc auth.AuthUsecase) {
-	gen.RegisterAuthServer(gRPCServer, &serverAPI{log: log, uc: uc})
+func NewGrpcAuthHandler(uc auth.AuthUsecase, log *slog.Logger) *GrpcAuthHandler {
+	return &GrpcAuthHandler{
+		uc:  uc,
+		log: log,
+	}
 }
 
-func (h serverAPI) SignIn(ctx context.Context, in *gen.SignInRequest) (*gen.SignInResponse, error) {
+func (h GrpcAuthHandler) SignIn(ctx context.Context, in *gen.SignInRequest) (*gen.SignInResponse, error) {
 	userSignIn := models.SignInPayload{
 		Login:    in.Login,
 		Password: in.Password,
@@ -49,7 +52,7 @@ func (h serverAPI) SignIn(ctx context.Context, in *gen.SignInRequest) (*gen.Sign
 	}, nil
 }
 
-func (h serverAPI) SignUp(ctx context.Context, in *gen.SignUpRequest) (*gen.SignUpResponse, error) {
+func (h GrpcAuthHandler) SignUp(ctx context.Context, in *gen.SignUpRequest) (*gen.SignUpResponse, error) {
 	userSignUp := models.SignUpPayload{
 		Login:    in.Login,
 		Password: in.Password,
@@ -75,7 +78,7 @@ func (h serverAPI) SignUp(ctx context.Context, in *gen.SignUpRequest) (*gen.Sign
 	}, nil
 }
 
-func (h serverAPI) CheckAuth(ctx context.Context, in *gen.CheckAuthRequst) (*gen.CheckAuthResponse, error) {
+func (h GrpcAuthHandler) CheckAuth(ctx context.Context, in *gen.CheckAuthRequst) (*gen.CheckAuthResponse, error) {
 	userID, err := uuid.FromString(in.ID)
 	if err != nil {
 		return &gen.CheckAuthResponse{}, err

@@ -195,29 +195,9 @@ CREATE TABLE comment
     CHECK (rating >= 0)
 );
 --- DICTIONARY ---------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION make_tsvector(name TEXT, description TEXT)
-    RETURNS tsvector AS
-$$
-BEGIN
-    RETURN (
-                    setweight(to_tsvector('ru', name), 'A') ||
-                    setweight(to_tsvector('ru', description), 'B') ||
-                    setweight(to_tsvector('english', name), 'C') ||
-                    setweight(to_tsvector('english', description), 'D')
-        );
-END
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION make_tsrank(param TEXT, phrase TEXT, lang regconfig)
-    RETURNS tsvector AS
-$$
-BEGIN
-    RETURN ts_rank(to_tsvector(lang, param), plainto_tsquery(lang, phrase));
-END
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+CREATE EXTENSION pg_trgm;
 
-CREATE INDEX product_name_idx ON product (LOWER(name) varchar_pattern_ops);
-CREATE INDEX product_description_idx ON product (LOWER(description) varchar_pattern_ops);
 --- DICTIONARY ---------------------------------------------------------------------------------------------------------
 
 

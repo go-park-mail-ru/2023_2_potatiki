@@ -99,8 +99,8 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
-// @Param ratingBy query string false "(Use ASC/DESC) Sort products by rating"
-// @Param priceBy query string false "(Use ASC/DESC) Sort products by price"
+// @Param ratingBy query string false "(Use ASC/DESC and their combinations) Sort products by rating"
+// @Param priceBy query string false "(Use ASC/DESC and their combinations) Sort products by price"
 // @Success	200	{object} []models.Product "Products array"
 // @Failure	400	{object} responser.Response	"error message"
 // @Failure	429
@@ -137,14 +137,12 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//ratingBy := r.URL.Query().Get("ratingBy")
+	ratingBy := r.URL.Query().Get("ratingBy")
 
-	//sortingBy := r.URL.Query().Get("priceBy")
-
-	//products, err := h.uc.GetProducts(r.Context(), paging, count, ratingBy, sortingBy)
+	priceBy := r.URL.Query().Get("priceBy")
 
 	response, err := h.client.GetProducts(r.Context(),
-		&gen.ProductsRequest{Paging: paging, Count: count})
+		&gen.ProductsRequest{Paging: paging, Count: count, RatingBy: ratingBy, PriceBy: priceBy})
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -189,8 +187,8 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 // @Param category_id query int true "Category ID"
 // @Param paging query int false "Skip number of products"
 // @Param count query int true "Display number of products"
-// @Param ratingBy query string false "(Use ASC/DESC) Sort products by rating"
-// @Param priceBy query string false "(Use ASC/DESC) Sort products by price"
+// @Param ratingBy query string false "(Use ASC/DESC and their combinations) Sort products by rating"
+// @Param priceBy query string false "(Use ASC/DESC and their combinations) Sort products by price"
 // @Success	200	{object} []models.Product "Products by category id"
 // @Failure	400	{object} responser.Response	"error message"
 // @Failure	429
@@ -237,13 +235,12 @@ func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//ratingBy := r.URL.Query().Get("ratingBy")
+	ratingBy := r.URL.Query().Get("ratingBy")
 
-	//sortingBy := r.URL.Query().Get("priceBy")
+	priceBy := r.URL.Query().Get("priceBy")
 
-	//products, err := h.uc.GetCategory(r.Context(), id, paging, count, ratingBy, sortingBy)
 	response, err := h.client.GetCategory(r.Context(),
-		&gen.CategoryRequest{Id: int32(id), Paging: paging, Count: count})
+		&gen.CategoryRequest{Id: int32(id), Paging: paging, Count: count, RatingBy: ratingBy, PriceBy: priceBy})
 	if err != nil {
 		h.log.Error("failed to get products by category", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)

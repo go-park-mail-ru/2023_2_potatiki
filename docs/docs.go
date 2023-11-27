@@ -824,13 +824,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "(Use ASC/DESC) Sort products by rating",
+                        "description": "(Use ASC/DESC and their combinations) Sort products by rating",
                         "name": "ratingBy",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "(Use ASC/DESC) Sort products by price",
+                        "description": "(Use ASC/DESC and their combinations) Sort products by price",
                         "name": "priceBy",
                         "in": "query"
                     }
@@ -886,13 +886,13 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "(Use ASC/DESC) Sort products by rating",
+                        "description": "(Use ASC/DESC and their combinations) Sort products by rating",
                         "name": "ratingBy",
                         "in": "query"
                     },
                     {
                         "type": "string",
-                        "description": "(Use ASC/DESC) Sort products by price",
+                        "description": "(Use ASC/DESC and their combinations) Sort products by price",
                         "name": "priceBy",
                         "in": "query"
                     }

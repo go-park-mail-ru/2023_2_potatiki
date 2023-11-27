@@ -17,6 +17,12 @@ type ProductsUsecase interface {
 
 type ProductsRepo interface {
 	ReadProduct(context.Context, uuid.UUID) (models.Product, error)
-	ReadProducts(context.Context, int64, int64, string, string) ([]models.Product, error)
-	ReadCategory(context.Context, int, int64, int64, string, string) ([]models.Product, error)
+	ReadProducts(context.Context, int64, int64) ([]models.Product, error)
+	ReadProductsByPrice(context.Context, int64, int64, string) ([]models.Product, error)
+	ReadProductsByRating(context.Context, int64, int64, string) ([]models.Product, error)
+	ReadProductsCategory(context.Context, int, int64, int64) ([]models.Product, error)
+	ReadProductsByRatingPrice(context.Context, int64, int64, string, string) ([]models.Product, error)
+	ReadProductsCategoryByPrice(context.Context, int, int64, int64, string) ([]models.Product, error)
+	ReadProductsCategoryByRating(context.Context, int, int64, int64, string) ([]models.Product, error)
+	ReadProductsCategoryByRatingPrice(context.Context, int, int64, int64, string, string) ([]models.Product, error)
 }
