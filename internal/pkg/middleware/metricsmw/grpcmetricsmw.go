@@ -2,16 +2,17 @@ package metricsmw
 
 import (
 	"context"
+	"time"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"google.golang.org/grpc"
-	"time"
 )
 
 type GrpcMiddleware struct {
-	metrics metrics.MetricsGRPC
+	metrics metrics.MetricerGRPC
 }
 
-func NewGrpcMiddleware(metrics metrics.MetricsGRPC) *GrpcMiddleware {
+func NewGrpcMiddleware(metrics metrics.MetricerGRPC) *GrpcMiddleware {
 	return &GrpcMiddleware{
 		metrics: metrics,
 	}

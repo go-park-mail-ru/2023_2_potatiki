@@ -100,42 +100,53 @@ services:
     networks:
       - zuzu-network
 
-  auth:
-    build:
-      context: ./build
-      dockerfile: Dockerfile.multistage.auth
+  zuzu-auth:
     env_file:
-      - ./.env
+        - ./.env
+    container_name: ${GRPC_AUTH_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_AUTH_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
     restart: always
-    ports:
-      - '8011:8011'
-      - '8010:8010'
+    expose:
+      - "${GRPC_AUTH_PORT}"
     volumes:
-      - ./.env:/docker-zuzu-main/.env
+      - ./.env:/docker-${GRPC_AUTH_CONTAINER_IP}/.env
       - zuzu-logs:/var/lib/zuzu/logs
     depends_on:
       - postgres
     networks:
       - zuzu-network
 
-
-  node_exporter:
-    image: quay.io/prometheus/node-exporter:latest
-    container_name: node_exporter
-    command:
-      - '--path.rootfs=/host'
-    network_mode: host
-    pid: host
-    restart: unless-stopped
+  zuzu-order:
+    env_file:
+        - ./.env
+    container_name: ${GRPC_ORDER_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_ORDER_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
+    restart: always
+    expose:
+      - "${GRPC_ORDER_PORT}"
     volumes:
-      - '/:/host:ro,rslave'
+      - ./.env:/docker-${GRPC_ORDER_CONTAINER_IP}/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
 
-  grafana:
-    image: grafana/grafana-enterprise
-    container_name: grafana
-    restart: unless-stopped
-    network_mode: host
-
+  zuzu-products:
+    env_file:
+        - ./.env
+    container_name: ${GRPC_PRODUCTS_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_PRODUCTS_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
+    restart: always
+    expose:
+      - "${GRPC_PRODUCTS_PORT}"
+    volumes:
+      - ./.env:/docker-${GRPC_PRODUCTS_CONTAINER_IP}/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
 
 volumes:
   zuzu-db-data:

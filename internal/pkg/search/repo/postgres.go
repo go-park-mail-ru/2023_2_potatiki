@@ -21,10 +21,8 @@ const (
 	   c.name AS category_name
 	FROM product p
 		 JOIN category c ON p.category_id = c.id
-	WHERE make_tsvector(p.name, p.description)
-	@@
-	  (plainto_tsquery('english', $1))
-	OR lower(p.name) LIKE lower($1)
+	WHERE similarity(c.name, $1) > 0.2 OR similarity(p.name, $1) > 0.1 OR similarity(p.description, $1) > 0.04
+	ORDER BY similarity(c.name, $1) DESC, similarity(p.name, $1) DESC, similarity(p.description, $1) DESC
 	LIMIT 10;`
 )
 

@@ -4,23 +4,24 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log/slog"
+	"net"
+	"os"
+	"os/signal"
+	"syscall"
+
 	grpcAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
+	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	authUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/usecase"
+	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
-	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
-	"github.com/gorilla/mux"
 	"github.com/jackc/pgx/v4/pgxpool"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"google.golang.org/grpc"
-	"log/slog"
-	"net"
-	"net/http"
-	"os"
 )
 
 func main() {
@@ -30,7 +31,7 @@ func main() {
 }
 
 func run() (err error) {
-	cfg := config.MustLoad() // TODO : dev-config.yaml -> readme.
+	cfg := config.MustLoad()
 
 	logFile, err := os.OpenFile(cfg.LogFilePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0644)
 	if err != nil {
@@ -46,11 +47,10 @@ func run() (err error) {
 	log := logger.Set(cfg.Enviroment, logFile)
 
 	log.Info(
-		"starting zuzu-main",
+		"starting "+cfg.GRPC.AuthContainerIP,
 		slog.String("env", cfg.Enviroment),
-		slog.String("addr", cfg.Address),
+		slog.String("addr", fmt.Sprintf("%s:%d", cfg.GRPC.AuthContainerIP, cfg.GRPC.AuthPort)),
 		slog.String("log_file_path", cfg.LogFilePath),
-		slog.String("photos_file_path", cfg.PhotosFilePath),
 	)
 	log.Debug("debug messages are enabled")
 
@@ -78,37 +78,36 @@ func run() (err error) {
 		return err
 	}
 	// ----------------------------Database---------------------------- //
+
 	profileRepo := profileRepo.NewProfileRepo(db)
-
 	authUsecase := authUsecase.NewAuthUsecase(profileRepo, cfg.AuthJWT)
-	service := grpcAuth.NewGrpcAuthHandler(authUsecase, log)
 
-	listener, err := net.Listen("tcp", "0.0.0.0:8010")
-	if err != nil {
-		return err
-	}
+	authHandler := grpcAuth.NewGrpcAuthHandler(authUsecase, log)
 
-	grpcMetrics := metrics.NewGRPCMetrics(metrics.ServiceAuthName)
+	grpcMetrics := metrics.NewMetricGRPC(metrics.ServiceAuthName)
 	metricsMw := metricsmw.NewGrpcMiddleware(grpcMetrics)
 
-	server := grpc.NewServer(grpc.UnaryInterceptor(metricsMw.ServerMetricsInterceptor))
+	gRPCServer := grpc.NewServer(grpc.UnaryInterceptor(metricsMw.ServerMetricsInterceptor))
 
-	generatedAuth.RegisterAuthServiceServer(server, service)
-
-	r := mux.NewRouter().PathPrefix("/api").Subrouter()
-	r.PathPrefix("/metrics").Handler(promhttp.Handler())
-
-	http.Handle("/", r)
-	httpSrv := http.Server{Handler: r, Addr: "0.0.0.0:8011"}
+	generatedAuth.RegisterAuthServer(gRPCServer, authHandler)
 
 	go func() {
-		err := httpSrv.ListenAndServe()
+		listener, err := net.Listen("tcp", fmt.Sprintf(":%d", cfg.GRPC.AuthPort))
 		if err != nil {
-			log.Error("fail httpSrv.ListenAndServe", sl.Err(err))
+			log.Error("listen returned err: ", sl.Err(err))
+		}
+		log.Info("grpc server started", slog.String("addr", listener.Addr().String()))
+		if err := gRPCServer.Serve(listener); err != nil {
+			log.Error("serve returned err: ", sl.Err(err))
 		}
 	}()
 
-	log.Info("auth running on: ", listener.Addr())
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGTERM, syscall.SIGINT)
 
-	return server.Serve(listener)
+	<-stop
+
+	gRPCServer.GracefulStop()
+	log.Info("Gracefully stopped")
+	return nil
 }

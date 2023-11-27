@@ -12,6 +12,11 @@ run: build_
 rund: build_
 	./.bin &
 
+runa: build_
+	go run ./cmd/auth/main.go
+	go run ./cmd/order/main.go
+	./.bin
+
 lint:
 	golangci-lint run
 
@@ -20,7 +25,7 @@ swag:
 	
 cover:
 	go test -json ./... -coverprofile coverprofile_.tmp -coverpkg=./... ; \
-	cat coverprofile_.tmp | grep -v _mock.go > coverprofile.tmp ; \
+	cat coverprofile_.tmp | grep -v _mock.go | grep -v _easyjson.go | grep -v .pb.go | grep -v _grpc.go > coverprofile.tmp ; \
 	rm coverprofile_.tmp ; \
 	go tool cover -html coverprofile.tmp ; \
 	go tool cover -func coverprofile.tmp
@@ -30,6 +35,12 @@ test:
 
 done: lint test swag run
 	git add .
+
+protoc:
+#go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+#go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+	protoc -I proto proto/gmodels/*.proto --go_out=./proto/ --go_opt=paths=source_relative
+	protoc -I proto proto/*.proto --go_out=./ --go-grpc_out=./
 
 #gotests -all -w internal/pkg/cart/usecase/usecase.go
 

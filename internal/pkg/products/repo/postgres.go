@@ -4,34 +4,237 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jackc/pgx/v4"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
+	"github.com/jackc/pgx/v4"
 	uuid "github.com/satori/go.uuid"
 )
 
 const (
-	getProduct = `SELECT p.id, p.name, p.description, p.price, p.imgsrc, p.rating, p.category_id,
-    c.name AS category_name
+	getProduct = `SELECT p.id, p.name, p.description, p.price, p.imgsrc, COALESCE(AVG(cm.rating), 0) AS average_rating,
+       p.category_id, c.name AS category_name
 	FROM product p
 	JOIN category c ON p.category_id = c.id
-	WHERE p.id = $1;`
+	LEFT JOIN comment cm ON p.id = cm.productID
+	WHERE p.id = $1
+	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name;
+	`
 
-	getProducts = `SELECT p.id, p.name, p.description, p.price, p.imgsrc, p.rating, p.category_id,
-    c.name AS category_name
-	FROM product p
-	JOIN category c ON p.category_id = c.id
-	ORDER BY p.id
-	LIMIT $1 OFFSET $2;`
+	getProductsByRatingPrice = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.price %s, COALESCE(AVG(cm.rating), 0) %s
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
 
-	getProductsByCategoryID = `SELECT p.id, p.name, p.description, p.price, p.imgsrc, p.rating, p.category_id,
-    c.name AS category_name
-	FROM product p
-	JOIN category c ON p.category_id = c.id
-	WHERE p.category_id = $3
-	ORDER BY p.id
-	LIMIT $1 OFFSET $2;`
+	getProductsByPrice = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.price %s
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsByRating = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		COALESCE(AVG(cm.rating), 0) %s
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProducts = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.creation_at DESC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsByCategoryID = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.creation_at DESC
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsCategoryByRatingPrice = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+   		p.price %s, COALESCE(AVG(cm.rating), 0) %s
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsCategoryByRating = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+		COALESCE(AVG(cm.rating), 0) %s
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
+
+	getProductsCategoryByPrice = `
+	SELECT
+		p.id AS product_id,
+		p.name AS product_name,
+		p.description,
+		p.price,
+		p.imgsrc,
+		COALESCE(AVG(cm.rating), 0) AS average_rating,
+		p.category_id,
+		c.name AS category_name
+	FROM
+		product p
+	JOIN
+		category c ON p.category_id = c.id
+	LEFT JOIN
+		comment cm ON p.id = cm.productID
+	WHERE
+	    p.category_id = $3
+	GROUP BY
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+	ORDER BY
+		p.price %s
+	LIMIT
+		$1
+	OFFSET
+		$2;
+	`
 )
 
 var (
@@ -64,8 +267,10 @@ func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Pr
 	return pr, nil
 }
 
-func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int64) ([]models.Product, error) {
+func (r *ProductsRepo) ReadProducts(ctx context.Context, paging, count int64) (
+	[]models.Product, error) {
 	productSlice := make([]models.Product, 0, count)
+
 	rows, err := r.db.Query(ctx, getProducts, count, paging)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
@@ -99,8 +304,240 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging int64, count int
 	return productSlice, nil
 }
 
-func (r *ProductsRepo) ReadCategory(ctx context.Context, id int, paging, count int64) ([]models.Product, error) {
+func (r *ProductsRepo) ReadProductsByPrice(ctx context.Context, paging, count int64, priceBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0, count)
+
+	query := fmt.Sprintf(getProductsByPrice, priceBy) //спросить про %S
+	rows, err := r.db.Query(ctx, query, count, paging)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsByRating(ctx context.Context, paging, count int64, ratingBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0, count)
+
+	query := fmt.Sprintf(getProductsByRating, ratingBy) //спросить про %S
+	rows, err := r.db.Query(ctx, query, count, paging)
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsByRatingPrice(ctx context.Context, paging, count int64, ratingBy, priceBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0, count)
+
+	query := fmt.Sprintf(getProductsByRatingPrice, priceBy, ratingBy) //спросить про %S
+	rows, err := r.db.Query(ctx, query, count, paging)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsCategoryByRatingPrice(ctx context.Context, id int, paging, count int64, ratingBy, priceBy string) (
+	[]models.Product, error) {
 	productSlice := make([]models.Product, 0)
+
+	query := fmt.Sprintf(getProductsCategoryByRatingPrice, priceBy, ratingBy)
+	rows, err := r.db.Query(ctx, query, count, paging, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsCategoryByRating(ctx context.Context, id int, paging, count int64, ratingBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0)
+
+	query := fmt.Sprintf(getProductsCategoryByRating, ratingBy)
+	rows, err := r.db.Query(ctx, query, count, paging, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsCategoryByPrice(ctx context.Context, id int, paging, count int64, priceBy string) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0)
+
+	query := fmt.Sprintf(getProductsCategoryByPrice, priceBy)
+	rows, err := r.db.Query(ctx, query, count, paging, id)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Product{}, err
+	}
+	product := models.Product{}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	return productSlice, nil
+}
+
+func (r *ProductsRepo) ReadProductsCategory(ctx context.Context, id int, paging, count int64) (
+	[]models.Product, error) {
+	productSlice := make([]models.Product, 0)
+
 	rows, err := r.db.Query(ctx, getProductsByCategoryID, count, paging, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {

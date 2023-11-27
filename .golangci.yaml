@@ -20,11 +20,19 @@ linters:
     - gci
     - gofumpt
     - godot
+    - cyclop
     - goimports
+    - typecheck
     - gochecknoglobals
+    - goconst
+    - nestif
     - errname
+    - nilerr
+    - dupword
+    - protogetter
     - maintidx #???
     - stylecheck #???
+    - promlinter #???
     - funlen #del
     - staticcheck #del
     - sqlclosecheck #del

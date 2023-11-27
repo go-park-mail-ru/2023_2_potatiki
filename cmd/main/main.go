@@ -4,17 +4,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 
 	_ "github.com/go-park-mail-ru/2023_2_potatiki/docs"
 	"github.com/gorilla/mux"
@@ -31,6 +31,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
+	authGrpc "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
 	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
@@ -40,9 +41,9 @@ import (
 	categoryRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/repo"
 	categoryUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/category/usecase"
 
+	productsGrpc "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
 	productsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/http"
 	productsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/repo"
-	productsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/usecase"
 
 	searchHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/delivery/http"
 	searchRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/repo"
@@ -52,6 +53,7 @@ import (
 	profileRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/repo"
 	profileUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile/usecase"
 
+	orderGrpc "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 	orderHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/http"
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	orderUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/usecase"
@@ -59,6 +61,14 @@ import (
 	addressHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/delivery/http"
 	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 	addressUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/usecase"
+
+	commentsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/delivery/http"
+	commentsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/repo"
+	commentsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/usecase"
+
+	surveyHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey/delivery/http"
+	surveyRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey/repo"
+	surveyUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/survey/usecase"
 )
 
 // @title ZuZu Backend API
@@ -128,8 +138,7 @@ func run() (err error) {
 	//
 	//
 	// ===============================Grpc============================== //
-	authConn, err := grpc.Dial(
-		"0.0.0.0:8010",
+	authConn, err := grpc.Dial(fmt.Sprintf("%s:%d", cfg.GRPC.AuthContainerIP, cfg.GRPC.AuthPort),
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Error("fail grpc.Dial auth", sl.Err(err))
@@ -138,26 +147,46 @@ func run() (err error) {
 		return err
 	}
 	defer authConn.Close()
+
+	orderConn, err := grpc.Dial(fmt.Sprintf("%s:%d", cfg.GRPC.OrderContainerIP, cfg.GRPC.OrderPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Error("fail grpc.Dial order", sl.Err(err))
+		err = fmt.Errorf("error happened in grpc.Dial order: %w", err)
+
+		return err
+	}
+	defer orderConn.Close()
+
+	productConn, err := grpc.Dial(fmt.Sprintf("%s:%d", cfg.GRPC.ProductsContainerIP, cfg.GRPC.ProductsPort),
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.Error("fail grpc.Dial product", sl.Err(err))
+		err = fmt.Errorf("error happened in grpc.Dial product: %w", err)
+
+		return err
+	}
+	defer orderConn.Close()
+
 	// -------------------------------Grpc------------------------------- //
 	//
 	//
 	// ============================Init layers============================ //
 
-	authClient := generatedAuth.NewAuthServiceClient(authConn)
-
 	profileRepo := profileRepo.NewProfileRepo(db)
 	profileUsecase := profileUsecase.NewProfileUsecase(profileRepo, cfg)
 	profileHandler := profileHandler.NewProfileHandler(log, profileUsecase)
 
+	authClient := authGrpc.NewAuthClient(authConn)
 	authHandler := authHandler.NewAuthHandler(authClient, log)
 
 	cartRepo := cartRepo.NewCartRepo(db)
 	cartUsecase := cartUsecase.NewCartUsecase(cartRepo)
 	cartHandler := cartHandler.NewCartHandler(log, cartUsecase)
 
+	productsClient := productsGrpc.NewProductsClient(productConn)
 	productsRepo := productsRepo.NewProductsRepo(db)
-	productsUsecase := productsUsecase.NewProductsUsecase(productsRepo)
-	productsHandler := productsHandler.NewProductsHandler(log, productsUsecase)
+	productsHandler := productsHandler.NewProductsHandler(productsClient, log)
 
 	searchRepo := searchRepo.NewSearchRepo(db)
 	searchUsecase := searchUsecase.NewSearchUsecase(searchRepo, productsRepo)
@@ -173,7 +202,16 @@ func run() (err error) {
 
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
-	orderHandler := orderHandler.NewOrderHandler(log, orderUsecase)
+	orderClient := orderGrpc.NewOrderClient(orderConn)
+	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
+
+	commentsRepo := commentsRepo.NewCommentsRepo(db)
+	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
+	commentsHandler := commentsHandler.NewCommentsHandler(log, commentsUsecase)
+
+	surveyRepo := surveyRepo.NewSurveyRepo(db)
+	surveyUsecase := surveyUsecase.NewSurveyUsecase(surveyRepo)
+	surveyHandler := surveyHandler.NewSurveyHandler(log, surveyUsecase)
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -181,7 +219,7 @@ func run() (err error) {
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 
-	mt := metrics.NewMetrics()
+	mt := metrics.NewMetricHTTP()
 
 	r.Use(middleware.Recover(log), middleware.CORSMiddleware, logmw.New(mt, log))
 	// r.Use(middleware.CORSMiddleware, logmw.New(mt, log))
@@ -301,6 +339,27 @@ func run() (err error) {
 	{
 		search.HandleFunc("/", searchHandler.SearchProducts).
 			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	comments := r.PathPrefix("/comments").Subrouter()
+	{
+		comments.Handle("/create", authMW(csrfMW(http.HandlerFunc(commentsHandler.CreateComment)))).
+			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
+
+		comments.HandleFunc("/get_all", commentsHandler.GetProductComments).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	survey := r.PathPrefix("/survey").Subrouter()
+	{
+		survey.Handle("/get", authMW(http.HandlerFunc(surveyHandler.GetSurvey))).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		survey.HandleFunc("/stat/{id:[0-9a-fA-F-]+}", surveyHandler.GetStat).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		survey.Handle("/response", authMW(http.HandlerFunc(surveyHandler.SaveResponse))).
+			Methods(http.MethodPost, http.MethodOptions)
 	}
 	//----------------------------Setup endpoints----------------------------//
 

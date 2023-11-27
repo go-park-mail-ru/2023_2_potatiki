@@ -2,12 +2,17 @@ package grpc
 
 import (
 	"context"
+	"log/slog"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
+	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
+	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
 	uuid "github.com/satori/go.uuid"
-	"log/slog"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 //go:generate mockgen -source=./generated/auth_grpc.pb.go -destination=../../mocks/auth_grpc.go -package=mock
@@ -16,7 +21,7 @@ type GrpcAuthHandler struct {
 	uc  auth.AuthUsecase
 	log *slog.Logger
 
-	generatedAuth.AuthServiceServer
+	generatedAuth.AuthServer
 }
 
 func NewGrpcAuthHandler(uc auth.AuthUsecase, log *slog.Logger) *GrpcAuthHandler {
@@ -26,8 +31,7 @@ func NewGrpcAuthHandler(uc auth.AuthUsecase, log *slog.Logger) *GrpcAuthHandler 
 	}
 }
 
-func (h GrpcAuthHandler) SignIn(ctx context.Context, in *generatedAuth.SignInPayload) (*generatedAuth.ProfileAndCookie,
-	error) {
+func (h GrpcAuthHandler) SignIn(ctx context.Context, in *gen.SignInRequest) (*gen.SignInResponse, error) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
@@ -41,30 +45,28 @@ func (h GrpcAuthHandler) SignIn(ctx context.Context, in *generatedAuth.SignInPay
 	if err != nil {
 		h.log.Error("failed in uc.SignIn", sl.Err(err))
 
-		return &generatedAuth.ProfileAndCookie{Error: err.Error()}, err
+		return &gen.SignInResponse{}, status.Error(codes.Internal, "failed in uc.SignIn")
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 
-	return &generatedAuth.ProfileAndCookie{
-		ProfileInfo: &generatedAuth.Profile{
+	return &gen.SignInResponse{
+		Profile: &gmodels.Profile{
 			Id:          profile.Id.String(),
 			Login:       profile.Login,
 			Description: profile.Description,
 			ImgSrc:      profile.ImgSrc,
 			Phone:       profile.Phone,
 		},
-		CookieInfo: &generatedAuth.Cookie{
-			Token:   token,
-			Expires: expires.String(),
-		},
+		Token:   token,
+		Expires: expires.String(),
 	}, nil
 }
 
-func (h GrpcAuthHandler) SignUp(ctx context.Context, in *generatedAuth.SignUpPayload) (*generatedAuth.ProfileAndCookie,
-	error) {
+func (h GrpcAuthHandler) SignUp(ctx context.Context, in *gen.SignUpRequest) (*gen.SignUpResponse, error) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
+
 	userSignUp := models.SignUpPayload{
 		Login:    in.Login,
 		Password: in.Password,
@@ -74,28 +76,25 @@ func (h GrpcAuthHandler) SignUp(ctx context.Context, in *generatedAuth.SignUpPay
 	profile, token, expires, err := h.uc.SignUp(ctx, &userSignUp)
 	if err != nil {
 		h.log.Error("failed in uc.SignUp", sl.Err(err))
-
-		return &generatedAuth.ProfileAndCookie{Error: err.Error()}, err
+		return &gen.SignUpResponse{}, status.Error(codes.Internal, "failed in uc.SignUp")
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 
-	return &generatedAuth.ProfileAndCookie{
-		ProfileInfo: &generatedAuth.Profile{
+	return &gen.SignUpResponse{
+		Profile: &gmodels.Profile{
 			Id:          profile.Id.String(),
 			Login:       profile.Login,
 			Description: profile.Description,
 			ImgSrc:      profile.ImgSrc,
 			Phone:       profile.Phone,
 		},
-		CookieInfo: &generatedAuth.Cookie{
-			Token:   token,
-			Expires: expires.String(),
-		},
+
+		Token:   token,
+		Expires: expires.String(),
 	}, nil
 }
 
-func (h GrpcAuthHandler) CheckAuth(ctx context.Context, in *generatedAuth.UserID) (*generatedAuth.Profile,
-	error) {
+func (h GrpcAuthHandler) CheckAuth(ctx context.Context, in *gen.CheckAuthRequst) (*gen.CheckAuthResponse, error) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
@@ -103,23 +102,23 @@ func (h GrpcAuthHandler) CheckAuth(ctx context.Context, in *generatedAuth.UserID
 	userID, err := uuid.FromString(in.ID)
 	if err != nil {
 		h.log.Error("failed to get uuid from string", sl.Err(err))
-
-		return &generatedAuth.Profile{Error: err.Error()}, err
+		return &gen.CheckAuthResponse{}, status.Error(codes.InvalidArgument, "invalid ID, fail to cast uuid")
 	}
 
 	profile, err := h.uc.CheckAuth(ctx, userID)
 	if err != nil {
 		h.log.Error("failed in uc.CheckAuth", sl.Err(err))
-
-		return &generatedAuth.Profile{Error: err.Error()}, err
+		return &gen.CheckAuthResponse{}, status.Error(codes.Internal, "failed in uc.CheckAuth")
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 
-	return &generatedAuth.Profile{
-		Id:          profile.Id.String(),
-		Login:       profile.Login,
-		Description: profile.Description,
-		ImgSrc:      profile.ImgSrc,
-		Phone:       profile.Phone,
+	return &gen.CheckAuthResponse{
+		Profile: &gmodels.Profile{
+			Id:          profile.Id.String(),
+			Login:       profile.Login,
+			Description: profile.Description,
+			ImgSrc:      profile.ImgSrc,
+			Phone:       profile.Phone,
+		},
 	}, nil
 }

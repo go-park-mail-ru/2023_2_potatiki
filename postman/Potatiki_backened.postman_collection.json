@@ -309,13 +309,13 @@
 						"header": [
 							{
 								"key": "X-Csrf-Token",
-								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNjk5MzY4ODQ2fQ.4arbtuzmE31YcH_NoSENtZgG4NXYsn3lcoBRc3hhChc",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNzAwODcwOTg4fQ.nqxlQvZ4oHdVRl5Rj6rStKlnzQhOU0BUt90K0S9lWvo",
 								"type": "text"
 							}
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"login\": \"MrDjebQQQ\",\r\n    \"phone\": \"+78234567890\", \r\n    \"password\": \"1234567819QQQQQQQQQQQQQQQQQQQQQQQQQQQQQ\" \r\n}",
+							"raw": "{\r\n    \"login\": \"MDдiгвjш4Q\",\r\n    \"phone\": \"+78234567890\", \r\n    \"password\": \"1234567819QQQ\" \r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -390,7 +390,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/products/get_all?count=5",
+							"raw": "{{baseUrl}}/api/products/get_all?paging=0&count=20&priceBy=DESC&ratingBy=ASC",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -401,8 +401,20 @@
 							],
 							"query": [
 								{
+									"key": "paging",
+									"value": "0"
+								},
+								{
 									"key": "count",
-									"value": "5"
+									"value": "20"
+								},
+								{
+									"key": "priceBy",
+									"value": "DESC"
+								},
+								{
+									"key": "ratingBy",
+									"value": "ASC"
 								}
 							]
 						}
@@ -427,7 +439,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/api/products/category?paging=1&count=3&category_id=5",
+							"raw": "{{baseUrl}}/api/products/category?paging=0&count=10&category_id=4&priceBy=DESC&ratingBy=DESC",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -439,15 +451,23 @@
 							"query": [
 								{
 									"key": "paging",
-									"value": "1"
+									"value": "0"
 								},
 								{
 									"key": "count",
-									"value": "3"
+									"value": "10"
 								},
 								{
 									"key": "category_id",
-									"value": "5"
+									"value": "4"
+								},
+								{
+									"key": "priceBy",
+									"value": "DESC"
+								},
+								{
+									"key": "ratingBy",
+									"value": "DESC"
 								}
 							]
 						}
@@ -1137,6 +1157,255 @@
 									"key": "product",
 									"value": "fridge"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Metrics",
+			"item": [
+				{
+					"name": "prometheus",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/prometheus",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"prometheus"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comments",
+			"item": [
+				{
+					"name": "create",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-Csrf-Token",
+								"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyQWdlbnQiOiJQb3N0bWFuUnVudGltZS83LjMzLjAiLCJpc3MiOiJjc3JmIiwiZXhwIjoxNzAwODcwOTg4fQ.nqxlQvZ4oHdVRl5Rj6rStKlnzQhOU0BUt90K0S9lWvo",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"productId\": \"007749b5-7e07-4be8-8c91-8db273ace4c1\",\n  \"pros\": \"Очень круто\",\n  \"cons\": \"Очень плохо\",\n  \"comment\": \"Просто вау!!! берите!!!\",\n  \"rating\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/comments/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"comments",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create CSRF",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/comments/create",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"comments",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get_all",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/comments/get_all?product=007749b5-7e07-4be8-8c91-8db273ace4c1",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"comments",
+								"get_all"
+							],
+							"query": [
+								{
+									"key": "product",
+									"value": "007749b5-7e07-4be8-8c91-8db273ace4c1"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Survey",
+			"item": [
+				{
+					"name": "get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/survey/get?surveyID=1e461708-6b04-45b9-a4fa-77c32c14d982",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"survey",
+								"get"
+							],
+							"query": [
+								{
+									"key": "surveyID",
+									"value": "1e461708-6b04-45b9-a4fa-77c32c14d982"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get stat",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/survey/get?surveyID=1e461708-6b04-45b9-a4fa-77c32c14d982",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"survey",
+								"get"
+							],
+							"query": [
+								{
+									"key": "surveyID",
+									"value": "1e461708-6b04-45b9-a4fa-77c32c14d982"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "response",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"questionID\": \"1e461708-6b04-45b9-a4fa-77c32c14d387\",\n  \"resultID\": \"7410a992-ac53-4157-8f1d-8bd33a84ca19\",\n  \"answer\": 5\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/survey/response",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"survey",
+								"response"
 							]
 						}
 					},

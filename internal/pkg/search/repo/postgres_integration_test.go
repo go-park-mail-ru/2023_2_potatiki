@@ -4,12 +4,19 @@ import (
 	"context"
 	"fmt"
 	"github.com/jackc/pgx/v4/pgxpool"
+	"github.com/joho/godotenv"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 )
 
 func TestDatabse(t *testing.T) {
+	envFilePath := "./../../../../.env"
+
+	err := godotenv.Load(envFilePath)
+	if err != nil {
+		t.Skip("no .env found")
+	}
 	confString := os.Getenv("DATABASE_URL")
 	if confString == "" {
 		t.Skip("no DATABASE_URL in env")

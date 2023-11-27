@@ -1,8 +1,9 @@
 package metrics
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type MetricsHTTP interface {
@@ -19,7 +20,7 @@ type MetricHTTP struct {
 	durationSummary   *prometheus.SummaryVec
 }
 
-func NewMetrics() *MetricHTTP {
+func NewMetricHTTP() *MetricHTTP {
 	labelHits := []string{"path"}
 	totalHits := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "http_requests_total",

@@ -2,13 +2,13 @@ package http
 
 import (
 	"encoding/json"
-	generatedAuth "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/generated"
 	"io"
 	"log/slog"
 	"net/http"
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
@@ -17,13 +17,13 @@ import (
 )
 
 type AuthHandler struct {
-	client generatedAuth.AuthServiceClient
+	client gen.AuthClient
 	log    *slog.Logger
 }
 
 const customTimeFormat = "2006-01-02 15:04:05.999999999 -0700 UTC"
 
-func NewAuthHandler(cl generatedAuth.AuthServiceClient, log *slog.Logger) *AuthHandler {
+func NewAuthHandler(cl gen.AuthClient, log *slog.Logger) *AuthHandler {
 	return &AuthHandler{
 		client: cl,
 		log:    log,
@@ -62,20 +62,20 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profileAndCookie, err := h.client.SignIn(r.Context(), &generatedAuth.SignInPayload{
+	profileAndCookie, err := h.client.SignIn(r.Context(), &gen.SignInRequest{
 		Login:    userInfo.Login,
 		Password: userInfo.Password,
 	})
-	if len(profileAndCookie.Error) != 0 || err != nil {
+	if err != nil {
 		h.log.Error("failed to signin", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
 
 		return
 	}
 
-	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.ProfileInfo.Id))
+	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.Profile.Id))
 
-	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.CookieInfo.Expires)
+	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.Expires)
 	if err != nil {
 		h.log.Error("failed to parse time from auth signin", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -83,7 +83,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idUuid, err := uuid.FromString(profileAndCookie.ProfileInfo.Id)
+	idUuid, err := uuid.FromString(profileAndCookie.Profile.Id)
 	if err != nil {
 		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -92,13 +92,13 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	}
 	profile := models.Profile{
 		Id:          idUuid,
-		Login:       profileAndCookie.ProfileInfo.Login,
-		Description: profileAndCookie.ProfileInfo.Description,
-		ImgSrc:      profileAndCookie.ProfileInfo.ImgSrc,
-		Phone:       profileAndCookie.ProfileInfo.Phone,
+		Login:       profileAndCookie.Profile.Login,
+		Description: profileAndCookie.Profile.Description,
+		ImgSrc:      profileAndCookie.Profile.ImgSrc,
+		Phone:       profileAndCookie.Profile.Phone,
 	}
 
-	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.CookieInfo.Token, expiresTime))
+	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.Token, expiresTime))
 	resp.JSON(w, http.StatusOK, profile)
 }
 
@@ -133,21 +133,21 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	profileAndCookie, err := h.client.SignUp(r.Context(), &generatedAuth.SignUpPayload{
+	profileAndCookie, err := h.client.SignUp(r.Context(), &gen.SignUpRequest{
 		Login:    userInfo.Login,
 		Password: userInfo.Password,
 		Phone:    userInfo.Phone,
 	})
-	if len(profileAndCookie.Error) != 0 || err != nil {
+	if err != nil {
 		h.log.Error("failed to signup", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid login or password"))
 
 		return
 	}
 
-	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.ProfileInfo.Id))
+	h.log.Debug("got profile", slog.Any("profile", profileAndCookie.Profile.Id))
 
-	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.CookieInfo.Expires)
+	expiresTime, err := time.Parse(customTimeFormat, profileAndCookie.Expires)
 	if err != nil {
 		h.log.Error("failed to parse time from auth signup", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -155,7 +155,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	idUuid, err := uuid.FromString(profileAndCookie.ProfileInfo.Id)
+	idUuid, err := uuid.FromString(profileAndCookie.Profile.Id)
 	if err != nil {
 		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -164,14 +164,15 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	}
 	profile := models.Profile{
 		Id:          idUuid,
-		Login:       profileAndCookie.ProfileInfo.Login,
-		Description: profileAndCookie.ProfileInfo.Description,
-		ImgSrc:      profileAndCookie.ProfileInfo.ImgSrc,
-		Phone:       profileAndCookie.ProfileInfo.Phone,
+		Login:       profileAndCookie.Profile.Login,
+		Description: profileAndCookie.Profile.Description,
+		ImgSrc:      profileAndCookie.Profile.ImgSrc,
+		Phone:       profileAndCookie.Profile.Phone,
 	}
 
-	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.CookieInfo.Token, expiresTime))
+	http.SetCookie(w, authmw.MakeTokenCookie(profileAndCookie.Token, expiresTime))
 	resp.JSON(w, http.StatusOK, profile)
+
 }
 
 // @Summary	Logout
@@ -215,17 +216,17 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 
 	h.log.Debug("check auth success", "id", id)
 
-	profile, err := h.client.CheckAuth(r.Context(), &generatedAuth.UserID{
+	profile, err := h.client.CheckAuth(r.Context(), &gen.CheckAuthRequst{
 		ID: id.String(),
 	})
-	if len(profile.Error) != 0 || err != nil {
+	if err != nil {
 		h.log.Error("failed to CheckAuth", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
 	}
 
-	idUuid, err := uuid.FromString(profile.Id)
+	idUuid, err := uuid.FromString(profile.Profile.Id)
 	if err != nil {
 		h.log.Error("failed to make uuid from string in uuid.FromString", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -234,12 +235,12 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	}
 	profileModel := models.Profile{
 		Id:          idUuid,
-		Login:       profile.Login,
-		Description: profile.Description,
-		ImgSrc:      profile.ImgSrc,
-		Phone:       profile.Phone,
+		Login:       profile.Profile.Login,
+		Description: profile.Profile.Description,
+		ImgSrc:      profile.Profile.ImgSrc,
+		Phone:       profile.Profile.Phone,
 	}
 
-	h.log.Debug("got profile", slog.Any("profile", profile.Id))
+	h.log.Debug("got profile", slog.Any("profile", profile.Profile.Id))
 	resp.JSON(w, http.StatusOK, profileModel)
 }

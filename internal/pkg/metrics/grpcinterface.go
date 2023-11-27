@@ -1,15 +1,16 @@
 package metrics
 
 import (
-	"github.com/prometheus/client_golang/prometheus"
 	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 const (
 	ServiceAuthName = "auth"
 )
 
-type MetricsGRPC interface {
+type MetricerGRPC interface {
 	IncreaseHits(string)
 	IncreaseErr(string)
 	AddDurationToHistogram(string, time.Duration)
@@ -24,7 +25,7 @@ type MetricGRPC struct {
 	name              string
 }
 
-func NewGRPCMetrics(serverName string) *MetricGRPC {
+func NewMetricGRPC(serverName string) *MetricGRPC {
 	//labelGauge := []string{"path", "service_name", "method", "full_time"}
 	//gauge := prometheus.NewGaugeVec(prometheus.GaugeOpts{
 	//	Name: serverName,

@@ -20,6 +20,76 @@ DROP TABLE IF EXISTS favorite;
 
 DROP TABLE IF EXISTS status;
 
+DROP TABLE IF EXISTS comment;
+
+DROP TABLE IF EXISTS survey CASCADE;
+
+DROP TABLE IF EXISTS question_type CASCADE;
+
+DROP TABLE IF EXISTS question CASCADE;
+
+DROP TABLE IF EXISTS answer;
+
+DROP TABLE IF EXISTS results;
+
+CREATE TABLE IF NOT EXISTS survey
+(
+    id uuid NOT NULL PRIMARY KEY,
+    name text UNIQUE
+);
+
+INSERT INTO survey (id, name)
+VALUES
+    ('1e461708-6b04-45b9-a4fa-77c32c14d982', 'Опрос про товары'),
+    ('1e461708-6b04-45b9-a4fa-77c32c14d487', 'Опрос про вид'),
+    ('1e461708-6b04-45b9-a4fa-77c32c14d318', 'Опрос про что-то еще');
+
+CREATE TABLE IF NOT EXISTS question_type
+(
+    id serial NOT NULL PRIMARY KEY,
+    type text NOT NULL
+);
+
+INSERT INTO question_type (id, type)
+VALUES
+    (1, 'CSAT'),
+    (2, 'NPS'),
+    (3, 'CSI');
+
+CREATE TABLE IF NOT EXISTS question
+(
+    id uuid NOT NULL PRIMARY KEY,
+    type int NOT NULL,
+    FOREIGN KEY (type) REFERENCES question_type(id) ON DELETE RESTRICT,
+    id_survey uuid,
+    FOREIGN KEY (id_survey) REFERENCES survey(id) ON DELETE RESTRICT,
+    name text UNIQUE
+);
+
+INSERT INTO question (id, type, id_survey, name)
+VALUES
+    ('1e461708-6b04-45b9-a4fa-77c32c14d382', 1, '1e461708-6b04-45b9-a4fa-77c32c14d982', 'Крутой сайт?'),
+    ('1e461708-6b04-45b9-a4fa-77c32c14d387', 1,'1e461708-6b04-45b9-a4fa-77c32c14d982', 'Круто дизайн?'),
+    ('1e461708-6b04-45b9-a4fa-77c32c14d388', 2,'1e461708-6b04-45b9-a4fa-77c32c14d982', 'Ваше мнение?');
+
+CREATE TABLE IF NOT EXISTS results
+(
+    id uuid NOT NULL PRIMARY KEY,
+    user_id uuid,
+    survey_id uuid,
+    FOREIGN KEY (survey_id) REFERENCES survey(id) ON DELETE RESTRICT
+);
+
+CREATE TABLE IF NOT EXISTS answer
+(
+    id uuid NOT NULL PRIMARY KEY,
+    question uuid,
+    FOREIGN KEY (question) REFERENCES question(id) ON DELETE RESTRICT,
+    result_id uuid,
+    FOREIGN KEY (result_id) REFERENCES results(id) ON DELETE RESTRICT,
+    answer int
+);
+
 --- setup ru_RU dictionary ---
 CREATE TEXT SEARCH DICTIONARY russian_ispell (
     TEMPLATE = ispell,
@@ -105,38 +175,29 @@ CREATE TABLE IF NOT EXISTS product
     description text NOT NULL,
     price INT NOT NULL,
     imgsrc text NOT NULL,
-    rating NUMERIC(3, 2) NOT NULL,
     category_id INT,
+    rating NUMERIC(3, 2) NOT NULL,
     FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE RESTRICT,
+    creation_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     CHECK (rating >= 0),
     CHECK (price > 0)
     );
-
-
+------------------------------------------------------------------------------------------------------------------------
+CREATE TABLE comment
+(
+    id uuid NOT NULL PRIMARY KEY,
+    productID uuid REFERENCES product (id) ON DELETE CASCADE,
+    userID uuid REFERENCES profile (id) ON DELETE CASCADE,
+    pros text NOT NULL,
+    cons text NOT NULL,
+    comment text NOT NULL,
+    rating NUMERIC(3, 2) NOT NULL,
+    CHECK (rating >= 0)
+);
 --- DICTIONARY ---------------------------------------------------------------------------------------------------------
-CREATE OR REPLACE FUNCTION make_tsvector(name TEXT, description TEXT)
-    RETURNS tsvector AS
-$$
-BEGIN
-    RETURN (
-                    setweight(to_tsvector('ru', name), 'A') ||
-                    setweight(to_tsvector('ru', description), 'B') ||
-                    setweight(to_tsvector('english', name), 'C') ||
-                    setweight(to_tsvector('english', description), 'D')
-        );
-END
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
 
-CREATE OR REPLACE FUNCTION make_tsrank(param TEXT, phrase TEXT, lang regconfig)
-    RETURNS tsvector AS
-$$
-BEGIN
-    RETURN ts_rank(to_tsvector(lang, param), plainto_tsquery(lang, phrase));
-END
-$$ LANGUAGE 'plpgsql' IMMUTABLE;
+CREATE EXTENSION pg_trgm;
 
-CREATE INDEX product_name_idx ON product (LOWER(name) varchar_pattern_ops);
-CREATE INDEX product_description_idx ON product (LOWER(description) varchar_pattern_ops);
 --- DICTIONARY ---------------------------------------------------------------------------------------------------------
 
 
