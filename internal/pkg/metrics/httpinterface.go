@@ -21,21 +21,21 @@ type MetricHTTP struct {
 }
 
 func NewMetricHTTP() *MetricHTTP {
-	labelHits := []string{"path"}
+	labelHits := []string{"path", "method"}
 	totalHits := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "http_requests_total",
 		Help: "number_of_all_requests",
 	}, labelHits)
 	prometheus.MustRegister(totalHits)
 
-	labelErrors := []string{"status_code", "path"}
+	labelErrors := []string{"status_code", "path", "method"}
 	totalErrors := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "http_requests_errors_total",
 		Help: "number_of_all_errors",
 	}, labelErrors)
 	prometheus.MustRegister(totalErrors)
 
-	labelHistogram := []string{"path"}
+	labelHistogram := []string{"path", "method"}
 	durationHistogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "durations_stats_histogram",
 		Help: "durations_stats_histogram",
@@ -43,7 +43,7 @@ func NewMetricHTTP() *MetricHTTP {
 	}, labelHistogram)
 	prometheus.MustRegister(durationHistogram)
 
-	labelSummary := []string{"status_code", "path"}
+	labelSummary := []string{"status_code", "path", "method"}
 	durationSummary := prometheus.NewSummaryVec(prometheus.SummaryOpts{
 		Name: "durations_stats_summary",
 		Help: "durations_stats_summary",
@@ -65,20 +65,20 @@ func NewMetricHTTP() *MetricHTTP {
 	}
 }
 
-func (m *MetricHTTP) IncreaseHits(path string) {
-	m.totalHits.WithLabelValues(path).Inc()
+func (m *MetricHTTP) IncreaseHits(path, method string) {
+	m.totalHits.WithLabelValues(path, method).Inc()
 }
 
-func (m *MetricHTTP) IncreaseErr(statusCode, path string) {
+func (m *MetricHTTP) IncreaseErr(statusCode, path, method string) {
 	// m.totalHits.WithLabelValues(path).Inc()
 
-	m.totalErrors.WithLabelValues(statusCode, path).Inc()
+	m.totalErrors.WithLabelValues(statusCode, path, method).Inc()
 }
 
-func (m *MetricHTTP) AddDurationToHistogram(path string, duration time.Duration) {
-	m.durationHistogram.WithLabelValues(path).Observe(duration.Seconds())
+func (m *MetricHTTP) AddDurationToHistogram(path, method string, duration time.Duration) {
+	m.durationHistogram.WithLabelValues(path, method).Observe(duration.Seconds())
 }
 
-func (m *MetricHTTP) AddDurationToSummary(statusCode string, path string, duration time.Duration) {
-	m.durationSummary.WithLabelValues(statusCode, path).Observe(duration.Seconds())
+func (m *MetricHTTP) AddDurationToSummary(statusCode string, path string, method string, duration time.Duration) {
+	m.durationSummary.WithLabelValues(statusCode, path, method).Observe(duration.Seconds())
 }

@@ -76,7 +76,6 @@ func (m *MetricGRPC) IncreaseHits(path string) {
 }
 
 func (m *MetricGRPC) IncreaseErr(statusCode, path string) {
-	// m.totalHits.WithLabelValues(path).Inc()
 
 	m.totalErrors.WithLabelValues(statusCode, path, m.name).Inc()
 }

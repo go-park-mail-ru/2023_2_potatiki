@@ -96,22 +96,22 @@ func NewWithConfig(mt *metrics.MetricHTTP, log *slog.Logger, config Config) mux.
 
 			switch {
 			case status >= http.StatusInternalServerError:
-				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path)
+				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path, r.Method)
 				log.LogAttrs(r.Context(), config.ServerErrorLevel, "Server Error", attributes...)
 			case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
-				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path)
+				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path, r.Method)
 				log.LogAttrs(r.Context(), config.ClientErrorLevel, "Client Error", attributes...)
 			case status >= http.StatusMultipleChoices && status < http.StatusBadRequest:
-				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path)
+				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path, r.Method)
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Redirection", attributes...)
 			case status >= http.StatusOK && status < http.StatusMultipleChoices:
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Success", attributes...)
 			default:
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Informational", attributes...)
 			}
-			mt.IncreaseHits(r.URL.Path)
-			mt.AddDurationToHistogram(r.URL.Path, duration)
-			mt.AddDurationToSummary(strconv.Itoa(status), r.URL.Path, duration)
+			mt.IncreaseHits(r.URL.Path, r.Method)
+			mt.AddDurationToHistogram(r.URL.Path, r.Method, duration)
+			mt.AddDurationToSummary(strconv.Itoa(status), r.URL.Path, r.Method, duration)
 		})
 	}
 }
