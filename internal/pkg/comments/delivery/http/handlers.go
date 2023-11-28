@@ -83,11 +83,11 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 
 	commentPayload.Sanitize()
 
-	err = h.uc.CreateComment(r.Context(), commentPayload)
+	comment, err := h.uc.CreateComment(r.Context(), commentPayload)
 	if err != nil {
 		h.log.Error("failed in uc.CreateComment", sl.Err(err))
 		if errors.Is(err, usecase.ErrManyCommentsToProduct) {
-			resp.JSONStatus(w, http.StatusRequestEntityTooLarge)
+			resp.JSON(w, http.StatusRequestEntityTooLarge, comment)
 
 			return
 		}
@@ -96,8 +96,8 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	h.log.Debug("uc.CreateComment", "comment created", commentPayload)
-	resp.JSONStatus(w, http.StatusOK)
+	h.log.Debug("uc.CreateComment", "comment created", comment)
+	resp.JSON(w, http.StatusOK, comment)
 }
 
 // @Summary	GetProductComments

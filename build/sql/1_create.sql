@@ -191,6 +191,7 @@ CREATE TABLE comment
     pros text NOT NULL,
     cons text NOT NULL,
     comment text NOT NULL,
+    creation_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     rating NUMERIC(3, 2) NOT NULL,
     CHECK (rating >= 0)
 );

@@ -24,24 +24,25 @@ func NewCommentsUsecase(repoComments comments.CommentsRepo) *CommentsUsecase {
 	}
 }
 
-func (uc *CommentsUsecase) CreateComment(ctx context.Context, commentPayload models.CommentPayload) error {
-	count, err := uc.repo.ReadCountOfCommentsToProduct(ctx, commentPayload.UserID, commentPayload.ProductID)
+func (uc *CommentsUsecase) CreateComment(ctx context.Context, commentPayload models.CommentPayload) (
+	models.Comment, error) {
+	count, comment, err := uc.repo.ReadCountOfCommentsToProduct(ctx, commentPayload.UserID, commentPayload.ProductID)
 	if !errors.Is(err, repo.ErrCommentNotFound) && err != nil {
 		err = fmt.Errorf("error happened in repo.MakeComment: %w", err)
 
-		return err
+		return models.Comment{}, err
 	}
 	if count > 0 {
-		return ErrManyCommentsToProduct
+		return comment, ErrManyCommentsToProduct
 	}
-	err = uc.repo.MakeComment(ctx, commentPayload)
+	comment, err = uc.repo.MakeComment(ctx, commentPayload)
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.MakeComment: %w", err)
 
-		return err
+		return models.Comment{}, err
 	}
 
-	return nil
+	return comment, nil
 }
 
 func (uc *CommentsUsecase) GetProductComments(ctx context.Context, productID uuid.UUID) ([]models.Comment, error) {

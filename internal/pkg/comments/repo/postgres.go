@@ -16,14 +16,26 @@ const (
 	`
 
 	getComments = `
-	SELECT id, productID,  pros, cons, comment, rating FROM comment WHERE productID = $1;
+	SELECT c.id, c.productID, c.pros, c.cons, c.comment, c.rating, p.login, c.creation_at
+	FROM comment c
+	JOIN profile p ON c.userID = p.id
+	WHERE c.productID = $1;
+	`
+
+	getComment = `
+	SELECT c.id, c.productID, c.pros, c.cons, c.comment, c.rating, p.login, c.creation_at
+	FROM comment c
+	JOIN profile p ON c.userID = p.id
+	WHERE c.userID = $1
+	  AND c.productID = $2;
 	`
 
 	countOfCommentsToProduct = `
-	SELECT COUNT(*) AS comment_count
-	FROM comment
-	WHERE userID = $1
-	  AND productID = $2;
+	SELECT COUNT(*), c.id, c.productID, c.pros, c.cons, c.comment, c.rating, p.login, c.creation_at
+	FROM comment c
+	JOIN profile p ON c.userID = p.id
+	WHERE c.userID = $1 AND c.productID = $2
+	GROUP BY c.id, c.productID, c.pros, c.cons, c.comment, c.rating, p.login, c.creation_at;
 	`
 )
 
@@ -41,23 +53,25 @@ func NewCommentsRepo(db pgxtype.Querier) *CommentsRepo {
 	}
 }
 
-func (r *CommentsRepo) ReadCountOfCommentsToProduct(ctx context.Context, userID, productID uuid.UUID) (int, error) {
+func (r *CommentsRepo) ReadCountOfCommentsToProduct(ctx context.Context, userID, productID uuid.UUID) (int, models.Comment, error) {
 	countComments := 0
+	comment := models.Comment{}
 	err := r.db.QueryRow(ctx, countOfCommentsToProduct, userID, productID).
-		Scan(&countComments)
+		Scan(&countComments, &comment.ID, &comment.ProductID, &comment.Pros, &comment.Cons,
+			&comment.Comment, &comment.Rating, &comment.UserName, &comment.CreationDate)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return countComments, ErrCommentNotFound
+			return countComments, models.Comment{}, ErrCommentNotFound
 		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
-		return countComments, err
+		return countComments, models.Comment{}, err
 	}
 
-	return countComments, nil
+	return countComments, comment, nil
 }
 
-func (r *CommentsRepo) MakeComment(ctx context.Context, commentPayload models.CommentPayload) error {
+func (r *CommentsRepo) MakeComment(ctx context.Context, commentPayload models.CommentPayload) (models.Comment, error) {
 	commentID := uuid.NewV4()
 	_, err := r.db.Exec(ctx, createComment, commentID,
 		commentPayload.ProductID,
@@ -70,10 +84,19 @@ func (r *CommentsRepo) MakeComment(ctx context.Context, commentPayload models.Co
 	if err != nil {
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
-		return err
+		return models.Comment{}, err
 	}
 
-	return nil
+	comment := models.Comment{}
+	err = r.db.QueryRow(ctx, getComment, commentPayload.UserID, commentPayload.ProductID).
+		Scan(&comment.ID, &comment.ProductID, &comment.Pros, &comment.Cons,
+			&comment.Comment, &comment.Rating, &comment.UserName, &comment.CreationDate)
+	if err != nil {
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
+
+		return models.Comment{}, err
+	}
+	return comment, nil
 }
 
 func (r *CommentsRepo) ReadProductComments(ctx context.Context, productID uuid.UUID) ([]models.Comment, error) {
@@ -96,6 +119,8 @@ func (r *CommentsRepo) ReadProductComments(ctx context.Context, productID uuid.U
 			&comment.Cons,
 			&comment.Comment,
 			&comment.Rating,
+			&comment.UserName,
+			&comment.CreationDate,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
