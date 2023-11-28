@@ -4,6 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"log/slog"
 	"net/http"
+	"regexp"
 	"strconv"
 	"time"
 
@@ -12,6 +13,10 @@ import (
 )
 
 const RequestIDCtx = "x-request-id"
+
+var (
+	UUIDRegExp = regexp.MustCompile(`[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}`)
+)
 
 type Config struct {
 	DefaultLevel     slog.Level
@@ -93,25 +98,27 @@ func NewWithConfig(mt *metrics.MetricHTTP, log *slog.Logger, config Config) mux.
 				attributes = append(attributes, slog.String("request-id", requestID))
 			}
 			// r.Response.Status
+			bytesUrl := []byte(r.URL.Path)
+			urlWithCuttedUUID := UUIDRegExp.ReplaceAll(bytesUrl, []byte("<uuid>"))
 
 			switch {
 			case status >= http.StatusInternalServerError:
-				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path, r.Method)
+				mt.IncreaseErr(strconv.Itoa(status), string(urlWithCuttedUUID), r.Method)
 				log.LogAttrs(r.Context(), config.ServerErrorLevel, "Server Error", attributes...)
 			case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
-				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path, r.Method)
+				mt.IncreaseErr(strconv.Itoa(status), string(urlWithCuttedUUID), r.Method)
 				log.LogAttrs(r.Context(), config.ClientErrorLevel, "Client Error", attributes...)
 			case status >= http.StatusMultipleChoices && status < http.StatusBadRequest:
-				mt.IncreaseErr(strconv.Itoa(status), r.URL.Path, r.Method)
+				mt.IncreaseErr(strconv.Itoa(status), string(urlWithCuttedUUID), r.Method)
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Redirection", attributes...)
 			case status >= http.StatusOK && status < http.StatusMultipleChoices:
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Success", attributes...)
 			default:
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Informational", attributes...)
 			}
-			mt.IncreaseHits(r.URL.Path, r.Method)
-			mt.AddDurationToHistogram(r.URL.Path, r.Method, duration)
-			mt.AddDurationToSummary(strconv.Itoa(status), r.URL.Path, r.Method, duration)
+			mt.IncreaseHits(string(urlWithCuttedUUID), r.Method)
+			mt.AddDurationToHistogram(string(urlWithCuttedUUID), r.Method, duration)
+			mt.AddDurationToSummary(strconv.Itoa(status), string(urlWithCuttedUUID), r.Method, duration)
 		})
 	}
 }
