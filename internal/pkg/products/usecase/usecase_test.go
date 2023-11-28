@@ -1,6 +1,5 @@
 package usecase
 
-/*
 import (
 	"context"
 	"fmt"
@@ -93,7 +92,24 @@ func TestProductsUsecase_GetProducts(t *testing.T) {
 		{
 			name: "TestProductsUsecase_GetProducts good",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1), gomock.Any(), gomock.Any()).Return([]models.Product{}, nil)
+				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1)).Return([]models.Product{}, nil)
+			},
+			args:    args{context.Background(), 1, 1, "", ""},
+			want:    []models.Product{},
+			wantErr: false,
+		},
+		{
+			name: "TestProductsUsecase_GetProducts bad",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1)).Return(nil, fmt.Errorf("dummyErr"))
+			},
+			args:    args{context.Background(), 1, 1, "", ""},
+			wantErr: true,
+		},
+		{
+			name: "TestProductsUsecase_GetProducts good",
+			prepare: func(f *fields) {
+				f.repo.EXPECT().ReadProductsByRatingPrice(gomock.Any(), int64(1), int64(1), "DESC", "DESC").Return([]models.Product{}, nil)
 			},
 			args:    args{context.Background(), 1, 1, "DESC", "DESC"},
 			want:    []models.Product{},
@@ -102,7 +118,7 @@ func TestProductsUsecase_GetProducts(t *testing.T) {
 		{
 			name: "TestProductsUsecase_GetProducts bad",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("dummyErr"))
+				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1)).Return(nil, fmt.Errorf("dummyErr"))
 			},
 			args:    args{context.Background(), 1, 1, "DESC", "DESC"},
 			wantErr: true,
@@ -155,7 +171,7 @@ func TestProductsUsecase_GetCategory(t *testing.T) {
 		{
 			name: "TestProductsUsecase_GetCategory good",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().ReadCategory(gomock.Any(), 1, int64(1), int64(1), gomock.Any(), gomock.Any()).Return([]models.Product{}, nil)
+				f.repo.EXPECT().ReadProductsCategoryByRatingPrice(gomock.Any(), 1, int64(1), int64(1), "DESC", "DESC").Return([]models.Product{}, nil)
 			},
 			args:    args{context.Background(), 1, 1, 1, "DESC", "DESC"},
 			want:    []models.Product{},
@@ -164,7 +180,7 @@ func TestProductsUsecase_GetCategory(t *testing.T) {
 		{
 			name: "TestProductsUsecase_GetCategory bad",
 			prepare: func(f *fields) {
-				f.repo.EXPECT().ReadCategory(gomock.Any(), 1, int64(1), int64(1), gomock.Any(), gomock.Any()).Return(nil, fmt.Errorf("dummyErr"))
+				f.repo.EXPECT().ReadProductsCategoryByRatingPrice(gomock.Any(), 1, int64(1), int64(1), "DESC", "DESC").Return(nil, fmt.Errorf("dummyErr"))
 			},
 			args:    args{context.Background(), 1, 1, 1, "DESC", "DESC"},
 			wantErr: true,
@@ -193,4 +209,3 @@ func TestProductsUsecase_GetCategory(t *testing.T) {
 		})
 	}
 }
-*/

@@ -105,7 +105,7 @@ func (m *MockOrderRepo) EXPECT() *MockOrderRepoMockRecorder {
 }
 
 // CreateOrder mocks base method.
-func (m *MockOrderRepo) CreateOrder(arg0 context.Context, arg1 models.Cart, arg2, arg3 uuid.UUID, arg4 int) (models.Order, error) {
+func (m *MockOrderRepo) CreateOrder(arg0 context.Context, arg1 models.Cart, arg2, arg3 uuid.UUID, arg4 int64) (models.Order, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateOrder", arg0, arg1, arg2, arg3, arg4)
 	ret0, _ := ret[0].(models.Order)
