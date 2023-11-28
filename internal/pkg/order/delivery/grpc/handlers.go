@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 	"log/slog"
 
 	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
@@ -35,12 +36,12 @@ func (h GrpcOrderHandler) CreateOrder(ctx context.Context, in *gen.CreateOrderRe
 	userId, err := uuid.FromString(in.Id)
 	if err != nil {
 		h.log.Error("failed to get uuid from string", sl.Err(err))
-		return &gen.CreateOrderResponse{Error: err.Error()}, nil
+		return &gen.CreateOrderResponse{Error: err.Error()}, metricsmw.ClientError
 	}
 	order, err := h.uc.CreateOrder(ctx, userId)
 	if err != nil {
 		h.log.Error("failed in h.uc.CreateOrder", sl.Err(err))
-		return &gen.CreateOrderResponse{Error: err.Error()}, nil
+		return &gen.CreateOrderResponse{Error: err.Error()}, metricsmw.ServerError
 	}
 
 	orderResponse := gen.CreateOrderResponse{
@@ -92,12 +93,12 @@ func (h GrpcOrderHandler) GetOrders(ctx context.Context, in *gen.OrdersRequest) 
 	userId, err := uuid.FromString(in.Id)
 	if err != nil {
 		h.log.Error("failed to get uuid from string", sl.Err(err))
-		return &gen.OrdersResponse{Error: err.Error()}, nil
+		return &gen.OrdersResponse{Error: err.Error()}, metricsmw.ClientError
 	}
 	orders, err := h.uc.GetOrders(ctx, userId)
 	if err != nil {
 		h.log.Error("failed in h.uc.GetOrders", sl.Err(err))
-		return &gen.OrdersResponse{Error: err.Error()}, nil
+		return &gen.OrdersResponse{Error: err.Error()}, metricsmw.ServerError
 	}
 
 	var ordersResponse gen.OrdersResponse

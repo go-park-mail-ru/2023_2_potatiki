@@ -12,7 +12,7 @@ const (
 
 type MetricerGRPC interface {
 	IncreaseHits(string)
-	IncreaseErr(string)
+	IncreaseErr(string, string)
 	AddDurationToHistogram(string, time.Duration)
 	AddDurationToSummary(string, string, time.Duration)
 }
@@ -26,12 +26,6 @@ type MetricGRPC struct {
 }
 
 func NewMetricGRPC(serverName string) *MetricGRPC {
-	//labelGauge := []string{"path", "service_name", "method", "full_time"}
-	//gauge := prometheus.NewGaugeVec(prometheus.GaugeOpts{
-	//	Name: serverName,
-	//	Help: fmt.Sprintf("SLO for service %s", serverName),
-	//}, labelGauge)
-	//prometheus.MustRegister(gauge)
 
 	labelHits := []string{"path", "service_name"}
 	totalHits := prometheus.NewCounterVec(prometheus.CounterOpts{
@@ -40,7 +34,7 @@ func NewMetricGRPC(serverName string) *MetricGRPC {
 	}, labelHits)
 	prometheus.MustRegister(totalHits)
 
-	labelErrors := []string{"path", "service_name"}
+	labelErrors := []string{"status_code", "path", "service_name"}
 	totalErrors := prometheus.NewCounterVec(prometheus.CounterOpts{
 		Name: "http_requests_errors_total",
 		Help: "number_of_all_errors",
@@ -81,10 +75,10 @@ func (m *MetricGRPC) IncreaseHits(path string) {
 	m.totalHits.WithLabelValues(path, m.name).Inc()
 }
 
-func (m *MetricGRPC) IncreaseErr(path string) {
+func (m *MetricGRPC) IncreaseErr(statusCode, path string) {
 	// m.totalHits.WithLabelValues(path).Inc()
 
-	m.totalErrors.WithLabelValues(path, m.name).Inc()
+	m.totalErrors.WithLabelValues(statusCode, path, m.name).Inc()
 }
 
 func (m *MetricGRPC) AddDurationToHistogram(path string, duration time.Duration) {

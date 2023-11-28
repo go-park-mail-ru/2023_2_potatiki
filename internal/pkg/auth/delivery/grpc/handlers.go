@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 	"log/slog"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
@@ -11,8 +12,6 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
 	uuid "github.com/satori/go.uuid"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 //go:generate mockgen -source=./generated/auth_grpc.pb.go -destination=../../mocks/auth_grpc.go -package=mock
@@ -45,7 +44,7 @@ func (h GrpcAuthHandler) SignIn(ctx context.Context, in *gen.SignInRequest) (*ge
 	if err != nil {
 		h.log.Error("failed in uc.SignIn", sl.Err(err))
 
-		return &gen.SignInResponse{}, status.Error(codes.Internal, "failed in uc.SignIn")
+		return &gen.SignInResponse{}, metricsmw.ServerError
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 
@@ -76,7 +75,7 @@ func (h GrpcAuthHandler) SignUp(ctx context.Context, in *gen.SignUpRequest) (*ge
 	profile, token, expires, err := h.uc.SignUp(ctx, &userSignUp)
 	if err != nil {
 		h.log.Error("failed in uc.SignUp", sl.Err(err))
-		return &gen.SignUpResponse{}, status.Error(codes.Internal, "failed in uc.SignUp")
+		return &gen.SignUpResponse{}, metricsmw.ServerError
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 
@@ -102,13 +101,13 @@ func (h GrpcAuthHandler) CheckAuth(ctx context.Context, in *gen.CheckAuthRequst)
 	userID, err := uuid.FromString(in.ID)
 	if err != nil {
 		h.log.Error("failed to get uuid from string", sl.Err(err))
-		return &gen.CheckAuthResponse{}, status.Error(codes.InvalidArgument, "invalid ID, fail to cast uuid")
+		return &gen.CheckAuthResponse{}, metricsmw.ClientError
 	}
 
 	profile, err := h.uc.CheckAuth(ctx, userID)
 	if err != nil {
 		h.log.Error("failed in uc.CheckAuth", sl.Err(err))
-		return &gen.CheckAuthResponse{}, status.Error(codes.Internal, "failed in uc.CheckAuth")
+		return &gen.CheckAuthResponse{}, metricsmw.ServerError
 	}
 	h.log.Info("got profile", slog.Any("profile", profile.Id))
 

@@ -2,6 +2,7 @@ package grpc
 
 import (
 	"context"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 	"log/slog"
 
 	uuid "github.com/satori/go.uuid"
@@ -11,8 +12,6 @@ import (
 	generatedProduct "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 //go:generate mockgen -source=./generated/products_grpc.pb.go -destination=../../mocks/products_grpc.go -package=mock
@@ -40,13 +39,13 @@ func (h GrpcProductsHandler) GetProduct(ctx context.Context,
 	id, err := uuid.FromString(in.Id)
 	if err != nil {
 		h.log.Error("failed to get uuid from string", sl.Err(err))
-		return nil, status.Error(codes.InvalidArgument, "invalid ID, fail to cast uuid")
+		return nil, metricsmw.ClientError
 	}
 
 	product, err := h.uc.GetProduct(ctx, id)
 	if err != nil {
 		h.log.Error("failed to get product", sl.Err(err))
-		return nil, status.Error(codes.Internal, "failed to get product")
+		return nil, metricsmw.ServerError
 	}
 
 	gproduct := &gmodels.Product{
@@ -75,7 +74,7 @@ func (h GrpcProductsHandler) GetProducts(ctx context.Context,
 	products, err := h.uc.GetProducts(ctx, in.Paging, in.Count, in.RatingBy, in.PriceBy)
 	if err != nil {
 		h.log.Error("failed to get products", sl.Err(err))
-		return nil, status.Error(codes.Internal, "failed to get products")
+		return nil, metricsmw.ServerError
 	}
 
 	gproducts := make([]*gmodels.Product, len(products))
@@ -107,7 +106,7 @@ func (h GrpcProductsHandler) GetCategory(ctx context.Context,
 	products, err := h.uc.GetCategory(ctx, int(in.Id), in.Paging, in.Count, in.RatingBy, in.PriceBy)
 	if err != nil {
 		h.log.Error("failed in h.uc.GetCategory", sl.Err(err))
-		return nil, status.Error(codes.Internal, "failed to h.uc.GetCategory")
+		return nil, metricsmw.ServerError
 	}
 
 	gproducts := make([]*gmodels.Product, len(products))
