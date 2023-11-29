@@ -38,6 +38,27 @@ func TestSearchRepo_ReadProductsByName(t *testing.T) {
 			},
 			err: nil,
 		},
+		{
+			name: "UnSuccessfullReadProductsByName",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(
+					gomock.Any(),
+					getProductsByName,
+					gomock.Any(),
+				).Return(pgxRows, pgx.ErrNoRows)
+			},
+			columns: []string{
+				"id",
+				"name",
+				"description",
+				"price",
+				"imgsrc",
+				"rating",
+				"category_id",
+				"category_name",
+			},
+			err: ErrProductNotFound,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
