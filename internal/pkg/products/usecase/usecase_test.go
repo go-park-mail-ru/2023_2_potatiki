@@ -120,7 +120,7 @@ func TestProductsUsecase_GetProducts(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repo.EXPECT().ReadProducts(gomock.Any(), int64(1), int64(1)).Return(nil, fmt.Errorf("dummyErr"))
 			},
-			args:    args{context.Background(), 1, 1, "DESC", "DESC"},
+			args:    args{context.Background(), 1, 1, "", ""},
 			wantErr: true,
 		},
 	}
