@@ -1,9 +1,5 @@
 package models
 
-import (
-	"log/slog"
-)
-
 type Category struct {
 	Id     int64  `json:"categoryId"`
 	Name   string `json:"categoryName"`
@@ -16,10 +12,10 @@ type CategoryBranch [MAX_LEVEL_CATEGORY]string
 
 type CategoryTree []Category
 
-func (c *Category) LogValue() slog.Value {
-	return slog.GroupValue(
-		//slog.Int64("id", c.Id),
-		slog.String("name", c.Name),
-		//slog.Int64("parent", c.Parent.String()),
-	)
-}
+//func (c *Category) LogValue() slog.Value {
+//	return slog.GroupValue(
+//		//slog.Int64("id", c.Id),
+//		slog.String("name", c.Name),
+//		//slog.Int64("parent", c.Parent.String()),
+//	)
+//}

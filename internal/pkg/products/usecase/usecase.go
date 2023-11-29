@@ -36,8 +36,21 @@ func (uc *ProductsUsecase) GetProduct(ctx context.Context, id uuid.UUID) (models
 	return product, nil
 }
 
-func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging int64, count int64) ([]models.Product, error) {
-	productsSlice, err := uc.repo.ReadProducts(ctx, paging, count)
+func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging, count int64, ratingBy, priceBy string) (
+	[]models.Product, error) {
+
+	var err error
+	productsSlice := []models.Product{}
+	if (ratingBy == "DESC" || ratingBy == "ASC") && (priceBy == "DESC" || priceBy == "ASC") {
+		productsSlice, err = uc.repo.ReadProductsByRatingPrice(ctx, paging, count, ratingBy, priceBy)
+	} else if ratingBy == "DESC" || ratingBy == "ASC" {
+		productsSlice, err = uc.repo.ReadProductsByRating(ctx, paging, count, ratingBy)
+	} else if priceBy == "DESC" || priceBy == "ASC" {
+		productsSlice, err = uc.repo.ReadProductsByPrice(ctx, paging, count, priceBy)
+	} else {
+		productsSlice, err = uc.repo.ReadProducts(ctx, paging, count)
+	}
+
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.ReadProducts: %w", err)
 
@@ -47,8 +60,21 @@ func (uc *ProductsUsecase) GetProducts(ctx context.Context, paging int64, count 
 	return productsSlice, nil
 }
 
-func (uc *ProductsUsecase) GetCategory(ctx context.Context, id int, paging, count int64) ([]models.Product, error) {
-	productsSlice, err := uc.repo.ReadCategory(ctx, id, paging, count)
+func (uc *ProductsUsecase) GetCategory(ctx context.Context, id int, paging, count int64, ratingBy, priceBy string) (
+	[]models.Product, error) {
+
+	var err error
+	productsSlice := []models.Product{}
+	if (ratingBy == "DESC" || ratingBy == "ASC") && (priceBy == "DESC" || priceBy == "ASC") {
+		productsSlice, err = uc.repo.ReadProductsCategoryByRatingPrice(ctx, id, paging, count, ratingBy, priceBy)
+	} else if ratingBy == "DESC" || ratingBy == "ASC" {
+		productsSlice, err = uc.repo.ReadProductsCategoryByRating(ctx, id, paging, count, ratingBy)
+	} else if priceBy == "DESC" || priceBy == "ASC" {
+		productsSlice, err = uc.repo.ReadProductsCategoryByPrice(ctx, id, paging, count, priceBy)
+	} else {
+		productsSlice, err = uc.repo.ReadProductsCategory(ctx, id, paging, count)
+	}
+
 	if err != nil {
 		err = fmt.Errorf("error happened in repo.GetCategory: %w", err)
 

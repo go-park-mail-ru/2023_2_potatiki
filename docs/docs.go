@@ -38,7 +38,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/models.AddressInfo"
+                            "$ref": "#/definitions/models.AddressPayload"
                         }
                     }
                 ],
@@ -593,6 +593,99 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/comments/create": {
+            "post": {
+                "description": "Create Comment to product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "CreateComment",
+                "parameters": [
+                    {
+                        "description": "cart info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CommentPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comment created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "406": {
+                        "description": "Comment is invalid"
+                    },
+                    "413": {
+                        "description": "User already has commented this product",
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/comments/get_all": {
+            "get": {
+                "description": "Get product comments",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Comments"
+                ],
+                "summary": "GetProductComments",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product ID",
+                        "name": "product",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Comments array",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Comment"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
         "/api/order/create": {
             "post": {
                 "description": "Create Order using profile ID from cookies",
@@ -734,6 +827,18 @@ const docTemplate = `{
                         "name": "count",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "(Use ASC/DESC and their combinations) Sort products by rating",
+                        "name": "ratingBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "(Use ASC/DESC and their combinations) Sort products by price",
+                        "name": "priceBy",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -784,6 +889,18 @@ const docTemplate = `{
                         "name": "count",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "(Use ASC/DESC and their combinations) Sort products by rating",
+                        "name": "ratingBy",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "(Use ASC/DESC and their combinations) Sort products by price",
+                        "name": "priceBy",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -978,6 +1095,50 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/search/": {
+            "get": {
+                "description": "Search products by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Search"
+                ],
+                "summary": "SearchProducts",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Search products by name",
+                        "name": "product",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Products array",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Product"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.Response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -1012,28 +1173,32 @@ const docTemplate = `{
                 }
             }
         },
-        "models.AddressInfo": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string"
-                },
-                "flat": {
-                    "type": "string"
-                },
-                "house": {
-                    "type": "string"
-                },
-                "street": {
-                    "type": "string"
-                }
-            }
-        },
         "models.AddressMakeCurrent": {
             "type": "object",
             "properties": {
                 "addressId": {
                     "type": "string"
+                }
+            }
+        },
+        "models.AddressPayload": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "flat": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "house": {
+                    "type": "string",
+                    "maxLength": 32
+                },
+                "street": {
+                    "type": "string",
+                    "maxLength": 32
                 }
             }
         },
@@ -1058,6 +1223,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "categoryParent": {
+                    "type": "integer"
+                },
+                "countComments": {
                     "type": "integer"
                 },
                 "description": {
@@ -1127,6 +1295,59 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Comment": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string"
+                },
+                "cons": {
+                    "type": "string"
+                },
+                "creationDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "productId": {
+                    "type": "string"
+                },
+                "pros": {
+                    "type": "string"
+                },
+                "rating": {
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.CommentPayload": {
+            "type": "object",
+            "properties": {
+                "comment": {
+                    "type": "string",
+                    "maxLength": 400
+                },
+                "cons": {
+                    "type": "string",
+                    "maxLength": 400
+                },
+                "productId": {
+                    "type": "string"
+                },
+                "pros": {
+                    "type": "string",
+                    "maxLength": 400
+                },
+                "rating": {
+                    "type": "integer",
+                    "minimum": 1
+                }
+            }
+        },
         "models.Order": {
             "type": "object",
             "properties": {
@@ -1174,6 +1395,9 @@ const docTemplate = `{
                 "categoryParent": {
                     "type": "integer"
                 },
+                "countComments": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1207,6 +1431,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "categoryParent": {
+                    "type": "integer"
+                },
+                "countComments": {
                     "type": "integer"
                 },
                 "description": {

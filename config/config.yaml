@@ -7,3 +7,4 @@ authJwt:
   accessExpirationTime: 6h
 csrfJwt:
   accessExpirationTime: 6h
+  

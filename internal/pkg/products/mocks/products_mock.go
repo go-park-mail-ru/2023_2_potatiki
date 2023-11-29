@@ -37,18 +37,18 @@ func (m *MockProductsUsecase) EXPECT() *MockProductsUsecaseMockRecorder {
 }
 
 // GetCategory mocks base method.
-func (m *MockProductsUsecase) GetCategory(arg0 context.Context, arg1 int, arg2, arg3 int64) ([]models.Product, error) {
+func (m *MockProductsUsecase) GetCategory(arg0 context.Context, arg1 int, arg2, arg3 int64, arg4, arg5 string) ([]models.Product, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCategory", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "GetCategory", arg0, arg1, arg2, arg3, arg4, arg5)
 	ret0, _ := ret[0].([]models.Product)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetCategory indicates an expected call of GetCategory.
-func (mr *MockProductsUsecaseMockRecorder) GetCategory(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+func (mr *MockProductsUsecaseMockRecorder) GetCategory(arg0, arg1, arg2, arg3, arg4, arg5 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategory", reflect.TypeOf((*MockProductsUsecase)(nil).GetCategory), arg0, arg1, arg2, arg3)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategory", reflect.TypeOf((*MockProductsUsecase)(nil).GetCategory), arg0, arg1, arg2, arg3, arg4, arg5)
 }
 
 // GetProduct mocks base method.
@@ -67,18 +67,18 @@ func (mr *MockProductsUsecaseMockRecorder) GetProduct(arg0, arg1 interface{}) *g
 }
 
 // GetProducts mocks base method.
-func (m *MockProductsUsecase) GetProducts(arg0 context.Context, arg1, arg2 int64) ([]models.Product, error) {
+func (m *MockProductsUsecase) GetProducts(arg0 context.Context, arg1, arg2 int64, arg3, arg4 string) ([]models.Product, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetProducts", arg0, arg1, arg2)
+	ret := m.ctrl.Call(m, "GetProducts", arg0, arg1, arg2, arg3, arg4)
 	ret0, _ := ret[0].([]models.Product)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // GetProducts indicates an expected call of GetProducts.
-func (mr *MockProductsUsecaseMockRecorder) GetProducts(arg0, arg1, arg2 interface{}) *gomock.Call {
+func (mr *MockProductsUsecaseMockRecorder) GetProducts(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProducts", reflect.TypeOf((*MockProductsUsecase)(nil).GetProducts), arg0, arg1, arg2)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetProducts", reflect.TypeOf((*MockProductsUsecase)(nil).GetProducts), arg0, arg1, arg2, arg3, arg4)
 }
 
 // MockProductsRepo is a mock of ProductsRepo interface.
@@ -102,21 +102,6 @@ func NewMockProductsRepo(ctrl *gomock.Controller) *MockProductsRepo {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockProductsRepo) EXPECT() *MockProductsRepoMockRecorder {
 	return m.recorder
-}
-
-// ReadCategory mocks base method.
-func (m *MockProductsRepo) ReadCategory(arg0 context.Context, arg1 int, arg2, arg3 int64) ([]models.Product, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadCategory", arg0, arg1, arg2, arg3)
-	ret0, _ := ret[0].([]models.Product)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadCategory indicates an expected call of ReadCategory.
-func (mr *MockProductsRepoMockRecorder) ReadCategory(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadCategory", reflect.TypeOf((*MockProductsRepo)(nil).ReadCategory), arg0, arg1, arg2, arg3)
 }
 
 // ReadProduct mocks base method.
@@ -147,4 +132,109 @@ func (m *MockProductsRepo) ReadProducts(arg0 context.Context, arg1, arg2 int64) 
 func (mr *MockProductsRepoMockRecorder) ReadProducts(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProducts", reflect.TypeOf((*MockProductsRepo)(nil).ReadProducts), arg0, arg1, arg2)
+}
+
+// ReadProductsByPrice mocks base method.
+func (m *MockProductsRepo) ReadProductsByPrice(arg0 context.Context, arg1, arg2 int64, arg3 string) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadProductsByPrice", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadProductsByPrice indicates an expected call of ReadProductsByPrice.
+func (mr *MockProductsRepoMockRecorder) ReadProductsByPrice(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsByPrice", reflect.TypeOf((*MockProductsRepo)(nil).ReadProductsByPrice), arg0, arg1, arg2, arg3)
+}
+
+// ReadProductsByRating mocks base method.
+func (m *MockProductsRepo) ReadProductsByRating(arg0 context.Context, arg1, arg2 int64, arg3 string) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadProductsByRating", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadProductsByRating indicates an expected call of ReadProductsByRating.
+func (mr *MockProductsRepoMockRecorder) ReadProductsByRating(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsByRating", reflect.TypeOf((*MockProductsRepo)(nil).ReadProductsByRating), arg0, arg1, arg2, arg3)
+}
+
+// ReadProductsByRatingPrice mocks base method.
+func (m *MockProductsRepo) ReadProductsByRatingPrice(arg0 context.Context, arg1, arg2 int64, arg3, arg4 string) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadProductsByRatingPrice", arg0, arg1, arg2, arg3, arg4)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadProductsByRatingPrice indicates an expected call of ReadProductsByRatingPrice.
+func (mr *MockProductsRepoMockRecorder) ReadProductsByRatingPrice(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsByRatingPrice", reflect.TypeOf((*MockProductsRepo)(nil).ReadProductsByRatingPrice), arg0, arg1, arg2, arg3, arg4)
+}
+
+// ReadProductsCategory mocks base method.
+func (m *MockProductsRepo) ReadProductsCategory(arg0 context.Context, arg1 int, arg2, arg3 int64) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadProductsCategory", arg0, arg1, arg2, arg3)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadProductsCategory indicates an expected call of ReadProductsCategory.
+func (mr *MockProductsRepoMockRecorder) ReadProductsCategory(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsCategory", reflect.TypeOf((*MockProductsRepo)(nil).ReadProductsCategory), arg0, arg1, arg2, arg3)
+}
+
+// ReadProductsCategoryByPrice mocks base method.
+func (m *MockProductsRepo) ReadProductsCategoryByPrice(arg0 context.Context, arg1 int, arg2, arg3 int64, arg4 string) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadProductsCategoryByPrice", arg0, arg1, arg2, arg3, arg4)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadProductsCategoryByPrice indicates an expected call of ReadProductsCategoryByPrice.
+func (mr *MockProductsRepoMockRecorder) ReadProductsCategoryByPrice(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsCategoryByPrice", reflect.TypeOf((*MockProductsRepo)(nil).ReadProductsCategoryByPrice), arg0, arg1, arg2, arg3, arg4)
+}
+
+// ReadProductsCategoryByRating mocks base method.
+func (m *MockProductsRepo) ReadProductsCategoryByRating(arg0 context.Context, arg1 int, arg2, arg3 int64, arg4 string) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadProductsCategoryByRating", arg0, arg1, arg2, arg3, arg4)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadProductsCategoryByRating indicates an expected call of ReadProductsCategoryByRating.
+func (mr *MockProductsRepoMockRecorder) ReadProductsCategoryByRating(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsCategoryByRating", reflect.TypeOf((*MockProductsRepo)(nil).ReadProductsCategoryByRating), arg0, arg1, arg2, arg3, arg4)
+}
+
+// ReadProductsCategoryByRatingPrice mocks base method.
+func (m *MockProductsRepo) ReadProductsCategoryByRatingPrice(arg0 context.Context, arg1 int, arg2, arg3 int64, arg4, arg5 string) ([]models.Product, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadProductsCategoryByRatingPrice", arg0, arg1, arg2, arg3, arg4, arg5)
+	ret0, _ := ret[0].([]models.Product)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ReadProductsCategoryByRatingPrice indicates an expected call of ReadProductsCategoryByRatingPrice.
+func (mr *MockProductsRepoMockRecorder) ReadProductsCategoryByRatingPrice(arg0, arg1, arg2, arg3, arg4, arg5 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsCategoryByRatingPrice", reflect.TypeOf((*MockProductsRepo)(nil).ReadProductsCategoryByRatingPrice), arg0, arg1, arg2, arg3, arg4, arg5)
 }

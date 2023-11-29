@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
 )
 
@@ -16,7 +17,8 @@ func TestNew(t *testing.T) {
 
 	res := httptest.NewRecorder()
 	handler(res, req)
+	mt := metrics.NewMetricHTTP()
 
-	mw := New(logger.Set("local", os.Stdout))
+	mw := New(mt, logger.Set("local", os.Stdout))
 	mw(http.HandlerFunc(handler)).ServeHTTP(res, req)
 }

@@ -92,7 +92,6 @@ func TestCartUsecase_GetCart(t *testing.T) {
 			}
 		})
 	}
-
 }
 
 func TestCartUsecase_AddProduct(t *testing.T) {

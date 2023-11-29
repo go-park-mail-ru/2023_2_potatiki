@@ -19,20 +19,24 @@ definitions:
       addressId:
         type: string
     type: object
-  models.AddressInfo:
-    properties:
-      city:
-        type: string
-      flat:
-        type: string
-      house:
-        type: string
-      street:
-        type: string
-    type: object
   models.AddressMakeCurrent:
     properties:
       addressId:
+        type: string
+    type: object
+  models.AddressPayload:
+    properties:
+      city:
+        maxLength: 32
+        type: string
+      flat:
+        maxLength: 32
+        type: string
+      house:
+        maxLength: 32
+        type: string
+      street:
+        maxLength: 32
         type: string
     type: object
   models.Cart:
@@ -49,6 +53,8 @@ definitions:
       categoryName:
         type: string
       categoryParent:
+        type: integer
+      countComments:
         type: integer
       description:
         type: string
@@ -93,6 +99,42 @@ definitions:
       categoryParent:
         type: integer
     type: object
+  models.Comment:
+    properties:
+      comment:
+        type: string
+      cons:
+        type: string
+      creationDate:
+        type: string
+      id:
+        type: string
+      productId:
+        type: string
+      pros:
+        type: string
+      rating:
+        type: integer
+      userName:
+        type: string
+    type: object
+  models.CommentPayload:
+    properties:
+      comment:
+        maxLength: 400
+        type: string
+      cons:
+        maxLength: 400
+        type: string
+      productId:
+        type: string
+      pros:
+        maxLength: 400
+        type: string
+      rating:
+        minimum: 1
+        type: integer
+    type: object
   models.Order:
     properties:
       addressId:
@@ -124,6 +166,8 @@ definitions:
         type: string
       categoryParent:
         type: integer
+      countComments:
+        type: integer
       description:
         type: string
       img:
@@ -146,6 +190,8 @@ definitions:
       categoryName:
         type: string
       categoryParent:
+        type: integer
+      countComments:
         type: integer
       description:
         type: string
@@ -244,7 +290,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/models.AddressInfo'
+          $ref: '#/definitions/models.AddressPayload'
       produces:
       - application/json
       responses:
@@ -607,6 +653,67 @@ paths:
       summary: Category
       tags:
       - Category
+  /api/comments/create:
+    post:
+      consumes:
+      - application/json
+      description: Create Comment to product
+      parameters:
+      - description: cart info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.CommentPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comment created
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "401":
+          description: User unauthorized
+        "406":
+          description: Comment is invalid
+        "413":
+          description: User already has commented this product
+          schema:
+            $ref: '#/definitions/models.Comment'
+        "429":
+          description: Too Many Requests
+      summary: CreateComment
+      tags:
+      - Comments
+  /api/comments/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get product comments
+      parameters:
+      - description: Product ID
+        in: query
+        name: product
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Comments array
+          schema:
+            items:
+              $ref: '#/definitions/models.Comment'
+            type: array
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.Response'
+        "429":
+          description: Too Many Requests
+      summary: GetProductComments
+      tags:
+      - Comments
   /api/order/create:
     post:
       consumes:
@@ -725,6 +832,14 @@ paths:
         name: count
         required: true
         type: integer
+      - description: (Use ASC/DESC and their combinations) Sort products by rating
+        in: query
+        name: ratingBy
+        type: string
+      - description: (Use ASC/DESC and their combinations) Sort products by price
+        in: query
+        name: priceBy
+        type: string
       produces:
       - application/json
       responses:
@@ -758,6 +873,14 @@ paths:
         name: count
         required: true
         type: integer
+      - description: (Use ASC/DESC and their combinations) Sort products by rating
+        in: query
+        name: ratingBy
+        type: string
+      - description: (Use ASC/DESC and their combinations) Sort products by price
+        in: query
+        name: priceBy
+        type: string
       produces:
       - application/json
       responses:
@@ -861,4 +984,33 @@ paths:
       summary: UpdatePhoto
       tags:
       - Profile
+  /api/search/:
+    get:
+      consumes:
+      - application/json
+      description: Search products by name
+      parameters:
+      - description: Search products by name
+        in: query
+        name: product
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products array
+          schema:
+            items:
+              $ref: '#/definitions/models.Product'
+            type: array
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.Response'
+        "429":
+          description: Too Many Requests
+      summary: SearchProducts
+      tags:
+      - Search
 swagger: "2.0"

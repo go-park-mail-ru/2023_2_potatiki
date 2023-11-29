@@ -25,5 +25,8 @@ go.work
 *.bin
 *.tmp
 *.log
-*.sh
+
 photos/
+metrics/grafana
+metrics/prometheus
+script.sh

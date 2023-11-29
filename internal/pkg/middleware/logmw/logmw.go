@@ -1,8 +1,11 @@
 package logmw
 
 import (
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"log/slog"
 	"net/http"
+	"regexp"
+	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -10,6 +13,10 @@ import (
 )
 
 const RequestIDCtx = "x-request-id"
+
+var (
+	UUIDRegExp = regexp.MustCompile(`[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}`)
+)
 
 type Config struct {
 	DefaultLevel     slog.Level
@@ -23,8 +30,8 @@ type Config struct {
 //
 // Requests with errors are logged using slog.Error().
 // Requests without errors are logged using slog.Info().
-func New(logger *slog.Logger) mux.MiddlewareFunc {
-	return NewWithConfig(logger, Config{
+func New(mt *metrics.MetricHTTP, logger *slog.Logger) mux.MiddlewareFunc {
+	return NewWithConfig(mt, logger, Config{
 		DefaultLevel:     slog.LevelInfo,
 		ClientErrorLevel: slog.LevelWarn,
 		ServerErrorLevel: slog.LevelError,
@@ -50,10 +57,9 @@ func (r *ResponseWrapper) Write(bytes []byte) (int, error) {
 	return r.ResponseWriter.Write(bytes) //nolint:wrapcheck
 }
 
-func NewWithConfig(log *slog.Logger, config Config) mux.MiddlewareFunc { //nolint:cyclop
+func NewWithConfig(mt *metrics.MetricHTTP, log *slog.Logger, config Config) mux.MiddlewareFunc { //nolint:cyclop
 	return func(next http.Handler) http.Handler { // TODO: del
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			start := time.Now()
 
 			wrapper := &ResponseWrapper{
 				ResponseWriter: w,
@@ -68,7 +74,10 @@ func NewWithConfig(log *slog.Logger, config Config) mux.MiddlewareFunc { //nolin
 
 			// ctx := context.WithValue(r.Context(), "request-id", requestID)
 			r.Header.Set(RequestIDCtx, requestID)
+
+			start := time.Now()
 			next.ServeHTTP(wrapper, r)
+			duration := time.Since(start)
 
 			status := wrapper.Status
 			byteLen := wrapper.bytesLen
@@ -88,19 +97,28 @@ func NewWithConfig(log *slog.Logger, config Config) mux.MiddlewareFunc { //nolin
 			if config.WithRequestID {
 				attributes = append(attributes, slog.String("request-id", requestID))
 			}
+			// r.Response.Status
+			bytesUrl := []byte(r.URL.Path)
+			urlWithCuttedUUID := UUIDRegExp.ReplaceAll(bytesUrl, []byte("<uuid>"))
 
 			switch {
 			case status >= http.StatusInternalServerError:
+				mt.IncreaseErr(strconv.Itoa(status), string(urlWithCuttedUUID), r.Method)
 				log.LogAttrs(r.Context(), config.ServerErrorLevel, "Server Error", attributes...)
 			case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
+				mt.IncreaseErr(strconv.Itoa(status), string(urlWithCuttedUUID), r.Method)
 				log.LogAttrs(r.Context(), config.ClientErrorLevel, "Client Error", attributes...)
 			case status >= http.StatusMultipleChoices && status < http.StatusBadRequest:
+				mt.IncreaseErr(strconv.Itoa(status), string(urlWithCuttedUUID), r.Method)
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Redirection", attributes...)
 			case status >= http.StatusOK && status < http.StatusMultipleChoices:
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Success", attributes...)
 			default:
 				log.LogAttrs(r.Context(), config.DefaultLevel, "Informational", attributes...)
 			}
+			mt.IncreaseHits(string(urlWithCuttedUUID), r.Method)
+			mt.AddDurationToHistogram(string(urlWithCuttedUUID), r.Method, duration)
+			mt.AddDurationToSummary(strconv.Itoa(status), string(urlWithCuttedUUID), r.Method, duration)
 		})
 	}
 }

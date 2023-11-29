@@ -4,12 +4,14 @@ services:
 
   postgres:
     container_name: ${DB_HOST}
-    image: postgres:latest
+    build:
+      context: ./build
+      dockerfile: postgres.Dockerfile # FROM postgres:latest && RUN chmod 777 /usr/share/postgresql/16/tsearch_data
     restart: always
     command: 
       - "postgres"
       - "-c"
-      - "max_connections=5"
+      - "max_connections=10"
       - "-c"
       - "shared_buffers=100MB"
       - "-c"
@@ -45,8 +47,6 @@ services:
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'
-      #- './build/sql/create.sql:/docker-entrypoint-initdb.d/create.sql'
-      #- ./init_uuid.sql:/docker-entrypoint-initdb.d/init_uuid.sql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
       interval: 5s
@@ -100,6 +100,54 @@ services:
     networks:
       - zuzu-network
 
+  zuzu-auth:
+    env_file:
+        - ./.env
+    container_name: ${GRPC_AUTH_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_AUTH_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
+    restart: always
+    expose:
+      - "${GRPC_AUTH_PORT}"
+    volumes:
+      - ./.env:/docker-${GRPC_AUTH_CONTAINER_IP}/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
+
+  zuzu-order:
+    env_file:
+        - ./.env
+    container_name: ${GRPC_ORDER_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_ORDER_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
+    restart: always
+    expose:
+      - "${GRPC_ORDER_PORT}"
+    volumes:
+      - ./.env:/docker-${GRPC_ORDER_CONTAINER_IP}/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
+
+  zuzu-products:
+    env_file:
+        - ./.env
+    container_name: ${GRPC_PRODUCTS_CONTAINER_IP}
+    image: ${REGISTRY}/${GRPC_PRODUCTS_CONTAINER_IP}-web:${GITHUB_SHA_SHORT}
+    restart: always
+    expose:
+      - "${GRPC_PRODUCTS_PORT}"
+    volumes:
+      - ./.env:/docker-${GRPC_PRODUCTS_CONTAINER_IP}/.env
+      - zuzu-logs:/var/lib/zuzu/logs
+    depends_on:
+      - postgres
+    networks:
+      - zuzu-network
+
 volumes:
   zuzu-db-data:
   pgadmin-data:
@@ -108,4 +156,5 @@ volumes:
 
 networks:
   zuzu-network:
+    name: zuzu-network
     driver: bridge

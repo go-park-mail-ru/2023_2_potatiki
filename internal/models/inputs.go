@@ -1,6 +1,9 @@
 package models
 
-import "html"
+import (
+	uuid "github.com/satori/go.uuid"
+	"html"
+)
 
 type SignUpPayload struct {
 	Login    string `json:"login" validate:"required,min=6,max=30"`
@@ -51,4 +54,19 @@ func (b *AddressPayload) Sanitize() {
 	b.Street = html.EscapeString(b.Street)
 	b.House = html.EscapeString(b.House)
 	b.Flat = html.EscapeString(b.Flat)
+}
+
+type CommentPayload struct {
+	UserID    uuid.UUID `json:"-"`
+	ProductID uuid.UUID `json:"productId"`
+	Pros      string    `json:"pros" validate:"omitempty,max=400"`
+	Cons      string    `json:"cons" validate:"omitempty,max=400"`
+	Comment   string    `json:"comment" validate:"omitempty,max=400"`
+	Rating    int       `json:"rating" validate:"gte=1"`
+}
+
+func (b *CommentPayload) Sanitize() {
+	b.Pros = html.EscapeString(b.Pros)
+	b.Cons = html.EscapeString(b.Cons)
+	b.Comment = html.EscapeString(b.Comment)
 }
