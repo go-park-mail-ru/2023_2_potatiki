@@ -58,19 +58,20 @@ func TestOrderRepo_ReadOrderID(t *testing.T) {
 		mockRepoFn func(pool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows)
 		err        error
 		columns    []string
-	}{{
-		name: "SuccessfullReadOrderID",
-		mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
-			mockPool.EXPECT().QueryRow(
-				gomock.Any(),
-				getCurrentOrderID,
-				gomock.Any(),
-			).Return(pgxRows)
-			pgxRows.Next()
+	}{
+		{
+			name: "SuccessfullReadOrderID",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().QueryRow(
+					gomock.Any(),
+					getCurrentOrderID,
+					gomock.Any(),
+				).Return(pgxRows)
+				pgxRows.Next()
+			},
+			columns: []string{"order_id"},
+			err:     nil,
 		},
-		columns: []string{"order_id"},
-		err:     nil,
-	},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -96,35 +97,65 @@ func TestOrderRepo_ReadOrder(t *testing.T) {
 		mockRepoFn func(pool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows)
 		err        error
 		columns    []string
-	}{{
-		name: "SuccessfullReadOrder",
-		mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
-			mockPool.EXPECT().Query(
-				gomock.Any(),
-				getCurrentOrder,
-				gomock.Any(),
-			).Return(pgxRows, nil)
+	}{
+		{
+			name: "SuccessfullReadOrder",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(
+					gomock.Any(),
+					getCurrentOrder,
+					gomock.Any(),
+				).Return(pgxRows, nil)
+			},
+			columns: []string{
+				"product_id",
+				"product_name",
+				"product_description",
+				"product_price",
+				"product_imgsrc",
+				"product_rating",
+				"product_quantity",
+				"category_id",
+				"category_name",
+				"status_id",
+				"address_id",
+				"address_city",
+				"address_street",
+				"address_house",
+				"address_flat",
+				"is_current",
+			},
+			err: nil,
 		},
-		columns: []string{
-			"product_id",
-			"product_name",
-			"product_description",
-			"product_price",
-			"product_imgsrc",
-			"product_rating",
-			"product_quantity",
-			"category_id",
-			"category_name",
-			"status_id",
-			"address_id",
-			"address_city",
-			"address_street",
-			"address_house",
-			"address_flat",
-			"is_current",
+		{
+			name: "UnSuccessfullReadOrder",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(
+					gomock.Any(),
+					getCurrentOrder,
+					gomock.Any(),
+				).Return(pgxRows, pgx.ErrNoRows)
+			},
+			columns: []string{
+				"product_id",
+				"product_name",
+				"product_description",
+				"product_price",
+				"product_imgsrc",
+				"product_rating",
+				"product_quantity",
+				"category_id",
+				"category_name",
+				"status_id",
+				"address_id",
+				"address_city",
+				"address_street",
+				"address_house",
+				"address_flat",
+				"is_current",
+			},
+			err: ErrPoductsInOrderNotFound,
 		},
-		err: nil,
-	},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -167,20 +198,35 @@ func TestOrderRepo_ReadOrdersID(t *testing.T) {
 		mockRepoFn func(pool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows)
 		err        error
 		columns    []string
-	}{{
-		name: "SuccessfullReadOrdersID",
-		mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
-			mockPool.EXPECT().Query(
-				gomock.Any(),
-				getOrdersID,
-				gomock.Any(),
-			).Return(pgxRows, nil)
+	}{
+		{
+			name: "SuccessfullReadOrdersID",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(
+					gomock.Any(),
+					getOrdersID,
+					gomock.Any(),
+				).Return(pgxRows, nil)
+			},
+			columns: []string{
+				"order_id",
+			},
+			err: nil,
 		},
-		columns: []string{
-			"order_id",
+		{
+			name: "UnSuccessfullReadOrdersID",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(
+					gomock.Any(),
+					getOrdersID,
+					gomock.Any(),
+				).Return(pgxRows, pgx.ErrNoRows)
+			},
+			columns: []string{
+				"order_id",
+			},
+			err: ErrOrdersNotFound,
 		},
-		err: nil,
-	},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
