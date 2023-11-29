@@ -54,6 +54,8 @@ definitions:
         type: string
       categoryParent:
         type: integer
+      countComments:
+        type: integer
       description:
         type: string
       img:
@@ -103,6 +105,8 @@ definitions:
         type: string
       cons:
         type: string
+      creationDate:
+        type: string
       id:
         type: string
       productId:
@@ -111,6 +115,8 @@ definitions:
         type: string
       rating:
         type: integer
+      userName:
+        type: string
     type: object
   models.CommentPayload:
     properties:
@@ -160,6 +166,8 @@ definitions:
         type: string
       categoryParent:
         type: integer
+      countComments:
+        type: integer
       description:
         type: string
       img:
@@ -182,6 +190,8 @@ definitions:
       categoryName:
         type: string
       categoryParent:
+        type: integer
+      countComments:
         type: integer
       description:
         type: string
@@ -660,12 +670,16 @@ paths:
       responses:
         "200":
           description: Comment created
+          schema:
+            $ref: '#/definitions/models.Comment'
         "401":
           description: User unauthorized
         "406":
           description: Comment is invalid
         "413":
-          description: User already gas commented this product
+          description: User already has commented this product
+          schema:
+            $ref: '#/definitions/models.Comment'
         "429":
           description: Too Many Requests
       summary: CreateComment

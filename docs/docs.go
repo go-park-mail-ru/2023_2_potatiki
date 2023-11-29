@@ -619,7 +619,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Comment created"
+                        "description": "Comment created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
                     },
                     "401": {
                         "description": "User unauthorized"
@@ -628,7 +631,10 @@ const docTemplate = `{
                         "description": "Comment is invalid"
                     },
                     "413": {
-                        "description": "User already gas commented this product"
+                        "description": "User already has commented this product",
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -1219,6 +1225,9 @@ const docTemplate = `{
                 "categoryParent": {
                     "type": "integer"
                 },
+                "countComments": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1295,6 +1304,9 @@ const docTemplate = `{
                 "cons": {
                     "type": "string"
                 },
+                "creationDate": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1306,6 +1318,9 @@ const docTemplate = `{
                 },
                 "rating": {
                     "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
                 }
             }
         },
@@ -1380,6 +1395,9 @@ const docTemplate = `{
                 "categoryParent": {
                     "type": "integer"
                 },
+                "countComments": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1413,6 +1431,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "categoryParent": {
+                    "type": "integer"
+                },
+                "countComments": {
                     "type": "integer"
                 },
                 "description": {
