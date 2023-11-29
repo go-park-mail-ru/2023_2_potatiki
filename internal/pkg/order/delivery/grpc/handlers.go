@@ -2,8 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 	"log/slog"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 
 	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
@@ -13,6 +14,8 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
 	uuid "github.com/satori/go.uuid"
 )
+
+//go:generate mockgen -source=./gen/order_grpc.pb.go -destination=../../mocks/order_grpc.go -package=mock
 
 type GrpcOrderHandler struct {
 	log *slog.Logger

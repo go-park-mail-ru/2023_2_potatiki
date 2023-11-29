@@ -2,8 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 	"log/slog"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 
 	uuid "github.com/satori/go.uuid"
 
@@ -14,7 +15,7 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/proto/gmodels"
 )
 
-//go:generate mockgen -source=./generated/products_grpc.pb.go -destination=../../mocks/products_grpc.go -package=mock
+//go:generate mockgen -source=./gen/products_grpc.pb.go -destination=../../mocks/products_grpc.go -package=mock
 
 type GrpcProductsHandler struct {
 	uc  products.ProductsUsecase

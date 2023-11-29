@@ -2,8 +2,9 @@ package grpc
 
 import (
 	"context"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 	"log/slog"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
@@ -14,7 +15,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-//go:generate mockgen -source=./generated/auth_grpc.pb.go -destination=../../mocks/auth_grpc.go -package=mock
+//go:generate mockgen -source=./gen/auth_grpc.pb.go -destination=../../mocks/auth_grpc.go -package=mock
 
 type GrpcAuthHandler struct {
 	uc  auth.AuthUsecase
@@ -30,7 +31,7 @@ func NewGrpcAuthHandler(uc auth.AuthUsecase, log *slog.Logger) *GrpcAuthHandler 
 	}
 }
 
-func (h GrpcAuthHandler) SignIn(ctx context.Context, in *gen.SignInRequest) (*gen.SignInResponse, error) {
+func (h *GrpcAuthHandler) SignIn(ctx context.Context, in *gen.SignInRequest) (*gen.SignInResponse, error) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
@@ -61,7 +62,7 @@ func (h GrpcAuthHandler) SignIn(ctx context.Context, in *gen.SignInRequest) (*ge
 	}, nil
 }
 
-func (h GrpcAuthHandler) SignUp(ctx context.Context, in *gen.SignUpRequest) (*gen.SignUpResponse, error) {
+func (h *GrpcAuthHandler) SignUp(ctx context.Context, in *gen.SignUpRequest) (*gen.SignUpResponse, error) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)
@@ -93,7 +94,7 @@ func (h GrpcAuthHandler) SignUp(ctx context.Context, in *gen.SignUpRequest) (*ge
 	}, nil
 }
 
-func (h GrpcAuthHandler) CheckAuth(ctx context.Context, in *gen.CheckAuthRequst) (*gen.CheckAuthResponse, error) {
+func (h *GrpcAuthHandler) CheckAuth(ctx context.Context, in *gen.CheckAuthRequst) (*gen.CheckAuthResponse, error) {
 	h.log = h.log.With(
 		slog.String("op", sl.GFN()),
 	)

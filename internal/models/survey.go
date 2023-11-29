@@ -7,14 +7,14 @@ type SurveysCompleted struct {
 }
 
 type Survey struct {
-	ID        uuid.UUID `json:"surveyID"`
+	ID        uuid.UUID `json:"surveyId"`
 	Name      string    `json:"surveyName"`
-	ResultID  uuid.UUID `json:"resultID"`
+	ResultID  uuid.UUID `json:"resultId"`
 	Questions []Question
 }
 
 type Question struct {
-	ID   uuid.UUID `json:"questionID"`
+	ID   uuid.UUID `json:"questionId"`
 	Name string    `json:"questionName"`
 	QuestionType
 }
@@ -30,8 +30,8 @@ type Answer struct {
 }
 
 type SurveyResponse struct {
-	QuestionID uuid.UUID `json:"questionID"`
-	ResultID   uuid.UUID `json:"resultID"`
+	QuestionID uuid.UUID `json:"questionId"`
+	ResultID   uuid.UUID `json:"resultId"`
 	Answer     int       `json:"answer"`
 	UserID     uuid.UUID `json:"-"`
 }
