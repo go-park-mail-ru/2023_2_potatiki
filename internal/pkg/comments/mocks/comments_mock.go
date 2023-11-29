@@ -37,11 +37,12 @@ func (m *MockCommentsUsecase) EXPECT() *MockCommentsUsecaseMockRecorder {
 }
 
 // CreateComment mocks base method.
-func (m *MockCommentsUsecase) CreateComment(arg0 context.Context, arg1 models.CommentPayload) error {
+func (m *MockCommentsUsecase) CreateComment(arg0 context.Context, arg1 models.CommentPayload) (models.Comment, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateComment", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(models.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateComment indicates an expected call of CreateComment.
@@ -89,17 +90,34 @@ func (m *MockCommentsRepo) EXPECT() *MockCommentsRepoMockRecorder {
 }
 
 // MakeComment mocks base method.
-func (m *MockCommentsRepo) MakeComment(arg0 context.Context, arg1 models.CommentPayload) error {
+func (m *MockCommentsRepo) MakeComment(arg0 context.Context, arg1 models.CommentPayload) (models.Comment, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "MakeComment", arg0, arg1)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(models.Comment)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // MakeComment indicates an expected call of MakeComment.
 func (mr *MockCommentsRepoMockRecorder) MakeComment(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "MakeComment", reflect.TypeOf((*MockCommentsRepo)(nil).MakeComment), arg0, arg1)
+}
+
+// ReadCountOfCommentsToProduct mocks base method.
+func (m *MockCommentsRepo) ReadCountOfCommentsToProduct(arg0 context.Context, arg1, arg2 uuid.UUID) (int, models.Comment, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ReadCountOfCommentsToProduct", arg0, arg1, arg2)
+	ret0, _ := ret[0].(int)
+	ret1, _ := ret[1].(models.Comment)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ReadCountOfCommentsToProduct indicates an expected call of ReadCountOfCommentsToProduct.
+func (mr *MockCommentsRepoMockRecorder) ReadCountOfCommentsToProduct(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadCountOfCommentsToProduct", reflect.TypeOf((*MockCommentsRepo)(nil).ReadCountOfCommentsToProduct), arg0, arg1, arg2)
 }
 
 // ReadProductComments mocks base method.
