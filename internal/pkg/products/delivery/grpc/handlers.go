@@ -50,12 +50,13 @@ func (h GrpcProductsHandler) GetProduct(ctx context.Context,
 	}
 
 	gproduct := &gmodels.Product{
-		Id:          product.Id.String(),
-		Name:        product.Name,
-		Description: product.Description,
-		Price:       product.Price,
-		ImgSrc:      product.ImgSrc,
-		Rating:      product.Rating,
+		Id:            product.Id.String(),
+		Name:          product.Name,
+		Description:   product.Description,
+		Price:         product.Price,
+		ImgSrc:        product.ImgSrc,
+		Rating:        product.Rating,
+		CountComments: product.CountComments,
 		Category: &gmodels.Category{
 			Id:     product.Category.Id,
 			Name:   product.Category.Name,
@@ -81,12 +82,13 @@ func (h GrpcProductsHandler) GetProducts(ctx context.Context,
 	gproducts := make([]*gmodels.Product, len(products))
 	for i, product := range products {
 		gproduct := &gmodels.Product{
-			Id:          product.Id.String(),
-			Name:        product.Name,
-			Description: product.Description,
-			Price:       product.Price,
-			ImgSrc:      product.ImgSrc,
-			Rating:      product.Rating,
+			Id:            product.Id.String(),
+			Name:          product.Name,
+			Description:   product.Description,
+			Price:         product.Price,
+			ImgSrc:        product.ImgSrc,
+			Rating:        product.Rating,
+			CountComments: product.CountComments,
 			Category: &gmodels.Category{
 				Id:     product.Category.Id,
 				Name:   product.Category.Name,
@@ -113,12 +115,13 @@ func (h GrpcProductsHandler) GetCategory(ctx context.Context,
 	gproducts := make([]*gmodels.Product, len(products))
 	for i, product := range products {
 		gproduct := &gmodels.Product{
-			Id:          product.Id.String(),
-			Name:        product.Name,
-			Description: product.Description,
-			Price:       product.Price,
-			ImgSrc:      product.ImgSrc,
-			Rating:      product.Rating,
+			Id:            product.Id.String(),
+			Name:          product.Name,
+			Description:   product.Description,
+			Price:         product.Price,
+			ImgSrc:        product.ImgSrc,
+			Rating:        product.Rating,
+			CountComments: product.CountComments,
 			Category: &gmodels.Category{
 				Id:     product.Category.Id,
 				Name:   product.Category.Name,

@@ -179,6 +179,7 @@ CREATE TABLE IF NOT EXISTS product
     rating NUMERIC(3, 2) NOT NULL,
     FOREIGN KEY (category_id) REFERENCES category(id) ON DELETE RESTRICT,
     creation_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    count_comments INT DEFAULT 0,
     CHECK (rating >= 0),
     CHECK (price > 0)
     );
@@ -197,7 +198,7 @@ CREATE TABLE comment
 );
 --- DICTIONARY ---------------------------------------------------------------------------------------------------------
 
-CREATE EXTENSION pg_trgm;
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 
 --- DICTIONARY ---------------------------------------------------------------------------------------------------------
 
@@ -325,3 +326,21 @@ CREATE TRIGGER set_is_current_on_update
     BEFORE UPDATE ON address
     FOR EACH ROW
     EXECUTE FUNCTION update_is_current();
+
+
+-- Создание функции для обновления счетчика комментариев
+CREATE OR REPLACE FUNCTION update_comment_count()
+    RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE product
+    SET count_comments = count_comments + 1
+    WHERE id = NEW.productID;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Создание триггера, который вызывает функцию при добавлении нового комментария
+CREATE TRIGGER comment_trigger
+    AFTER INSERT ON comment
+    FOR EACH ROW
+EXECUTE FUNCTION update_comment_count();

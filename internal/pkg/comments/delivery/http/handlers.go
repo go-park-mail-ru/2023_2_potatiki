@@ -36,10 +36,10 @@ func NewCommentsHandler(log *slog.Logger, uc comments.CommentsUsecase) *Comments
 // @Accept json
 // @Produce json
 // @Param input body models.CommentPayload true "cart info"
-// @Success	200 "Comment created"
+// @Success	200 {object} models.Comment "Comment created"
 // @Failure	401	"User unauthorized"
 // @Failure	406 "Comment is invalid"
-// @Failure	413 "User already gas commented this product"
+// @Failure	413 {object} models.Comment "User already has commented this product"
 // @Failure	429
 // @Router	/api/comments/create [post]
 func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) {

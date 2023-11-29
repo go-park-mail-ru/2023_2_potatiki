@@ -610,7 +610,10 @@
                 ],
                 "responses": {
                     "200": {
-                        "description": "Comment created"
+                        "description": "Comment created",
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
                     },
                     "401": {
                         "description": "User unauthorized"
@@ -619,7 +622,10 @@
                         "description": "Comment is invalid"
                     },
                     "413": {
-                        "description": "User already gas commented this product"
+                        "description": "User already has commented this product",
+                        "schema": {
+                            "$ref": "#/definitions/models.Comment"
+                        }
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -1210,6 +1216,9 @@
                 "categoryParent": {
                     "type": "integer"
                 },
+                "countComments": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1286,6 +1295,9 @@
                 "cons": {
                     "type": "string"
                 },
+                "creationDate": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
@@ -1297,6 +1309,9 @@
                 },
                 "rating": {
                     "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
                 }
             }
         },
@@ -1371,6 +1386,9 @@
                 "categoryParent": {
                     "type": "integer"
                 },
+                "countComments": {
+                    "type": "integer"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -1404,6 +1422,9 @@
                     "type": "string"
                 },
                 "categoryParent": {
+                    "type": "integer"
+                },
+                "countComments": {
                     "type": "integer"
                 },
                 "description": {
