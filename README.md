@@ -27,6 +27,8 @@
 ### UI/UX
 [Figma].
 
+### Dashboard
+[Link to API](http://84.23.52.212:8052/).
 ----
 
 ## Запуск в local окружение
