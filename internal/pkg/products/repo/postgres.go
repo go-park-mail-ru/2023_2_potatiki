@@ -12,12 +12,12 @@ import (
 
 const (
 	getProduct = `SELECT p.id, p.name, p.description, p.price, p.imgsrc, COALESCE(AVG(cm.rating), 0) AS average_rating,
-       p.category_id, c.name AS category_name
+       p.category_id, c.name AS category_name, p.count_comments
 	FROM product p
 	JOIN category c ON p.category_id = c.id
 	LEFT JOIN comment cm ON p.id = cm.productID
 	WHERE p.id = $1
-	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name;
+	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments;
 	`
 
 	getProductsByRatingPrice = `
@@ -29,7 +29,8 @@ const (
 		p.imgsrc,
 		COALESCE(AVG(cm.rating), 0) AS average_rating,
 		p.category_id,
-		c.name AS category_name
+		c.name AS category_name,
+		p.count_comments
 	FROM
 		product p
 	JOIN
@@ -37,7 +38,7 @@ const (
 	LEFT JOIN
 		comment cm ON p.id = cm.productID
 	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
    		p.price %s, COALESCE(AVG(cm.rating), 0) %s
 	LIMIT
@@ -55,7 +56,8 @@ const (
 		p.imgsrc,
 		COALESCE(AVG(cm.rating), 0) AS average_rating,
 		p.category_id,
-		c.name AS category_name
+		c.name AS category_name,
+		p.count_comments
 	FROM
 		product p
 	JOIN
@@ -63,7 +65,7 @@ const (
 	LEFT JOIN
 		comment cm ON p.id = cm.productID
 	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
    		p.price %s
 	LIMIT
@@ -81,7 +83,8 @@ const (
 		p.imgsrc,
 		COALESCE(AVG(cm.rating), 0) AS average_rating,
 		p.category_id,
-		c.name AS category_name
+		c.name AS category_name,
+		p.count_comments
 	FROM
 		product p
 	JOIN
@@ -89,7 +92,7 @@ const (
 	LEFT JOIN
 		comment cm ON p.id = cm.productID
 	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
    		COALESCE(AVG(cm.rating), 0) %s
 	LIMIT
@@ -107,7 +110,8 @@ const (
 		p.imgsrc,
 		COALESCE(AVG(cm.rating), 0) AS average_rating,
 		p.category_id,
-		c.name AS category_name
+		c.name AS category_name,
+		p.count_comments
 	FROM
 		product p
 	JOIN
@@ -115,7 +119,7 @@ const (
 	LEFT JOIN
 		comment cm ON p.id = cm.productID
 	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
    		p.creation_at DESC
 	LIMIT
@@ -133,7 +137,8 @@ const (
 		p.imgsrc,
 		COALESCE(AVG(cm.rating), 0) AS average_rating,
 		p.category_id,
-		c.name AS category_name
+		c.name AS category_name,
+		p.count_comments
 	FROM
 		product p
 	JOIN
@@ -143,7 +148,7 @@ const (
 	WHERE
 	    p.category_id = $3
 	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
    		p.creation_at DESC
 	LIMIT
@@ -161,7 +166,8 @@ const (
 		p.imgsrc,
 		COALESCE(AVG(cm.rating), 0) AS average_rating,
 		p.category_id,
-		c.name AS category_name
+		c.name AS category_name,
+		p.count_comments
 	FROM
 		product p
 	JOIN
@@ -171,7 +177,7 @@ const (
 	WHERE
 	    p.category_id = $3
 	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
    		p.price %s, COALESCE(AVG(cm.rating), 0) %s
 	LIMIT
@@ -189,7 +195,8 @@ const (
 		p.imgsrc,
 		COALESCE(AVG(cm.rating), 0) AS average_rating,
 		p.category_id,
-		c.name AS category_name
+		c.name AS category_name,
+		p.count_comments
 	FROM
 		product p
 	JOIN
@@ -199,7 +206,7 @@ const (
 	WHERE
 	    p.category_id = $3
 	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
 		COALESCE(AVG(cm.rating), 0) %s
 	LIMIT
@@ -217,7 +224,8 @@ const (
 		p.imgsrc,
 		COALESCE(AVG(cm.rating), 0) AS average_rating,
 		p.category_id,
-		c.name AS category_name
+		c.name AS category_name,
+		p.count_comments
 	FROM
 		product p
 	JOIN
@@ -227,7 +235,7 @@ const (
 	WHERE
 	    p.category_id = $3
 	GROUP BY
-		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name
+		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
 		p.price %s
 	LIMIT
@@ -254,7 +262,8 @@ func NewProductsRepo(db pgxtype.Querier) *ProductsRepo {
 func (r *ProductsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	pr := models.Product{}
 	err := r.db.QueryRow(ctx, getProduct, id).
-		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.ImgSrc, &pr.Rating, &pr.Category.Id, &pr.Category.Name)
+		Scan(&pr.Id, &pr.Name, &pr.Description, &pr.Price, &pr.ImgSrc, &pr.Rating,
+			&pr.Category.Id, &pr.Category.Name, &pr.CountComments)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return models.Product{}, ErrProductNotFound
@@ -291,6 +300,7 @@ func (r *ProductsRepo) ReadProducts(ctx context.Context, paging, count int64) (
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -330,6 +340,7 @@ func (r *ProductsRepo) ReadProductsByPrice(ctx context.Context, paging, count in
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -369,6 +380,7 @@ func (r *ProductsRepo) ReadProductsByRating(ctx context.Context, paging, count i
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -407,6 +419,7 @@ func (r *ProductsRepo) ReadProductsByRatingPrice(ctx context.Context, paging, co
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -445,6 +458,7 @@ func (r *ProductsRepo) ReadProductsCategoryByRatingPrice(ctx context.Context, id
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -483,6 +497,7 @@ func (r *ProductsRepo) ReadProductsCategoryByRating(ctx context.Context, id int,
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -521,6 +536,7 @@ func (r *ProductsRepo) ReadProductsCategoryByPrice(ctx context.Context, id int, 
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
@@ -558,6 +574,7 @@ func (r *ProductsRepo) ReadProductsCategory(ctx context.Context, id int, paging,
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)

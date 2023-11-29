@@ -19,7 +19,9 @@ message Product {
   string ImgSrc = 5;
   float Rating = 6;
   Category Category = 7;
+  int64 CountComments = 8;
 }
+
 message Category {
   int64 Id = 1;
   string Name = 2;
