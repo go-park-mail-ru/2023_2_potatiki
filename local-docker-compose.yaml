@@ -9,7 +9,7 @@ services:
       context: ./build
       dockerfile: postgres.Dockerfile # FROM postgres:latest && RUN chmod 777 /usr/share/postgresql/16/tsearch_data
     restart: always
-    command: 
+    command:
       - "postgres"
       - "-c"
       - "max_connections=5"
@@ -43,10 +43,8 @@ services:
       PGDATA: "/var/lib/postgresql/data/pgdata" # storing db files
     env_file:
       - ./.env
-    #ports:
-    #  - ${DB_PORT}:5432
-    expose:
-      - "${DB_PORT}"
+    ports:
+      - ${DB_PORT}:5432
     volumes:
       - 'zuzu-db-data:/var/lib/postgresql/data'
       - './build/sql/:/docker-entrypoint-initdb.d/'
@@ -62,34 +60,13 @@ services:
           cpus: '0.50'
           memory: 200M
     networks:
-      - zuzu-network
-
-  zuzu-auth:
-    env_file:
-        - ./.env
-    container_name: ${GRPC_AUTH_CONTAINER_IP}
-    image: mrdjeb/${GRPC_AUTH_CONTAINER_IP}-web:latest
-    restart: always
-    expose:
-      - "${GRPC_AUTH_PORT}"
-    #ports:
-    #  - 7911:7911
-    volumes:
-      - ./.env:/docker-zuzu-auth/.env
-      - zuzu-logs:/var/lib/zuzu/logs
-    depends_on:
       - zuzu-postgres
-    networks:
-      - zuzu-network
-
 
 
 volumes:
   zuzu-db-data:
   initdb:
-  zuzu-logs:
 
 networks:
-  zuzu-network:
-    name: zuzu-network
+  zuzu-postgres:
     driver: bridge
