@@ -76,12 +76,13 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 	}
 
 	product := models.Product{
-		Id:          productID,
-		Name:        gproduct.Product.Name,
-		Description: gproduct.Product.Description,
-		Price:       gproduct.Product.Price,
-		ImgSrc:      gproduct.Product.ImgSrc,
-		Rating:      gproduct.Product.Rating,
+		Id:            productID,
+		Name:          gproduct.Product.Name,
+		Description:   gproduct.Product.Description,
+		Price:         gproduct.Product.Price,
+		ImgSrc:        gproduct.Product.ImgSrc,
+		Rating:        gproduct.Product.Rating,
+		CountComments: gproduct.Product.CountComments,
 		Category: models.Category{
 			Id:     gproduct.Product.Category.Id,
 			Name:   gproduct.Product.Category.Name,
@@ -160,12 +161,13 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 		}
 
 		product := models.Product{
-			Id:          productID,
-			Name:        gproduct.Name,
-			Description: gproduct.Description,
-			Price:       gproduct.Price,
-			ImgSrc:      gproduct.ImgSrc,
-			Rating:      gproduct.Rating,
+			Id:            productID,
+			Name:          gproduct.Name,
+			Description:   gproduct.Description,
+			Price:         gproduct.Price,
+			ImgSrc:        gproduct.ImgSrc,
+			Rating:        gproduct.Rating,
+			CountComments: gproduct.CountComments,
 			Category: models.Category{
 				Id:     gproduct.Category.Id,
 				Name:   gproduct.Category.Name,
@@ -260,12 +262,13 @@ func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 		}
 
 		product := models.Product{
-			Id:          productID,
-			Name:        gproduct.Name,
-			Description: gproduct.Description,
-			Price:       gproduct.Price,
-			ImgSrc:      gproduct.ImgSrc,
-			Rating:      gproduct.Rating,
+			Id:            productID,
+			Name:          gproduct.Name,
+			Description:   gproduct.Description,
+			Price:         gproduct.Price,
+			ImgSrc:        gproduct.ImgSrc,
+			Rating:        gproduct.Rating,
+			CountComments: gproduct.CountComments,
 			Category: models.Category{
 				Id:     gproduct.Category.Id,
 				Name:   gproduct.Category.Name,
