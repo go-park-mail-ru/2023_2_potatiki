@@ -189,7 +189,7 @@ jobs:
             GRAFANA_DIR=/home/ubuntu/metrics-data/grafana/
             EOF
 
-            # Start metrics containers
+            # Restart metrics containers
             docker compose -f "docker-compose-metrics.yaml" down
             docker compose -f "docker-compose-metrics.yaml" up -d
             # <==========!==========>
