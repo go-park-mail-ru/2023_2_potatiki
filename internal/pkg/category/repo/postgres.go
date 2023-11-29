@@ -57,30 +57,3 @@ func (r *CategoryRepo) ReadCategories(ctx context.Context) (models.CategoryTree,
 
 	return categorySlice, nil
 }
-
-/*func (r *CategoryRepo) ReadCategories(ctx context.Context) ([]models.CategoryBranch, error) {
-	var tree []models.CategoryBranch
-	rows, err := r.db.Query(ctx, getCategories)
-	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return []models.CategoryBranch{}, ErrCategoryNotFound
-		}
-		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
-
-		return []models.CategoryBranch{}, err
-	}
-	branch := models.CategoryBranch{}
-	for rows.Next() {
-		err = rows.Scan(&branch[0], &branch[1], &branch[2])
-		if err != nil {
-			err = fmt.Errorf("error happened in rows.Scan: %w", err)
-
-			return []models.CategoryBranch{}, err
-		}
-		tree = append(tree, branch)
-	}
-	defer rows.Close()
-
-	return tree, nil
-}
-*/
