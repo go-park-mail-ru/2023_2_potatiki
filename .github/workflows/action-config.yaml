@@ -3,7 +3,6 @@ name: CI
 on:
   push:
     branches:
-      - main
       - RK3
 
 env:
@@ -39,7 +38,7 @@ jobs:
 
   build_and_push:
     runs-on: ubuntu-latest
-    #needs: lint_and_test
+    needs: lint_and_test
 
     steps:
       - name: Checkout
@@ -190,6 +189,6 @@ jobs:
             EOF
 
             # Restart metrics containers
-            docker compose -f "docker-compose-metrics.yaml" down
-            docker compose -f "docker-compose-metrics.yaml" up -d
+            #docker compose -f "docker-compose-metrics.yaml" down
+            #docker compose -f "docker-compose-metrics.yaml" up -d
             # <==========!==========>
