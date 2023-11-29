@@ -33,6 +33,7 @@ linters:
     - maintidx #???
     - stylecheck #???
     - promlinter #???
+    - tagliatelle
     - funlen #del
     - staticcheck #del
     - sqlclosecheck #del
