@@ -1,8 +1,6 @@
 package models
 
 import (
-	"log/slog"
-
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -34,9 +32,9 @@ type CartProductDelete struct {
 	Id uuid.UUID `json:"productId"`
 }
 
-func (c *Cart) LogValue() slog.Value {
-	return slog.GroupValue(
-		slog.String("id", c.Id.String()),
-		slog.String("ProfileId", c.ProfileId.String()),
-	)
-}
+//func (c *Cart) LogValue() slog.Value {
+//	return slog.GroupValue(
+//		slog.String("id", c.Id.String()),
+//		slog.String("ProfileId", c.ProfileId.String()),
+//	)
+//}

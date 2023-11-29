@@ -29,3 +29,5 @@ go.work
 photos/
 metrics/grafana
 metrics/prometheus
+grafana.json
+script.sh
