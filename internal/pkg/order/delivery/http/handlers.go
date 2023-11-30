@@ -1,9 +1,12 @@
 package http
 
 import (
+	"encoding/json"
 	"errors"
+	"io"
 	"log/slog"
 	"net/http"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
@@ -38,6 +41,7 @@ func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase
 // @Description	Create Order using profile ID from cookies
 // @Accept json
 // @Produce json
+// @Param input body models.OrderInfo true "UpdateProfileDataPayload"
 // @Success	200	{object} models.Order "New order info"
 // @Failure	401	"User unauthorized"
 // @Failure	404	{object} responser.Response	"something not found error message"
@@ -57,9 +61,27 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	body, err := io.ReadAll(r.Body)
+	if resp.BodyErr(err, h.log, w) {
+		return
+	}
+	defer r.Body.Close()
+	h.log.Debug("got file from r.Body", slog.Any("request", r))
+
+	payload := &models.OrderInfo{}
+	err = json.Unmarshal(body, payload)
+	if err != nil {
+		h.log.Error("failed to unmarshal request body", sl.Err(err))
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
 	//order, err := h.uc.CreateOrder(r.Context(), userID)
 	orderResponse, err := h.client.CreateOrder(r.Context(), &gen.CreateOrderRequest{
-		Id: userID.String(),
+		Id:           userID.String(),
+		DeliveryDate: payload.DeliveryAtDate,
+		DeliveryTime: payload.DeliveryAtTime,
 	})
 	if err != nil {
 		h.log.Error("failed to get something", sl.Err(err))
@@ -94,12 +116,22 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	orderProto := orderResponse.Order
 	addressProto := orderProto.Address
 	productsProto := orderProto.Products
-	orderId, _ := uuid.FromString(orderProto.Id)
-	addressId, _ := uuid.FromString(orderProto.Address.Id)
-	profileId, _ := uuid.FromString(orderProto.Address.ProfileId)
+	orderId, err := uuid.FromString(orderProto.Id)
+	addressId, err := uuid.FromString(orderProto.Address.Id)
+	profileId, err := uuid.FromString(orderProto.Address.ProfileId)
+	parsedTime, err := time.Parse(time.RFC3339, orderProto.CreationAt)
+	if err != nil {
+		h.log.Error("failed to get from string", err)
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
 	orderModel := models.Order{
-		Id:     orderId,
-		Status: orderProto.Status,
+		Id:           orderId,
+		Status:       orderProto.Status,
+		CreationAt:   parsedTime,
+		DeliveryTime: orderProto.DeliveryTime,
+		DeliveryDate: orderProto.DeliveryDate,
 		Address: models.Address{
 			Id:        addressId,
 			ProfileId: profileId,
@@ -236,17 +268,29 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ordersSlice []models.Order
+	var (
+		ordersSlice []models.Order
+	)
 
 	for _, orderProto := range ordersResponse.Orders {
 		addressProto := orderProto.Address
 		productsProto := orderProto.Products
-		orderId, _ := uuid.FromString(orderProto.Id)
-		addressId, _ := uuid.FromString(orderProto.Address.Id)
-		profileId, _ := uuid.FromString(orderProto.Address.ProfileId)
+		orderId, err := uuid.FromString(orderProto.Id)
+		addressId, err := uuid.FromString(orderProto.Address.Id)
+		profileId, err := uuid.FromString(orderProto.Address.ProfileId)
+		parsedTime, err := time.Parse(time.RFC3339, orderProto.CreationAt)
+		if err != nil {
+			h.log.Error("failed to get from string", err)
+			resp.JSONStatus(w, http.StatusTooManyRequests)
+
+			return
+		}
 		orderModel := models.Order{
-			Id:     orderId,
-			Status: orderProto.Status,
+			Id:           orderId,
+			Status:       orderProto.Status,
+			CreationAt:   parsedTime,
+			DeliveryTime: orderProto.DeliveryTime,
+			DeliveryDate: orderProto.DeliveryDate,
 			Address: models.Address{
 				Id:        addressId,
 				ProfileId: profileId,

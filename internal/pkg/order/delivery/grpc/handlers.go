@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
 
@@ -41,16 +42,20 @@ func (h GrpcOrderHandler) CreateOrder(ctx context.Context, in *gen.CreateOrderRe
 		h.log.Error("failed to get uuid from string", sl.Err(err))
 		return &gen.CreateOrderResponse{Error: err.Error()}, metricsmw.ClientError
 	}
-	order, err := h.uc.CreateOrder(ctx, userId)
+	order, err := h.uc.CreateOrder(ctx, userId, in.DeliveryTime, in.DeliveryDate)
 	if err != nil {
 		h.log.Error("failed in h.uc.CreateOrder", sl.Err(err))
 		return &gen.CreateOrderResponse{Error: err.Error()}, metricsmw.ServerError
 	}
 
+	timeString := order.CreationAt.Format(time.RFC3339)
 	orderResponse := gen.CreateOrderResponse{
 		Order: &gmodels.Order{
-			Id:     order.Id.String(),
-			Status: order.Status,
+			Id:           order.Id.String(),
+			Status:       order.Status,
+			CreationAt:   timeString,
+			DeliveryTime: order.DeliveryTime,
+			DeliveryDate: order.DeliveryDate,
 			Address: &gmodels.Address{
 				Id:        order.Address.Id.String(),
 				ProfileId: order.Address.ProfileId.String(),
@@ -106,9 +111,13 @@ func (h GrpcOrderHandler) GetOrders(ctx context.Context, in *gen.OrdersRequest) 
 
 	var ordersResponse gen.OrdersResponse
 	for _, o := range orders {
+		timeString := o.CreationAt.Format(time.RFC3339)
 		order := gmodels.Order{
-			Id:     o.Id.String(),
-			Status: o.Status,
+			Id:           o.Id.String(),
+			Status:       o.Status,
+			CreationAt:   timeString,
+			DeliveryTime: o.DeliveryTime,
+			DeliveryDate: o.DeliveryDate,
 			Address: &gmodels.Address{
 				Id:        o.Address.Id.String(),
 				ProfileId: o.Address.ProfileId.String(),

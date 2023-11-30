@@ -699,6 +699,17 @@ const docTemplate = `{
                     "Order"
                 ],
                 "summary": "CreateOrder",
+                "parameters": [
+                    {
+                        "description": "UpdateProfileDataPayload",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderInfo"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "New order info",
@@ -1360,6 +1371,15 @@ const docTemplate = `{
                 "city": {
                     "type": "string"
                 },
+                "creationDate": {
+                    "type": "string"
+                },
+                "deliveryDate": {
+                    "type": "string"
+                },
+                "deliveryTime": {
+                    "type": "string"
+                },
                 "flat": {
                     "type": "string"
                 },
@@ -1375,10 +1395,21 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.OrderProduct"
                     }
                 },
-                "statusId": {
-                    "type": "integer"
+                "status": {
+                    "type": "string"
                 },
                 "street": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OrderInfo": {
+            "type": "object",
+            "properties": {
+                "deliveryDate": {
+                    "type": "string"
+                },
+                "deliveryTime": {
                     "type": "string"
                 }
             }

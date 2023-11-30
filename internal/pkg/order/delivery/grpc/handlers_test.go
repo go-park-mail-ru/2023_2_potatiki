@@ -5,6 +5,7 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
@@ -35,7 +36,7 @@ func TestGrpcOrderHandler_CreateOrder(t *testing.T) {
 		{
 			name: "TestGrpcOrderHandler_CreateOrder good",
 			prepare: func(f *fields) {
-				f.uc.EXPECT().CreateOrder(gomock.Any(), id).Return(
+				f.uc.EXPECT().CreateOrder(gomock.Any(), id, "", "").Return(
 					models.Order{
 						Id:      id,
 						Address: models.Address{},
@@ -46,8 +47,9 @@ func TestGrpcOrderHandler_CreateOrder(t *testing.T) {
 			}},
 			want: &gen.CreateOrderResponse{
 				Order: &gmodels.Order{
-					Id:      id.String(),
-					Address: &gmodels.Address{Id: uuid.Nil.String(), ProfileId: uuid.Nil.String()},
+					Id:         id.String(),
+					Address:    &gmodels.Address{Id: uuid.Nil.String(), ProfileId: uuid.Nil.String()},
+					CreationAt: time.Time{}.Format(time.RFC3339),
 				}},
 			wantErr: false,
 		},
@@ -108,8 +110,9 @@ func TestGrpcOrderHandler_GetOrders(t *testing.T) {
 			}},
 			want: &gen.OrdersResponse{
 				Orders: []*gmodels.Order{{
-					Id:      id.String(),
-					Address: &gmodels.Address{Id: uuid.Nil.String(), ProfileId: uuid.Nil.String()},
+					Id:         id.String(),
+					Address:    &gmodels.Address{Id: uuid.Nil.String(), ProfileId: uuid.Nil.String()},
+					CreationAt: time.Time{}.Format(time.RFC3339),
 				}}},
 			wantErr: false,
 		},

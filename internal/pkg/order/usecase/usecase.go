@@ -29,7 +29,7 @@ func NewOrderUsecase(repoOrder order.OrderRepo, repoCart cart.CartRepo, repoAddr
 	}
 }
 
-func (uc *OrderUsecase) CreateOrder(ctx context.Context, userID uuid.UUID) (models.Order, error) {
+func (uc *OrderUsecase) CreateOrder(ctx context.Context, userID uuid.UUID, deliveryTime, deliveryDate string) (models.Order, error) {
 	address, err := uc.repoAddress.ReadCurrentAddress(ctx, userID)
 	if err != nil {
 		if errors.Is(err, addressRepo.ErrAddressNotFound) {
@@ -50,7 +50,7 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, userID uuid.UUID) (mode
 		return models.Order{}, err
 	}
 
-	order, err := uc.repoOrder.CreateOrder(ctx, cart, address.Id, userID, 1)
+	order, err := uc.repoOrder.CreateOrder(ctx, cart, address.Id, userID, 1, deliveryTime, deliveryDate)
 	if err != nil {
 		if errors.Is(err, orderRepo.ErrPoductNotFound) {
 			return models.Order{}, err

@@ -158,8 +158,8 @@ CREATE TABLE IF NOT EXISTS status
 
 INSERT INTO status (name)
 VALUES
-    ('cart'),
-    ('created'),
+    ('В обработке'),
+    ('Передан в службу доставки'),
     ('processed'),
     ('delivery'),
     ('delivered'),
@@ -259,7 +259,8 @@ CREATE TABLE IF NOT EXISTS address
 CREATE TABLE IF NOT EXISTS order_info
 (
     id UUID NOT NULL PRIMARY KEY,
-    delivery_at TIMESTAMPTZ,
+    delivery_at_date TEXT NOT NULL,
+    delivery_at_time TEXT NOT NULL,
     creation_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL,
     profile_id UUID NOT NULL,
     FOREIGN KEY (profile_id) REFERENCES profile(id) ON DELETE CASCADE,

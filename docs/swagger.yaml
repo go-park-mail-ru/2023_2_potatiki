@@ -143,6 +143,12 @@ definitions:
         type: boolean
       city:
         type: string
+      creationDate:
+        type: string
+      deliveryDate:
+        type: string
+      deliveryTime:
+        type: string
       flat:
         type: string
       house:
@@ -153,9 +159,16 @@ definitions:
         items:
           $ref: '#/definitions/models.OrderProduct'
         type: array
-      statusId:
-        type: integer
+      status:
+        type: string
       street:
+        type: string
+    type: object
+  models.OrderInfo:
+    properties:
+      deliveryDate:
+        type: string
+      deliveryTime:
         type: string
     type: object
   models.OrderProduct:
@@ -719,6 +732,13 @@ paths:
       consumes:
       - application/json
       description: Create Order using profile ID from cookies
+      parameters:
+      - description: UpdateProfileDataPayload
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderInfo'
       produces:
       - application/json
       responses:
