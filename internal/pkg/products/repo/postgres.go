@@ -121,7 +121,7 @@ const (
 	GROUP BY
 		p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY
-   		p.creation_at DESC
+   		p.id DESC
 	LIMIT
 		$1
 	OFFSET
