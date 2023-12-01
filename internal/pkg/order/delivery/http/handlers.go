@@ -251,9 +251,12 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		if !ok {
 			h.log.Error("failed cast grpc error", sl.Err(err))
 			resp.JSONStatus(w, http.StatusTooManyRequests)
+			return
 		}
 		if st.Code() == codes.NotFound {
 			h.log.Warn("orders not found", slog.Any("grpc status", st))
+			resp.JSONStatus(w, http.StatusNotFound)
+			return
 		}
 		h.log.Error("failed to get order", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)

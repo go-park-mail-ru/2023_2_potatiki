@@ -109,7 +109,8 @@ func (h GrpcOrderHandler) GetOrders(ctx context.Context, in *gen.OrdersRequest) 
 	}
 	orders, err := h.uc.GetOrders(ctx, userId)
 	if err != nil {
-		if errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
+		if errors.Is(err, orderRepo.ErrOrdersNotFound) {
+			h.log.Error("GetOrders empty orders found", sl.Err(err))
 			return &gen.OrdersResponse{Error: err.Error()}, status.Error(codes.NotFound, "empty orders found")
 		}
 		h.log.Error("failed in h.uc.GetOrders", sl.Err(err))
