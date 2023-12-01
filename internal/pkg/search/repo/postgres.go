@@ -16,12 +16,15 @@ const (
 	   p.description,
 	   p.price,
 	   p.imgsrc,
-	   p.rating,
+	   COALESCE(AVG(cm.rating), 0),
 	   p.category_id,
-	   c.name AS category_name
+	   c.name AS category_name,
+	   p.count_comments
 	FROM product p
 		 JOIN category c ON p.category_id = c.id
+		 LEFT JOIN comment cm ON p.id = cm.productID
 	WHERE similarity(c.name, $1) > 0.2 OR similarity(p.name, $1) > 0.1 OR similarity(p.description, $1) > 0.04
+	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	ORDER BY similarity(c.name, $1) DESC, similarity(p.name, $1) DESC, similarity(p.description, $1) DESC
 	LIMIT 10;`
 )
@@ -64,6 +67,7 @@ func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string)
 			&product.Rating,
 			&product.Category.Id,
 			&product.Category.Name,
+			&product.CountComments,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)
