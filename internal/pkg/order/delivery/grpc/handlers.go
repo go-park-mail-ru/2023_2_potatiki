@@ -2,12 +2,16 @@ package grpc
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
+	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
@@ -105,6 +109,9 @@ func (h GrpcOrderHandler) GetOrders(ctx context.Context, in *gen.OrdersRequest) 
 	}
 	orders, err := h.uc.GetOrders(ctx, userId)
 	if err != nil {
+		if errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
+			return &gen.OrdersResponse{Error: err.Error()}, status.Error(codes.NotFound, "empty orders found")
+		}
 		h.log.Error("failed in h.uc.GetOrders", sl.Err(err))
 		return &gen.OrdersResponse{Error: err.Error()}, metricsmw.ServerError
 	}

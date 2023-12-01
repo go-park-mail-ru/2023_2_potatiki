@@ -10,6 +10,8 @@ import (
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 
@@ -245,6 +247,14 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 		Id: userID.String(),
 	})
 	if err != nil {
+		st, ok := status.FromError(err)
+		if !ok {
+			h.log.Error("failed cast grpc error", sl.Err(err))
+			resp.JSONStatus(w, http.StatusTooManyRequests)
+		}
+		if st.Code() == codes.NotFound {
+			h.log.Warn("orders not found", slog.Any("grpc status", st))
+		}
 		h.log.Error("failed to get order", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
