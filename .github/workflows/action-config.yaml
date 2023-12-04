@@ -66,6 +66,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           file: ./build/Dockerfile.multistage.main
+          platforms: linux/arm64/v8
           build-args: |
               IMAGE_NAME=${{ env.IMAGE_NAME }}
               REGISTRY=${{ env.REGISTRY }}
@@ -78,6 +79,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.GRPC_AUTH_CONTAINER_IP }}-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.GRPC_AUTH_CONTAINER_IP }}-web:latest
           file: ./build/Dockerfile.multistage.auth
+          platforms: linux/arm64/v8
           build-args: |
               IMAGE_NAME=${{ env.GRPC_AUTH_CONTAINER_IP }}-web
               REGISTRY=${{ env.REGISTRY }}
@@ -90,6 +92,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.GRPC_ORDER_CONTAINER_IP }}-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.GRPC_ORDER_CONTAINER_IP }}-web:latest
           file: ./build/Dockerfile.multistage.order
+          platforms: linux/arm64/v8
           build-args: |
               IMAGE_NAME=${{ env.GRPC_ORDER_CONTAINER_IP }}-web
               REGISTRY=${{ env.REGISTRY }}
@@ -102,6 +105,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web:${{ env.GITHUB_SHA_SHORT }}, ${{ env.REGISTRY }}/${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web:latest
           file: ./build/Dockerfile.multistage.products
+          platforms: linux/arm64/v8
           build-args: |
               IMAGE_NAME=${{ env.GRPC_PRODUCTS_CONTAINER_IP }}-web
               REGISTRY=${{ env.REGISTRY }}
@@ -118,10 +122,10 @@ jobs:
       - name: Deploy docker-compose.yml via SSH action
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.HOST }}
-          port: ${{ secrets.PORT }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSHKEY }}
+          host: ${{ secrets.RASPI_HOST }}
+          port: ${{ secrets.RASPI_PORT }}
+          username: ${{ secrets.RASPI_USER }}
+          key: ${{ secrets.RASPI_SSHKEY }}
           rm: true
           source: docker-compose.yaml, build, metrics
           target: ~/${{ env.FOLDER_COMPOSE }}
@@ -130,10 +134,10 @@ jobs:
       - name: Deploy to DockerHub via SSH action
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: ${{ secrets.HOST }}
-          port: ${{ secrets.PORT }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSHKEY }}
+          host: ${{ secrets.RASPI_HOST }}
+          port: ${{ secrets.RASPI_PORT }}
+          username: ${{ secrets.RASPI_USER }}
+          key: ${{ secrets.RASPI_SSHKEY }}
           envs: REGISTRY, IMAGE_NAME, CONTAINER_NAME, GITHUB_SHA, FOLDER_COMPOSE, PHOTOS_FILE_PATH, GRPC_AUTH_CONTAINER_IP, GRPC_ORDER_CONTAINER_IP, GRPC_PRODUCTS_CONTAINER_IP
           script: |
             sudo bash
