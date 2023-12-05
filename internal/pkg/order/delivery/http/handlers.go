@@ -3,13 +3,14 @@ package http
 import (
 	"encoding/json"
 	"errors"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
-	"github.com/gorilla/websocket"
 	"io"
 	"log"
 	"log/slog"
 	"net/http"
 	"time"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
+	"github.com/gorilla/websocket"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
@@ -31,10 +32,10 @@ type OrderHandler struct {
 	client gen.OrderClient
 	log    *slog.Logger
 	uc     order.OrderUsecase
-	hub    hub.Hub
+	hub    *hub.Hub
 }
 
-func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase, hub hub.Hub) *OrderHandler {
+func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase, hub *hub.Hub) *OrderHandler {
 	return &OrderHandler{
 		client: cl,
 		log:    log,

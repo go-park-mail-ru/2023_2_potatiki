@@ -9,7 +9,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.1.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
-	github.com/gorilla/websocket v0.0.0-20170926233335-4201258b820c
+	github.com/gorilla/websocket v1.5.1
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgtype v1.14.0
 	github.com/jackc/pgx/v4 v4.18.1

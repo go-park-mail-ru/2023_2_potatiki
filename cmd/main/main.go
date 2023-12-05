@@ -4,13 +4,14 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
 	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -203,7 +204,7 @@ func run() (err error) {
 
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
 	orderClient := orderGrpc.NewOrderClient(orderConn)
-	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase, *hub)
+	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase, hub)
 
 	commentsRepo := commentsRepo.NewCommentsRepo(db)
 	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
