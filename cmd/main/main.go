@@ -67,6 +67,10 @@ import (
 	commentsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/delivery/http"
 	commentsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/repo"
 	commentsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/usecase"
+
+	promoHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/delivery/http"
+	promoRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/repo"
+	promoUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/usecase"
 )
 
 // @title ZuZu Backend API
@@ -210,6 +214,10 @@ func run() (err error) {
 	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
 	commentsHandler := commentsHandler.NewCommentsHandler(log, commentsUsecase)
 
+	promoRepo := promoRepo.NewPromoRepo(db)
+	promoUsecase := promoUsecase.NewPromoUsecase(promoRepo)
+	promoHandler := promoHandler.NewPromoHandler(log, promoUsecase)
+
 	// ----------------------------Init layers---------------------------- //
 	//
 	//
@@ -348,6 +356,12 @@ func run() (err error) {
 			Methods(http.MethodPost, http.MethodGet, http.MethodOptions)
 
 		comments.HandleFunc("/get_all", commentsHandler.GetProductComments).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	promo := r.PathPrefix("/promo").Subrouter()
+	{
+		promo.HandleFunc("/check", promoHandler.CheckPromocode).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 

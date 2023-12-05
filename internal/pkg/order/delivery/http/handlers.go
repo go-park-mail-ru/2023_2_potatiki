@@ -76,7 +76,7 @@ func (h *OrderHandler) GetNotifications(w http.ResponseWriter, r *http.Request) 
 // @Param input body models.OrderInfo true "UpdateProfileDataPayload"
 // @Success	200	{object} models.Order "New order info"
 // @Failure	401	"User unauthorized"
-// @Failure	404	{object} responser.Response	"something not found error message"
+// @Failure	404	{object} responser.response	"something not found error message"
 // @Failure	429
 // @Router	/api/order/create [post]
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -210,7 +210,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success	200	{object} models.Order "Current order info"
 // @Failure	401	"User unauthorized"
-// @Failure	404	{object} responser.Response	"something not found error message"
+// @Failure	404	{object} responser.response	"something not found error message"
 // @Failure	429
 // @Router	/api/order/get_current [get]
 func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
@@ -256,7 +256,7 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success	200	{array} models.Order "All orders info"
 // @Failure	401	"User unauthorized"
-// @Failure 404	{object} responser.Response	"something not found error message"
+// @Failure 404	{object} responser.response	"something not found error message"
 // @Failure	429
 // @Router	/api/order/get_all [get]
 func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {

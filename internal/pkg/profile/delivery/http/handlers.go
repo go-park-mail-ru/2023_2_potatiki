@@ -38,7 +38,7 @@ func NewProfileHandler(log *slog.Logger, uc profile.ProfileUsecase) *ProfileHand
 // @Produce json
 // @Param id path string true "Profile UUID"
 // @Success	200	{object} models.Profile "Profile"
-// @Failure	400	{object} responser.Response	"error messege"
+// @Failure	400	{object} responser.response	"error messege"
 // @Failure	429
 // @Router	/api/profile/{id} [get]
 func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
@@ -83,7 +83,7 @@ func (h *ProfileHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body models.UpdateProfileDataPayload true "UpdateProfileDataPayload"
 // @Success	200	{object} models.Profile "Profile"
-// @Failure	400	{object} responser.Response	"error messege"
+// @Failure	400	{object} responser.response	"error messege"
 // @Failure	401
 // @Failure	429
 // @Router	/api/profile/update-data [post]

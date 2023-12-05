@@ -34,7 +34,7 @@ func NewProductsHandler(client gen.ProductsClient, log *slog.Logger) ProductHand
 // @Produce json
 // @Param id path string true "Product UUID"
 // @Success	200	{object} models.Product "Product info"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/products/{id} [get]
 func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
@@ -103,7 +103,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 // @Param ratingBy query string false "(Use ASC/DESC and their combinations) Sort products by rating"
 // @Param priceBy query string false "(Use ASC/DESC and their combinations) Sort products by price"
 // @Success	200	{object} []models.Product "Products array"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/products/get_all [get]
 func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
@@ -192,7 +192,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 // @Param ratingBy query string false "(Use ASC/DESC and their combinations) Sort products by rating"
 // @Param priceBy query string false "(Use ASC/DESC and their combinations) Sort products by price"
 // @Success	200	{object} []models.Product "Products by category id"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/products/category [get]
 func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {

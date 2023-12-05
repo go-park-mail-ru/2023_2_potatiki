@@ -107,7 +107,7 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 // @Produce json
 // @Param product query string true "Product ID"
 // @Success	200	{object} []models.Comment "Comments array"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/comments/get_all [get]
 func (h *CommentsHandler) GetProductComments(w http.ResponseWriter, r *http.Request) {

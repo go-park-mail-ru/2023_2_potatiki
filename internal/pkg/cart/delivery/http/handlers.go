@@ -33,7 +33,7 @@ func NewCartHandler(log *slog.Logger, uc cart.CartUsecase) CartHandler {
 // @Produce json
 // @Param input body models.CartUpdate true "cart info"
 // @Success	200	{object} models.Cart "cart info"
-// @Failure	400	{object} responser.Response	"invalid request"
+// @Failure	400	{object} responser.response	"invalid request"
 // @Failure	429
 // @Router	/api/cart/update [post]
 func (h *CartHandler) UpdateCart(w http.ResponseWriter, r *http.Request) {
@@ -119,7 +119,7 @@ func (h *CartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body models.CartProductUpdate true "product info"
 // @Success	200	{object} models.Cart "cart info"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	401
 // @Failure	429
 // @Router	/api/cart/add_product [post]
@@ -173,7 +173,7 @@ func (h *CartHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body models.CartProductDelete true "product info"
 // @Success	200	{object} models.Cart "cart info"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	401
 // @Failure	429
 // @Router	/api/cart/delete_product [delete]

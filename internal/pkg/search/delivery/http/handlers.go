@@ -32,7 +32,7 @@ func NewSearchHandler(log *slog.Logger, uc search.SearchUsecase) *SearchHandler 
 // @Produce json
 // @Param product query int true "Search products by name"
 // @Success	200	{object} []models.Product "Products array"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/search/ [get]
 func (h *SearchHandler) SearchProducts(w http.ResponseWriter, r *http.Request) {
