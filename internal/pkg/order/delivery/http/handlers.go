@@ -3,7 +3,10 @@ package http
 import (
 	"encoding/json"
 	"errors"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
+	"github.com/gorilla/websocket"
 	"io"
+	"log"
 	"log/slog"
 	"net/http"
 	"time"
@@ -28,14 +31,41 @@ type OrderHandler struct {
 	client gen.OrderClient
 	log    *slog.Logger
 	uc     order.OrderUsecase
+	hub    hub.Hub
 }
 
-func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase) *OrderHandler {
+func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase, hub hub.Hub) *OrderHandler {
 	return &OrderHandler{
 		client: cl,
 		log:    log,
 		uc:     uc,
+		hub:    hub,
 	}
+}
+
+var upgrader = websocket.Upgrader{} // use default options
+
+func (h *OrderHandler) GetNotifications(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
+	)
+
+	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
+		resp.JSONStatus(w, http.StatusUnauthorized)
+
+		return
+	}
+
+	c, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Print("upgrade:", err)
+		return
+	}
+	h.hub.AddClient(userID, c)
+
 }
 
 // @Summary	CreateOrder

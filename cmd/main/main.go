@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
 	"log/slog"
 	"net/http"
 	"os"
@@ -197,9 +198,12 @@ func run() (err error) {
 	addressHandler := addressHandler.NewAddressHandler(log, addressUsecase)
 
 	orderRepo := orderRepo.NewOrderRepo(db)
+
+	hub := hub.NewHub(orderRepo)
+
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
 	orderClient := orderGrpc.NewOrderClient(orderConn)
-	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
+	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase, *hub)
 
 	commentsRepo := commentsRepo.NewCommentsRepo(db)
 	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
@@ -305,6 +309,9 @@ func run() (err error) {
 
 		order.Handle("/get_all", authMW(http.HandlerFunc(orderHandler.GetOrders))).
 			Methods(http.MethodGet, http.MethodOptions)
+
+		order.Handle("/notify", authMW(http.HandlerFunc(orderHandler.GetNotifications))).
+			Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	address := r.PathPrefix("/address").Subrouter()
@@ -359,6 +366,8 @@ func run() (err error) {
 	quit := make(chan os.Signal, 1)
 	// SIGINT = ctrl+c; SIGTERM = kill; Interrupt = аппаратное прерывание, в Windows даст ошибку
 	signal.Notify(quit, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	go hub.Run(context.Background())
 
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {

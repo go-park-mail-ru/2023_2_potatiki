@@ -32,6 +32,19 @@ DROP TABLE IF EXISTS answer;
 
 DROP TABLE IF EXISTS results;
 
+DROP TABLE IF EXISTS messages;
+
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE messages (
+    user_id uuid NOT NULL,
+    created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    message_info TEXT
+);
+
+------------------------------------------------------------------------------------------------------------------------
+
 CREATE TABLE IF NOT EXISTS survey
 (
     id uuid NOT NULL PRIMARY KEY,

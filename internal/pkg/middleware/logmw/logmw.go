@@ -1,8 +1,11 @@
 package logmw
 
 import (
+	"bufio"
+	"errors"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"log/slog"
+	"net"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -44,6 +47,14 @@ type ResponseWrapper struct {
 	http.ResponseWriter
 	Status   int
 	bytesLen int
+}
+
+func (w *ResponseWrapper) Hijack() (net.Conn, *bufio.ReadWriter, error) {
+	h, ok := w.ResponseWriter.(http.Hijacker)
+	if !ok {
+		return nil, nil, errors.New("hijack not supported")
+	}
+	return h.Hijack()
 }
 
 func (r *ResponseWrapper) WriteHeader(status int) {

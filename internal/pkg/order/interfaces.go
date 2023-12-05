@@ -2,6 +2,7 @@ package order
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	uuid "github.com/satori/go.uuid"
@@ -20,4 +21,5 @@ type OrderRepo interface {
 	ReadOrderID(context.Context, uuid.UUID) (uuid.UUID, error)
 	ReadOrder(context.Context, uuid.UUID) (models.Order, error)
 	ReadOrdersID(context.Context, uuid.UUID) ([]uuid.UUID, error)
+	GetUpdates(context.Context, uuid.UUID, time.Time) ([]models.Message, error)
 }

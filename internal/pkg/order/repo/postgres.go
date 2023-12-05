@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v4"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
@@ -54,6 +55,13 @@ const (
 	ORDER BY creation_at DESC;
 	`
 
+	getUpdates = `
+	SELECT user_id, created, message_info
+	FROM messages
+	WHERE user_id = $1 AND created > $2
+	ORDER BY created ASC;
+	`
+
 	SetCurrentAddressToOrder = `
 	UPDATE order_info
 	SET address_id = $1
@@ -74,6 +82,7 @@ var (
 	ErrOrderNotFound          = errors.New("order not found")
 	ErrOrdersNotFound         = errors.New("orders not found")
 	ErrPoductsInOrderNotFound = errors.New("products in order not found")
+	ErrMessageNotFound        = errors.New("message not found")
 	ErrPoductNotFound         = errors.New("product not found")
 )
 
@@ -85,6 +94,37 @@ func NewOrderRepo(db pgxtype.Querier) *OrderRepo {
 	return &OrderRepo{
 		db: db,
 	}
+}
+
+func (r *OrderRepo) GetUpdates(ctx context.Context, userID uuid.UUID, time time.Time) ([]models.Message, error) {
+	rows, err := r.db.Query(ctx, getUpdates, userID, time)
+	defer rows.Close()
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Message{}, ErrMessageNotFound
+		}
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Message{}, err
+	}
+
+	var message models.Message
+	var messages []models.Message
+	for rows.Next() {
+		err = rows.Scan(
+			&message.UserID,
+			&message.Created,
+			&message.MessageInfo,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Message{}, err
+		}
+		messages = append(messages, message)
+	}
+
+	return messages, nil
 }
 
 func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, addressID uuid.UUID, userID uuid.UUID,
