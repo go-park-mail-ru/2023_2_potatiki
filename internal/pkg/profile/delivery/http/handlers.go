@@ -1,7 +1,6 @@
 package http
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
 	"log/slog"
@@ -110,7 +109,7 @@ func (h *ProfileHandler) UpdateProfileData(w http.ResponseWriter, r *http.Reques
 	h.log.Debug("got file from r.Body", slog.Any("request", r))
 
 	payload := &models.UpdateProfileDataPayload{}
-	err = json.Unmarshal(body, payload)
+	err = payload.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)

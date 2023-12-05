@@ -75,7 +75,7 @@ func (h *ProductHandler) Product(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	product := models.Product{
+	product := &models.Product{
 		Id:            productID,
 		Name:          gproduct.Product.Name,
 		Description:   gproduct.Product.Description,
@@ -178,7 +178,7 @@ func (h *ProductHandler) Products(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("got products", "len", len(products))
-	resp.JSON(w, http.StatusOK, products)
+	resp.JSON(w, http.StatusOK, (*models.ProductSlice)(&products))
 }
 
 // @Summary	Products
@@ -279,5 +279,5 @@ func (h *ProductHandler) Category(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("got products by category", "len", len(products))
-	resp.JSON(w, http.StatusOK, products)
+	resp.JSON(w, http.StatusOK, (*models.ProductSlice)(&products))
 }

@@ -1,7 +1,6 @@
 package http
 
 import (
-	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
@@ -57,7 +56,7 @@ func (h *CartHandler) UpdateCart(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	c := models.Cart{}
-	err = json.Unmarshal(body, &c)
+	err = c.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -75,7 +74,7 @@ func (h *CartHandler) UpdateCart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("update cart")
-	resp.JSON(w, http.StatusOK, cart)
+	resp.JSON(w, http.StatusOK, &cart)
 }
 
 // @Summary	GetCart
@@ -110,7 +109,7 @@ func (h *CartHandler) GetCart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("h.uc.GetCart", "cart", cart)
-	resp.JSON(w, http.StatusOK, cart)
+	resp.JSON(w, http.StatusOK, &cart)
 }
 
 // @Summary	AddProduct
@@ -145,7 +144,7 @@ func (h *CartHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	p := models.CartProductUpdate{}
-	err = json.Unmarshal(body, &p)
+	err = p.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -164,7 +163,7 @@ func (h *CartHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("add product to cart")
-	resp.JSON(w, http.StatusOK, cart)
+	resp.JSON(w, http.StatusOK, &cart)
 }
 
 // @Summary	DeleteProduct
@@ -199,7 +198,7 @@ func (h *CartHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	p := models.CartProductDelete{}
-	err = json.Unmarshal(body, &p)
+	err = p.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -218,5 +217,5 @@ func (h *CartHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("delete product from cart")
-	resp.JSON(w, http.StatusOK, cart)
+	resp.JSON(w, http.StatusOK, &cart)
 }

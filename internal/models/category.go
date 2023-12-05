@@ -10,6 +10,7 @@ const MAX_LEVEL_CATEGORY = 3
 
 type CategoryBranch [MAX_LEVEL_CATEGORY]string
 
+//easyjson:json
 type CategoryTree []Category
 
 //func (c *Category) LogValue() slog.Value {

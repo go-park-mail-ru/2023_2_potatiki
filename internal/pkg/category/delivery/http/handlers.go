@@ -47,5 +47,5 @@ func (h *CategoryHandler) Categories(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("got category", "len", len(categories))
-	resp.JSON(w, http.StatusOK, categories)
+	resp.JSON(w, http.StatusOK, &categories)
 }

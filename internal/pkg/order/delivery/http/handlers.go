@@ -1,7 +1,6 @@
 package http
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
 	"log"
@@ -102,7 +101,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("got file from r.Body", slog.Any("request", r))
 
 	payload := &models.OrderInfo{}
-	err = json.Unmarshal(body, payload)
+	err = payload.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -201,7 +200,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	orderModel.Products = productsSlice
 
 	h.log.Debug("h.uc.CreateOrder", "order", orderModel)
-	resp.JSON(w, http.StatusOK, orderModel)
+	resp.JSON(w, http.StatusOK, &orderModel)
 }
 
 // @Summary	GetCurrentOrder
@@ -247,7 +246,7 @@ func (h *OrderHandler) GetCurrentOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("h.uc.GetCurrentOrder", "order", order)
-	resp.JSON(w, http.StatusOK, order)
+	resp.JSON(w, http.StatusOK, &order)
 }
 
 // @Summary	GetOrders
@@ -374,5 +373,5 @@ func (h *OrderHandler) GetOrders(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("h.uc.GetOrders", "orders", ordersSlice)
-	resp.JSON(w, http.StatusOK, ordersSlice)
+	resp.JSON(w, http.StatusOK, (*models.OrderSlice)(&ordersSlice))
 }

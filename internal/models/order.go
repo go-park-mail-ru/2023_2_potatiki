@@ -1,10 +1,12 @@
 package models
 
 import (
-	"github.com/satori/go.uuid"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
+//easyjson:json
 type Order struct {
 	Id           uuid.UUID `json:"id"`
 	Status       string    `json:"status"`
@@ -15,11 +17,15 @@ type Order struct {
 	Products []OrderProduct `json:"products"`
 }
 
+//easyjson:json
+type OrderSlice []Order
+
 type OrderProduct struct {
 	Quantity int64 `json:"quantity"`
 	Product
 }
 
+//easyjson:json
 type OrderInfo struct {
 	DeliveryAtDate string `json:"deliveryDate"`
 	DeliveryAtTime string `json:"deliveryTime"`
