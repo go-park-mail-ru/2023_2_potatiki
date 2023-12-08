@@ -44,7 +44,6 @@ func NewSearchRepo(db pgxtype.Querier) *SearchRepo {
 }
 
 func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string) ([]models.Product, error) {
-
 	count := 10
 	productSlice := make([]models.Product, 0, count)
 	rows, err := r.db.Query(ctx, getProductsByName, productName)

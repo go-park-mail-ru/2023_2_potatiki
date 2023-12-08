@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+type HubInterface interface {
+	AddClient(uuid.UUID, *websocket.Conn)
+	Run(context.Context)
+}
+
 type Hub struct {
 	connect       map[*websocket.Conn]uuid.UUID
 	currentOffset time.Time
@@ -41,8 +46,8 @@ func (h *Hub) AddClient(userID uuid.UUID, client *websocket.Conn) {
 
 	client.SetCloseHandler(func(code int, text string) error {
 		h.m.Lock()
-		delete(h.connect, client) //TODO: add sync.Map
-		h.m.Unlock()
+		defer h.m.Unlock()
+		delete(h.connect, client)
 		return nil
 	})
 

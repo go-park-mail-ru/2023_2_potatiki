@@ -27,6 +27,10 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+var (
+	upgrader = websocket.Upgrader{}
+)
+
 type OrderHandler struct {
 	client gen.OrderClient
 	log    *slog.Logger
@@ -42,8 +46,6 @@ func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase
 		hub:    hub,
 	}
 }
-
-var upgrader = websocket.Upgrader{} // use default options
 
 func (h *OrderHandler) GetNotifications(w http.ResponseWriter, r *http.Request) {
 	h.log = h.log.With(
@@ -73,7 +75,7 @@ func (h *OrderHandler) GetNotifications(w http.ResponseWriter, r *http.Request) 
 // @Description	Create Order using profile ID from cookies
 // @Accept json
 // @Produce json
-// @Param input body models.OrderInfo true "UpdateProfileDataPayload"
+// @Param input body models.OrderInfo true "DeliveryDate and DeliveryTime"
 // @Success	200	{object} models.Order "New order info"
 // @Failure	401	"User unauthorized"
 // @Failure	404	{object} responser.response	"something not found error message"

@@ -358,3 +358,44 @@ CREATE TRIGGER comment_trigger
     AFTER INSERT ON comment
     FOR EACH ROW
 EXECUTE FUNCTION update_comment_count();
+
+
+CREATE OR REPLACE FUNCTION order_created_trigger()
+    RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.profile_id IS NOT NULL THEN
+        DECLARE
+            message_count INTEGER;
+        BEGIN
+            SELECT COUNT(*)
+            INTO message_count
+            FROM messages
+            WHERE user_id = NEW.profile_id;
+
+            IF message_count >= 5 THEN
+                UPDATE messages
+                SET created = CURRENT_TIMESTAMP,
+                    message_info = 'Заказ создан, загляните в раздел: "Заказы"'
+                WHERE created = (
+                    SELECT created
+                    FROM messages
+                    WHERE user_id = NEW.profile_id
+                    ORDER BY created ASC
+                    LIMIT 1
+                );
+            ELSE
+                INSERT INTO messages (user_id, created, message_info)
+                VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Заказ создан, загляните в раздел: "Заказы"');
+            END IF;
+        END;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER order_created
+    AFTER INSERT
+    ON order_info
+    FOR EACH ROW
+EXECUTE FUNCTION order_created_trigger();

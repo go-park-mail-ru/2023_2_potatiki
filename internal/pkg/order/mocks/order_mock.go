@@ -7,6 +7,7 @@ package mock
 import (
 	context "context"
 	reflect "reflect"
+	time "time"
 
 	models "github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	gomock "github.com/golang/mock/gomock"
@@ -117,6 +118,21 @@ func (m *MockOrderRepo) CreateOrder(arg0 context.Context, arg1 models.Cart, arg2
 func (mr *MockOrderRepoMockRecorder) CreateOrder(arg0, arg1, arg2, arg3, arg4, arg5, arg6 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepo)(nil).CreateOrder), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+}
+
+// GetUpdates mocks base method.
+func (m *MockOrderRepo) GetUpdates(arg0 context.Context, arg1 uuid.UUID, arg2 time.Time) ([]models.Message, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUpdates", arg0, arg1, arg2)
+	ret0, _ := ret[0].([]models.Message)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUpdates indicates an expected call of GetUpdates.
+func (mr *MockOrderRepoMockRecorder) GetUpdates(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUpdates", reflect.TypeOf((*MockOrderRepo)(nil).GetUpdates), arg0, arg1, arg2)
 }
 
 // ReadOrder mocks base method.
