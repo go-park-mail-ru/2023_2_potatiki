@@ -17,10 +17,10 @@ var (
 )
 
 type GrpcMiddleware struct {
-	metrics metrics.MetricerGRPC
+	metrics metrics.MetricsGRPC
 }
 
-func NewGrpcMiddleware(metrics metrics.MetricerGRPC) *GrpcMiddleware {
+func NewGrpcMiddleware(metrics metrics.MetricsGRPC) *GrpcMiddleware {
 	return &GrpcMiddleware{
 		metrics: metrics,
 	}
