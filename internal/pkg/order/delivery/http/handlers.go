@@ -7,8 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/gorilla/websocket"
-
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 	"google.golang.org/grpc/codes"
@@ -23,10 +21,6 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
 	uuid "github.com/satori/go.uuid"
-)
-
-var (
-	upgrader = websocket.Upgrader{}
 )
 
 type OrderHandler struct {
