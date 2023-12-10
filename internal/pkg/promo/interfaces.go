@@ -15,8 +15,10 @@ var (
 
 type PromoUsecase interface {
 	CheckPromocode(context.Context, string) (*models.Promocode, error)
+	UsePromocode(context.Context, string) (*models.Promocode, error)
 }
 
 type PromoRepo interface {
 	ReadPromocode(context.Context, string) (*models.Promocode, error)
+	UsePromocode(context.Context, string) (*models.Promocode, error)
 }

@@ -363,6 +363,8 @@ func run() (err error) {
 	{
 		promo.HandleFunc("/check", promoHandler.CheckPromocode).
 			Methods(http.MethodGet, http.MethodOptions)
+		promo.HandleFunc("/use", promoHandler.UsePromocode).
+			Methods(http.MethodGet, http.MethodOptions)
 	}
 
 	//----------------------------Setup endpoints----------------------------//
