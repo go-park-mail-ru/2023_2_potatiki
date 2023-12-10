@@ -34,6 +34,7 @@ DROP TABLE IF EXISTS results;
 
 DROP TABLE IF EXISTS messages;
 
+DROP TABLE IF EXISTS activities;
 
 ------------------------------------------------------------------------------------------------------------------------
 
@@ -358,3 +359,12 @@ CREATE TRIGGER comment_trigger
     AFTER INSERT ON comment
     FOR EACH ROW
 EXECUTE FUNCTION update_comment_count();
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE TABLE IF NOT EXISTS activities
+(
+    id SERIAL NOT NULL PRIMARY KEY,
+    user_id UUID NOT NULL,
+    body jsonb
+)

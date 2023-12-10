@@ -1,5 +1,6 @@
 package models
 
+//easyjson:json
 type Category struct {
 	Id     int64  `json:"categoryId"`
 	Name   string `json:"categoryName"`
