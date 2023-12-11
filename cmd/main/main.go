@@ -224,7 +224,7 @@ func run() (err error) {
 
 	recRepo := recRepo.NewRecommendationsRepo(db)
 	recUsecase := recUsecase.NewRecommendationsUsecase(recRepo)
-	recHandler := recHandler.NewCategoryHandler(log, recUsecase)
+	recHandler := recHandler.NewRecommendationsHandler(log, recUsecase)
 
 	// ----------------------------Init layers---------------------------- //
 	//

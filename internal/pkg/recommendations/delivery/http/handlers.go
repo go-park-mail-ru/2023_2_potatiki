@@ -19,7 +19,7 @@ type RecommendationsHandler struct {
 	uc  recommendations.RecommendationsUsecase
 }
 
-func NewCategoryHandler(log *slog.Logger, uc recommendations.RecommendationsUsecase) RecommendationsHandler {
+func NewRecommendationsHandler(log *slog.Logger, uc recommendations.RecommendationsUsecase) RecommendationsHandler {
 	return RecommendationsHandler{
 		log: log,
 		uc:  uc,
@@ -34,6 +34,7 @@ func NewCategoryHandler(log *slog.Logger, uc recommendations.RecommendationsUsec
 // @Param id query string true "Product UUID"
 // @Param category_id query int true "Category id"
 // @Success	200	{object} []models.ProductSlice "Products Slice"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/recommendations/get_anon [get]
 func (h *RecommendationsHandler) AnonRecommendations(w http.ResponseWriter, r *http.Request) {
@@ -82,7 +83,7 @@ func (h *RecommendationsHandler) AnonRecommendations(w http.ResponseWriter, r *h
 		return
 	}
 
-	h.log.Debug("h.uc.Recommendations", recommendations)
+	h.log.Debug("h.uc.AnonRecommendations", "recommendations", "recommendations")
 	resp.JSON(w, http.StatusOK, &recommendations)
 }
 
@@ -94,6 +95,7 @@ func (h *RecommendationsHandler) AnonRecommendations(w http.ResponseWriter, r *h
 // @Param id query string true "Product UUID"
 // @Param category_id query int true "Category id"
 // @Success	200	{object} []models.ProductSlice "Products Slice"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/recommendations/get_all [get]
 func (h *RecommendationsHandler) Recommendations(w http.ResponseWriter, r *http.Request) {
@@ -150,7 +152,7 @@ func (h *RecommendationsHandler) Recommendations(w http.ResponseWriter, r *http.
 		return
 	}
 
-	h.log.Debug("h.uc.Recommendations", recommendations)
+	h.log.Debug("h.uc.Recommendations", "recommendations", "recommendations")
 	resp.JSON(w, http.StatusOK, &recommendations)
 }
 
@@ -162,6 +164,7 @@ func (h *RecommendationsHandler) Recommendations(w http.ResponseWriter, r *http.
 // @Param input body models.UserActivity true "User activity info"
 // @Success	200
 // @Failure	401	"User unauthorized"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/recommendations/update [post]
 func (h *RecommendationsHandler) UpdateUserActivity(w http.ResponseWriter, r *http.Request) {
@@ -189,7 +192,7 @@ func (h *RecommendationsHandler) UpdateUserActivity(w http.ResponseWriter, r *ht
 	err = userActivity.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
-		resp.JSONStatus(w, http.StatusTooManyRequests)
+		resp.JSONStatus(w, http.StatusBadRequest)
 
 		return
 	}
@@ -203,6 +206,6 @@ func (h *RecommendationsHandler) UpdateUserActivity(w http.ResponseWriter, r *ht
 		return
 	}
 
-	h.log.Debug("h.uc.UpdateUserActivity", "update success")
+	h.log.Debug("h.uc.UpdateUserActivity", "update success", "recommendations")
 	resp.JSONStatus(w, http.StatusOK)
 }

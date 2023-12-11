@@ -6,6 +6,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//go:generate mockgen -source interfaces.go -destination ./mocks/recommendations_mock.go -package mock
+
 type RecommendationsUsecase interface {
 	UpdateUserActivity(context.Context, uuid.UUID, models.UserActivity) error
 	Recommendations(context.Context, uuid.UUID, uuid.UUID, int64) (models.ProductSlice, error)
