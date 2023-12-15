@@ -78,6 +78,29 @@ func (uc *OrderUsecase) CreateOrder(
 	return order, nil
 }
 
+func (uc *OrderUsecase) GetOrders(ctx context.Context, userID uuid.UUID) ([]models.Order, error) {
+	ordersID, err := uc.repoOrder.ReadOrdersID(ctx, userID)
+	if err != nil {
+		if errors.Is(err, orderRepo.ErrOrdersNotFound) {
+			return []models.Order{}, err
+		}
+		return nil, fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
+	}
+
+	orders := make([]models.Order, len(ordersID))
+	for i, orderID := range ordersID {
+		orders[i], err = uc.repoOrder.ReadOrder(ctx, orderID)
+		if err != nil {
+			if errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
+				return []models.Order{}, err
+			}
+			return nil, fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
+		}
+	}
+
+	return orders, nil
+}
+
 func (uc *OrderUsecase) GetCurrentOrder(ctx context.Context, userID uuid.UUID) (models.Order, error) {
 	orderID, err := uc.repoOrder.ReadOrderID(ctx, userID)
 	if err != nil {
@@ -100,32 +123,4 @@ func (uc *OrderUsecase) GetCurrentOrder(ctx context.Context, userID uuid.UUID) (
 	}
 
 	return order, nil
-}
-
-func (uc *OrderUsecase) GetOrders(ctx context.Context, userID uuid.UUID) ([]models.Order, error) {
-	ordersID, err := uc.repoOrder.ReadOrdersID(ctx, userID)
-	if err != nil {
-		if errors.Is(err, orderRepo.ErrOrdersNotFound) {
-			return []models.Order{}, err
-		}
-		err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
-
-		return []models.Order{}, err
-	}
-
-	orders := make([]models.Order, 0)
-	for _, orderID := range ordersID {
-		order, err := uc.repoOrder.ReadOrder(ctx, orderID)
-		if err != nil {
-			if errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
-				return []models.Order{}, err
-			}
-			err = fmt.Errorf("error happened in repoOrder.ReadOrder: %w", err)
-
-			return []models.Order{}, err // ASK: Стоит ли выбрасывать пустой слайс при ошибке чтения?
-		}
-		orders = append(orders, order)
-	}
-
-	return orders, nil
 }

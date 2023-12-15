@@ -17,7 +17,6 @@ message CreateOrderRequest {
 
 message CreateOrderResponse {
   gmodels.Order Order = 1;
-  string Error = 2;
 }
 
 message OrdersRequest {
@@ -26,7 +25,6 @@ message OrdersRequest {
 
 message OrdersResponse {
   repeated gmodels.Order Orders = 1;
-  string Error = 2;
 }
 
 
