@@ -12,6 +12,7 @@ type Order struct {
 	Status       string    `json:"status"`
 	DeliveryDate string    `json:"deliveryDate"`
 	DeliveryTime string    `json:"deliveryTime"`
+	PomocodeName string    `json:"promocodeName"`
 	CreationAt   time.Time `json:"creationDate"`
 	Address
 	Products []OrderProduct `json:"products"`
@@ -29,4 +30,5 @@ type OrderProduct struct {
 type OrderInfo struct {
 	DeliveryAtDate string `json:"deliveryDate"`
 	DeliveryAtTime string `json:"deliveryTime"`
+	PromocodeName  string `json:"promocodeName,omitempty"`
 }

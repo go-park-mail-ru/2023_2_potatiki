@@ -10,7 +10,10 @@ import (
 //go:generate mockgen -source interfaces.go -destination ./mocks/promo_mock.go -package mock
 
 var (
-	ErrPromocodeNotFound = errors.New("promocode not found")
+	ErrPromocodeNotFound = errors.New("promocode not found") //404
+	ErrPromocodeLeftout  = errors.New("promocode leftout")   //403
+	ErrPromocodeExpired  = errors.New("promocode expired")   //419
+
 )
 
 type PromoUsecase interface {

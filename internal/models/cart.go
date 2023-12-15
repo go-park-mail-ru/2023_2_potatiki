@@ -12,6 +12,7 @@ type Cart struct {
 	Products  []CartProduct `json:"products"`
 }
 
+//easyjson:json
 type CartProduct struct {
 	Quantity int64 `json:"quantity"`
 	Product

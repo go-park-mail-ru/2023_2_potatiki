@@ -50,14 +50,21 @@ func (h *PromoHandler) CheckPromocode(w http.ResponseWriter, r *http.Request) {
 
 	promocode, err := h.uc.CheckPromocode(r.Context(), name)
 	if err != nil {
-		if errors.Is(err, promo.ErrPromocodeNotFound) {
+		switch {
+		case errors.Is(err, promo.ErrPromocodeNotFound):
 			h.log.Debug("promocode not found", sl.Err(err))
 			resp.JSONStatus(w, http.StatusNotFound)
-			return
+		case errors.Is(err, promo.ErrPromocodeExpired):
+			h.log.Debug("promocode expired", sl.Err(err))
+			resp.JSONStatus(w, 419) //http code doesn't implement in lib
+		case errors.Is(err, promo.ErrPromocodeLeftout):
+			h.log.Debug("promocode not leftout", sl.Err(err))
+			resp.JSONStatus(w, http.StatusForbidden)
+		default:
+			h.log.Error("failed to check promocode", sl.Err(err))
+			resp.JSONStatus(w, http.StatusTooManyRequests)
 		}
 
-		h.log.Error("failed to check promocode", sl.Err(err))
-		resp.JSONStatus(w, http.StatusTooManyRequests)
 		return
 	}
 

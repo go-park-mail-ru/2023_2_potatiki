@@ -63,7 +63,8 @@ message Order {
   repeated OrderProduct Products = 4;
   string DeliveryTime = 5;
   string DeliveryDate = 6;
-  string CreationAt = 7;
+  string PromocodeName = 7;
+  string CreationAt = 8;
 }
 
 message OrderProduct {

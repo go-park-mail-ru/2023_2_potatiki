@@ -24,8 +24,11 @@ func (uc *PromoUsecase) CheckPromocode(ctx context.Context, name string) (*model
 		return &models.Promocode{}, err
 	}
 
-	if time.Now().After(promocode.Deadline) || promocode.Leftover < 1 {
-		return &models.Promocode{}, promo.ErrPromocodeNotFound
+	if time.Now().After(promocode.Deadline) {
+		return &models.Promocode{}, promo.ErrPromocodeExpired
+	}
+	if promocode.Leftover < 1 {
+		return &models.Promocode{}, promo.ErrPromocodeLeftout
 	}
 
 	return promocode, nil

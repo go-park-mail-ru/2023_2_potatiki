@@ -1151,6 +1151,50 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/promo/use": {
+            "get": {
+                "description": "Use Promocode",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Promo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "promocode name, example: SALE23",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Promocode model",
+                        "schema": {
+                            "$ref": "#/definitions/models.Promocode"
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.response"
+                        }
+                    },
+                    "404": {
+                        "description": "something not found error message"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
         "/api/search/": {
             "get": {
                 "description": "Search products by name",
@@ -1439,6 +1483,9 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.OrderProduct"
                     }
                 },
+                "promocodeName": {
+                    "type": "string"
+                },
                 "status": {
                     "type": "string"
                 },
@@ -1454,6 +1501,9 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deliveryTime": {
+                    "type": "string"
+                },
+                "promocodeName": {
                     "type": "string"
                 }
             }

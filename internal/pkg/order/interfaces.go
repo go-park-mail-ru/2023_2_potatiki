@@ -11,7 +11,7 @@ import (
 //go:generate mockgen -source interfaces.go -destination ./mocks/order_mock.go -package mock
 
 type OrderUsecase interface {
-	CreateOrder(context.Context, uuid.UUID, string, string) (models.Order, error)
+	CreateOrder(context.Context, uuid.UUID, string, string, string) (models.Order, error)
 	GetCurrentOrder(context.Context, uuid.UUID) (models.Order, error)
 	GetOrders(context.Context, uuid.UUID) ([]models.Order, error)
 }

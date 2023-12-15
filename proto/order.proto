@@ -12,6 +12,7 @@ message CreateOrderRequest {
   string Id = 1;
   string DeliveryDate = 2;
   string DeliveryTime = 3;
+	string PromocodeName = 4;
 }
 
 message CreateOrderResponse {

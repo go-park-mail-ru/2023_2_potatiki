@@ -46,20 +46,20 @@ func (h GrpcOrderHandler) CreateOrder(ctx context.Context, in *gen.CreateOrderRe
 		h.log.Error("failed to get uuid from string", sl.Err(err))
 		return &gen.CreateOrderResponse{Error: err.Error()}, metricsmw.ClientError
 	}
-	order, err := h.uc.CreateOrder(ctx, userId, in.DeliveryTime, in.DeliveryDate)
+	order, err := h.uc.CreateOrder(ctx, userId, in.DeliveryTime, in.DeliveryDate, in.PromocodeName)
 	if err != nil {
 		h.log.Error("failed in h.uc.CreateOrder", sl.Err(err))
 		return &gen.CreateOrderResponse{Error: err.Error()}, metricsmw.ServerError
 	}
 
-	timeString := order.CreationAt.Format(time.RFC3339)
 	orderResponse := gen.CreateOrderResponse{
 		Order: &gmodels.Order{
-			Id:           order.Id.String(),
-			Status:       order.Status,
-			CreationAt:   timeString,
-			DeliveryTime: order.DeliveryTime,
-			DeliveryDate: order.DeliveryDate,
+			Id:            order.Id.String(),
+			Status:        order.Status,
+			CreationAt:    order.CreationAt.Format(time.RFC3339),
+			DeliveryTime:  order.DeliveryTime,
+			DeliveryDate:  order.DeliveryDate,
+			PromocodeName: order.PomocodeName,
 			Address: &gmodels.Address{
 				Id:        order.Address.Id.String(),
 				ProfileId: order.Address.ProfileId.String(),

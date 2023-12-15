@@ -110,20 +110,21 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//order, err := h.uc.CreateOrder(r.Context(), userID)
-	orderResponse, err := h.client.CreateOrder(r.Context(), &gen.CreateOrderRequest{
-		Id:           userID.String(),
-		DeliveryDate: payload.DeliveryAtDate,
-		DeliveryTime: payload.DeliveryAtTime,
+	gorder, err := h.client.CreateOrder(r.Context(), &gen.CreateOrderRequest{
+		Id:            userID.String(),
+		DeliveryDate:  payload.DeliveryAtDate,
+		DeliveryTime:  payload.DeliveryAtTime,
+		PromocodeName: payload.PromocodeName,
 	})
 	if err != nil {
-		h.log.Error("failed to get something", sl.Err(err))
+		h.log.Error("failed to get CreateOrder", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
 	}
 
-	if orderResponse.Error != "" {
-		h.log.Error("failed to get something", sl.Err(errors.New(orderResponse.Error)))
+	if gorder.Error != "" {
+		h.log.Error("failed to get something", sl.Err(errors.New(gorder.Error)))
 		resp.JSONStatus(w, http.StatusNotFound)
 
 		//if errors.Is(err, cartRepo.ErrCartNotFound) {
@@ -145,62 +146,64 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		//}
 		return
 	}
-	orderProto := orderResponse.Order
-	addressProto := orderProto.Address
-	productsProto := orderProto.Products
-	orderId, err := uuid.FromString(orderProto.Id)
-	addressId, err := uuid.FromString(orderProto.Address.Id)
-	profileId, err := uuid.FromString(orderProto.Address.ProfileId)
-	parsedTime, err := time.Parse(time.RFC3339, orderProto.CreationAt)
+	orderId, err := uuid.FromString(gorder.Order.Id)
+	addressId, err := uuid.FromString(gorder.Order.Address.Id)
+	profileId, err := uuid.FromString(gorder.Order.Address.ProfileId)
+	parsedTime, err := time.Parse(time.RFC3339, gorder.Order.CreationAt)
 	if err != nil {
-		h.log.Error("failed to get from string", err)
+		h.log.Error("failed to parse order response field", err)
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 
 		return
 	}
-	orderModel := models.Order{
+	order := models.Order{
 		Id:           orderId,
-		Status:       orderProto.Status,
+		Status:       gorder.Order.Status,
 		CreationAt:   parsedTime,
-		DeliveryTime: orderProto.DeliveryTime,
-		DeliveryDate: orderProto.DeliveryDate,
+		DeliveryTime: gorder.Order.DeliveryTime,
+		DeliveryDate: gorder.Order.DeliveryDate,
 		Address: models.Address{
 			Id:        addressId,
 			ProfileId: profileId,
-			City:      addressProto.City,
-			Street:    addressProto.Street,
-			House:     addressProto.House,
-			Flat:      addressProto.Flat,
-			IsCurrent: addressProto.IsCurrent,
+			City:      gorder.Order.Address.City,
+			Street:    gorder.Order.Address.Street,
+			House:     gorder.Order.Address.House,
+			Flat:      gorder.Order.Address.Flat,
+			IsCurrent: gorder.Order.Address.IsCurrent,
 		},
 	}
 
-	var productsSlice []models.OrderProduct
-	for _, orderProduct := range productsProto {
-		product := orderProduct.Product
-		productId, _ := uuid.FromString(product.Id)
-		productsSlice = append(productsSlice, models.OrderProduct{
-			Quantity: orderProduct.Quantity,
+	var products []models.OrderProduct
+	for _, gproduct := range gorder.Order.Products {
+		productId, err := uuid.FromString(gproduct.Product.Id)
+		if err != nil {
+			h.log.Error("failed to cast id", sl.Err(err))
+			resp.JSONStatus(w, http.StatusTooManyRequests)
+
+			return
+		}
+		products = append(products, models.OrderProduct{
+			Quantity: gproduct.Quantity,
 			Product: models.Product{
 				Id:          productId,
-				Name:        product.Name,
-				Description: product.Description,
-				Price:       product.Price,
-				ImgSrc:      product.ImgSrc,
-				Rating:      product.Rating,
+				Name:        gproduct.Product.Name,
+				Description: gproduct.Product.Description,
+				Price:       gproduct.Product.Price,
+				ImgSrc:      gproduct.Product.ImgSrc,
+				Rating:      gproduct.Product.Rating,
 				Category: models.Category{
-					Id:     product.Category.Id,
-					Name:   product.Category.Name,
-					Parent: product.Category.Parent,
+					Id:     gproduct.Product.Category.Id,
+					Name:   gproduct.Product.Category.Name,
+					Parent: gproduct.Product.Category.Parent,
 				},
 			},
 		})
 	}
 
-	orderModel.Products = productsSlice
+	order.Products = products
 
-	h.log.Debug("h.uc.CreateOrder", "order", orderModel)
-	resp.JSON(w, http.StatusOK, &orderModel)
+	h.log.Debug("h.uc.CreateOrder", "order", order)
+	resp.JSON(w, http.StatusOK, &order)
 }
 
 // @Summary	GetCurrentOrder

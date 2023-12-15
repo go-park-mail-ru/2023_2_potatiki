@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
 	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
 
@@ -29,7 +30,12 @@ func NewOrderUsecase(repoOrder order.OrderRepo, repoCart cart.CartRepo, repoAddr
 	}
 }
 
-func (uc *OrderUsecase) CreateOrder(ctx context.Context, userID uuid.UUID, deliveryTime, deliveryDate string) (models.Order, error) {
+func (uc *OrderUsecase) CreateOrder(
+	ctx context.Context,
+	userID uuid.UUID,
+	deliveryTime,
+	deliveryDate,
+	promocodeName string) (models.Order, error) {
 	address, err := uc.repoAddress.ReadCurrentAddress(ctx, userID)
 	if err != nil {
 		if errors.Is(err, addressRepo.ErrAddressNotFound) {
@@ -60,6 +66,7 @@ func (uc *OrderUsecase) CreateOrder(ctx context.Context, userID uuid.UUID, deliv
 		return models.Order{}, err
 	}
 	order.Address = address
+	order.PomocodeName = promocodeName
 
 	err = uc.repoCart.DeleteCart(ctx, cart.Id)
 	if err != nil {
