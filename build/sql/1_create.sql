@@ -364,31 +364,12 @@ EXECUTE FUNCTION update_comment_count();
 CREATE OR REPLACE FUNCTION order_created_trigger()
     RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.profile_id IS NOT NULL THEN
-        DECLARE
-            message_count INTEGER;
-        BEGIN
-            SELECT COUNT(*)
-            INTO message_count
-            FROM messages
-            WHERE user_id = NEW.profile_id;
+    DELETE FROM messages
+    WHERE created < CURRENT_TIMESTAMP - interval '1 day';
 
-            IF message_count >= 5 THEN
-                UPDATE messages
-                SET created = CURRENT_TIMESTAMP,
-                    message_info = 'Заказ создан, загляните в раздел: "Заказы"'
-                WHERE created = (
-                    SELECT created
-                    FROM messages
-                    WHERE user_id = NEW.profile_id
-                    ORDER BY created ASC
-                    LIMIT 1
-                );
-            ELSE
-                INSERT INTO messages (user_id, created, message_info)
-                VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Заказ создан, загляните в раздел: "Заказы"');
-            END IF;
-        END;
+    IF NEW.profile_id IS NOT NULL THEN
+        INSERT INTO messages (user_id, created, message_info)
+        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Заказ создан, загляните в раздел: "Заказы"');
     END IF;
 
     RETURN NEW;
@@ -406,31 +387,12 @@ EXECUTE FUNCTION order_created_trigger();
 CREATE OR REPLACE FUNCTION profile_created_trigger()
     RETURNS TRIGGER AS $$
 BEGIN
-    IF NEW.id IS NOT NULL THEN
-        DECLARE
-            message_count INTEGER;
-        BEGIN
-            SELECT COUNT(*)
-            INTO message_count
-            FROM messages
-            WHERE user_id = NEW.id;
+    DELETE FROM messages
+    WHERE created < CURRENT_TIMESTAMP - interval '1 day';
 
-            IF message_count >= 5 THEN
-                UPDATE messages
-                SET created = CURRENT_TIMESTAMP + interval '1 second',
-                    message_info = 'Спасибо за регистрацию, мы дарим вам промокод'
-                WHERE created = (
-                    SELECT created
-                    FROM messages
-                    WHERE user_id = NEW.id
-                    ORDER BY created ASC
-                    LIMIT 1
-                );
-            ELSE
-                INSERT INTO messages (user_id, created, message_info)
-                VALUES (NEW.id, CURRENT_TIMESTAMP + interval '1 second', 'Спасибо за регистрацию, мы дарим вам промокод');
-            END IF;
-        END;
+    IF NEW.id IS NOT NULL THEN
+        INSERT INTO messages (user_id, created, message_info)
+        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '5 seconds', 'Спасибо за регистрацию, мы дарим вам промокод: ****');
     END IF;
 
     RETURN NEW;

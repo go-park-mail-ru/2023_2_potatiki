@@ -54,7 +54,7 @@ func (h *Hub) AddClient(userID uuid.UUID, client *websocket.Conn) {
 }
 
 func (h *Hub) Run(ctx context.Context) {
-	t := time.NewTicker(30 * time.Second)
+	t := time.NewTicker(5 * time.Second)
 	defer t.Stop()
 
 	for {
@@ -69,7 +69,7 @@ func (h *Hub) Run(ctx context.Context) {
 					}
 				}
 			}
-			h.currentOffset = h.currentOffset.Add(30 * time.Second)
+			h.currentOffset = h.currentOffset.Add(5 * time.Second)
 		case <-ctx.Done():
 			return
 		}
