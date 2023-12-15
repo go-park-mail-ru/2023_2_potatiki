@@ -3,9 +3,10 @@ package models
 import uuid "github.com/satori/go.uuid"
 
 const (
-	MinProductsCount         = 20
-	MinCateggoriesCount      = 4
-	ProductCountFromCategory = 2
+	MinProductsCount          = 20
+	MinCateggoriesCount       = 4
+	ProductCountFromCategory  = 2
+	ProductCountFromStatistic = 10
 )
 
 //easyjson:json
@@ -45,7 +46,3 @@ type CategoryStatistic struct {
 	CategoryID     int64 `json:"categoryId"`
 	ActivityPoints int64 `json:"activityPoints"`
 }
-
-type ProductIDs []uuid.UUID
-
-type CategoryIDs []int64

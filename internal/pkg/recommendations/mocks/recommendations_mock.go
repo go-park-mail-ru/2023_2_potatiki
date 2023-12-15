@@ -132,21 +132,6 @@ func (mr *MockRecommendationsRepoMockRecorder) ReadProduct(arg0, arg1 interface{
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProduct", reflect.TypeOf((*MockRecommendationsRepo)(nil).ReadProduct), arg0, arg1)
 }
 
-// ReadProductsFromCategories mocks base method.
-func (m *MockRecommendationsRepo) ReadProductsFromCategories(arg0 context.Context, arg1 models.CategoryIDs) (models.ProductSlice, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadProductsFromCategories", arg0, arg1)
-	ret0, _ := ret[0].(models.ProductSlice)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadProductsFromCategories indicates an expected call of ReadProductsFromCategories.
-func (mr *MockRecommendationsRepoMockRecorder) ReadProductsFromCategories(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsFromCategories", reflect.TypeOf((*MockRecommendationsRepo)(nil).ReadProductsFromCategories), arg0, arg1)
-}
-
 // ReadProductsFromCategory mocks base method.
 func (m *MockRecommendationsRepo) ReadProductsFromCategory(arg0 context.Context, arg1 int64) (models.ProductSlice, error) {
 	m.ctrl.T.Helper()
@@ -175,21 +160,6 @@ func (m *MockRecommendationsRepo) ReadProductsFromParentCategory(arg0 context.Co
 func (mr *MockRecommendationsRepoMockRecorder) ReadProductsFromParentCategory(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadProductsFromParentCategory", reflect.TypeOf((*MockRecommendationsRepo)(nil).ReadProductsFromParentCategory), arg0, arg1)
-}
-
-// ReadRecommendations mocks base method.
-func (m *MockRecommendationsRepo) ReadRecommendations(arg0 context.Context, arg1 models.ProductIDs) (models.ProductSlice, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ReadRecommendations", arg0, arg1)
-	ret0, _ := ret[0].(models.ProductSlice)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ReadRecommendations indicates an expected call of ReadRecommendations.
-func (mr *MockRecommendationsRepoMockRecorder) ReadRecommendations(arg0, arg1 interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadRecommendations", reflect.TypeOf((*MockRecommendationsRepo)(nil).ReadRecommendations), arg0, arg1)
 }
 
 // ReadUserActivity mocks base method.

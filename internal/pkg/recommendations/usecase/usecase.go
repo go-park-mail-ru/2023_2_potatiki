@@ -81,19 +81,16 @@ func (uc *RecommendationsUsecase) Recommendations(
 		return productStatisticSlice[i].ActivityPoints > productStatisticSlice[j].ActivityPoints
 	})
 
-	productIds := make(models.ProductIDs, 0, models.MinProductsCount/2)
-	for index, product := range productStatisticSlice {
-		productIds = append(productIds, product.ProductID)
-		if index == models.MinProductsCount-1 {
-			break
+	productsLen := min(models.MinProductsCount, len(productStatisticSlice))
+	products := make(models.ProductSlice, 0, models.ProductCountFromStatistic)
+	for i := 0; i < productsLen; i++ {
+		product, err := uc.repo.ReadProduct(ctx, productStatisticSlice[i].ProductID)
+		if err != nil {
+			err = fmt.Errorf("error happened in repo.ReadProduct: %w", err)
+
+			return models.ProductSlice{}, err
 		}
-	}
-
-	products, err := uc.repo.ReadRecommendations(ctx, productIds)
-	if err != nil {
-		err = fmt.Errorf("error happened in repo.ReadRecommendations: %w", err)
-
-		return models.ProductSlice{}, err
+		products = append(products, product)
 	}
 
 	categoryStatisticSlice := make([]models.CategoryStatistic, 0, len(oldActivity.Category))
@@ -104,15 +101,18 @@ func (uc *RecommendationsUsecase) Recommendations(
 		return categoryStatisticSlice[i].ActivityPoints > categoryStatisticSlice[j].ActivityPoints
 	})
 
-	categoryIDs := make(models.CategoryIDs, 0, models.MinCateggoriesCount)
-	for index, category := range categoryStatisticSlice {
-		categoryIDs = append(categoryIDs, category.CategoryID)
-		if index == models.MinCateggoriesCount-1 {
-			break
+	categoriesLen := min(models.MinCateggoriesCount, len(categoryStatisticSlice))
+	productsFromCategories := make(models.ProductSlice, 0, models.ProductCountFromStatistic)
+	for i := 0; i < categoriesLen; i++ {
+		productsFromCategorie, err := uc.repo.ReadProductsFromCategory(ctx, categoryStatisticSlice[i].CategoryID)
+		if err != nil {
+			err = fmt.Errorf("error happened in repo.ReadProductsFromCategory: %w", err)
+
+			return models.ProductSlice{}, err
 		}
+		productsFromCategories = append(productsFromCategories, productsFromCategorie...)
 	}
 
-	productsFromCategories, err := uc.repo.ReadProductsFromCategories(ctx, categoryIDs)
 	products = append(products, productsFromCategories...)
 	productsMap := make(map[uuid.UUID]models.Product, len(products))
 	for _, product := range products {

@@ -18,9 +18,7 @@ type RecommendationsRepo interface {
 	ReadUserActivity(context.Context, uuid.UUID) (models.UserActivityStore, error)
 	CreateUserActivity(context.Context, uuid.UUID) error
 	UpdateUserActivity(context.Context, uuid.UUID, models.UserActivityStore) error
-	ReadRecommendations(context.Context, models.ProductIDs) (models.ProductSlice, error)
 	ReadProductsFromParentCategory(context.Context, int64) (models.ProductSlice, error)
 	ReadProduct(context.Context, uuid.UUID) (models.Product, error)
-	ReadProductsFromCategories(context.Context, models.CategoryIDs) (models.ProductSlice, error)
 	ReadProductsFromCategory(context.Context, int64) (models.ProductSlice, error)
 }

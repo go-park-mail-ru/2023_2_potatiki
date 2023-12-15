@@ -122,43 +122,6 @@ func (r *RecommendationsRepo) ReadProductsFromCategory(ctx context.Context, cate
 	return productSlice, nil
 }
 
-func (r *RecommendationsRepo) ReadProductsFromCategories(ctx context.Context, categoryIDs models.CategoryIDs) (models.ProductSlice, error) {
-	productSlice := make(models.ProductSlice, 0, models.MinProductsCount/2)
-	for _, id := range categoryIDs {
-		products, err := r.ReadProductsFromCategory(ctx, id)
-		if err != nil {
-			if !errors.Is(err, ErrProductNotFound) {
-				err = fmt.Errorf("error happened in db.QueryContext: %w", err)
-
-				return models.ProductSlice{}, err
-			}
-			break
-		}
-		productSlice = append(productSlice, products...)
-	}
-
-	return productSlice, nil
-}
-
-func (r *RecommendationsRepo) ReadRecommendations(ctx context.Context, productIDs models.ProductIDs) (models.ProductSlice, error) {
-	productSlice := make(models.ProductSlice, 0, models.MinProductsCount/2)
-	for _, id := range productIDs {
-		product, err := r.ReadProduct(ctx, id)
-		if err != nil {
-			if !errors.Is(err, ErrProductNotFound) {
-				err = fmt.Errorf("error happened in db.QueryContext: %w", err)
-
-				return models.ProductSlice{}, err
-			}
-			break
-		}
-		productSlice = append(productSlice, product)
-	}
-
-	return productSlice, nil
-
-}
-
 func (r *RecommendationsRepo) ReadProduct(ctx context.Context, id uuid.UUID) (models.Product, error) {
 	pr := models.Product{}
 	err := r.db.QueryRow(ctx, getProduct, id).
