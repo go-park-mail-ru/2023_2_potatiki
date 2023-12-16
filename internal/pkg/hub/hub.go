@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+//go:generate mockgen -source hub.go -destination ./mocks/hub_mock.go -package mock
+
 type HubInterface interface {
 	AddClient(uuid.UUID, *websocket.Conn)
 	Run(context.Context)

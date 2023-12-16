@@ -18,11 +18,11 @@ var (
 )
 
 type NotificationsHandler struct {
-	hub *userConnections.Hub
+	hub userConnections.HubInterface
 	log *slog.Logger
 }
 
-func NewNotificationsHandler(hub *userConnections.Hub, log *slog.Logger) *NotificationsHandler {
+func NewNotificationsHandler(hub userConnections.HubInterface, log *slog.Logger) *NotificationsHandler {
 	return &NotificationsHandler{
 		log: log,
 		hub: hub,
