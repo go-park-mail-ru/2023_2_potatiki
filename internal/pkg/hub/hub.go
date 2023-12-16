@@ -15,24 +15,20 @@ type HubInterface interface {
 }
 
 type Hub struct {
-	connect       map[*websocket.Conn]uuid.UUID
+	connect       sync.Map
 	currentOffset time.Time
 	repo          order.OrderRepo
-	m             sync.RWMutex
 }
 
 func NewHub(repo order.OrderRepo) *Hub {
 	return &Hub{
 		repo:          repo,
 		currentOffset: time.Now(),
-		connect:       make(map[*websocket.Conn]uuid.UUID),
-		m:             sync.RWMutex{},
 	}
 }
 
 func (h *Hub) AddClient(userID uuid.UUID, client *websocket.Conn) {
-
-	h.connect[client] = userID
+	h.connect.Store(client, userID)
 
 	go func() {
 		for {
@@ -45,12 +41,9 @@ func (h *Hub) AddClient(userID uuid.UUID, client *websocket.Conn) {
 	}()
 
 	client.SetCloseHandler(func(code int, text string) error {
-		h.m.Lock()
-		defer h.m.Unlock()
-		delete(h.connect, client)
+		h.connect.Delete(client)
 		return nil
 	})
-
 }
 
 func (h *Hub) Run(ctx context.Context) {
@@ -60,7 +53,10 @@ func (h *Hub) Run(ctx context.Context) {
 	for {
 		select {
 		case <-t.C:
-			for connect, userID := range h.connect {
+			h.connect.Range(func(key, value interface{}) bool {
+				connect := key.(*websocket.Conn)
+				userID := value.(uuid.UUID)
+
 				messages, _ := h.repo.GetUpdates(ctx, userID, h.currentOffset)
 				for _, message := range messages {
 					err := connect.WriteJSON(message)
@@ -68,11 +64,14 @@ func (h *Hub) Run(ctx context.Context) {
 						continue
 					}
 				}
-			}
+
+				return true
+			})
+
 			h.currentOffset = h.currentOffset.Add(5 * time.Second)
+
 		case <-ctx.Done():
 			return
 		}
-
 	}
 }

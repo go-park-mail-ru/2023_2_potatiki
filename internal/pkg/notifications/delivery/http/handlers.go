@@ -1,7 +1,7 @@
 package http
 
 import (
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
+	userConnections "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
 	"github.com/gorilla/websocket"
 	"log/slog"
 	"net/http"
@@ -18,11 +18,11 @@ var (
 )
 
 type NotificationsHandler struct {
-	hub *hub.Hub
+	hub *userConnections.Hub
 	log *slog.Logger
 }
 
-func NewNotificationsHandler(hub *hub.Hub, log *slog.Logger) *NotificationsHandler {
+func NewNotificationsHandler(hub *userConnections.Hub, log *slog.Logger) *NotificationsHandler {
 	return &NotificationsHandler{
 		log: log,
 		hub: hub,
