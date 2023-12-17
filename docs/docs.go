@@ -701,7 +701,7 @@ const docTemplate = `{
                 "summary": "CreateOrder",
                 "parameters": [
                     {
-                        "description": "UpdateProfileDataPayload",
+                        "description": "DeliveryDate and DeliveryTime",
                         "name": "input",
                         "in": "body",
                         "required": true,

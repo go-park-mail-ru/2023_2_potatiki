@@ -35,6 +35,7 @@ func TestSearchRepo_ReadProductsByName(t *testing.T) {
 				"rating",
 				"category_id",
 				"category_name",
+				"count",
 			},
 			err: nil,
 		},
@@ -56,6 +57,7 @@ func TestSearchRepo_ReadProductsByName(t *testing.T) {
 				"rating",
 				"category_id",
 				"category_name",
+				"count",
 			},
 			err: ErrProductNotFound,
 		},
@@ -75,6 +77,7 @@ func TestSearchRepo_ReadProductsByName(t *testing.T) {
 				float32(0),
 				int64(0),
 				"",
+				int64(0),
 			).ToPgxRows()
 			tt.mockRepoFn(mockPool, pgxRows)
 

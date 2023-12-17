@@ -3,13 +3,9 @@ package http
 import (
 	"errors"
 	"io"
-	"log"
 	"log/slog"
 	"net/http"
 	"time"
-
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
-	"github.com/gorilla/websocket"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
@@ -31,41 +27,14 @@ type OrderHandler struct {
 	client gen.OrderClient
 	log    *slog.Logger
 	uc     order.OrderUsecase
-	hub    *hub.Hub
 }
 
-func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase, hub *hub.Hub) *OrderHandler {
+func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase) *OrderHandler {
 	return &OrderHandler{
 		client: cl,
 		log:    log,
 		uc:     uc,
-		hub:    hub,
 	}
-}
-
-var upgrader = websocket.Upgrader{} // use default options
-
-func (h *OrderHandler) GetNotifications(w http.ResponseWriter, r *http.Request) {
-	h.log = h.log.With(
-		slog.String("op", sl.GFN()),
-		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
-	)
-
-	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
-	if !ok {
-		h.log.Error("failed cast uuid from context value")
-		resp.JSONStatus(w, http.StatusUnauthorized)
-
-		return
-	}
-
-	c, err := upgrader.Upgrade(w, r, nil)
-	if err != nil {
-		log.Print("upgrade:", err)
-		return
-	}
-	h.hub.AddClient(userID, c)
-
 }
 
 // @Summary	CreateOrder
@@ -73,7 +42,7 @@ func (h *OrderHandler) GetNotifications(w http.ResponseWriter, r *http.Request) 
 // @Description	Create Order using profile ID from cookies
 // @Accept json
 // @Produce json
-// @Param input body models.OrderInfo true "UpdateProfileDataPayload"
+// @Param input body models.OrderInfo true "DeliveryDate and DeliveryTime"
 // @Success	200	{object} models.Order "New order info"
 // @Failure	401	"User unauthorized"
 // @Failure	404	{object} responser.response	"something not found error message"
