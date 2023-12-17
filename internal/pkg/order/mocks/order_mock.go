@@ -135,6 +135,21 @@ func (mr *MockOrderRepoMockRecorder) GetUpdates(arg0, arg1, arg2 interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUpdates", reflect.TypeOf((*MockOrderRepo)(nil).GetUpdates), arg0, arg1, arg2)
 }
 
+// GetUpdates mocks base method.
+func (m *MockOrderRepo) GetUpdates(arg0 context.Context, arg1 uuid.UUID, arg2 time.Time) ([]models.Message, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUpdates", arg0, arg1, arg2)
+	ret0, _ := ret[0].([]models.Message)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUpdates indicates an expected call of GetUpdates.
+func (mr *MockOrderRepoMockRecorder) GetUpdates(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUpdates", reflect.TypeOf((*MockOrderRepo)(nil).GetUpdates), arg0, arg1, arg2)
+}
+
 // ReadOrder mocks base method.
 func (m *MockOrderRepo) ReadOrder(arg0 context.Context, arg1 uuid.UUID) (models.Order, error) {
 	m.ctrl.T.Helper()

@@ -10,7 +10,7 @@ const (
 	ServiceAuthName = "auth"
 )
 
-type MetricerGRPC interface {
+type MetricsGRPC interface {
 	IncreaseHits(string)
 	IncreaseErr(string, string)
 	AddDurationToHistogram(string, time.Duration)
@@ -76,7 +76,6 @@ func (m *MetricGRPC) IncreaseHits(path string) {
 }
 
 func (m *MetricGRPC) IncreaseErr(statusCode, path string) {
-
 	m.totalErrors.WithLabelValues(statusCode, path, m.name).Inc()
 }
 

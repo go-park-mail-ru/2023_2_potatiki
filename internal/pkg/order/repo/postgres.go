@@ -106,9 +106,6 @@ func (r *OrderRepo) GetUpdates(ctx context.Context, userID uuid.UUID, time time.
 	rows, err := r.db.Query(ctx, getUpdates, userID, time)
 	defer rows.Close()
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return []models.Message{}, ErrMessageNotFound
-		}
 		err = fmt.Errorf("error happened in db.Query: %w", err)
 
 		return []models.Message{}, err
@@ -128,6 +125,9 @@ func (r *OrderRepo) GetUpdates(ctx context.Context, userID uuid.UUID, time time.
 			return []models.Message{}, err
 		}
 		messages = append(messages, message)
+	}
+	if len(messages) == 0 {
+		return []models.Message{}, ErrMessageNotFound
 	}
 
 	return messages, nil

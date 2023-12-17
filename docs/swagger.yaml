@@ -746,7 +746,7 @@ paths:
       - application/json
       description: Create Order using profile ID from cookies
       parameters:
-      - description: UpdateProfileDataPayload
+      - description: DeliveryDate and DeliveryTime
         in: body
         name: input
         required: true

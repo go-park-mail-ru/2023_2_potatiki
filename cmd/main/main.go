@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
+	clientHub "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -71,6 +71,12 @@ import (
 	promoHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/delivery/http"
 	promoRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/repo"
 	promoUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/usecase"
+
+	recHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/delivery/http"
+	recRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/repo"
+	recUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/usecase"
+
+	notificationsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/delivery/http"
 )
 
 // @title ZuZu Backend API
@@ -208,15 +214,20 @@ func run() (err error) {
 
 	orderRepo := orderRepo.NewOrderRepo(db)
 
-	hub := hub.NewHub(orderRepo)
-
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo, promoRepo)
 	orderClient := orderGrpc.NewOrderClient(orderConn)
-	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase, hub)
+	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
 
 	commentsRepo := commentsRepo.NewCommentsRepo(db)
 	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
 	commentsHandler := commentsHandler.NewCommentsHandler(log, commentsUsecase)
+
+	recRepo := recRepo.NewRecommendationsRepo(db)
+	recUsecase := recUsecase.NewRecommendationsUsecase(recRepo)
+	recHandler := recHandler.NewRecommendationsHandler(log, recUsecase)
+
+	hub := clientHub.NewHub(orderRepo)
+	notificationsHandler := notificationsHandler.NewNotificationsHandler(hub, log)
 
 	// ----------------------------Init layers---------------------------- //
 	//
@@ -318,8 +329,11 @@ func run() (err error) {
 
 		order.Handle("/get_all", authMW(http.HandlerFunc(orderHandler.GetOrders))).
 			Methods(http.MethodGet, http.MethodOptions)
+	}
 
-		order.Handle("/notify", authMW(http.HandlerFunc(orderHandler.GetNotifications))).
+	notifications := r.PathPrefix("/notifications").Subrouter()
+	{
+		notifications.Handle("/get_all", authMW(http.HandlerFunc(notificationsHandler.GetNotifications))).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 
@@ -364,6 +378,18 @@ func run() (err error) {
 		promo.HandleFunc("/check", promoHandler.CheckPromocode).
 			Methods(http.MethodGet, http.MethodOptions)
 		promo.HandleFunc("/use", promoHandler.UsePromocode).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	recs := r.PathPrefix("/recommendations").Subrouter()
+	{
+		recs.Handle("/get_all", authMW(http.HandlerFunc(recHandler.Recommendations))).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		recs.Handle("/update", authMW(http.HandlerFunc(recHandler.UpdateUserActivity))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		recs.HandleFunc("/get_anon", recHandler.AnonRecommendations).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 
