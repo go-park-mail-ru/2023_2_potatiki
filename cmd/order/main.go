@@ -22,6 +22,7 @@ import (
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	orderUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/usecase"
+	promoRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/repo"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/config"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
@@ -78,8 +79,9 @@ func run() (err error) {
 	// ----------------------------Database---------------------------- //
 	addressRepo := addressRepo.NewAddressRepo(db)
 	cartRepo := cartRepo.NewCartRepo(db)
+	promoRepo := promoRepo.NewPromoRepo(db)
 	orderRepo := orderRepo.NewOrderRepo(db)
-	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
+	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo, promoRepo)
 	orderHandler := grpcOrder.NewGrpcOrderHandler(orderUsecase, log)
 
 	grpcMetrics := metrics.NewMetricGRPC(metrics.ServiceAuthName)

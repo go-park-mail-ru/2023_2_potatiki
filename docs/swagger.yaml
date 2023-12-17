@@ -159,6 +159,8 @@ definitions:
         items:
           $ref: '#/definitions/models.OrderProduct'
         type: array
+      promocodeName:
+        type: string
       status:
         type: string
       street:
@@ -169,6 +171,8 @@ definitions:
       deliveryDate:
         type: string
       deliveryTime:
+        type: string
+      promocodeName:
         type: string
     type: object
   models.OrderProduct:
@@ -1018,6 +1022,35 @@ paths:
       consumes:
       - application/json
       description: Check Promocode
+      parameters:
+      - description: 'promocode name, example: SALE23'
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Promocode model
+          schema:
+            $ref: '#/definitions/models.Promocode'
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.response'
+        "404":
+          description: something not found error message
+        "429":
+          description: Too Many Requests
+      summary: Promo
+      tags:
+      - Promo
+  /api/promo/use:
+    get:
+      consumes:
+      - application/json
+      description: Use Promocode
       parameters:
       - description: 'promocode name, example: SALE23'
         in: query

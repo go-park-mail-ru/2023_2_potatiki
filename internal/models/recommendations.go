@@ -9,7 +9,6 @@ const (
 	ProductCountFromStatistic = 10
 )
 
-//easyjson:json
 type UserActivity struct {
 	Product  ProductStatisticSlice  `json:"product"`
 	Category CategoryStatisticSlice `json:"category"`
@@ -21,7 +20,6 @@ type ProductStatisticSlice []ProductStatistic
 //easyjson:json
 type CategoryStatisticSlice []CategoryStatistic
 
-//easyjson:json
 type UserActivityStore struct {
 	Product  ProductStatisticMap  `json:"product"`
 	Category CategoryStatisticMap `json:"category"`
@@ -33,7 +31,6 @@ type ProductStatisticMap map[uuid.UUID]ProductStatistic
 //easyjson:json
 type CategoryStatisticMap map[int64]CategoryStatistic
 
-//easyjson:json
 type ProductStatistic struct {
 	ProductID      uuid.UUID `json:"productId"`
 	ActivityPoints int64     `json:"activityPoints"`
@@ -41,7 +38,6 @@ type ProductStatistic struct {
 	IsReviewed     bool      `json:"isReviewed"`
 }
 
-//easyjson:json
 type CategoryStatistic struct {
 	CategoryID     int64 `json:"categoryId"`
 	ActivityPoints int64 `json:"activityPoints"`

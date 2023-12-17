@@ -1073,7 +1073,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/promo/check?name=PROMO10",
+							"raw": "{{baseUrl}}/api/promo/check?name=ZUZU99",
 							"host": [
 								"{{baseUrl}}"
 							],
@@ -1085,7 +1085,32 @@
 							"query": [
 								{
 									"key": "name",
-									"value": "PROMO10"
+									"value": "ZUZU99"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "usePromocode",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/promo/use?name=SAVE25",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"promo",
+								"use"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "SAVE25"
 								}
 							]
 						}

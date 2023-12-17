@@ -6,7 +6,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-//easyjson:json
 type Comment struct {
 	ID           uuid.UUID `json:"id"`
 	UserName     string    `json:"userName"`

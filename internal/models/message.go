@@ -1,10 +1,12 @@
 package models
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
+//easyjson:skip
 type Message struct {
 	UserID      uuid.UUID
 	Created     time.Time

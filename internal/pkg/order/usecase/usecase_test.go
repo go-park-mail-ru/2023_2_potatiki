@@ -12,6 +12,9 @@ import (
 	mockCart "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/mocks"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
 	mockOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/mocks"
+
+	mockPromo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/mocks"
+
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	"github.com/golang/mock/gomock"
 	uuid "github.com/satori/go.uuid"
@@ -22,6 +25,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 		repoOrder   *mockOrder.MockOrderRepo
 		repoCart    *mockCart.MockCartRepo
 		repoAddress *mockAddress.MockAddressRepo
+		repoPromo   *mockPromo.MockPromoRepo
 	}
 	type args struct {
 		ctx    context.Context
@@ -41,7 +45,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repoAddress.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
 				f.repoCart.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, nil)
-				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), "", "").Return(models.Order{}, nil)
+				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), int64(-1), "", "").Return(models.Order{}, nil)
 				f.repoCart.EXPECT().DeleteCart(gomock.Any(), gomock.Any()).Return(nil)
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
@@ -70,7 +74,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repoAddress.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
 				f.repoCart.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, nil)
-				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), "", "").Return(models.Order{}, errors.New("dummyError"))
+				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), int64(-1), "", "").Return(models.Order{}, errors.New("dummyError"))
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
 			wantErr: true,
@@ -80,7 +84,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repoAddress.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
 				f.repoCart.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, nil)
-				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), "", "").Return(models.Order{}, nil)
+				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), int64(-1), "", "").Return(models.Order{}, nil)
 				f.repoCart.EXPECT().DeleteCart(gomock.Any(), gomock.Any()).Return(errors.New("dummyError"))
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
@@ -108,7 +112,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repoAddress.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
 				f.repoCart.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, nil)
-				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), "", "").Return(models.Order{}, orderRepo.ErrPoductNotFound)
+				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), int64(-1), "", "").Return(models.Order{}, orderRepo.ErrPoductNotFound)
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
 			wantErr: true,
@@ -122,13 +126,14 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 				repoOrder:   mockOrder.NewMockOrderRepo(ctrl),
 				repoCart:    mockCart.NewMockCartRepo(ctrl),
 				repoAddress: mockAddress.NewMockAddressRepo(ctrl),
+				repoPromo:   mockPromo.NewMockPromoRepo(ctrl),
 			}
 			if tt.prepare != nil {
 				tt.prepare(&f)
 			}
-			tt.uc = NewOrderUsecase(f.repoOrder, f.repoCart, f.repoAddress)
+			tt.uc = NewOrderUsecase(f.repoOrder, f.repoCart, f.repoAddress, f.repoPromo)
 
-			got, err := tt.uc.CreateOrder(tt.args.ctx, tt.args.userID, "", "")
+			got, err := tt.uc.CreateOrder(tt.args.ctx, tt.args.userID, "", "", "")
 			if (err != nil) != tt.wantErr {
 				t.Errorf("OrderUsecase.CreateOrder() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -145,6 +150,7 @@ func TestOrderUsecase_GetCurrentOrder(t *testing.T) {
 		repoOrder   *mockOrder.MockOrderRepo
 		repoCart    *mockCart.MockCartRepo
 		repoAddress *mockAddress.MockAddressRepo
+		repoPromo   *mockPromo.MockPromoRepo
 	}
 	type args struct {
 		ctx    context.Context
@@ -216,7 +222,7 @@ func TestOrderUsecase_GetCurrentOrder(t *testing.T) {
 			if tt.prepare != nil {
 				tt.prepare(&f)
 			}
-			tt.uc = NewOrderUsecase(f.repoOrder, f.repoCart, f.repoAddress)
+			tt.uc = NewOrderUsecase(f.repoOrder, f.repoCart, f.repoAddress, f.repoPromo)
 
 			got, err := tt.uc.GetCurrentOrder(tt.args.ctx, tt.args.userID)
 			if (err != nil) != tt.wantErr {
@@ -235,6 +241,7 @@ func TestOrderUsecase_GetOrders(t *testing.T) {
 		repoOrder   *mockOrder.MockOrderRepo
 		repoCart    *mockCart.MockCartRepo
 		repoAddress *mockAddress.MockAddressRepo
+		repoPromo   *mockPromo.MockPromoRepo
 	}
 	type args struct {
 		ctx    context.Context
@@ -302,11 +309,12 @@ func TestOrderUsecase_GetOrders(t *testing.T) {
 				repoOrder:   mockOrder.NewMockOrderRepo(ctrl),
 				repoCart:    mockCart.NewMockCartRepo(ctrl),
 				repoAddress: mockAddress.NewMockAddressRepo(ctrl),
+				repoPromo:   mockPromo.NewMockPromoRepo(ctrl),
 			}
 			if tt.prepare != nil {
 				tt.prepare(&f)
 			}
-			tt.uc = NewOrderUsecase(f.repoOrder, f.repoCart, f.repoAddress)
+			tt.uc = NewOrderUsecase(f.repoOrder, f.repoCart, f.repoAddress, f.repoPromo)
 
 			got, err := tt.uc.GetOrders(tt.args.ctx, tt.args.userID)
 			if (err != nil) != tt.wantErr {

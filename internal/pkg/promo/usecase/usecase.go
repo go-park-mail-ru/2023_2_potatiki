@@ -2,7 +2,7 @@ package usecase
 
 import (
 	"context"
-	"fmt"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo"
@@ -21,7 +21,29 @@ func NewPromoUsecase(repo promo.PromoRepo) *PromoUsecase {
 func (uc *PromoUsecase) CheckPromocode(ctx context.Context, name string) (*models.Promocode, error) {
 	promocode, err := uc.repo.ReadPromocode(ctx, name)
 	if err != nil {
-		return &models.Promocode{}, fmt.Errorf("error happened in repo.ReadPromocode: %w", err)
+		return &models.Promocode{}, err
+	}
+
+	if time.Now().After(promocode.Deadline) {
+		return &models.Promocode{}, promo.ErrPromocodeExpired
+	}
+	if promocode.Leftover < 1 {
+		return &models.Promocode{}, promo.ErrPromocodeLeftout
+	}
+
+	return promocode, nil
+}
+
+func (uc *PromoUsecase) UsePromocode(ctx context.Context, name string) (*models.Promocode, error) {
+	promocode, err := uc.repo.UsePromocode(ctx, name)
+	if err != nil {
+		return &models.Promocode{}, err
+	}
+	if time.Now().After(promocode.Deadline) {
+		return &models.Promocode{}, promo.ErrPromocodeExpired
+	}
+	if promocode.Leftover < 1 {
+		return &models.Promocode{}, promo.ErrPromocodeLeftout
 	}
 
 	return promocode, nil

@@ -75,7 +75,7 @@ import (
 	recHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/delivery/http"
 	recRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/repo"
 	recUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/usecase"
-  
+
 	notificationsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/delivery/http"
 )
 
@@ -208,18 +208,19 @@ func run() (err error) {
 	addressUsecase := addressUsecase.NewAddressUsecase(addressRepo)
 	addressHandler := addressHandler.NewAddressHandler(log, addressUsecase)
 
+	promoRepo := promoRepo.NewPromoRepo(db)
+	promoUsecase := promoUsecase.NewPromoUsecase(promoRepo)
+	promoHandler := promoHandler.NewPromoHandler(log, promoUsecase)
+
 	orderRepo := orderRepo.NewOrderRepo(db)
-	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
+
+	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo, promoRepo)
 	orderClient := orderGrpc.NewOrderClient(orderConn)
 	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
 
 	commentsRepo := commentsRepo.NewCommentsRepo(db)
 	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
 	commentsHandler := commentsHandler.NewCommentsHandler(log, commentsUsecase)
-
-	promoRepo := promoRepo.NewPromoRepo(db)
-	promoUsecase := promoUsecase.NewPromoUsecase(promoRepo)
-	promoHandler := promoHandler.NewPromoHandler(log, promoUsecase)
 
 	recRepo := recRepo.NewRecommendationsRepo(db)
 	recUsecase := recUsecase.NewRecommendationsUsecase(recRepo)
@@ -375,6 +376,8 @@ func run() (err error) {
 	promo := r.PathPrefix("/promo").Subrouter()
 	{
 		promo.HandleFunc("/check", promoHandler.CheckPromocode).
+			Methods(http.MethodGet, http.MethodOptions)
+		promo.HandleFunc("/use", promoHandler.UsePromocode).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 

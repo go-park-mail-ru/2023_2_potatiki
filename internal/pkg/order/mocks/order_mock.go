@@ -38,18 +38,18 @@ func (m *MockOrderUsecase) EXPECT() *MockOrderUsecaseMockRecorder {
 }
 
 // CreateOrder mocks base method.
-func (m *MockOrderUsecase) CreateOrder(arg0 context.Context, arg1 uuid.UUID, arg2, arg3 string) (models.Order, error) {
+func (m *MockOrderUsecase) CreateOrder(arg0 context.Context, arg1 uuid.UUID, arg2, arg3, arg4 string) (models.Order, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOrder", arg0, arg1, arg2, arg3)
+	ret := m.ctrl.Call(m, "CreateOrder", arg0, arg1, arg2, arg3, arg4)
 	ret0, _ := ret[0].(models.Order)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateOrder indicates an expected call of CreateOrder.
-func (mr *MockOrderUsecaseMockRecorder) CreateOrder(arg0, arg1, arg2, arg3 interface{}) *gomock.Call {
+func (mr *MockOrderUsecaseMockRecorder) CreateOrder(arg0, arg1, arg2, arg3, arg4 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderUsecase)(nil).CreateOrder), arg0, arg1, arg2, arg3)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderUsecase)(nil).CreateOrder), arg0, arg1, arg2, arg3, arg4)
 }
 
 // GetCurrentOrder mocks base method.
@@ -106,18 +106,33 @@ func (m *MockOrderRepo) EXPECT() *MockOrderRepoMockRecorder {
 }
 
 // CreateOrder mocks base method.
-func (m *MockOrderRepo) CreateOrder(arg0 context.Context, arg1 models.Cart, arg2, arg3 uuid.UUID, arg4 int64, arg5, arg6 string) (models.Order, error) {
+func (m *MockOrderRepo) CreateOrder(arg0 context.Context, arg1 models.Cart, arg2, arg3 uuid.UUID, arg4, arg5 int64, arg6, arg7 string) (models.Order, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CreateOrder", arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	ret := m.ctrl.Call(m, "CreateOrder", arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
 	ret0, _ := ret[0].(models.Order)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CreateOrder indicates an expected call of CreateOrder.
-func (mr *MockOrderRepoMockRecorder) CreateOrder(arg0, arg1, arg2, arg3, arg4, arg5, arg6 interface{}) *gomock.Call {
+func (mr *MockOrderRepoMockRecorder) CreateOrder(arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepo)(nil).CreateOrder), arg0, arg1, arg2, arg3, arg4, arg5, arg6)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOrder", reflect.TypeOf((*MockOrderRepo)(nil).CreateOrder), arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7)
+}
+
+// GetUpdates mocks base method.
+func (m *MockOrderRepo) GetUpdates(arg0 context.Context, arg1 uuid.UUID, arg2 time.Time) ([]models.Message, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUpdates", arg0, arg1, arg2)
+	ret0, _ := ret[0].([]models.Message)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUpdates indicates an expected call of GetUpdates.
+func (mr *MockOrderRepoMockRecorder) GetUpdates(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUpdates", reflect.TypeOf((*MockOrderRepo)(nil).GetUpdates), arg0, arg1, arg2)
 }
 
 // GetUpdates mocks base method.

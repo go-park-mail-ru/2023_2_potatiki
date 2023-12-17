@@ -2,12 +2,13 @@ package repo
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/driftprogramming/pgxpoolmock"
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/assert"
-	"testing"
-	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	uuid "github.com/satori/go.uuid"
@@ -17,6 +18,7 @@ func TestOrderRepo_CreateOrder(t *testing.T) {
 	addressID := uuid.NewV4()
 	userID := uuid.NewV4()
 	var statusID int64 = 0
+	promocodeID := int64(-1)
 	tests := []struct {
 		name       string
 		mockRepoFn func(pool *pgxpoolmock.MockPgxPool)
@@ -46,7 +48,7 @@ func TestOrderRepo_CreateOrder(t *testing.T) {
 			tt.mockRepoFn(mockPool)
 
 			repo := NewOrderRepo(mockPool)
-			_, err := repo.CreateOrder(context.Background(), models.Cart{}, addressID, userID, statusID, "", "")
+			_, err := repo.CreateOrder(context.Background(), models.Cart{}, addressID, userID, statusID, promocodeID, "", "")
 
 			assert.Equal(t, tt.err, err)
 		})

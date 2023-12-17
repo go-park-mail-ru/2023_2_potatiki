@@ -222,16 +222,20 @@ CREATE TABLE IF NOT EXISTS promocode
 (
     id SERIAL PRIMARY KEY,
     discount INT NOT NULL,
-    name TEXT NOT NULL UNIQUE
+    name TEXT NOT NULL UNIQUE,
+    leftover INT NOT NULL,
+    deadline TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-INSERT INTO promocode (discount, name)
+INSERT INTO promocode (discount, name, leftover, deadline)
 VALUES
-    (10, 'PROMO10'),
-    (15, 'SALE15'),
-    (20, 'DISCOUNT20'),
-    (25, 'SAVE25'),
-    (30, '30OFF');
+    (10, 'PROMO10', 100, '2024-01-01 00:00:00'),
+    (15, 'SALE15', 1000, '2024-01-01 00:00:00'),
+    (20, 'DISCOUNT20', 100, '2024-01-01 00:00:00'),
+    (25, 'SAVE25', 100, '2024-01-01 00:00:00'),
+    (50, 'ZUZU50', 9, '2023-01-01 00:00:00'),
+    (99, 'ZUZU99', 5, '2024-01-01 00:00:00'),
+    (30, '30OFF', 1, '2024-01-01 00:00:00');
 ------------------------------------------------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS cart
 (
@@ -281,8 +285,8 @@ CREATE TABLE IF NOT EXISTS order_info
     status_id INT NOT NULL,
     FOREIGN KEY (status_id) REFERENCES status(id) ON DELETE RESTRICT,
     promocode_id INT,
-    CONSTRAINT uq_order_info_profile_id_promocode_id UNIQUE (profile_id, promocode_id),
     FOREIGN KEY (promocode_id) REFERENCES promocode(id) ON DELETE RESTRICT,
+    CONSTRAINT uq_order_info_profile_id_promocode_id UNIQUE (profile_id, promocode_id),
     address_id UUID NOT NULL,
     FOREIGN KEY (address_id) REFERENCES address(id) ON DELETE RESTRICT
     );

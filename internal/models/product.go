@@ -2,7 +2,6 @@ package models
 
 import uuid "github.com/satori/go.uuid"
 
-//easyjson:json
 type Product struct {
 	Id            uuid.UUID `json:"productId"`
 	Name          string    `json:"productName"`
