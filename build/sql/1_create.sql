@@ -358,3 +358,49 @@ CREATE TRIGGER comment_trigger
     AFTER INSERT ON comment
     FOR EACH ROW
 EXECUTE FUNCTION update_comment_count();
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION order_created_trigger()
+    RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM messages
+    WHERE created < CURRENT_TIMESTAMP - interval '1 day';
+
+    IF NEW.profile_id IS NOT NULL THEN
+        INSERT INTO messages (user_id, created, message_info)
+        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Заказ создан, загляните в раздел: "Заказы"');
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER order_created
+    AFTER INSERT
+    ON order_info
+    FOR EACH ROW
+EXECUTE FUNCTION order_created_trigger();
+
+------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE FUNCTION profile_created_trigger()
+    RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM messages
+    WHERE created < CURRENT_TIMESTAMP - interval '1 day';
+
+    IF NEW.id IS NOT NULL THEN
+        INSERT INTO messages (user_id, created, message_info)
+        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '5 seconds', 'Спасибо за регистрацию, мы дарим вам промокод: ****');
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER profile_created
+    AFTER INSERT
+    ON profile
+    FOR EACH ROW
+EXECUTE FUNCTION profile_created_trigger();

@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
+	clientHub "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/metrics"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -71,6 +71,8 @@ import (
 	promoHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/delivery/http"
 	promoRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/repo"
 	promoUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/usecase"
+
+	notificationsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/delivery/http"
 )
 
 // @title ZuZu Backend API
@@ -203,12 +205,9 @@ func run() (err error) {
 	addressHandler := addressHandler.NewAddressHandler(log, addressUsecase)
 
 	orderRepo := orderRepo.NewOrderRepo(db)
-
-	hub := hub.NewHub(orderRepo)
-
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
 	orderClient := orderGrpc.NewOrderClient(orderConn)
-	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase, hub)
+	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase)
 
 	commentsRepo := commentsRepo.NewCommentsRepo(db)
 	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
@@ -217,6 +216,9 @@ func run() (err error) {
 	promoRepo := promoRepo.NewPromoRepo(db)
 	promoUsecase := promoUsecase.NewPromoUsecase(promoRepo)
 	promoHandler := promoHandler.NewPromoHandler(log, promoUsecase)
+
+	hub := clientHub.NewHub(orderRepo)
+	notificationsHandler := notificationsHandler.NewNotificationsHandler(hub, log)
 
 	// ----------------------------Init layers---------------------------- //
 	//
@@ -318,8 +320,11 @@ func run() (err error) {
 
 		order.Handle("/get_all", authMW(http.HandlerFunc(orderHandler.GetOrders))).
 			Methods(http.MethodGet, http.MethodOptions)
+	}
 
-		order.Handle("/notify", authMW(http.HandlerFunc(orderHandler.GetNotifications))).
+	notifications := r.PathPrefix("/notifications").Subrouter()
+	{
+		notifications.Handle("/get_all", authMW(http.HandlerFunc(notificationsHandler.GetNotifications))).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 

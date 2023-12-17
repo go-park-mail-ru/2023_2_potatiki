@@ -9,25 +9,28 @@ import (
 	"time"
 )
 
+//go:generate mockgen -source hub.go -destination ./mocks/hub_mock.go -package mock
+
+type HubInterface interface {
+	AddClient(uuid.UUID, *websocket.Conn)
+	Run(context.Context)
+}
+
 type Hub struct {
-	connect       map[*websocket.Conn]uuid.UUID
+	connect       sync.Map
 	currentOffset time.Time
 	repo          order.OrderRepo
-	m             sync.RWMutex
 }
 
 func NewHub(repo order.OrderRepo) *Hub {
 	return &Hub{
 		repo:          repo,
 		currentOffset: time.Now(),
-		connect:       make(map[*websocket.Conn]uuid.UUID),
-		m:             sync.RWMutex{},
 	}
 }
 
 func (h *Hub) AddClient(userID uuid.UUID, client *websocket.Conn) {
-
-	h.connect[client] = userID
+	h.connect.Store(client, userID)
 
 	go func() {
 		for {
@@ -40,22 +43,22 @@ func (h *Hub) AddClient(userID uuid.UUID, client *websocket.Conn) {
 	}()
 
 	client.SetCloseHandler(func(code int, text string) error {
-		h.m.Lock()
-		delete(h.connect, client) //TODO: add sync.Map
-		h.m.Unlock()
+		h.connect.Delete(client)
 		return nil
 	})
-
 }
 
 func (h *Hub) Run(ctx context.Context) {
-	t := time.NewTicker(30 * time.Second)
+	t := time.NewTicker(5 * time.Second)
 	defer t.Stop()
 
 	for {
 		select {
 		case <-t.C:
-			for connect, userID := range h.connect {
+			h.connect.Range(func(key, value interface{}) bool {
+				connect := key.(*websocket.Conn)
+				userID := value.(uuid.UUID)
+
 				messages, _ := h.repo.GetUpdates(ctx, userID, h.currentOffset)
 				for _, message := range messages {
 					err := connect.WriteJSON(message)
@@ -63,11 +66,14 @@ func (h *Hub) Run(ctx context.Context) {
 						continue
 					}
 				}
-			}
-			h.currentOffset = h.currentOffset.Add(30 * time.Second)
+
+				return true
+			})
+
+			h.currentOffset = h.currentOffset.Add(5 * time.Second)
+
 		case <-ctx.Done():
 			return
 		}
-
 	}
 }
