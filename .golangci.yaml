@@ -34,6 +34,8 @@ linters:
     - stylecheck #???
     - promlinter #???
     - tagliatelle
+    - usestdlibvars #???
+    - forcetypeassert #???
     - funlen #del
     - staticcheck #del
     - sqlclosecheck #del
