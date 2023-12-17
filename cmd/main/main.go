@@ -72,6 +72,10 @@ import (
 	promoRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/repo"
 	promoUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo/usecase"
 
+	recHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/delivery/http"
+	recRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/repo"
+	recUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/usecase"
+  
 	notificationsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/delivery/http"
 )
 
@@ -216,6 +220,10 @@ func run() (err error) {
 	promoRepo := promoRepo.NewPromoRepo(db)
 	promoUsecase := promoUsecase.NewPromoUsecase(promoRepo)
 	promoHandler := promoHandler.NewPromoHandler(log, promoUsecase)
+
+	recRepo := recRepo.NewRecommendationsRepo(db)
+	recUsecase := recUsecase.NewRecommendationsUsecase(recRepo)
+	recHandler := recHandler.NewRecommendationsHandler(log, recUsecase)
 
 	hub := clientHub.NewHub(orderRepo)
 	notificationsHandler := notificationsHandler.NewNotificationsHandler(hub, log)
@@ -367,6 +375,18 @@ func run() (err error) {
 	promo := r.PathPrefix("/promo").Subrouter()
 	{
 		promo.HandleFunc("/check", promoHandler.CheckPromocode).
+			Methods(http.MethodGet, http.MethodOptions)
+	}
+
+	recs := r.PathPrefix("/recommendations").Subrouter()
+	{
+		recs.Handle("/get_all", authMW(http.HandlerFunc(recHandler.Recommendations))).
+			Methods(http.MethodGet, http.MethodOptions)
+
+		recs.Handle("/update", authMW(http.HandlerFunc(recHandler.UpdateUserActivity))).
+			Methods(http.MethodPost, http.MethodOptions)
+
+		recs.HandleFunc("/get_anon", recHandler.AnonRecommendations).
 			Methods(http.MethodGet, http.MethodOptions)
 	}
 
