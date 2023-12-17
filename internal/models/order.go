@@ -6,7 +6,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-//easyjson:json
 type Order struct {
 	Id           uuid.UUID `json:"id"`
 	Status       string    `json:"status"`
@@ -26,7 +25,6 @@ type OrderProduct struct {
 	Product
 }
 
-//easyjson:json
 type OrderInfo struct {
 	DeliveryAtDate string `json:"deliveryDate"`
 	DeliveryAtTime string `json:"deliveryTime"`

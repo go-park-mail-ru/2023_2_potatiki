@@ -202,21 +202,21 @@ func run() (err error) {
 	addressUsecase := addressUsecase.NewAddressUsecase(addressRepo)
 	addressHandler := addressHandler.NewAddressHandler(log, addressUsecase)
 
+	promoRepo := promoRepo.NewPromoRepo(db)
+	promoUsecase := promoUsecase.NewPromoUsecase(promoRepo)
+	promoHandler := promoHandler.NewPromoHandler(log, promoUsecase)
+
 	orderRepo := orderRepo.NewOrderRepo(db)
 
 	hub := hub.NewHub(orderRepo)
 
-	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo)
+	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo, promoRepo)
 	orderClient := orderGrpc.NewOrderClient(orderConn)
 	orderHandler := orderHandler.NewOrderHandler(orderClient, log, orderUsecase, hub)
 
 	commentsRepo := commentsRepo.NewCommentsRepo(db)
 	commentsUsecase := commentsUsecase.NewCommentsUsecase(commentsRepo)
 	commentsHandler := commentsHandler.NewCommentsHandler(log, commentsUsecase)
-
-	promoRepo := promoRepo.NewPromoRepo(db)
-	promoUsecase := promoUsecase.NewPromoUsecase(promoRepo)
-	promoHandler := promoHandler.NewPromoHandler(log, promoUsecase)
 
 	// ----------------------------Init layers---------------------------- //
 	//

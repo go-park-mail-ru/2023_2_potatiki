@@ -284,8 +284,8 @@ CREATE TABLE IF NOT EXISTS order_info
     status_id INT NOT NULL,
     FOREIGN KEY (status_id) REFERENCES status(id) ON DELETE RESTRICT,
     promocode_id INT,
-    CONSTRAINT uq_order_info_profile_id_promocode_id UNIQUE (profile_id, promocode_id),
     FOREIGN KEY (promocode_id) REFERENCES promocode(id) ON DELETE RESTRICT,
+    CONSTRAINT uq_order_info_profile_id_promocode_id UNIQUE (profile_id, promocode_id),
     address_id UUID NOT NULL,
     FOREIGN KEY (address_id) REFERENCES address(id) ON DELETE RESTRICT
     );

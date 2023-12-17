@@ -36,7 +36,7 @@ func TestGrpcOrderHandler_CreateOrder(t *testing.T) {
 		{
 			name: "TestGrpcOrderHandler_CreateOrder good",
 			prepare: func(f *fields) {
-				f.uc.EXPECT().CreateOrder(gomock.Any(), id, "", "").Return(
+				f.uc.EXPECT().CreateOrder(gomock.Any(), id, 1, "", "").Return(
 					models.Order{
 						Id:      id,
 						Address: models.Address{},

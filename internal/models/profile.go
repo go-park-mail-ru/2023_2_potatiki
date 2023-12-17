@@ -2,7 +2,6 @@ package models
 
 import uuid "github.com/satori/go.uuid"
 
-//easyjson:json
 type Profile struct {
 	Id           uuid.UUID `json:"id"`
 	Login        string    `json:"login"`

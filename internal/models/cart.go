@@ -4,7 +4,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-//easyjson:json
 type Cart struct {
 	Id        uuid.UUID     `json:"-"`
 	ProfileId uuid.UUID     `json:"-"`
@@ -12,7 +11,6 @@ type Cart struct {
 	Products  []CartProduct `json:"products"`
 }
 
-//easyjson:json
 type CartProduct struct {
 	Quantity int64 `json:"quantity"`
 	Product
@@ -25,13 +23,11 @@ type CartUpdate struct {
 	Products  []CartProductUpdate `json:"productsInfo"`
 }
 
-//easyjson:json
 type CartProductUpdate struct {
 	Quantity int64     `json:"quantity"`
 	Id       uuid.UUID `json:"productId"`
 }
 
-//easyjson:json
 type CartProductDelete struct {
 	Id uuid.UUID `json:"productId"`
 }

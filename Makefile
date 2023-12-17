@@ -45,7 +45,7 @@ protoc:
 json:
 #go get github.com/mailru/easyjson
 #go install github.com/mailru/easyjson/...@latest
-	easyjson -pkg ./internal/models/
+	easyjson -all -pkg ./internal/models/
 
 #gotests -all -w internal/pkg/cart/usecase/usecase.go
 

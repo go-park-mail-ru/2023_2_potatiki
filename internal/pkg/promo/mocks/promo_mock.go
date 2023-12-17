@@ -50,6 +50,21 @@ func (mr *MockPromoUsecaseMockRecorder) CheckPromocode(arg0, arg1 interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckPromocode", reflect.TypeOf((*MockPromoUsecase)(nil).CheckPromocode), arg0, arg1)
 }
 
+// UsePromocode mocks base method.
+func (m *MockPromoUsecase) UsePromocode(arg0 context.Context, arg1 string) (*models.Promocode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UsePromocode", arg0, arg1)
+	ret0, _ := ret[0].(*models.Promocode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UsePromocode indicates an expected call of UsePromocode.
+func (mr *MockPromoUsecaseMockRecorder) UsePromocode(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UsePromocode", reflect.TypeOf((*MockPromoUsecase)(nil).UsePromocode), arg0, arg1)
+}
+
 // MockPromoRepo is a mock of PromoRepo interface.
 type MockPromoRepo struct {
 	ctrl     *gomock.Controller
@@ -86,4 +101,19 @@ func (m *MockPromoRepo) ReadPromocode(arg0 context.Context, arg1 string) (*model
 func (mr *MockPromoRepoMockRecorder) ReadPromocode(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadPromocode", reflect.TypeOf((*MockPromoRepo)(nil).ReadPromocode), arg0, arg1)
+}
+
+// UsePromocode mocks base method.
+func (m *MockPromoRepo) UsePromocode(arg0 context.Context, arg1 string) (*models.Promocode, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UsePromocode", arg0, arg1)
+	ret0, _ := ret[0].(*models.Promocode)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UsePromocode indicates an expected call of UsePromocode.
+func (mr *MockPromoRepoMockRecorder) UsePromocode(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UsePromocode", reflect.TypeOf((*MockPromoRepo)(nil).UsePromocode), arg0, arg1)
 }

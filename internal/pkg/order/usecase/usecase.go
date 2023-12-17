@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address"
 	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart"
@@ -20,13 +22,19 @@ type OrderUsecase struct {
 	repoOrder   order.OrderRepo
 	repoCart    cart.CartRepo
 	repoAddress address.AddressRepo
+	repoPromo   promo.PromoRepo
 }
 
-func NewOrderUsecase(repoOrder order.OrderRepo, repoCart cart.CartRepo, repoAddress address.AddressRepo) *OrderUsecase {
+func NewOrderUsecase(
+	repoOrder order.OrderRepo,
+	repoCart cart.CartRepo,
+	repoAddress address.AddressRepo,
+	repoPromo promo.PromoRepo) *OrderUsecase {
 	return &OrderUsecase{
 		repoOrder:   repoOrder,
 		repoCart:    repoCart,
 		repoAddress: repoAddress,
+		repoPromo:   repoPromo,
 	}
 }
 
@@ -56,7 +64,22 @@ func (uc *OrderUsecase) CreateOrder(
 		return models.Order{}, err
 	}
 
-	order, err := uc.repoOrder.CreateOrder(ctx, cart, address.Id, userID, 1, deliveryTime, deliveryDate)
+	promocodeID := int64(-1)
+	if promocodeName != "" {
+		promocode, err := uc.repoPromo.UsePromocode(ctx, promocodeName)
+		if err != nil {
+			return models.Order{}, err
+		}
+		if time.Now().After(promocode.Deadline) {
+			return models.Order{}, promo.ErrPromocodeExpired
+		}
+		if promocode.Leftover < 1 {
+			return models.Order{}, promo.ErrPromocodeLeftout
+		}
+		promocodeID = promocode.Id
+	}
+
+	order, err := uc.repoOrder.CreateOrder(ctx, cart, address.Id, userID, 1, promocodeID, deliveryTime, deliveryDate)
 	if err != nil {
 		if errors.Is(err, orderRepo.ErrPoductNotFound) {
 			return models.Order{}, err
