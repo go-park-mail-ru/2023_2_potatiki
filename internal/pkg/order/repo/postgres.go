@@ -15,13 +15,12 @@ import (
 
 const (
 	createOrder = `
-	INSERT INTO order_info (id, profile_id, status_id, address_id, delivery_at_time, delivery_at_date, promocode_id)
-	VALUES ($1, $2, $3, $4, $5, $6, $7);
- 	`
-	createOrderWithoutPromo = `
 	 INSERT INTO order_info (id, profile_id, status_id, address_id, delivery_at_time, delivery_at_date)
 	 VALUES ($1, $2, $3, $4, $5, $6);
-	  `
+	`
+	setPromoToOrder = `
+	UPDATE order_info SET promocode_id=$1 WHERE id=$2;
+	`
 
 	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4, $5);"
 
@@ -134,25 +133,15 @@ func (r *OrderRepo) GetUpdates(ctx context.Context, userID uuid.UUID, time time.
 }
 
 func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, addressID uuid.UUID, userID uuid.UUID,
-	statusID, promocodeID int64, deliveryTime, deliveryDate string) (models.Order, error) {
+	statusID int64, deliveryTime, deliveryDate string) (models.Order, error) {
 	orderID := uuid.NewV4()
 
-	if promocodeID != -1 {
-		_, err := r.db.Exec(ctx, createOrder, orderID, userID,
-			statusID, addressID, deliveryTime, deliveryDate, promocodeID)
-		if err != nil {
-			err = fmt.Errorf("error happened in db.Exec: %w", err)
+	_, err := r.db.Exec(ctx, createOrder, orderID, userID,
+		statusID, addressID, deliveryTime, deliveryDate)
+	if err != nil {
+		err = fmt.Errorf("error happened in db.Exec: %w", err)
 
-			return models.Order{}, err
-		}
-	} else {
-		_, err := r.db.Exec(ctx, createOrderWithoutPromo, orderID, userID,
-			statusID, addressID, deliveryTime, deliveryDate)
-		if err != nil {
-			err = fmt.Errorf("error happened in db.Exec: %w", err)
-
-			return models.Order{}, err
-		}
+		return models.Order{}, err
 	}
 
 	var productsOrder []models.OrderProduct
@@ -192,6 +181,18 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, addressID
 	}
 
 	return order, nil
+}
+
+func (r *OrderRepo) SetPromoOrder(ctx context.Context, promocodeID int, orderID uuid.UUID) error {
+
+	res, err := r.db.Exec(ctx, setPromoToOrder, promocodeID, orderID)
+	if err != nil {
+		return fmt.Errorf("error happened in SetPromoOrder sql exec: %w", err)
+	}
+	if res.RowsAffected() != 1 {
+		return errors.New("failed update")
+	}
+	return nil
 }
 
 func (r *OrderRepo) ReadOrderID(ctx context.Context, userID uuid.UUID) (uuid.UUID, error) {

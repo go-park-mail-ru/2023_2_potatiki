@@ -17,9 +17,10 @@ type OrderUsecase interface {
 }
 
 type OrderRepo interface {
-	CreateOrder(context.Context, models.Cart, uuid.UUID, uuid.UUID, int64, int64, string, string) (models.Order, error)
+	CreateOrder(context.Context, models.Cart, uuid.UUID, uuid.UUID, int64, string, string) (models.Order, error)
 	ReadOrderID(context.Context, uuid.UUID) (uuid.UUID, error)
 	ReadOrder(context.Context, uuid.UUID) (models.Order, error)
 	ReadOrdersID(context.Context, uuid.UUID) ([]uuid.UUID, error)
 	GetUpdates(context.Context, uuid.UUID, time.Time) ([]models.Message, error)
+	SetPromoOrder(context.Context, int, uuid.UUID) error
 }

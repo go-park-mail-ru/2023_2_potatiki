@@ -45,7 +45,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repoAddress.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
 				f.repoCart.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, nil)
-				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), int64(-1), "", "").Return(models.Order{}, nil)
+				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), "", "").Return(models.Order{}, nil)
 				f.repoCart.EXPECT().DeleteCart(gomock.Any(), gomock.Any()).Return(nil)
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
@@ -74,7 +74,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repoAddress.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
 				f.repoCart.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, nil)
-				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), int64(-1), "", "").Return(models.Order{}, errors.New("dummyError"))
+				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), "", "").Return(models.Order{}, errors.New("dummyError"))
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
 			wantErr: true,
@@ -84,7 +84,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repoAddress.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
 				f.repoCart.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, nil)
-				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), int64(-1), "", "").Return(models.Order{}, nil)
+				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), "", "").Return(models.Order{}, nil)
 				f.repoCart.EXPECT().DeleteCart(gomock.Any(), gomock.Any()).Return(errors.New("dummyError"))
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
@@ -112,7 +112,7 @@ func TestOrderUsecase_CreateOrder(t *testing.T) {
 			prepare: func(f *fields) {
 				f.repoAddress.EXPECT().ReadCurrentAddress(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Address{Id: uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")}, nil)
 				f.repoCart.EXPECT().ReadCart(gomock.Any(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")).Return(models.Cart{}, nil)
-				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), int64(-1), "", "").Return(models.Order{}, orderRepo.ErrPoductNotFound)
+				f.repoOrder.EXPECT().CreateOrder(gomock.Any(), models.Cart{}, uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a"), int64(1), "", "").Return(models.Order{}, orderRepo.ErrPoductNotFound)
 			},
 			args:    args{context.Background(), uuid.FromStringOrNil("fb11fe90-09bb-4e72-98a5-5ffba93aa39a")},
 			wantErr: true,

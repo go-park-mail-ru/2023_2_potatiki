@@ -39,19 +39,15 @@ func NewOrderUsecase(
 }
 
 func (uc *OrderUsecase) CreateOrder(
-	ctx context.Context,
-	userID uuid.UUID,
-	deliveryTime,
-	deliveryDate,
-	promocodeName string) (models.Order, error) {
+	ctx context.Context, userID uuid.UUID,
+	deliveryTime, deliveryDate, promocodeName string) (models.Order, error) {
+
 	address, err := uc.repoAddress.ReadCurrentAddress(ctx, userID)
 	if err != nil {
 		if errors.Is(err, addressRepo.ErrAddressNotFound) {
 			return models.Order{}, err
 		}
-		err = fmt.Errorf("error happened in repoAddress.ReadCurrentAddressID: %w", err)
-
-		return models.Order{}, err
+		return models.Order{}, fmt.Errorf("error happened in repoAddress.ReadCurrentAddressID: %w", err)
 	}
 
 	cart, err := uc.repoCart.ReadCart(ctx, userID)
@@ -59,12 +55,17 @@ func (uc *OrderUsecase) CreateOrder(
 		if errors.Is(err, cartRepo.ErrCartNotFound) {
 			return models.Order{}, err
 		}
-		err = fmt.Errorf("error happened in repoCart.ReadCart: %w", err)
-
-		return models.Order{}, err
+		return models.Order{}, fmt.Errorf("error happened in repoCart.ReadCart: %w", err)
 	}
 
-	promocodeID := int64(-1)
+	order, err := uc.repoOrder.CreateOrder(ctx, cart, address.Id, userID, 1, deliveryTime, deliveryDate) //Status ID
+	if err != nil {
+		if errors.Is(err, orderRepo.ErrPoductNotFound) {
+			return models.Order{}, err
+		}
+		return models.Order{}, fmt.Errorf("error happened in repo.CreateOrder: %w", err)
+	}
+
 	if promocodeName != "" {
 		promocode, err := uc.repoPromo.UsePromocode(ctx, promocodeName)
 		if err != nil {
@@ -76,18 +77,11 @@ func (uc *OrderUsecase) CreateOrder(
 		if promocode.Leftover < 1 {
 			return models.Order{}, promo.ErrPromocodeLeftout
 		}
-		promocodeID = promocode.Id
-	}
-
-	order, err := uc.repoOrder.CreateOrder(ctx, cart, address.Id, userID, 1, promocodeID, deliveryTime, deliveryDate)
-	if err != nil {
-		if errors.Is(err, orderRepo.ErrPoductNotFound) {
+		if err = uc.repoOrder.SetPromoOrder(ctx, int(promocode.Id), order.Id); err != nil {
 			return models.Order{}, err
 		}
-		err = fmt.Errorf("error happened in repo.CreateOrder: %w", err)
-
-		return models.Order{}, err
 	}
+	order.Status = "В обработке"
 	order.Address = address
 	order.PomocodeName = promocodeName
 	order.DeliveryDate = deliveryDate
