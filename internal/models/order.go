@@ -20,11 +20,13 @@ type Order struct {
 //easyjson:json
 type OrderSlice []Order
 
+//easyjson:json
 type OrderProduct struct {
 	Quantity int64 `json:"quantity"`
 	Product
 }
 
+//easyjson:json
 type OrderInfo struct {
 	DeliveryAtDate string `json:"deliveryDate"`
 	DeliveryAtTime string `json:"deliveryTime"`
