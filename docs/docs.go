@@ -726,7 +726,7 @@ const docTemplate = `{
                     "404": {
                         "description": "Promocode not found"
                     },
-                    "409": {
+                    "406": {
                         "description": "something not found error message",
                         "schema": {
                             "$ref": "#/definitions/responser.response"

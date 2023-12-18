@@ -48,7 +48,7 @@ func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase
 // @Failure	404	"Promocode not found"
 // @Failure	403	"Promocode leftout"
 // @Failure	419	"Promocode expired"
-// @Failure	409	{object} responser.response	"something not found error message"
+// @Failure	406	{object} responser.response	"something not found error message"
 // @Failure	429
 // @Router	/api/order/create [post]
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
