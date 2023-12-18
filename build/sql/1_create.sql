@@ -371,7 +371,7 @@ CREATE TABLE IF NOT EXISTS activities
     id SERIAL NOT NULL PRIMARY KEY,
     user_id UUID NOT NULL,
     body jsonb
-)
+);
 
 CREATE OR REPLACE FUNCTION order_created_trigger()
     RETURNS TRIGGER AS $$
