@@ -6,6 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//easyjson:json
 type Order struct {
 	Id           uuid.UUID `json:"id"`
 	Status       string    `json:"status"`

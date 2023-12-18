@@ -9,6 +9,7 @@ type Category struct {
 
 const MAX_LEVEL_CATEGORY = 3
 
+//easyjson:json
 type CategoryBranch [MAX_LEVEL_CATEGORY]string
 
 //easyjson:json

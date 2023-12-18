@@ -6,6 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//easyjson:json
 type Address struct {
 	Id        uuid.UUID `json:"addressId"`
 	ProfileId uuid.UUID `json:"-"`
@@ -26,11 +27,13 @@ func (b *Address) Sanitize() {
 	b.Flat = html.EscapeString(b.Flat)
 }
 
+//easyjson:json
 type AddressDelete struct {
 	ProfileId uuid.UUID `json:"-"`
 	Id        uuid.UUID `json:"addressId"`
 }
 
+//easyjson:json
 type AddressMakeCurrent struct {
 	ProfileId uuid.UUID `json:"-"`
 	Id        uuid.UUID `json:"addressId"`
