@@ -38,7 +38,7 @@ DROP TABLE IF EXISTS activities;
 
 ------------------------------------------------------------------------------------------------------------------------
 
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     user_id uuid NOT NULL,
     created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     message_info TEXT
