@@ -31,4 +31,5 @@ type ProfileConfig interface {
 var (
 	ErrorForbiddenExtension = errors.New("this file extension is not allowed")
 	ErrBadUpdateData        = errors.New("incorrect update data profile payload")
+	ErrProfileNotFound      = errors.New("profile not found")
 )

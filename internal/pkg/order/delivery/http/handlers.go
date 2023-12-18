@@ -117,32 +117,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			h.log.Error("failed to CreateOrder", sl.Err(st.Err()))
 			resp.JSONStatus(w, http.StatusTooManyRequests)
 		}
-
 		return
-
-	}
-	if err != nil {
-		h.log.Error("failed to get CreateOrder", sl.Err(err))
-		resp.JSONStatus(w, http.StatusTooManyRequests)
-
-		//if errors.Is(err, cartRepo.ErrCartNotFound) {
-		//	resp.JSON(w, http.StatusNotFound, resp.Err("cart not found"))
-		//
-		//	return
-		//}
-		//
-		//if errors.Is(err, orderRepo.ErrPoductNotFound) {
-		//	resp.JSON(w, http.StatusNotFound, resp.Err("product not found"))
-		//
-		//	return
-		//}
-		//
-		//if errors.Is(err, addressRepo.ErrAddressNotFound) {
-		//	resp.JSON(w, http.StatusNotFound, resp.Err("address not found"))
-		//
-		//	return
-		//}
-
 	}
 
 	orderId, err := uuid.FromString(gorder.Order.Id)
