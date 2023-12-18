@@ -36,7 +36,7 @@ const (
 	getCurrentOrder = `
 	SELECT p.id AS product_id, p.name AS product_name, p.description AS product_description, p.price AS product_price, 
 	p.imgsrc AS product_imgsrc, p.rating AS product_rating, oi.quantity AS product_quantity, c.id AS category_id, 
-	c.name AS category_name, s.name, pm.name, a.id AS address_id, a.city AS address_city, 
+	c.name AS category_name, s.name, COALESCE(pm.name, ''), a.id AS address_id, a.city AS address_city, 
 	a.street AS address_street, a.house AS address_house, a.flat AS address_flat, a.is_current as is_current,
 	o.creation_at, o.delivery_at_time, o.delivery_at_date
 	FROM order_item oi
@@ -45,7 +45,7 @@ const (
 	JOIN category c ON p.category_id = c.id
 	JOIN address a ON o.address_id = a.id
 	JOIN status s ON o.status_id = s.id
-	JOIN promocode pm ON o.promocode_id = pm.id
+	LEFT JOIN promocode pm ON o.promocode_id = pm.id
 	WHERE oi.order_id = $1;
 	`
 
