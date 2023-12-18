@@ -90,6 +90,8 @@ func (uc *OrderUsecase) CreateOrder(
 	}
 	order.Address = address
 	order.PomocodeName = promocodeName
+	order.DeliveryDate = deliveryDate
+	order.DeliveryTime = deliveryTime
 
 	err = uc.repoCart.DeleteCart(ctx, cart.Id)
 	if err != nil {

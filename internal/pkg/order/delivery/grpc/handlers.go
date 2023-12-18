@@ -7,11 +7,15 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
+	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
 	generatedOrder "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order"
@@ -47,7 +51,29 @@ func (h GrpcOrderHandler) CreateOrder(ctx context.Context, in *gen.CreateOrderRe
 		return nil, metricsmw.ClientError
 	}
 	order, err := h.uc.CreateOrder(ctx, userId, in.DeliveryTime, in.DeliveryDate, in.PromocodeName)
-	if err != nil {
+
+	switch {
+	case err == nil:
+		break
+	case errors.Is(err, promo.ErrPromocodeNotFound):
+		h.log.Error("failed to CreateOrder", sl.Err(err))
+		return nil, status.Error(codes.NotFound, err.Error())
+	case errors.Is(err, promo.ErrPromocodeLeftout):
+		h.log.Error("failed to CreateOrder", sl.Err(err))
+		return nil, status.Error(codes.OutOfRange, err.Error())
+	case errors.Is(err, promo.ErrPromocodeExpired):
+		h.log.Error("failed to CreateOrder", sl.Err(err))
+		return nil, status.Error(codes.DeadlineExceeded, err.Error())
+	case errors.Is(err, orderRepo.ErrPoductNotFound):
+		h.log.Error("failed to CreateOrder", sl.Err(err))
+		return nil, status.Error(codes.Unavailable, err.Error())
+	case errors.Is(err, cartRepo.ErrCartNotFound):
+		h.log.Error("failed to CreateOrder", sl.Err(err))
+		return nil, status.Error(codes.Aborted, err.Error())
+	case errors.Is(err, addressRepo.ErrAddressNotFound):
+		h.log.Error("failed to CreateOrder", sl.Err(err))
+		return nil, status.Error(codes.ResourceExhausted, err.Error())
+	default:
 		h.log.Error("failed in h.uc.CreateOrder", sl.Err(err))
 		return nil, metricsmw.ServerError
 	}

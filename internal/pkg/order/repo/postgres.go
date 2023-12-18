@@ -156,7 +156,10 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, addressID
 	}
 
 	var productsOrder []models.OrderProduct
-	order := models.Order{Id: orderID, Products: productsOrder}
+	order := models.Order{
+		Id:       orderID,
+		Products: productsOrder,
+	}
 	for _, cartProduct := range cart.Products {
 		orderProduct := models.OrderProduct{Quantity: cartProduct.Quantity, Product: models.Product{Id: cartProduct.Id}}
 		err := r.db.QueryRow(ctx, getProductInfo, cartProduct.Id).Scan(
