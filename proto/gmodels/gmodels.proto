@@ -58,9 +58,13 @@ message CartProductDelete {
 
 message Order {
   string Id = 1;
-  int64 Status = 2;
+  string Status = 2;
   Address Address = 3;
   repeated OrderProduct Products = 4;
+  string DeliveryTime = 5;
+  string DeliveryDate = 6;
+  string PromocodeName = 7;
+  string CreationAt = 8;
 }
 
 message OrderProduct {

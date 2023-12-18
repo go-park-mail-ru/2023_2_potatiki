@@ -1,7 +1,6 @@
 package responser
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
 	"log/slog"
@@ -15,20 +14,25 @@ const (
 	StatusError = "Error"
 )
 
-type Response struct {
+type response struct {
 	Status string      `json:"status"`
 	Error  interface{} `json:"error,omitempty"`
 }
 
-func Err(msg string) Response {
-	return Response{
+func Err(msg string) *response {
+	return &response{
 		Status: StatusError,
 		Error:  msg,
 	}
 }
 
-func JSON(w http.ResponseWriter, status int, response any) {
-	responseJSON, err := json.Marshal(response)
+type responser interface {
+	MarshalJSON() ([]byte, error)
+	UnmarshalJSON(data []byte) error
+}
+
+func JSON(w http.ResponseWriter, status int, response responser) {
+	responseJSON, err := response.MarshalJSON()
 	if err != nil {
 		w.WriteHeader(status)
 

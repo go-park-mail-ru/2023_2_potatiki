@@ -143,6 +143,12 @@ definitions:
         type: boolean
       city:
         type: string
+      creationDate:
+        type: string
+      deliveryDate:
+        type: string
+      deliveryTime:
+        type: string
       flat:
         type: string
       house:
@@ -153,9 +159,20 @@ definitions:
         items:
           $ref: '#/definitions/models.OrderProduct'
         type: array
-      statusId:
-        type: integer
+      promocodeName:
+        type: string
+      status:
+        type: string
       street:
+        type: string
+    type: object
+  models.OrderInfo:
+    properties:
+      deliveryDate:
+        type: string
+      deliveryTime:
+        type: string
+      promocodeName:
         type: string
     type: object
   models.OrderProduct:
@@ -219,6 +236,15 @@ definitions:
       phone:
         type: string
     type: object
+  models.Promocode:
+    properties:
+      discount:
+        type: integer
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
   models.SignInPayload:
     properties:
       login:
@@ -266,7 +292,7 @@ definitions:
       phone:
         type: string
     type: object
-  responser.Response:
+  responser.response:
     properties:
       error: {}
       status:
@@ -493,7 +519,7 @@ paths:
         "400":
           description: error messege
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: SignIn
@@ -521,7 +547,7 @@ paths:
         "400":
           description: error messege
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: SignUp
@@ -549,7 +575,7 @@ paths:
         "400":
           description: error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "401":
           description: Unauthorized
         "429":
@@ -579,7 +605,7 @@ paths:
         "400":
           description: error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "401":
           description: Unauthorized
         "429":
@@ -628,7 +654,7 @@ paths:
         "400":
           description: invalid request
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: UpdateCart
@@ -708,7 +734,7 @@ paths:
         "400":
           description: error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: GetProductComments
@@ -719,6 +745,13 @@ paths:
       consumes:
       - application/json
       description: Create Order using profile ID from cookies
+      parameters:
+      - description: DeliveryDate and DeliveryTime
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.OrderInfo'
       produces:
       - application/json
       responses:
@@ -731,7 +764,7 @@ paths:
         "404":
           description: something not found error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: CreateOrder
@@ -756,7 +789,7 @@ paths:
         "404":
           description: something not found error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: GetOrders
@@ -779,7 +812,7 @@ paths:
         "404":
           description: something not found error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: GetCurrentOrder
@@ -806,7 +839,7 @@ paths:
         "400":
           description: error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: Product
@@ -852,7 +885,7 @@ paths:
         "400":
           description: error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: Products
@@ -893,7 +926,7 @@ paths:
         "400":
           description: error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: Products
@@ -920,7 +953,7 @@ paths:
         "400":
           description: error messege
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: GetProfile
@@ -948,7 +981,7 @@ paths:
         "400":
           description: error messege
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "401":
           description: Unauthorized
         "429":
@@ -984,6 +1017,64 @@ paths:
       summary: UpdatePhoto
       tags:
       - Profile
+  /api/promo/check:
+    get:
+      consumes:
+      - application/json
+      description: Check Promocode
+      parameters:
+      - description: 'promocode name, example: SALE23'
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Promocode model
+          schema:
+            $ref: '#/definitions/models.Promocode'
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.response'
+        "404":
+          description: something not found error message
+        "429":
+          description: Too Many Requests
+      summary: Promo
+      tags:
+      - Promo
+  /api/promo/use:
+    get:
+      consumes:
+      - application/json
+      description: Use Promocode
+      parameters:
+      - description: 'promocode name, example: SALE23'
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Promocode model
+          schema:
+            $ref: '#/definitions/models.Promocode'
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.response'
+        "404":
+          description: something not found error message
+        "429":
+          description: Too Many Requests
+      summary: Promo
+      tags:
+      - Promo
   /api/search/:
     get:
       consumes:
@@ -1007,7 +1098,7 @@ paths:
         "400":
           description: error message
           schema:
-            $ref: '#/definitions/responser.Response'
+            $ref: '#/definitions/responser.response'
         "429":
           description: Too Many Requests
       summary: SearchProducts

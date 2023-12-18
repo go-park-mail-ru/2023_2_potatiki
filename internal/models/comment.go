@@ -1,8 +1,9 @@
 package models
 
 import (
-	uuid "github.com/satori/go.uuid"
 	"time"
+
+	uuid "github.com/satori/go.uuid"
 )
 
 type Comment struct {
@@ -15,3 +16,6 @@ type Comment struct {
 	Comment      string    `json:"comment"`
 	Rating       int       `json:"rating"`
 }
+
+//easyjson:json
+type CommentSlice []Comment

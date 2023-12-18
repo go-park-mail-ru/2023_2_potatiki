@@ -16,6 +16,9 @@ type Address struct {
 	IsCurrent bool      `json:"addressIsCurrent"`
 }
 
+//easyjson:json
+type AddressSlice []Address
+
 func (b *Address) Sanitize() {
 	b.City = html.EscapeString(b.City)
 	b.Street = html.EscapeString(b.Street)

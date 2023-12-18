@@ -10,11 +10,13 @@ service Order {
 
 message CreateOrderRequest {
   string Id = 1;
+  string DeliveryDate = 2;
+  string DeliveryTime = 3;
+	string PromocodeName = 4;
 }
 
 message CreateOrderResponse {
   gmodels.Order Order = 1;
-  string Error = 2;
 }
 
 message OrdersRequest {
@@ -23,7 +25,6 @@ message OrdersRequest {
 
 message OrdersResponse {
   repeated gmodels.Order Orders = 1;
-  string Error = 2;
 }
 
 

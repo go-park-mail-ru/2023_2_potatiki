@@ -348,7 +348,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -391,7 +391,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -434,7 +434,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "401": {
@@ -480,7 +480,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "401": {
@@ -555,7 +555,7 @@ const docTemplate = `{
                     "400": {
                         "description": "invalid request",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -677,7 +677,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -699,6 +699,17 @@ const docTemplate = `{
                     "Order"
                 ],
                 "summary": "CreateOrder",
+                "parameters": [
+                    {
+                        "description": "DeliveryDate and DeliveryTime",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.OrderInfo"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "New order info",
@@ -712,7 +723,7 @@ const docTemplate = `{
                     "404": {
                         "description": "something not found error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -750,7 +761,7 @@ const docTemplate = `{
                     "404": {
                         "description": "something not found error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -785,7 +796,7 @@ const docTemplate = `{
                     "404": {
                         "description": "something not found error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -854,7 +865,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -916,7 +927,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -957,7 +968,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -1000,7 +1011,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "401": {
@@ -1087,8 +1098,96 @@ const docTemplate = `{
                     "400": {
                         "description": "error messege",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/promo/check": {
+            "get": {
+                "description": "Check Promocode",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Promo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "promocode name, example: SALE23",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Promocode model",
+                        "schema": {
+                            "$ref": "#/definitions/models.Promocode"
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.response"
+                        }
+                    },
+                    "404": {
+                        "description": "something not found error message"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/promo/use": {
+            "get": {
+                "description": "Use Promocode",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Promo"
+                ],
+                "summary": "Promo",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "promocode name, example: SALE23",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Promocode model",
+                        "schema": {
+                            "$ref": "#/definitions/models.Promocode"
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.response"
+                        }
+                    },
+                    "404": {
+                        "description": "something not found error message"
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -1131,7 +1230,7 @@ const docTemplate = `{
                     "400": {
                         "description": "error message",
                         "schema": {
-                            "$ref": "#/definitions/responser.Response"
+                            "$ref": "#/definitions/responser.response"
                         }
                     },
                     "429": {
@@ -1360,6 +1459,15 @@ const docTemplate = `{
                 "city": {
                     "type": "string"
                 },
+                "creationDate": {
+                    "type": "string"
+                },
+                "deliveryDate": {
+                    "type": "string"
+                },
+                "deliveryTime": {
+                    "type": "string"
+                },
                 "flat": {
                     "type": "string"
                 },
@@ -1375,10 +1483,27 @@ const docTemplate = `{
                         "$ref": "#/definitions/models.OrderProduct"
                     }
                 },
-                "statusId": {
-                    "type": "integer"
+                "promocodeName": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
                 },
                 "street": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OrderInfo": {
+            "type": "object",
+            "properties": {
+                "deliveryDate": {
+                    "type": "string"
+                },
+                "deliveryTime": {
+                    "type": "string"
+                },
+                "promocodeName": {
                     "type": "string"
                 }
             }
@@ -1476,6 +1601,20 @@ const docTemplate = `{
                 }
             }
         },
+        "models.Promocode": {
+            "type": "object",
+            "properties": {
+                "discount": {
+                    "type": "integer"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "models.SignInPayload": {
             "type": "object",
             "required": [
@@ -1541,7 +1680,7 @@ const docTemplate = `{
                 }
             }
         },
-        "responser.Response": {
+        "responser.response": {
             "type": "object",
             "properties": {
                 "error": {},

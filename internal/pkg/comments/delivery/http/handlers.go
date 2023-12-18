@@ -1,8 +1,11 @@
 package http
 
 import (
-	"encoding/json"
 	"errors"
+	"io"
+	"log/slog"
+	"net/http"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/comments/repo"
@@ -13,9 +16,6 @@ import (
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
 	"github.com/go-playground/validator/v10"
 	uuid "github.com/satori/go.uuid"
-	"io"
-	"log/slog"
-	"net/http"
 )
 
 type CommentsHandler struct {
@@ -66,7 +66,7 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 	commentPayload := models.CommentPayload{
 		UserID: userID,
 	}
-	err = json.Unmarshal(body, &commentPayload)
+	err = commentPayload.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -87,7 +87,7 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		h.log.Error("failed in uc.CreateComment", sl.Err(err))
 		if errors.Is(err, usecase.ErrManyCommentsToProduct) {
-			resp.JSON(w, http.StatusRequestEntityTooLarge, comment)
+			resp.JSON(w, http.StatusRequestEntityTooLarge, &comment)
 
 			return
 		}
@@ -97,7 +97,7 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 	}
 
 	h.log.Debug("uc.CreateComment", "comment created", comment)
-	resp.JSON(w, http.StatusOK, comment)
+	resp.JSON(w, http.StatusOK, &comment)
 }
 
 // @Summary	GetProductComments
@@ -107,7 +107,7 @@ func (h *CommentsHandler) CreateComment(w http.ResponseWriter, r *http.Request) 
 // @Produce json
 // @Param product query string true "Product ID"
 // @Success	200	{object} []models.Comment "Comments array"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/comments/get_all [get]
 func (h *CommentsHandler) GetProductComments(w http.ResponseWriter, r *http.Request) {
@@ -138,5 +138,5 @@ func (h *CommentsHandler) GetProductComments(w http.ResponseWriter, r *http.Requ
 	}
 
 	h.log.Debug("got comments", "len", len(comments))
-	resp.JSON(w, http.StatusOK, comments)
+	resp.JSON(w, http.StatusOK, (*models.CommentSlice)(&comments))
 }

@@ -42,5 +42,10 @@ protoc:
 	protoc -I proto proto/gmodels/*.proto --go_out=./proto/ --go_opt=paths=source_relative
 	protoc -I proto proto/*.proto --go_out=./ --go-grpc_out=./
 
+json:
+#go get github.com/mailru/easyjson
+#go install github.com/mailru/easyjson/...@latest
+	easyjson -all -pkg ./internal/models/
+
 #gotests -all -w internal/pkg/cart/usecase/usecase.go
 

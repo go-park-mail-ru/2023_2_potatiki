@@ -1,6 +1,6 @@
 package models
 
-import "github.com/satori/go.uuid"
+import uuid "github.com/satori/go.uuid"
 
 type Product struct {
 	Id            uuid.UUID `json:"productId"`
@@ -12,3 +12,6 @@ type Product struct {
 	CountComments int64     `json:"countComments"`
 	Category
 }
+
+//easyjson:json
+type ProductSlice []Product

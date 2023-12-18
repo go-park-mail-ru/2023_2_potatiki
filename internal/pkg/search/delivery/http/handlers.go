@@ -2,13 +2,15 @@ package http
 
 import (
 	"errors"
+	"log/slog"
+	"net/http"
+
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/logmw"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/search/repo"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
-	"log/slog"
-	"net/http"
 )
 
 type SearchHandler struct {
@@ -30,7 +32,7 @@ func NewSearchHandler(log *slog.Logger, uc search.SearchUsecase) *SearchHandler 
 // @Produce json
 // @Param product query int true "Search products by name"
 // @Success	200	{object} []models.Product "Products array"
-// @Failure	400	{object} responser.Response	"error message"
+// @Failure	400	{object} responser.response	"error message"
 // @Failure	429
 // @Router	/api/search/ [get]
 func (h *SearchHandler) SearchProducts(w http.ResponseWriter, r *http.Request) {
@@ -55,5 +57,5 @@ func (h *SearchHandler) SearchProducts(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("got products", "len", len(products))
-	resp.JSON(w, http.StatusOK, products)
+	resp.JSON(w, http.StatusOK, (*models.ProductSlice)(&products))
 }

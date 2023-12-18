@@ -1,7 +1,6 @@
 package http
 
 import (
-	"encoding/json"
 	"errors"
 	"io"
 	"log/slog"
@@ -61,7 +60,8 @@ func (h *AddressHandler) AddAddress(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	addressInfo := models.AddressPayload{}
-	err = json.Unmarshal(body, &addressInfo)
+
+	err = addressInfo.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -78,7 +78,7 @@ func (h *AddressHandler) AddAddress(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("h.uc.AddAddress", "address", address)
-	resp.JSON(w, http.StatusOK, address)
+	resp.JSON(w, http.StatusOK, &address)
 }
 
 // @Summary	UpdateAddress
@@ -113,7 +113,7 @@ func (h *AddressHandler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	adressInfo := models.Address{}
-	err = json.Unmarshal(body, &adressInfo)
+	err = adressInfo.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -136,7 +136,7 @@ func (h *AddressHandler) UpdateAddress(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("h.uc.UpdateAddress", "address", address)
-	resp.JSON(w, http.StatusOK, address)
+	resp.JSON(w, http.StatusOK, &address)
 }
 
 // @Summary	DeleteAddress
@@ -171,7 +171,7 @@ func (h *AddressHandler) DeleteAddress(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	adressInfo := models.AddressDelete{}
-	err = json.Unmarshal(body, &adressInfo)
+	err = adressInfo.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -229,7 +229,7 @@ func (h *AddressHandler) MakeCurrentAddress(w http.ResponseWriter, r *http.Reque
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	adressInfo := models.AddressMakeCurrent{}
-	err = json.Unmarshal(body, &adressInfo)
+	err = adressInfo.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -293,7 +293,7 @@ func (h *AddressHandler) GetCurrentAddress(w http.ResponseWriter, r *http.Reques
 	}
 
 	h.log.Debug("h.uc.GetCurrentAddress", "address", address)
-	resp.JSON(w, http.StatusOK, address)
+	resp.JSON(w, http.StatusOK, &address)
 }
 
 // @Summary	GetAllAddresses
@@ -332,7 +332,6 @@ func (h *AddressHandler) GetAllAddresses(w http.ResponseWriter, r *http.Request)
 
 		return
 	}
-
 	h.log.Debug("h.uc.GetAllAddresses", "addresses", addresses)
-	resp.JSON(w, http.StatusOK, addresses)
+	resp.JSON(w, http.StatusOK, (*models.AddressSlice)(&addresses))
 }

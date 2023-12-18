@@ -2,11 +2,13 @@ package repo
 
 import (
 	"context"
+	"testing"
+	"time"
+
 	"github.com/driftprogramming/pgxpoolmock"
 	"github.com/golang/mock/gomock"
 	"github.com/jackc/pgx/v4"
 	"github.com/stretchr/testify/assert"
-	"testing"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	uuid "github.com/satori/go.uuid"
@@ -16,6 +18,7 @@ func TestOrderRepo_CreateOrder(t *testing.T) {
 	addressID := uuid.NewV4()
 	userID := uuid.NewV4()
 	var statusID int64 = 0
+	promocodeID := int64(-1)
 	tests := []struct {
 		name       string
 		mockRepoFn func(pool *pgxpoolmock.MockPgxPool)
@@ -26,6 +29,7 @@ func TestOrderRepo_CreateOrder(t *testing.T) {
 			mockPool.EXPECT().Exec(
 				gomock.Any(),
 				createOrder,
+				gomock.Any(),
 				gomock.Any(),
 				gomock.Any(),
 				gomock.Any(),
@@ -44,7 +48,7 @@ func TestOrderRepo_CreateOrder(t *testing.T) {
 			tt.mockRepoFn(mockPool)
 
 			repo := NewOrderRepo(mockPool)
-			_, err := repo.CreateOrder(context.Background(), models.Cart{}, addressID, userID, statusID)
+			_, err := repo.CreateOrder(context.Background(), models.Cart{}, addressID, userID, statusID, promocodeID, "", "")
 
 			assert.Equal(t, tt.err, err)
 		})
@@ -124,6 +128,9 @@ func TestOrderRepo_ReadOrder(t *testing.T) {
 				"address_house",
 				"address_flat",
 				"is_current",
+				"creation_at",
+				"creation_at_time",
+				"address_flat_date",
 			},
 			err: nil,
 		},
@@ -153,6 +160,9 @@ func TestOrderRepo_ReadOrder(t *testing.T) {
 				"address_house",
 				"address_flat",
 				"is_current",
+				"creation_at",
+				"creation_at_time",
+				"address_flat_date",
 			},
 			err: ErrPoductsInOrderNotFound,
 		},
@@ -173,13 +183,16 @@ func TestOrderRepo_ReadOrder(t *testing.T) {
 				int64(0),
 				int64(0),
 				"",
-				int64(0),
+				"",
 				uuid.UUID{},
 				"",
 				"",
 				"",
 				"",
 				true,
+				time.Time{},
+				"",
+				"",
 			).ToPgxRows()
 			tt.mockRepoFn(mockPool, pgxRows)
 

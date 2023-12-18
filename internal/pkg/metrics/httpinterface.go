@@ -7,10 +7,10 @@ import (
 )
 
 type MetricsHTTP interface {
-	IncreaseHits(string)
-	IncreaseErr(string, string)
-	AddDurationToHistogram(string, time.Duration)
-	AddDurationToSummary(string, string, time.Duration)
+	IncreaseHits(string, string)
+	IncreaseErr(string, string, string)
+	AddDurationToHistogram(string, string, time.Duration)
+	AddDurationToSummary(string, string, string, time.Duration)
 }
 
 type MetricHTTP struct {
@@ -39,7 +39,6 @@ func NewMetricHTTP() *MetricHTTP {
 	durationHistogram := prometheus.NewHistogramVec(prometheus.HistogramOpts{
 		Name: "durations_stats_histogram",
 		Help: "durations_stats_histogram",
-		// Buckets: prometheus.LinearBuckets(0, 1, 10),
 	}, labelHistogram)
 	prometheus.MustRegister(durationHistogram)
 
@@ -70,8 +69,6 @@ func (m *MetricHTTP) IncreaseHits(path, method string) {
 }
 
 func (m *MetricHTTP) IncreaseErr(statusCode, path, method string) {
-	// m.totalHits.WithLabelValues(path).Inc()
-
 	m.totalErrors.WithLabelValues(statusCode, path, method).Inc()
 }
 

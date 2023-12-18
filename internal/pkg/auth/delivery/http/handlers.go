@@ -1,7 +1,6 @@
 package http
 
 import (
-	"encoding/json"
 	"io"
 	"log/slog"
 	"net/http"
@@ -37,7 +36,7 @@ func NewAuthHandler(cl gen.AuthClient, log *slog.Logger) *AuthHandler {
 // @Produce json
 // @Param input body models.SignInPayload true "SignInPayload"
 // @Success	200	{object} models.Profile "Profile"
-// @Failure	400	{object} responser.Response	"error messege"
+// @Failure	400	{object} responser.response	"error messege"
 // @Failure	429
 // @Router	/api/auth/signin [post]
 func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
@@ -54,7 +53,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	userInfo := &models.SignInPayload{}
-	err = json.Unmarshal(body, userInfo)
+	err = userInfo.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -90,7 +89,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	profile := models.Profile{
+	profile := &models.Profile{
 		Id:          idUuid,
 		Login:       profileAndCookie.Profile.Login,
 		Description: profileAndCookie.Profile.Description,
@@ -109,7 +108,7 @@ func (h *AuthHandler) SignIn(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Param input body models.SignUpPayload true "SignUpPayload"
 // @Success	200 {object} models.Profile "Profile"
-// @Failure	400	{object} responser.Response	"error messege"
+// @Failure	400	{object} responser.response	"error messege"
 // @Failure	429
 // @Router	/api/auth/signup [post]
 func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
@@ -125,7 +124,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 	h.log.Debug("request body decoded", slog.Any("request", r))
 
 	userInfo := &models.SignUpPayload{}
-	err = json.Unmarshal(body, userInfo)
+	err = userInfo.UnmarshalJSON(body)
 	if err != nil {
 		h.log.Error("failed to unmarshal request body", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
@@ -162,7 +161,7 @@ func (h *AuthHandler) SignUp(w http.ResponseWriter, r *http.Request) {
 
 		return
 	}
-	profile := models.Profile{
+	profile := &models.Profile{
 		Id:          idUuid,
 		Login:       profileAndCookie.Profile.Login,
 		Description: profileAndCookie.Profile.Description,
@@ -242,5 +241,5 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	}
 
 	h.log.Debug("got profile", slog.Any("profile", profile.Profile.Id))
-	resp.JSON(w, http.StatusOK, profileModel)
+	resp.JSON(w, http.StatusOK, &profileModel)
 }

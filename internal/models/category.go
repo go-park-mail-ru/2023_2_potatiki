@@ -1,5 +1,6 @@
 package models
 
+//easyjson:json
 type Category struct {
 	Id     int64  `json:"categoryId"`
 	Name   string `json:"categoryName"`
@@ -10,6 +11,7 @@ const MAX_LEVEL_CATEGORY = 3
 
 type CategoryBranch [MAX_LEVEL_CATEGORY]string
 
+//easyjson:json
 type CategoryTree []Category
 
 //func (c *Category) LogValue() slog.Value {

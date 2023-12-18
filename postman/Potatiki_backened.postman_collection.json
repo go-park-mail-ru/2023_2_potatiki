@@ -1,9 +1,9 @@
 {
 	"info": {
-		"_postman_id": "fc627d56-4116-447e-abb2-48cd2caf4c55",
+		"_postman_id": "30ed717a-7113-4a10-89c4-e95010cde468",
 		"name": "Potatiki_backened",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "30122325"
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "30722310"
 	},
 	"item": [
 		{
@@ -26,17 +26,7 @@
 								"src": "/home/scremyda/Загрузки/autopart1.jpg"
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/profile/update-photo",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"profile",
-								"update-photo"
-							]
-						}
+						"url": "{{baseUrl}}/api/profile/update-photo"
 					},
 					"response": []
 				},
@@ -54,17 +44,7 @@
 								"src": ""
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/profile/update-photo",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"profile",
-								"update-photo"
-							]
-						}
+						"url": "{{baseUrl}}/api/profile/update-photo"
 					},
 					"response": []
 				},
@@ -85,17 +65,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/profile/8af2a131-a4eb-4a57-b745-46dbfb7e0e03",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"profile",
-								"8af2a131-a4eb-4a57-b745-46dbfb7e0e03"
-							]
-						}
+						"url": "{{baseUrl}}/api/profile/8af2a131-a4eb-4a57-b745-46dbfb7e0e03"
 					},
 					"response": []
 				},
@@ -119,17 +89,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/profile/update-data",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"profile",
-								"update-data"
-							]
-						}
+						"url": "{{baseUrl}}/api/profile/update-data"
 					},
 					"response": []
 				},
@@ -150,17 +110,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/profile/update-data",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"profile",
-								"update-data"
-							]
-						}
+						"url": "{{baseUrl}}/api/profile/update-data"
 					},
 					"response": []
 				}
@@ -186,17 +136,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/check_auth",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"check_auth"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/check_auth"
 					},
 					"response": []
 				},
@@ -217,17 +157,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/logout",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"logout"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/logout"
 					},
 					"response": []
 				},
@@ -251,17 +181,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/signin",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"signin"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/signin"
 					},
 					"response": []
 				},
@@ -288,17 +208,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/signin",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"signin"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/signin"
 					},
 					"response": []
 				},
@@ -322,17 +232,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/signup",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"signup"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/signup"
 					},
 					"response": []
 				},
@@ -353,17 +253,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/auth/signup",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"auth",
-								"signup"
-							]
-						}
+						"url": "{{baseUrl}}/api/auth/signup"
 					},
 					"response": []
 				}
@@ -491,17 +381,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/products/007749b5-7e07-4be8-8c91-8db273ace1c2",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"products",
-								"007749b5-7e07-4be8-8c91-8db273ace1c2"
-							]
-						}
+						"url": "{{baseUrl}}/api/products/007749b5-7e07-4be8-8c91-8db273ace1c2"
 					},
 					"response": []
 				}
@@ -527,17 +407,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/category/get_all",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"category",
-								"get_all"
-							]
-						}
+						"url": "{{baseUrl}}/api/category/get_all"
 					},
 					"response": []
 				}
@@ -566,17 +436,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/order/create",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"order",
-								"create"
-							]
-						}
+						"url": "{{baseUrl}}/api/order/create"
 					},
 					"response": []
 				},
@@ -597,17 +457,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/order/create",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"order",
-								"create"
-							]
-						}
+						"url": "{{baseUrl}}/api/order/create"
 					},
 					"response": []
 				},
@@ -628,17 +478,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/order/get_current",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"order",
-								"get_current"
-							]
-						}
+						"url": "{{baseUrl}}/api/order/get_current"
 					},
 					"response": []
 				},
@@ -659,17 +499,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/order/get_all",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"order",
-								"get_all"
-							]
-						}
+						"url": "{{baseUrl}}/api/order/get_all"
 					},
 					"response": []
 				}
@@ -692,17 +522,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/cart/update",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"cart",
-								"update"
-							]
-						}
+						"url": "{{baseUrl}}/api/cart/update"
 					},
 					"response": []
 				},
@@ -723,17 +543,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/cart/summary",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"cart",
-								"summary"
-							]
-						}
+						"url": "{{baseUrl}}/api/cart/summary"
 					},
 					"response": []
 				},
@@ -751,17 +561,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/cart/add_product",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"cart",
-								"add_product"
-							]
-						}
+						"url": "{{baseUrl}}/api/cart/add_product"
 					},
 					"response": []
 				},
@@ -779,17 +579,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/cart/delete_product",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"cart",
-								"delete_product"
-							]
-						}
+						"url": "{{baseUrl}}/api/cart/delete_product"
 					},
 					"response": []
 				}
@@ -818,17 +608,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/add",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"add"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/add"
 					},
 					"response": []
 				},
@@ -849,17 +629,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/add",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"add"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/add"
 					},
 					"response": []
 				},
@@ -883,17 +653,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/update",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"update"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/update"
 					},
 					"response": []
 				},
@@ -914,17 +674,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/update",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"update"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/update"
 					},
 					"response": []
 				},
@@ -948,17 +698,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/make_current",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"make_current"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/make_current"
 					},
 					"response": []
 				},
@@ -979,17 +719,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/make_current",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"make_current"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/make_current"
 					},
 					"response": []
 				},
@@ -1010,17 +740,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/get_current",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"get_current"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/get_current"
 					},
 					"response": []
 				},
@@ -1041,17 +761,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/get_all",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"get_all"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/get_all"
 					},
 					"response": []
 				},
@@ -1075,17 +785,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/delete",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"delete"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/delete"
 					},
 					"response": []
 				},
@@ -1106,17 +806,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/address/delete",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"address",
-								"delete"
-							]
-						}
+						"url": "{{baseUrl}}/api/address/delete"
 					},
 					"response": []
 				}
@@ -1184,16 +874,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/prometheus",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"prometheus"
-							]
-						}
+						"url": "{{baseUrl}}/api/prometheus"
 					},
 					"response": []
 				}
@@ -1222,17 +903,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/comments/create",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"comments",
-								"create"
-							]
-						}
+						"url": "{{baseUrl}}/api/comments/create"
 					},
 					"response": []
 				},
@@ -1253,17 +924,7 @@
 								}
 							}
 						},
-						"url": {
-							"raw": "{{baseUrl}}/api/comments/create",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"api",
-								"comments",
-								"create"
-							]
-						}
+						"url": "{{baseUrl}}/api/comments/create"
 					},
 					"response": []
 				},
@@ -1397,15 +1058,60 @@
 								}
 							}
 						},
+						"url": "{{baseUrl}}/api/survey/response"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Promo",
+			"item": [
+				{
+					"name": "checkPromocode",
+					"request": {
+						"method": "GET",
+						"header": [],
 						"url": {
-							"raw": "{{baseUrl}}/api/survey/response",
+							"raw": "{{baseUrl}}/api/promo/check?name=ZUZU99",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"api",
-								"survey",
-								"response"
+								"promo",
+								"check"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "ZUZU99"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "usePromocode",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/api/promo/use?name=SAVE25",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"promo",
+								"use"
+							],
+							"query": [
+								{
+									"key": "name",
+									"value": "SAVE25"
+								}
 							]
 						}
 					},
