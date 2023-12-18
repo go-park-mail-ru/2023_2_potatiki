@@ -30,6 +30,7 @@ linters:
     - nilerr
     - dupword
     - protogetter
+    - exhaustive
     - maintidx #???
     - stylecheck #???
     - promlinter #???
