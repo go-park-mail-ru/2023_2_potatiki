@@ -1475,8 +1475,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20232PotatikiInternalModels17(in
 			out.Rating = float32(in.Float32())
 		case "countComments":
 			out.CountComments = int64(in.Int64())
-		case "categoryParent":
-			out.Parent = int64(in.Int64())
+		case "category":
+			(out.Category).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -1526,10 +1526,10 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20232PotatikiInternalModels17(ou
 		out.RawString(prefix)
 		out.Int64(int64(in.CountComments))
 	}
-	if in.Parent != 0 {
-		const prefix string = ",\"categoryParent\":"
+	{
+		const prefix string = ",\"category\":"
 		out.RawString(prefix)
-		out.Int64(int64(in.Parent))
+		(in.Category).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
@@ -1644,24 +1644,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20232PotatikiInternalModels19(in
 		switch key {
 		case "quantity":
 			out.Quantity = int64(in.Int64())
-		case "productId":
-			if data := in.UnsafeBytes(); in.Ok() {
-				in.AddError((out.Id).UnmarshalText(data))
-			}
-		case "productName":
-			out.Name = string(in.String())
-		case "description":
-			out.Description = string(in.String())
-		case "price":
-			out.Price = int64(in.Int64())
-		case "img":
-			out.ImgSrc = string(in.String())
-		case "rating":
-			out.Rating = float32(in.Float32())
-		case "countComments":
-			out.CountComments = int64(in.Int64())
-		case "categoryParent":
-			out.Parent = int64(in.Int64())
+		case "product":
+			(out.Product).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -1682,44 +1666,9 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20232PotatikiInternalModels19(ou
 		out.Int64(int64(in.Quantity))
 	}
 	{
-		const prefix string = ",\"productId\":"
+		const prefix string = ",\"product\":"
 		out.RawString(prefix)
-		out.RawText((in.Id).MarshalText())
-	}
-	{
-		const prefix string = ",\"productName\":"
-		out.RawString(prefix)
-		out.String(string(in.Name))
-	}
-	if in.Description != "" {
-		const prefix string = ",\"description\":"
-		out.RawString(prefix)
-		out.String(string(in.Description))
-	}
-	{
-		const prefix string = ",\"price\":"
-		out.RawString(prefix)
-		out.Int64(int64(in.Price))
-	}
-	{
-		const prefix string = ",\"img\":"
-		out.RawString(prefix)
-		out.String(string(in.ImgSrc))
-	}
-	{
-		const prefix string = ",\"rating\":"
-		out.RawString(prefix)
-		out.Float32(float32(in.Rating))
-	}
-	{
-		const prefix string = ",\"countComments\":"
-		out.RawString(prefix)
-		out.Int64(int64(in.CountComments))
-	}
-	if in.Parent != 0 {
-		const prefix string = ",\"categoryParent\":"
-		out.RawString(prefix)
-		out.Int64(int64(in.Parent))
+		(in.Product).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
@@ -2982,8 +2931,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20232PotatikiInternalModels34(in
 			out.Rating = float32(in.Float32())
 		case "countComments":
 			out.CountComments = int64(in.Int64())
-		case "categoryParent":
-			out.Parent = int64(in.Int64())
+		case "category":
+			(out.Category).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -3038,10 +2987,10 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20232PotatikiInternalModels34(ou
 		out.RawString(prefix)
 		out.Int64(int64(in.CountComments))
 	}
-	if in.Parent != 0 {
-		const prefix string = ",\"categoryParent\":"
+	{
+		const prefix string = ",\"category\":"
 		out.RawString(prefix)
-		out.Int64(int64(in.Parent))
+		(in.Category).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }
