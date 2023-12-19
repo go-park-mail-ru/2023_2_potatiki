@@ -11,7 +11,7 @@ type Product struct {
 	ImgSrc        string    `json:"img"`
 	Rating        float32   `json:"rating"`
 	CountComments int64     `json:"countComments"`
-	Category      `json:"category"`
+	Category                // `json:"_"`
 }
 
 //easyjson:json
