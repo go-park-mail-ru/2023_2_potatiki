@@ -48,12 +48,8 @@ definitions:
     type: object
   models.CartProduct:
     properties:
-      categoryId:
-        type: integer
-      categoryName:
-        type: string
-      categoryParent:
-        type: integer
+      category:
+        $ref: '#/definitions/models.Category'
       countComments:
         type: integer
       description:
@@ -144,21 +140,13 @@ definitions:
     type: object
   models.Order:
     properties:
-      addressId:
-        type: string
-      addressIsCurrent:
-        type: boolean
-      city:
-        type: string
+      address:
+        $ref: '#/definitions/models.Address'
       creationDate:
         type: string
       deliveryDate:
         type: string
       deliveryTime:
-        type: string
-      flat:
-        type: string
-      house:
         type: string
       id:
         type: string
@@ -169,8 +157,6 @@ definitions:
       promocodeName:
         type: string
       status:
-        type: string
-      street:
         type: string
     type: object
   models.OrderInfo:
@@ -184,37 +170,15 @@ definitions:
     type: object
   models.OrderProduct:
     properties:
-      categoryId:
-        type: integer
-      categoryName:
-        type: string
-      categoryParent:
-        type: integer
-      countComments:
-        type: integer
-      description:
-        type: string
-      img:
-        type: string
-      price:
-        type: integer
-      productId:
-        type: string
-      productName:
-        type: string
+      product:
+        $ref: '#/definitions/models.Product'
       quantity:
         type: integer
-      rating:
-        type: number
     type: object
   models.Product:
     properties:
-      categoryId:
-        type: integer
-      categoryName:
-        type: string
-      categoryParent:
-        type: integer
+      category:
+        $ref: '#/definitions/models.Category'
       countComments:
         type: integer
       description:

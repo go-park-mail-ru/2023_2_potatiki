@@ -104,8 +104,24 @@ func easyjson120d1ca2DecodeGithubComGoParkMailRu20232PotatikiInternalModels1(in 
 		switch key {
 		case "quantity":
 			out.Quantity = int64(in.Int64())
-		case "product":
-			(out.Product).UnmarshalEasyJSON(in)
+		case "productId":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.Id).UnmarshalText(data))
+			}
+		case "productName":
+			out.Name = string(in.String())
+		case "description":
+			out.Description = string(in.String())
+		case "price":
+			out.Price = int64(in.Int64())
+		case "img":
+			out.ImgSrc = string(in.String())
+		case "rating":
+			out.Rating = float32(in.Float32())
+		case "countComments":
+			out.CountComments = int64(in.Int64())
+		case "category":
+			(out.Category).UnmarshalEasyJSON(in)
 		default:
 			in.SkipRecursive()
 		}
@@ -126,9 +142,44 @@ func easyjson120d1ca2EncodeGithubComGoParkMailRu20232PotatikiInternalModels1(out
 		out.Int64(int64(in.Quantity))
 	}
 	{
-		const prefix string = ",\"product\":"
+		const prefix string = ",\"productId\":"
 		out.RawString(prefix)
-		(in.Product).MarshalEasyJSON(out)
+		out.RawText((in.Id).MarshalText())
+	}
+	{
+		const prefix string = ",\"productName\":"
+		out.RawString(prefix)
+		out.String(string(in.Name))
+	}
+	if in.Description != "" {
+		const prefix string = ",\"description\":"
+		out.RawString(prefix)
+		out.String(string(in.Description))
+	}
+	{
+		const prefix string = ",\"price\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.Price))
+	}
+	{
+		const prefix string = ",\"img\":"
+		out.RawString(prefix)
+		out.String(string(in.ImgSrc))
+	}
+	{
+		const prefix string = ",\"rating\":"
+		out.RawString(prefix)
+		out.Float32(float32(in.Rating))
+	}
+	{
+		const prefix string = ",\"countComments\":"
+		out.RawString(prefix)
+		out.Int64(int64(in.CountComments))
+	}
+	{
+		const prefix string = ",\"category\":"
+		out.RawString(prefix)
+		(in.Category).MarshalEasyJSON(out)
 	}
 	out.RawByte('}')
 }

@@ -26,7 +26,7 @@ type OrderSlice []Order
 //easyjson:json
 type OrderProduct struct {
 	Quantity int64 `json:"quantity"`
-	Product  `json:"product"`
+	Product
 }
 
 //easyjson:json

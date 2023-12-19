@@ -1484,14 +1484,8 @@ const docTemplate = `{
         "models.CartProduct": {
             "type": "object",
             "properties": {
-                "categoryId": {
-                    "type": "integer"
-                },
-                "categoryName": {
-                    "type": "string"
-                },
-                "categoryParent": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/models.Category"
                 },
                 "countComments": {
                     "type": "integer"
@@ -1630,14 +1624,8 @@ const docTemplate = `{
         "models.Order": {
             "type": "object",
             "properties": {
-                "addressId": {
-                    "type": "string"
-                },
-                "addressIsCurrent": {
-                    "type": "boolean"
-                },
-                "city": {
-                    "type": "string"
+                "address": {
+                    "$ref": "#/definitions/models.Address"
                 },
                 "creationDate": {
                     "type": "string"
@@ -1646,12 +1634,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deliveryTime": {
-                    "type": "string"
-                },
-                "flat": {
-                    "type": "string"
-                },
-                "house": {
                     "type": "string"
                 },
                 "id": {
@@ -1667,9 +1649,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
-                },
-                "street": {
                     "type": "string"
                 }
             }
@@ -1691,52 +1670,19 @@ const docTemplate = `{
         "models.OrderProduct": {
             "type": "object",
             "properties": {
-                "categoryId": {
-                    "type": "integer"
-                },
-                "categoryName": {
-                    "type": "string"
-                },
-                "categoryParent": {
-                    "type": "integer"
-                },
-                "countComments": {
-                    "type": "integer"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "img": {
-                    "type": "string"
-                },
-                "price": {
-                    "type": "integer"
-                },
-                "productId": {
-                    "type": "string"
-                },
-                "productName": {
-                    "type": "string"
+                "product": {
+                    "$ref": "#/definitions/models.Product"
                 },
                 "quantity": {
                     "type": "integer"
-                },
-                "rating": {
-                    "type": "number"
                 }
             }
         },
         "models.Product": {
             "type": "object",
             "properties": {
-                "categoryId": {
-                    "type": "integer"
-                },
-                "categoryName": {
-                    "type": "string"
-                },
-                "categoryParent": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/models.Category"
                 },
                 "countComments": {
                     "type": "integer"
