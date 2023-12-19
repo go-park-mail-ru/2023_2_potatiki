@@ -45,10 +45,9 @@ func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase
 // @Param input body models.OrderInfo true "DeliveryDate and DeliveryTime"
 // @Success	200	{object} models.Order "New order info"
 // @Failure	401	"User unauthorized"
-// @Failure	404	"Promocode not found"
+// @Failure	404	{object} responser.response	"something not found error message"
 // @Failure	403	"Promocode leftout"
 // @Failure	419	"Promocode expired"
-// @Failure	406	{object} responser.response	"something not found error message"
 // @Failure	429
 // @Router	/api/order/create [post]
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -95,9 +94,9 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		switch st.Code() {
-		case codes.NotFound:
+		case codes.NotFound: //ErrPromocodeNotFound:
 			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
-			resp.JSONStatus(w, http.StatusNotFound)
+			resp.JSON(w, http.StatusNotFound, resp.Err(st.Message()))
 		case codes.OutOfRange:
 			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
 			resp.JSONStatus(w, http.StatusForbidden)
@@ -106,13 +105,13 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 			resp.JSONStatus(w, 419)
 		case codes.Unavailable: //orderRepo.ErrPoductNotFound:
 			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
-			resp.JSON(w, http.StatusNotAcceptable, resp.Err(st.Message()))
+			resp.JSON(w, http.StatusNotFound, resp.Err(st.Message()))
 		case codes.Aborted: //cartRepo.ErrCartNotFound
 			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
-			resp.JSON(w, http.StatusNotAcceptable, resp.Err(st.Message()))
+			resp.JSON(w, http.StatusNotFound, resp.Err(st.Message()))
 		case codes.ResourceExhausted: //addressRepo.ErrAddressNotFound
 			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
-			resp.JSON(w, http.StatusNotAcceptable, resp.Err(st.Message()))
+			resp.JSON(w, http.StatusNotFound, resp.Err(st.Message()))
 		default:
 			h.log.Error("failed to CreateOrder", sl.Err(st.Err()))
 			resp.JSONStatus(w, http.StatusTooManyRequests)

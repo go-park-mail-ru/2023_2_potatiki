@@ -724,9 +724,6 @@ const docTemplate = `{
                         "description": "Promocode leftout"
                     },
                     "404": {
-                        "description": "Promocode not found"
-                    },
-                    "406": {
                         "description": "something not found error message",
                         "schema": {
                             "$ref": "#/definitions/responser.response"
@@ -1151,11 +1148,23 @@ const docTemplate = `{
                             "$ref": "#/definitions/responser.response"
                         }
                     },
+                    "401": {
+                        "description": "user Unauthorized"
+                    },
+                    "403": {
+                        "description": "promocode not leftout"
+                    },
                     "404": {
-                        "description": "something not found error message"
+                        "description": "promocode not found"
+                    },
+                    "410": {
+                        "description": "promocode already used"
+                    },
+                    "419": {
+                        "description": "promocode expired"
                     },
                     "429": {
-                        "description": "Too Many Requests"
+                        "description": "internal error"
                     }
                 }
             }
