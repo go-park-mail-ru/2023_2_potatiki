@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS promocode
     deadline TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
-INSERT INTO promocode (discount, name, leftover, deadline)
+INSERT INTO promocode
 VALUES
     (1, 10, 'PROMO10', 100, '2024-01-01 00:00:00'),
     (2, 15, 'SALE15', 1000, '2024-01-01 00:00:00'),
