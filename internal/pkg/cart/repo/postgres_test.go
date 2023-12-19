@@ -2,6 +2,11 @@ package repo
 
 import (
 	"context"
+	"fmt"
+	"github.com/driftprogramming/pgxpoolmock"
+	"github.com/golang/mock/gomock"
+	"github.com/jackc/pgx/v4"
+	"github.com/stretchr/testify/assert"
 	"reflect"
 	"testing"
 
@@ -9,80 +14,214 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func TestCartRepo_CreateCart(t *testing.T) {
-	type args struct {
-		ctx    context.Context
-		userID uuid.UUID
-	}
-	tests := []struct {
-		name    string
-		r       *CartRepo
-		args    args
-		want    uuid.UUID
-		wantErr bool
+func TestCartRepo_ReadCartProducts(t *testing.T) {
+	testCases := []struct {
+		name       string
+		mockRepoFn func(*pgxpoolmock.MockPgxPool, pgx.Rows)
+		columns    []string
+		err        error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "SuccessfulReadCartProducts",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(gomock.Any(), getProducts, gomock.Any()).Return(pgxRows, nil)
+			},
+			columns: []string{"id", "name", "description", "price", "imgSrc", "rating", "quantity", "Category.ID", "Category.Name"},
+			err:     nil,
+		},
+		{
+			name: "UnsuccessfulReadCartProductsErrProductsNotFound",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(gomock.Any(), getProducts, gomock.Any()).Return(pgxRows, pgx.ErrNoRows)
+			},
+			columns: []string{"id", "name", "description", "price", "imgSrc", "rating", "quantity", "Category.ID", "Category.Name"},
+			err:     ErrProductsNotFound,
+		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.r.CreateCart(tt.args.ctx, tt.args.userID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("CartRepo.CreateCart() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CartRepo.CreateCart() = %v, want %v", got, tt.want)
-			}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctr := gomock.NewController(t)
+			mockPool := pgxpoolmock.NewMockPgxPool(ctr)
+			defer ctr.Finish()
+
+			pgxRows := pgxpoolmock.NewRows(tc.columns).
+				AddRow(uuid.UUID{}, "", "", int64(0), "", float32(0), int64(0), int64(0), "").ToPgxRows()
+
+			tc.mockRepoFn(mockPool, pgxRows)
+
+			repo := NewCartRepo(mockPool)
+			_, err := repo.ReadCartProducts(context.Background(), models.Cart{})
+
+			assert.Equal(t, tc.err, err)
+		})
+	}
+}
+
+func TestCartRepo_CreateCart(t *testing.T) {
+	cartID := uuid.NewV4()
+	userID := uuid.NewV4()
+	testCases := []struct {
+		name       string
+		mockRepoFn func(*pgxpoolmock.MockPgxPool)
+		err        error
+		id         uuid.UUID
+	}{
+		{
+			name: "SuccessfulCreateCart",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool) {
+				mockPool.EXPECT().Exec(gomock.Any(), createCart, gomock.Any(), gomock.Any()).Return(nil, nil)
+			},
+			err: nil,
+			id:  cartID,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctr := gomock.NewController(t)
+			mockPool := pgxpoolmock.NewMockPgxPool(ctr)
+			defer ctr.Finish()
+
+			tc.mockRepoFn(mockPool)
+
+			repo := NewCartRepo(mockPool)
+			_, err := repo.CreateCart(context.Background(), userID)
+
+			assert.Equal(t, tc.err, err)
+			assert.Equal(t, tc.id, cartID)
 		})
 	}
 }
 
 func TestCartRepo_DeleteCart(t *testing.T) {
-	type args struct {
-		ctx    context.Context
-		cartID uuid.UUID
-	}
-	tests := []struct {
-		name    string
-		r       *CartRepo
-		args    args
-		wantErr bool
+	userID := uuid.NewV4()
+	testCases := []struct {
+		name       string
+		mockRepoFn func(*pgxpoolmock.MockPgxPool)
+		err        error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "SuccessfulDeleteCart",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool) {
+				mockPool.EXPECT().Exec(gomock.Any(), deleteCard, gomock.Any(), gomock.Any()).Return(nil, nil)
+			},
+			err: nil,
+		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if err := tt.r.DeleteCart(tt.args.ctx, tt.args.cartID); (err != nil) != tt.wantErr {
-				t.Errorf("CartRepo.DeleteCart() error = %v, wantErr %v", err, tt.wantErr)
-			}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctr := gomock.NewController(t)
+			mockPool := pgxpoolmock.NewMockPgxPool(ctr)
+			defer ctr.Finish()
+
+			tc.mockRepoFn(mockPool)
+
+			repo := NewCartRepo(mockPool)
+			err := repo.DeleteCart(context.Background(), userID)
+
+			assert.Equal(t, tc.err, err)
 		})
 	}
 }
 
 func TestCartRepo_CheckCart(t *testing.T) {
-	type args struct {
-		ctx    context.Context
-		userID uuid.UUID
-	}
-	tests := []struct {
-		name    string
-		r       *CartRepo
-		args    args
-		want    models.Cart
-		wantErr bool
+	userID := uuid.NewV4()
+	testCases := []struct {
+		name       string
+		mockRepoFn func(*pgxpoolmock.MockPgxPool, pgx.Rows)
+		columns    []string
+		err        error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "SuccessfulCheckCart",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().QueryRow(gomock.Any(), getCart, userID).Return(pgxRows)
+				pgxRows.Next()
+			},
+			columns: []string{"id"},
+			err:     nil,
+		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.r.CheckCart(tt.args.ctx, tt.args.userID)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("CartRepo.CheckCart() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CartRepo.CheckCart() = %v, want %v", got, tt.want)
-			}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctr := gomock.NewController(t)
+			mockPool := pgxpoolmock.NewMockPgxPool(ctr)
+			defer ctr.Finish()
+
+			pgxRows := pgxpoolmock.NewRows(tc.columns).
+				AddRow(uuid.UUID{}).ToPgxRows()
+
+			tc.mockRepoFn(mockPool, pgxRows)
+
+			repo := NewCartRepo(mockPool)
+			_, err := repo.CheckCart(context.Background(), userID)
+
+			assert.Equal(t, tc.err, err)
+		})
+	}
+}
+
+func TestCartRepo_AddProduct(t *testing.T) {
+	testCases := []struct {
+		name       string
+		mockRepoFn func(*pgxpoolmock.MockPgxPool)
+		err        error
+	}{
+		{
+			name: "UnsuccessfulAddProduct",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool) {
+				mockPool.EXPECT().Exec(gomock.Any(), updateOrCreateProduct, gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, pgx.ErrNoRows)
+			},
+			err: fmt.Errorf("error happened in db.Exec: %w", pgx.ErrNoRows),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctr := gomock.NewController(t)
+			mockPool := pgxpoolmock.NewMockPgxPool(ctr)
+			defer ctr.Finish()
+
+			tc.mockRepoFn(mockPool)
+
+			repo := NewCartRepo(mockPool)
+			_, err := repo.AddProduct(context.Background(), models.Cart{}, models.CartProductUpdate{})
+
+			assert.Equal(t, tc.err, err)
+		})
+	}
+}
+
+func TestCartRepo_DeleteProduct(t *testing.T) {
+	testCases := []struct {
+		name       string
+		mockRepoFn func(*pgxpoolmock.MockPgxPool)
+		err        error
+	}{
+		{
+			name: "UnsuccessfulDeleteProduct",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool) {
+				mockPool.EXPECT().Exec(gomock.Any(), deleteProduct, gomock.Any(), gomock.Any()).Return(nil, pgx.ErrNoRows)
+			},
+			err: fmt.Errorf("error happened in db.Exec: %w", pgx.ErrNoRows),
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctr := gomock.NewController(t)
+			mockPool := pgxpoolmock.NewMockPgxPool(ctr)
+			defer ctr.Finish()
+
+			tc.mockRepoFn(mockPool)
+
+			repo := NewCartRepo(mockPool)
+			_, err := repo.DeleteProduct(context.Background(), models.Cart{}, models.CartProductDelete{})
+
+			assert.Equal(t, tc.err, err)
 		})
 	}
 }
@@ -138,92 +277,6 @@ func TestCartRepo_UpdateCart(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("CartRepo.UpdateCart() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestCartRepo_ReadCartProducts(t *testing.T) {
-	type args struct {
-		ctx  context.Context
-		cart models.Cart
-	}
-	tests := []struct {
-		name    string
-		r       *CartRepo
-		args    args
-		want    models.Cart
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.r.ReadCartProducts(tt.args.ctx, tt.args.cart)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("CartRepo.ReadCartProducts() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CartRepo.ReadCartProducts() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestCartRepo_AddProduct(t *testing.T) {
-	type args struct {
-		ctx     context.Context
-		cart    models.Cart
-		product models.CartProductUpdate
-	}
-	tests := []struct {
-		name    string
-		r       *CartRepo
-		args    args
-		want    models.Cart
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.r.AddProduct(tt.args.ctx, tt.args.cart, tt.args.product)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("CartRepo.AddProduct() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CartRepo.AddProduct() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestCartRepo_DeleteProduct(t *testing.T) {
-	type args struct {
-		ctx     context.Context
-		cart    models.Cart
-		product models.CartProductDelete
-	}
-	tests := []struct {
-		name    string
-		r       *CartRepo
-		args    args
-		want    models.Cart
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.r.DeleteProduct(tt.args.ctx, tt.args.cart, tt.args.product)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("CartRepo.DeleteProduct() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CartRepo.DeleteProduct() = %v, want %v", got, tt.want)
 			}
 		})
 	}
