@@ -120,8 +120,26 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 	}
 
 	orderId, err := uuid.FromString(gorder.Order.Id)
+	if err != nil {
+		h.log.Error("failed to parse order response field", err)
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
 	addressId, err := uuid.FromString(gorder.Order.Address.Id)
+	if err != nil {
+		h.log.Error("failed to parse order response field", err)
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
 	profileId, err := uuid.FromString(gorder.Order.Address.ProfileId)
+	if err != nil {
+		h.log.Error("failed to parse order response field", err)
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
 	parsedTime, err := time.Parse(time.RFC3339, gorder.Order.CreationAt)
 	if err != nil {
 		h.log.Error("failed to parse order response field", err)

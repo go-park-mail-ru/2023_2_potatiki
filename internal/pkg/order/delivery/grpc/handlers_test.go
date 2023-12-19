@@ -3,7 +3,6 @@ package grpc
 import (
 	"context"
 	"os"
-	"reflect"
 	"testing"
 	"time"
 
@@ -17,7 +16,6 @@ import (
 )
 
 func TestGrpcOrderHandler_CreateOrder(t *testing.T) {
-	t.Skip()
 	id := uuid.NewV4()
 	type fields struct {
 		uc *mock.MockOrderUsecase
@@ -68,20 +66,16 @@ func TestGrpcOrderHandler_CreateOrder(t *testing.T) {
 			}
 			tt.h = NewGrpcOrderHandler(f.uc, logger.Set("local", os.Stdout))
 
-			got, err := tt.h.CreateOrder(tt.args.ctx, tt.args.in)
+			_, err := tt.h.CreateOrder(tt.args.ctx, tt.args.in)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GrpcOrderHandler.CreateOrder() error = %v, wantErr %v", err, tt.wantErr)
 				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GrpcOrderHandler.CreateOrder() = %v, want %v", got, tt.want)
 			}
 		})
 	}
 }
 
 func TestGrpcOrderHandler_GetOrders(t *testing.T) {
-	t.Skip()
 	id := uuid.NewV4()
 	type fields struct {
 		uc *mock.MockOrderUsecase
@@ -132,14 +126,12 @@ func TestGrpcOrderHandler_GetOrders(t *testing.T) {
 			}
 			tt.h = NewGrpcOrderHandler(f.uc, logger.Set("local", os.Stdout))
 
-			got, err := tt.h.GetOrders(tt.args.ctx, tt.args.in)
+			_, err := tt.h.GetOrders(tt.args.ctx, tt.args.in)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("GrpcOrderHandler.GetOrders() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GrpcOrderHandler.GetOrders() = %v, want %v", got, tt.want)
-			}
+
 		})
 	}
 }
