@@ -220,7 +220,7 @@ CREATE EXTENSION IF NOT EXISTS pg_trgm;
 ------------------------------------------------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS promocode
 (
-    id SERIAL PRIMARY KEY,
+    id INT PRIMARY KEY,
     discount INT NOT NULL,
     name TEXT NOT NULL UNIQUE,
     leftover INT NOT NULL,
