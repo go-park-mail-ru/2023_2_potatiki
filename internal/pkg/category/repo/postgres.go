@@ -2,9 +2,9 @@ package repo
 
 import (
 	"context"
-	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/jackc/pgx/v4"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
@@ -36,7 +36,7 @@ func (r *CategoryRepo) ReadCategories(ctx context.Context) (models.CategoryTree,
 	categorySlice := make(models.CategoryTree, 0)
 	rows, err := r.db.Query(ctx, getCategories)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Category{}, ErrCategoryNotFound
 		}
 		err = fmt.Errorf("error happened in db.QueryContext: %w", err)

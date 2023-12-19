@@ -2,35 +2,53 @@ package repo
 
 import (
 	"context"
-	"reflect"
+	"github.com/driftprogramming/pgxpoolmock"
+	"github.com/golang/mock/gomock"
+	"github.com/jackc/pgx/v4"
+	"github.com/stretchr/testify/assert"
 	"testing"
-
-	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 )
 
 func TestCategoryRepo_ReadCategories(t *testing.T) {
-	type args struct {
-		ctx context.Context
-	}
-	tests := []struct {
-		name    string
-		r       *CategoryRepo
-		args    args
-		want    models.CategoryTree
-		wantErr bool
+	testCases := []struct {
+		name       string
+		mockRepoFn func(*pgxpoolmock.MockPgxPool, pgx.Rows)
+		columns    []string
+		err        error
 	}{
-		// TODO: Add test cases.
+		{
+			name: "SuccessfulReadCartProducts",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(gomock.Any(), getCategories).Return(pgxRows, nil)
+			},
+			columns: []string{"id", "name", "count"},
+			err:     nil,
+		},
+		{
+			name: "UnsuccessfulReadCartProductsErrProductsNotFound",
+			mockRepoFn: func(mockPool *pgxpoolmock.MockPgxPool, pgxRows pgx.Rows) {
+				mockPool.EXPECT().Query(gomock.Any(), getCategories).Return(pgxRows, pgx.ErrNoRows)
+			},
+			columns: []string{"id", "name", "count"},
+			err:     ErrCategoryNotFound,
+		},
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.r.ReadCategories(tt.args.ctx)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("CategoryRepo.ReadCategories() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("CategoryRepo.ReadCategories() = %v, want %v", got, tt.want)
-			}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctr := gomock.NewController(t)
+			mockPool := pgxpoolmock.NewMockPgxPool(ctr)
+			defer ctr.Finish()
+
+			pgxRows := pgxpoolmock.NewRows(tc.columns).
+				AddRow(int64(0), "", int64(0)).ToPgxRows()
+
+			tc.mockRepoFn(mockPool, pgxRows)
+
+			repo := NewCategoryRepo(mockPool)
+			_, err := repo.ReadCategories(context.Background())
+
+			assert.Equal(t, tc.err, err)
 		})
 	}
 }
