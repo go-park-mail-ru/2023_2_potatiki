@@ -6,6 +6,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//go:generate easyjson -all /home/scremyda/GolandProjects/2023_2_potatiki/internal/models/inputs.go
+
 //easyjson:json
 type SignUpPayload struct {
 	Login    string `json:"login" validate:"required,min=6,max=30"`

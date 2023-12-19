@@ -1,5 +1,7 @@
 package models
 
+//go:generate easyjson -all /home/scremyda/GolandProjects/2023_2_potatiki/internal/models/category.go
+
 //easyjson:json
 type Category struct {
 	Id     int64  `json:"categoryId"`

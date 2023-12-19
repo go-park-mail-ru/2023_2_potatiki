@@ -6,6 +6,8 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//go:generate easyjson -all /home/scremyda/GolandProjects/2023_2_potatiki/internal/models/order.go
+
 //easyjson:json
 type Order struct {
 	Id           uuid.UUID `json:"id"`
@@ -14,8 +16,8 @@ type Order struct {
 	DeliveryTime string    `json:"deliveryTime"`
 	PomocodeName string    `json:"promocodeName"`
 	CreationAt   time.Time `json:"creationDate"`
-	Address
-	Products []OrderProduct `json:"products"`
+	Address      `json:"address"`
+	Products     []OrderProduct `json:"products"`
 }
 
 //easyjson:json
@@ -24,7 +26,7 @@ type OrderSlice []Order
 //easyjson:json
 type OrderProduct struct {
 	Quantity int64 `json:"quantity"`
-	Product        //`json:"product"`
+	Product  `json:"product"`
 }
 
 //easyjson:json

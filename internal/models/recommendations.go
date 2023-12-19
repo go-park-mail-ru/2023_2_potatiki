@@ -2,6 +2,8 @@ package models
 
 import uuid "github.com/satori/go.uuid"
 
+//go:generate easyjson -all /home/scremyda/GolandProjects/2023_2_potatiki/internal/models/recommendations.go
+
 const (
 	MinProductsCount          = 20
 	MinCateggoriesCount       = 4
