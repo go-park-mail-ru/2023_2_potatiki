@@ -9,11 +9,15 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo"
 	"github.com/jackc/pgtype/pgxtype"
 	"github.com/jackc/pgx/v4"
+	uuid "github.com/satori/go.uuid"
 )
 
 const (
 	readPromocode = "SELECT * FROM promocode WHERE name=$1;"
 	usePromocode  = "UPDATE promocode SET leftover=leftover-1 WHERE name=$1 AND leftover>0 RETURNING *;"
+
+	checkUniqPromoUser = `
+	SELECT profile_id, promocode_id FROM order_info WHERE profile_id=$1 AND promocode_id=$2;`
 )
 
 type PromoRepo struct {
@@ -36,6 +40,19 @@ func (r *PromoRepo) ReadPromocode(ctx context.Context, promocodeName string) (*m
 		return &models.Promocode{}, fmt.Errorf("error happened in row.Scan: %w", err)
 	}
 	return p, nil
+}
+
+func (r *PromoRepo) CheckUniq(ctx context.Context, userID uuid.UUID, promocodeID int) error {
+	res, err := r.db.Exec(ctx, checkUniqPromoUser, userID, promocodeID)
+	if err != nil {
+		return fmt.Errorf("error happened in CheckUniq sql exec: %w", err)
+	}
+
+	if res.RowsAffected() > 0 {
+		return promo.ErrAlreadyUsed
+	}
+
+	return nil
 }
 
 func (r *PromoRepo) UsePromocode(ctx context.Context, promocodeName string) (*models.Promocode, error) {

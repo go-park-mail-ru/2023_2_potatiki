@@ -6,12 +6,14 @@ import (
 	"testing"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	uuid "github.com/satori/go.uuid"
 )
 
 func TestPromoUsecase_CheckPromocode(t *testing.T) {
 	type args struct {
-		ctx  context.Context
-		name string
+		ctx    context.Context
+		userID uuid.UUID
+		name   string
 	}
 	tests := []struct {
 		name    string
@@ -24,7 +26,7 @@ func TestPromoUsecase_CheckPromocode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.uc.CheckPromocode(tt.args.ctx, tt.args.name)
+			got, err := tt.uc.CheckPromocode(tt.args.ctx, tt.args.userID, tt.args.name)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("PromoUsecase.CheckPromocode() error = %v, wantErr %v", err, tt.wantErr)
 				return

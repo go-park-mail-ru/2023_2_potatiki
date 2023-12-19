@@ -15,8 +15,8 @@ import (
 
 const (
 	createOrder = `
-	 INSERT INTO order_info (id, profile_id, status_id, address_id, delivery_at_time, delivery_at_date)
-	 VALUES ($1, $2, $3, $4, $5, $6);
+	INSERT INTO order_info (id, profile_id, status_id, address_id, delivery_at_time, delivery_at_date)
+	VALUES ($1, $2, $3, $4, $5, $6);
 	`
 	setPromoToOrder = `
 	UPDATE order_info SET promocode_id=$1 WHERE id=$2;

@@ -10,6 +10,7 @@ import (
 
 	models "github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	gomock "github.com/golang/mock/gomock"
+	uuid "github.com/satori/go.uuid"
 )
 
 // MockPromoUsecase is a mock of PromoUsecase interface.
@@ -36,18 +37,18 @@ func (m *MockPromoUsecase) EXPECT() *MockPromoUsecaseMockRecorder {
 }
 
 // CheckPromocode mocks base method.
-func (m *MockPromoUsecase) CheckPromocode(arg0 context.Context, arg1 string) (*models.Promocode, error) {
+func (m *MockPromoUsecase) CheckPromocode(arg0 context.Context, arg1 uuid.UUID, arg2 string) (*models.Promocode, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "CheckPromocode", arg0, arg1)
+	ret := m.ctrl.Call(m, "CheckPromocode", arg0, arg1, arg2)
 	ret0, _ := ret[0].(*models.Promocode)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // CheckPromocode indicates an expected call of CheckPromocode.
-func (mr *MockPromoUsecaseMockRecorder) CheckPromocode(arg0, arg1 interface{}) *gomock.Call {
+func (mr *MockPromoUsecaseMockRecorder) CheckPromocode(arg0, arg1, arg2 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckPromocode", reflect.TypeOf((*MockPromoUsecase)(nil).CheckPromocode), arg0, arg1)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckPromocode", reflect.TypeOf((*MockPromoUsecase)(nil).CheckPromocode), arg0, arg1, arg2)
 }
 
 // UsePromocode mocks base method.
@@ -86,6 +87,20 @@ func NewMockPromoRepo(ctrl *gomock.Controller) *MockPromoRepo {
 // EXPECT returns an object that allows the caller to indicate expected use.
 func (m *MockPromoRepo) EXPECT() *MockPromoRepoMockRecorder {
 	return m.recorder
+}
+
+// CheckUniq mocks base method.
+func (m *MockPromoRepo) CheckUniq(arg0 context.Context, arg1 uuid.UUID, arg2 int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CheckUniq", arg0, arg1, arg2)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CheckUniq indicates an expected call of CheckUniq.
+func (mr *MockPromoRepoMockRecorder) CheckUniq(arg0, arg1, arg2 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CheckUniq", reflect.TypeOf((*MockPromoRepo)(nil).CheckUniq), arg0, arg1, arg2)
 }
 
 // ReadPromocode mocks base method.

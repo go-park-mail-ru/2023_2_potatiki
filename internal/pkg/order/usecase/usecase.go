@@ -81,7 +81,7 @@ func (uc *OrderUsecase) CreateOrder(
 			return models.Order{}, err
 		}
 	}
-	order.Status = "В обработке"
+	order.Status = "В обработке" //Status ID =1
 	order.Address = address
 	order.PomocodeName = promocodeName
 	order.DeliveryDate = deliveryDate
