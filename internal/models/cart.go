@@ -17,7 +17,7 @@ type Cart struct {
 //easyjson:json
 type CartProduct struct {
 	Quantity int64 `json:"quantity"`
-	Product  `json:"product"`
+	Product
 }
 
 //easyjson:json
