@@ -1670,11 +1670,32 @@ const docTemplate = `{
         "models.OrderProduct": {
             "type": "object",
             "properties": {
-                "product": {
-                    "$ref": "#/definitions/models.Product"
+                "category": {
+                    "$ref": "#/definitions/models.Category"
+                },
+                "countComments": {
+                    "type": "integer"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "img": {
+                    "type": "string"
+                },
+                "price": {
+                    "type": "integer"
+                },
+                "productId": {
+                    "type": "string"
+                },
+                "productName": {
+                    "type": "string"
                 },
                 "quantity": {
                     "type": "integer"
+                },
+                "rating": {
+                    "type": "number"
                 }
             }
         },
