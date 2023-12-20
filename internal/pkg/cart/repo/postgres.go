@@ -32,8 +32,8 @@ const (
 )
 
 var (
-	ErrCartNotFound    = errors.New("cart not found")
-	ErrPoductsNotFound = errors.New("products not found")
+	ErrCartNotFound     = errors.New("cart not found")
+	ErrProductsNotFound = errors.New("products not found")
 )
 
 type CartRepo struct {
@@ -125,7 +125,7 @@ func (r *CartRepo) ReadCartProducts(ctx context.Context, cart models.Cart) (mode
 	rows, err := r.db.Query(ctx, getProducts, cart.Id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return cart, ErrPoductsNotFound
+			return cart, ErrProductsNotFound
 		}
 		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
 

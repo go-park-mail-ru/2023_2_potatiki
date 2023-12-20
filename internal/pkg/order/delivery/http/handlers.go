@@ -46,6 +46,8 @@ func NewOrderHandler(cl gen.OrderClient, log *slog.Logger, uc order.OrderUsecase
 // @Success	200	{object} models.Order "New order info"
 // @Failure	401	"User unauthorized"
 // @Failure	404	{object} responser.response	"something not found error message"
+// @Failure	403	"Promocode leftout"
+// @Failure	419	"Promocode expired"
 // @Failure	429
 // @Router	/api/order/create [post]
 func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
@@ -85,32 +87,59 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		PromocodeName: payload.PromocodeName,
 	})
 	if err != nil {
-		h.log.Error("failed to get CreateOrder", sl.Err(err))
-		resp.JSONStatus(w, http.StatusTooManyRequests)
-
-		//if errors.Is(err, cartRepo.ErrCartNotFound) {
-		//	resp.JSON(w, http.StatusNotFound, resp.Err("cart not found"))
-		//
-		//	return
-		//}
-		//
-		//if errors.Is(err, orderRepo.ErrPoductNotFound) {
-		//	resp.JSON(w, http.StatusNotFound, resp.Err("product not found"))
-		//
-		//	return
-		//}
-		//
-		//if errors.Is(err, addressRepo.ErrAddressNotFound) {
-		//	resp.JSON(w, http.StatusNotFound, resp.Err("address not found"))
-		//
-		//	return
-		//}
+		st, ok := status.FromError(err)
+		if !ok {
+			h.log.Error("failed cast grpc error", sl.Err(err))
+			resp.JSONStatus(w, http.StatusTooManyRequests)
+			return
+		}
+		switch st.Code() {
+		case codes.NotFound: //ErrPromocodeNotFound:
+			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
+			resp.JSON(w, http.StatusNotFound, resp.Err(st.Message()))
+		case codes.OutOfRange:
+			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
+			resp.JSONStatus(w, http.StatusForbidden)
+		case codes.DeadlineExceeded:
+			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
+			resp.JSONStatus(w, 419)
+		case codes.Unavailable: //orderRepo.ErrPoductNotFound:
+			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
+			resp.JSON(w, http.StatusNotFound, resp.Err(st.Message()))
+		case codes.Aborted: //cartRepo.ErrCartNotFound
+			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
+			resp.JSON(w, http.StatusNotFound, resp.Err(st.Message()))
+		case codes.ResourceExhausted: //addressRepo.ErrAddressNotFound
+			h.log.Warn("failed to CreateOrder", sl.Err(st.Err()))
+			resp.JSON(w, http.StatusNotFound, resp.Err(st.Message()))
+		default:
+			h.log.Error("failed to CreateOrder", sl.Err(st.Err()))
+			resp.JSONStatus(w, http.StatusTooManyRequests)
+		}
 		return
 	}
 
 	orderId, err := uuid.FromString(gorder.Order.Id)
+	if err != nil {
+		h.log.Error("failed to parse order response field", err)
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
 	addressId, err := uuid.FromString(gorder.Order.Address.Id)
+	if err != nil {
+		h.log.Error("failed to parse order response field", err)
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
 	profileId, err := uuid.FromString(gorder.Order.Address.ProfileId)
+	if err != nil {
+		h.log.Error("failed to parse order response field", err)
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
 	parsedTime, err := time.Parse(time.RFC3339, gorder.Order.CreationAt)
 	if err != nil {
 		h.log.Error("failed to parse order response field", err)
@@ -124,6 +153,7 @@ func (h *OrderHandler) CreateOrder(w http.ResponseWriter, r *http.Request) {
 		CreationAt:   parsedTime,
 		DeliveryTime: gorder.Order.DeliveryTime,
 		DeliveryDate: gorder.Order.DeliveryDate,
+		PomocodeName: gorder.Order.PromocodeName,
 		Address: models.Address{
 			Id:        addressId,
 			ProfileId: profileId,

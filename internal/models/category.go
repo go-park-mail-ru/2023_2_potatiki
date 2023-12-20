@@ -1,5 +1,7 @@
 package models
 
+//go:generate easyjson -all /home/scremyda/GolandProjects/2023_2_potatiki/internal/models/category.go
+
 //easyjson:json
 type Category struct {
 	Id     int64  `json:"categoryId"`
@@ -9,6 +11,7 @@ type Category struct {
 
 const MAX_LEVEL_CATEGORY = 3
 
+//easyjson:json
 type CategoryBranch [MAX_LEVEL_CATEGORY]string
 
 //easyjson:json

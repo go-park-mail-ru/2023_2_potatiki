@@ -6,6 +6,9 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
+//go:generate easyjson -all /home/scremyda/GolandProjects/2023_2_potatiki/internal/models/inputs.go
+
+//easyjson:json
 type SignUpPayload struct {
 	Login    string `json:"login" validate:"required,min=6,max=30"`
 	Phone    string `json:"phone" validate:"required,e164"`
@@ -18,6 +21,7 @@ func (p *SignUpPayload) Sanitize() {
 	p.Password = html.EscapeString(p.Password)
 }
 
+//easyjson:json
 type SignInPayload struct {
 	Login    string `json:"login" validate:"required,min=6,max=30"`
 	Password string `json:"password" validate:"required,min=8,max=32"`
@@ -29,6 +33,7 @@ func (p *SignInPayload) Sanitize() {
 
 }
 
+//easyjson:json
 type UpdateProfileDataPayload struct {
 	Passwords struct {
 		OldPass string `json:"oldPass" validate:"omitempty,min=8,max=32"`
@@ -43,6 +48,7 @@ func (p *UpdateProfileDataPayload) Sanitize() {
 	p.Passwords.NewPass = html.EscapeString(p.Passwords.NewPass)
 }
 
+//easyjson:json
 type AddressPayload struct {
 	City   string `json:"city" validate:"omitempty,max=32"`
 	Street string `json:"street" validate:"omitempty,max=32"`
@@ -57,6 +63,7 @@ func (b *AddressPayload) Sanitize() {
 	b.Flat = html.EscapeString(b.Flat)
 }
 
+//easyjson:json
 type CommentPayload struct {
 	UserID    uuid.UUID `json:"-"`
 	ProductID uuid.UUID `json:"productId"`

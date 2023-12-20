@@ -48,12 +48,8 @@ definitions:
     type: object
   models.CartProduct:
     properties:
-      categoryId:
-        type: integer
-      categoryName:
-        type: string
-      categoryParent:
-        type: integer
+      category:
+        $ref: '#/definitions/models.Category'
       countComments:
         type: integer
       description:
@@ -99,6 +95,13 @@ definitions:
       categoryParent:
         type: integer
     type: object
+  models.CategoryStatistic:
+    properties:
+      activityPoints:
+        type: integer
+      categoryId:
+        type: integer
+    type: object
   models.Comment:
     properties:
       comment:
@@ -137,21 +140,13 @@ definitions:
     type: object
   models.Order:
     properties:
-      addressId:
-        type: string
-      addressIsCurrent:
-        type: boolean
-      city:
-        type: string
+      address:
+        $ref: '#/definitions/models.Address'
       creationDate:
         type: string
       deliveryDate:
         type: string
       deliveryTime:
-        type: string
-      flat:
-        type: string
-      house:
         type: string
       id:
         type: string
@@ -162,8 +157,6 @@ definitions:
       promocodeName:
         type: string
       status:
-        type: string
-      street:
         type: string
     type: object
   models.OrderInfo:
@@ -177,12 +170,8 @@ definitions:
     type: object
   models.OrderProduct:
     properties:
-      categoryId:
-        type: integer
-      categoryName:
-        type: string
-      categoryParent:
-        type: integer
+      category:
+        $ref: '#/definitions/models.Category'
       countComments:
         type: integer
       description:
@@ -202,12 +191,8 @@ definitions:
     type: object
   models.Product:
     properties:
-      categoryId:
-        type: integer
-      categoryName:
-        type: string
-      categoryParent:
-        type: integer
+      category:
+        $ref: '#/definitions/models.Category'
       countComments:
         type: integer
       description:
@@ -222,6 +207,17 @@ definitions:
         type: string
       rating:
         type: number
+    type: object
+  models.ProductStatistic:
+    properties:
+      activityPoints:
+        type: integer
+      isBought:
+        type: boolean
+      isReviewed:
+        type: boolean
+      productId:
+        type: string
     type: object
   models.Profile:
     properties:
@@ -291,6 +287,17 @@ definitions:
         type: object
       phone:
         type: string
+    type: object
+  models.UserActivity:
+    properties:
+      category:
+        items:
+          $ref: '#/definitions/models.CategoryStatistic'
+        type: array
+      product:
+        items:
+          $ref: '#/definitions/models.ProductStatistic'
+        type: array
     type: object
   responser.response:
     properties:
@@ -761,10 +768,14 @@ paths:
             $ref: '#/definitions/models.Order'
         "401":
           description: User unauthorized
+        "403":
+          description: Promocode leftout
         "404":
           description: something not found error message
           schema:
             $ref: '#/definitions/responser.response'
+        "419":
+          description: Promocode expired
         "429":
           description: Too Many Requests
       summary: CreateOrder
@@ -1039,10 +1050,18 @@ paths:
           description: error message
           schema:
             $ref: '#/definitions/responser.response'
+        "401":
+          description: user Unauthorized
+        "403":
+          description: promocode not leftout
         "404":
-          description: something not found error message
+          description: promocode not found
+        "410":
+          description: promocode already used
+        "419":
+          description: promocode expired
         "429":
-          description: Too Many Requests
+          description: internal error
       summary: Promo
       tags:
       - Promo
@@ -1075,6 +1094,106 @@ paths:
       summary: Promo
       tags:
       - Promo
+  /api/recommendations/get_all:
+    get:
+      consumes:
+      - application/json
+      description: Get recommendations
+      parameters:
+      - description: Product UUID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Category id
+        in: query
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products Slice
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/models.Product'
+              type: array
+            type: array
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.response'
+        "429":
+          description: Too Many Requests
+      summary: Recommendations
+      tags:
+      - Recommendations
+  /api/recommendations/get_anon:
+    get:
+      consumes:
+      - application/json
+      description: Get recommendations for product
+      parameters:
+      - description: Product UUID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Category id
+        in: query
+        name: category_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Products Slice
+          schema:
+            items:
+              items:
+                $ref: '#/definitions/models.Product'
+              type: array
+            type: array
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.response'
+        "429":
+          description: Too Many Requests
+      summary: AnonRecommendations
+      tags:
+      - Recommendations
+  /api/recommendations/update:
+    post:
+      consumes:
+      - application/json
+      description: Update user activities
+      parameters:
+      - description: User activity info
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.UserActivity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: error message
+          schema:
+            $ref: '#/definitions/responser.response'
+        "401":
+          description: User unauthorized
+        "429":
+          description: Too Many Requests
+      summary: UpdateUserActivity
+      tags:
+      - Recommendations
   /api/search/:
     get:
       consumes:

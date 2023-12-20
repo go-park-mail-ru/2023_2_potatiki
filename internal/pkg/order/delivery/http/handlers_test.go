@@ -1,12 +1,10 @@
 package http
 
-/*
 import (
 	"context"
 	"errors"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
-	addressRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/address/repo"
-	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/delivery/grpc/gen"
 	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/mocks"
 	orderRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/order/repo"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
@@ -16,76 +14,49 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 )
 
 func TestOrderHandler_CreateOrder(t *testing.T) {
+	id := uuid.NewV4()
 	testCases := []struct {
 		name           string
-		mockUsecaseFn  func(*mock.MockOrderUsecase)
+		mockUsecaseFn  func(*mock.MockOrderClient)
 		expectedStatus int
 		funcCtxUser    func(context.Context) context.Context
+		jsonString     string
 	}{
 		{
-			name: "SuccessfulCreateOrder",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(models.Order{}, nil)
+			name: "UnsuccessfulCreateOrder/GrpcError",
+			mockUsecaseFn: func(client *mock.MockOrderClient) {
+				client.EXPECT().CreateOrder(gomock.Any(), &gen.CreateOrderRequest{
+					Id:           id.String(),
+					DeliveryDate: "08ddc2cf-fbf9-491a-b0b3-a8d5f698d81f",
+				}).Return(&gen.CreateOrderResponse{}, errors.New("error grpc"))
 			},
-			expectedStatus: http.StatusOK,
+			expectedStatus: http.StatusTooManyRequests,
 			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
 				return context.WithValue(ctx, "zuzu-t", id)
 			},
+			jsonString: `{
+				"deliveryDate": "08ddc2cf-fbf9-491a-b0b3-a8d5f698d81f"
+			}`,
 		},
 		{
 			name:           "UnauthorizedUser",
-			mockUsecaseFn:  func(mockUsecase *mock.MockOrderUsecase) {},
+			mockUsecaseFn:  func(client *mock.MockOrderClient) {},
 			expectedStatus: http.StatusUnauthorized,
 			funcCtxUser: func(ctx context.Context) context.Context {
 				return context.Background()
 			},
 		},
 		{
-			name: "UnsuccessfulAddAddress",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(models.Order{}, errors.New("error in create order"))
+			name: "UnsuccessfulAddAddress/NoBody",
+			mockUsecaseFn: func(client *mock.MockOrderClient) {
 			},
 			expectedStatus: http.StatusTooManyRequests,
 			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
-				return context.WithValue(ctx, "zuzu-t", id)
-			},
-		},
-		{
-			name: "CartNotFound",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(models.Order{}, cartRepo.ErrCartNotFound)
-			},
-			expectedStatus: http.StatusNotFound,
-			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
-				return context.WithValue(ctx, "zuzu-t", id)
-			},
-		},
-		{
-			name: "ProductNotFound",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(models.Order{}, orderRepo.ErrPoductNotFound)
-			},
-			expectedStatus: http.StatusNotFound,
-			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
-				return context.WithValue(ctx, "zuzu-t", id)
-			},
-		},
-		{
-			name: "AddressNotFound",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().CreateOrder(gomock.Any(), gomock.Any()).Return(models.Order{}, addressRepo.ErrAddressNotFound)
-			},
-			expectedStatus: http.StatusNotFound,
-			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
 				return context.WithValue(ctx, "zuzu-t", id)
 			},
 		},
@@ -97,14 +68,17 @@ func TestOrderHandler_CreateOrder(t *testing.T) {
 			defer ctrl.Finish()
 
 			mockUsecase := mock.NewMockOrderUsecase(ctrl)
-			tc.mockUsecaseFn(mockUsecase)
+			client := mock.NewMockOrderClient(ctrl)
 
-			req := httptest.NewRequest(http.MethodPost, "http://zuzu-market.ru/api/order/create", nil)
+			tc.mockUsecaseFn(client)
+
+			req := httptest.NewRequest(http.MethodPost, "http://zuzu-market.ru/api/order/create",
+				strings.NewReader(tc.jsonString))
 			w := httptest.NewRecorder()
 			ctx := tc.funcCtxUser(req.Context())
 
 			req = req.WithContext(ctx)
-			addressHandler := NewOrderHandler(logger.Set("local", os.Stdout), mockUsecase)
+			addressHandler := NewOrderHandler(client, logger.Set("local", os.Stdout), mockUsecase)
 			addressHandler.CreateOrder(w, req)
 
 			assert.Equal(t, tc.expectedStatus, w.Code)
@@ -185,8 +159,10 @@ func TestOrderHandler_GetCurrentOrder(t *testing.T) {
 			w := httptest.NewRecorder()
 			ctx := tc.funcCtxUser(req.Context())
 
+			client := mock.NewMockOrderClient(ctrl)
+
 			req = req.WithContext(ctx)
-			addressHandler := NewOrderHandler(logger.Set("local", os.Stdout), mockUsecase)
+			addressHandler := NewOrderHandler(client, logger.Set("local", os.Stdout), mockUsecase)
 			addressHandler.GetCurrentOrder(w, req)
 
 			assert.Equal(t, tc.expectedStatus, w.Code)
@@ -195,26 +171,28 @@ func TestOrderHandler_GetCurrentOrder(t *testing.T) {
 }
 
 func TestOrderHandler_GetOrders(t *testing.T) {
+	id := uuid.NewV4()
 	testCases := []struct {
 		name           string
-		mockUsecaseFn  func(*mock.MockOrderUsecase)
+		mockUsecaseFn  func(*mock.MockOrderClient)
 		expectedStatus int
 		funcCtxUser    func(context.Context) context.Context
 	}{
 		{
 			name: "SuccessfulGetOrders",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().GetOrders(gomock.Any(), gomock.Any()).Return([]models.Order{}, nil)
+			mockUsecaseFn: func(client *mock.MockOrderClient) {
+				client.EXPECT().GetOrders(gomock.Any(), &gen.OrdersRequest{
+					Id: id.String(),
+				}).Return(&gen.OrdersResponse{}, nil)
 			},
 			expectedStatus: http.StatusOK,
 			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
 				return context.WithValue(ctx, "zuzu-t", id)
 			},
 		},
 		{
 			name:           "UnauthorizedUser",
-			mockUsecaseFn:  func(mockUsecase *mock.MockOrderUsecase) {},
+			mockUsecaseFn:  func(client *mock.MockOrderClient) {},
 			expectedStatus: http.StatusUnauthorized,
 			funcCtxUser: func(ctx context.Context) context.Context {
 				return context.Background()
@@ -222,34 +200,14 @@ func TestOrderHandler_GetOrders(t *testing.T) {
 		},
 		{
 			name: "UnsuccessfulGetCurrentOrder",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().GetOrders(gomock.Any(), gomock.Any()).Return([]models.Order{}, errors.New("error in get orders"))
+			mockUsecaseFn: func(client *mock.MockOrderClient) {
+				client.EXPECT().GetOrders(gomock.Any(), &gen.OrdersRequest{
+					Id: id.String(),
+				}).Return(&gen.OrdersResponse{}, errors.New("error grpc"))
 			},
+
 			expectedStatus: http.StatusTooManyRequests,
 			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
-				return context.WithValue(ctx, "zuzu-t", id)
-			},
-		},
-		{
-			name: "OrdersNotFound",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().GetOrders(gomock.Any(), gomock.Any()).Return([]models.Order{}, orderRepo.ErrOrdersNotFound)
-			},
-			expectedStatus: http.StatusNotFound,
-			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
-				return context.WithValue(ctx, "zuzu-t", id)
-			},
-		},
-		{
-			name: "ProductsInOrderNotFound",
-			mockUsecaseFn: func(mockUsecase *mock.MockOrderUsecase) {
-				mockUsecase.EXPECT().GetOrders(gomock.Any(), gomock.Any()).Return([]models.Order{}, orderRepo.ErrPoductsInOrderNotFound)
-			},
-			expectedStatus: http.StatusNotFound,
-			funcCtxUser: func(ctx context.Context) context.Context {
-				id := uuid.NewV4()
 				return context.WithValue(ctx, "zuzu-t", id)
 			},
 		},
@@ -261,18 +219,19 @@ func TestOrderHandler_GetOrders(t *testing.T) {
 			defer ctrl.Finish()
 
 			mockUsecase := mock.NewMockOrderUsecase(ctrl)
-			tc.mockUsecaseFn(mockUsecase)
+			client := mock.NewMockOrderClient(ctrl)
+
+			tc.mockUsecaseFn(client)
 
 			req := httptest.NewRequest(http.MethodGet, "http://zuzu-market.ru/api/order/get_all", nil)
 			w := httptest.NewRecorder()
 			ctx := tc.funcCtxUser(req.Context())
 
 			req = req.WithContext(ctx)
-			addressHandler := NewOrderHandler(logger.Set("local", os.Stdout), mockUsecase)
+			addressHandler := NewOrderHandler(client, logger.Set("local", os.Stdout), mockUsecase)
 			addressHandler.GetOrders(w, req)
 
 			assert.Equal(t, tc.expectedStatus, w.Code)
 		})
 	}
 }
-*/

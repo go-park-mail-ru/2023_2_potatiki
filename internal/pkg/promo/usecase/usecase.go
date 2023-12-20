@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	uuid "github.com/satori/go.uuid"
+
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/promo"
 )
@@ -18,7 +20,7 @@ func NewPromoUsecase(repo promo.PromoRepo) *PromoUsecase {
 	}
 }
 
-func (uc *PromoUsecase) CheckPromocode(ctx context.Context, name string) (*models.Promocode, error) {
+func (uc *PromoUsecase) CheckPromocode(ctx context.Context, userID uuid.UUID, name string) (*models.Promocode, error) {
 	promocode, err := uc.repo.ReadPromocode(ctx, name)
 	if err != nil {
 		return &models.Promocode{}, err
@@ -29,6 +31,10 @@ func (uc *PromoUsecase) CheckPromocode(ctx context.Context, name string) (*model
 	}
 	if promocode.Leftover < 1 {
 		return &models.Promocode{}, promo.ErrPromocodeLeftout
+	}
+
+	if err := uc.repo.CheckUniq(ctx, userID, int(promocode.Id)); err != nil {
+		return &models.Promocode{}, err
 	}
 
 	return promocode, nil

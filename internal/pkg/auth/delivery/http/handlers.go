@@ -13,6 +13,8 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger/sl"
 	resp "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/responser"
 	uuid "github.com/satori/go.uuid"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type AuthHandler struct {
@@ -219,6 +221,18 @@ func (h *AuthHandler) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		ID: id.String(),
 	})
 	if err != nil {
+		st, ok := status.FromError(err)
+		if !ok {
+			h.log.Error("failed cast grpc error", sl.Err(err))
+			resp.JSONStatus(w, http.StatusTooManyRequests)
+			return
+		}
+		if st.Code() == codes.NotFound {
+			h.log.Warn("profile not found", slog.Any("grpc status", st))
+			resp.JSONStatus(w, http.StatusUnauthorized)
+			return
+		}
+
 		h.log.Error("failed to CheckAuth", sl.Err(err))
 		resp.JSONStatus(w, http.StatusTooManyRequests)
 

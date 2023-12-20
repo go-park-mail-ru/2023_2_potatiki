@@ -2,9 +2,13 @@ package grpc
 
 import (
 	"context"
+	"errors"
 	"log/slog"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/metricsmw"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth"
@@ -105,20 +109,23 @@ func (h *GrpcAuthHandler) CheckAuth(ctx context.Context, in *gen.CheckAuthRequst
 		return &gen.CheckAuthResponse{}, metricsmw.ClientError
 	}
 
-	profile, err := h.uc.CheckAuth(ctx, userID)
+	profil, err := h.uc.CheckAuth(ctx, userID)
 	if err != nil {
+		if errors.Is(err, profile.ErrProfileNotFound) {
+			return nil, status.Error(codes.NotFound, err.Error())
+		}
 		h.log.Error("failed in uc.CheckAuth", sl.Err(err))
 		return &gen.CheckAuthResponse{}, metricsmw.ServerError
 	}
-	h.log.Info("got profile", slog.Any("profile", profile.Id))
+	h.log.Info("got profile", slog.Any("profile", profil.Id))
 
 	return &gen.CheckAuthResponse{
 		Profile: &gmodels.Profile{
-			Id:          profile.Id.String(),
-			Login:       profile.Login,
-			Description: profile.Description,
-			ImgSrc:      profile.ImgSrc,
-			Phone:       profile.Phone,
+			Id:          profil.Id.String(),
+			Login:       profil.Login,
+			Description: profil.Description,
+			ImgSrc:      profil.ImgSrc,
+			Phone:       profil.Phone,
 		},
 	}, nil
 }

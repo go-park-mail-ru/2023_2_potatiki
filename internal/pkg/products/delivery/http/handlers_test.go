@@ -1,9 +1,12 @@
 package http
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/products/delivery/grpc/gen"
@@ -16,69 +19,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-func TestProduct(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-	id := uuid.NewV4()
-
-	client := mock.NewMockProductsClient(ctrl)
-
-	client.EXPECT().GetProduct(gomock.Any(), &gen.ProductRequest{Id: id.String()}).Return(
-		&gen.ProductResponse{
-			Product: &gmodels.Product{
-				Id:          id.String(),
-				Name:        "123",
-				Description: "123",
-				Price:       123,
-				Category:    &gmodels.Category{},
-			}}, nil)
-
-	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-	req = mux.SetURLVars(req, map[string]string{"id": id.String()})
-	w := httptest.NewRecorder()
-	ProductsHandler := NewProductsHandler(client, logger.Set("prod", os.Stdout))
-	ProductsHandler.Product(w, req)
-	assert.Equal(t, http.StatusOK, w.Code)
-}
-
-/*
-func TestProductBad(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	uc := mock.NewMockProductsClient(ctrl)
-
-	t.Run("EmptyID", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
-		ProductHandler.Product(w, req)
-		assert.Equal(t, http.StatusBadRequest, w.Code)
-	})
-
-	t.Run("InvalidID", func(t *testing.T) {
-		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-		req = mux.SetURLVars(req, map[string]string{"id": "invalidID"})
-		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
-		ProductHandler.Product(w, req)
-		assert.Equal(t, http.StatusBadRequest, w.Code)
-	})
-
-	t.Run("GetProductError", func(t *testing.T) {
-		validID := uuid.NewV4()
-		uc.EXPECT().GetProduct(gomock.Any(), validID).Return(models.Product{}, errors.New("getProductError"))
-
-		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
-		req = mux.SetURLVars(req, map[string]string{"id": validID.String()})
-		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
-		ProductHandler.Product(w, req)
-		assert.Equal(t, http.StatusTooManyRequests, w.Code)
-	})
-}
-*/
-/*
 func TestProductsHandledddr_Category(t *testing.T) {
 	testCases := []struct {
 		name               string
@@ -92,7 +32,11 @@ func TestProductsHandledddr_Category(t *testing.T) {
 		{
 			name: "SuccessfulCategory",
 			MockProductsClient: func(mock *mock.MockProductsClient) {
-				mock.EXPECT().GetCategory(gomock.Any(), &gen.CategoryRequest{}).
+				mock.EXPECT().GetCategory(gomock.Any(), &gen.CategoryRequest{
+					Id:     1,
+					Paging: 2,
+					Count:  3,
+				}).
 					Return(&gen.CategoryResponse{}, nil)
 			},
 			expectedStatus: http.StatusOK,
@@ -107,7 +51,11 @@ func TestProductsHandledddr_Category(t *testing.T) {
 		{
 			name: "UnsuccessfulCategoryWithCorrectQuery",
 			MockProductsClient: func(mock *mock.MockProductsClient) {
-				mock.EXPECT().GetCategory(gomock.Any(), &gen.CategoryRequest{}).
+				mock.EXPECT().GetCategory(gomock.Any(), &gen.CategoryRequest{
+					Id:     1,
+					Paging: 2,
+					Count:  3,
+				}).
 					Return(&gen.CategoryResponse{}, errors.New("error in get product by category"))
 			},
 			expectedStatus: http.StatusTooManyRequests,
@@ -208,27 +156,27 @@ func TestProductsHandledddr_Category(t *testing.T) {
 	}
 }
 
-
 func TestProduct(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
-
-	uc := mock.NewMockProductsClient(ctrl)
 	id := uuid.NewV4()
-	uc.EXPECT().GetProduct(gomock.Any(), id).Return(
-		models.Product{
-			Id:          id,
-			Name:        "123",
-			Description: "123",
-			Price:       123,
-		}, nil)
 
-	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo",
-		strings.NewReader(
-			"{ \"id\": \""+id.String()+"\", \"name\": \"123\" , \"description\": \"123\", \"price\": \"123\"}"))
+	client := mock.NewMockProductsClient(ctrl)
+
+	client.EXPECT().GetProduct(gomock.Any(), &gen.ProductRequest{Id: id.String()}).Return(
+		&gen.ProductResponse{
+			Product: &gmodels.Product{
+				Id:          id.String(),
+				Name:        "123",
+				Description: "123",
+				Price:       123,
+				Category:    &gmodels.Category{},
+			}}, nil)
+
+	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 	req = mux.SetURLVars(req, map[string]string{"id": id.String()})
 	w := httptest.NewRecorder()
-	ProductsHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
+	ProductsHandler := NewProductsHandler(client, logger.Set("prod", os.Stdout))
 	ProductsHandler.Product(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -237,12 +185,12 @@ func TestProductBad(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	uc := mock.NewMockProductsClient(ctrl)
+	client := mock.NewMockProductsClient(ctrl)
 
 	t.Run("EmptyID", func(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
+		ProductHandler := NewProductsHandler(client, logger.Set("prod", os.Stdout))
 		ProductHandler.Product(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
@@ -251,19 +199,21 @@ func TestProductBad(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req = mux.SetURLVars(req, map[string]string{"id": "invalidID"})
 		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
+		ProductHandler := NewProductsHandler(client, logger.Set("prod", os.Stdout))
 		ProductHandler.Product(w, req)
 		assert.Equal(t, http.StatusBadRequest, w.Code)
 	})
 
 	t.Run("GetProductError", func(t *testing.T) {
 		validID := uuid.NewV4()
-		uc.EXPECT().GetProduct(gomock.Any(), validID).Return(models.Product{}, errors.New("getProductError"))
+		client.EXPECT().GetProduct(gomock.Any(), &gen.ProductRequest{
+			Id: validID.String(),
+		}).Return(&gen.ProductResponse{}, errors.New("error grpc"))
 
 		req := httptest.NewRequest(http.MethodGet, "http://example.com/foo", nil)
 		req = mux.SetURLVars(req, map[string]string{"id": validID.String()})
 		w := httptest.NewRecorder()
-		ProductHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
+		ProductHandler := NewProductsHandler(client, logger.Set("prod", os.Stdout))
 		ProductHandler.Product(w, req)
 		assert.Equal(t, http.StatusTooManyRequests, w.Code)
 	})
@@ -273,24 +223,21 @@ func TestProducts(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	uc := mock.NewMockProductsClient(ctrl)
+	client := mock.NewMockProductsClient(ctrl)
+
 	id := uuid.NewV4()
-	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1), gomock.Any(), gomock.Any()).Return(
-		[]models.Product{{
-			Id:          id,
-			Name:        "123",
-			Description: "123",
-			Price:       123,
-		}}, nil)
+	client.EXPECT().GetProducts(gomock.Any(), &gen.ProductsRequest{
+		Count: 5,
+	}).Return(&gen.ProductsResponse{}, nil)
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo",
 		strings.NewReader(
 			"[{ \"id\": \""+id.String()+"\", \"name\": \"123\" , \"description\": \"123\", \"price\": \"123\"}]"))
 	q := req.URL.Query()
-	q.Add("count", "1")
+	q.Add("count", "5")
 	req.URL.RawQuery = q.Encode()
 	w := httptest.NewRecorder()
-	ProductsHandler := NewProductsHandler(logger.Set("prod", os.Stdout), uc)
+	ProductsHandler := NewProductsHandler(client, logger.Set("prod", os.Stdout))
 	ProductsHandler.Products(w, req)
 	assert.Equal(t, http.StatusOK, w.Code)
 }
@@ -299,20 +246,21 @@ func TestProductsBad(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	uc := mock.NewMockProductsClient(ctrl)
-	id := uuid.NewV4()
+	client := mock.NewMockProductsClient(ctrl)
 
-	uc.EXPECT().GetProducts(gomock.Any(), int64(0), int64(1), gomock.Any(), gomock.Any()).Return(nil, errors.New("some error"))
+	id := uuid.NewV4()
+	client.EXPECT().GetProducts(gomock.Any(), &gen.ProductsRequest{
+		Count: 5,
+	}).Return(&gen.ProductsResponse{}, errors.New("grpc error"))
 
 	req := httptest.NewRequest(http.MethodGet, "http://example.com/foo",
 		strings.NewReader(
 			"[{ \"id\": \""+id.String()+"\", \"name\": \"123\" , \"description\": \"123\", \"price\": \"123\"}]"))
 	q := req.URL.Query()
-	q.Add("count", "1")
+	q.Add("count", "5")
 	req.URL.RawQuery = q.Encode()
 	w := httptest.NewRecorder()
-	ProductsHandler := NewProductsHandler(logger.Set("prod", os.Stdout))
+	ProductsHandler := NewProductsHandler(client, logger.Set("prod", os.Stdout))
 	ProductsHandler.Products(w, req)
 	assert.Equal(t, http.StatusTooManyRequests, w.Code)
 }
-*/

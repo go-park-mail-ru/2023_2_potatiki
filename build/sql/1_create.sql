@@ -38,7 +38,7 @@ DROP TABLE IF EXISTS activities;
 
 ------------------------------------------------------------------------------------------------------------------------
 
-CREATE TABLE messages (
+CREATE TABLE IF NOT EXISTS messages (
     user_id uuid NOT NULL,
     created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     message_info TEXT
@@ -233,9 +233,8 @@ VALUES
     (15, 'SALE15', 1000, '2024-01-01 00:00:00'),
     (20, 'DISCOUNT20', 100, '2024-01-01 00:00:00'),
     (25, 'SAVE25', 100, '2024-01-01 00:00:00'),
-    (50, 'ZUZU50', 9, '2023-01-01 00:00:00'),
-    (99, 'ZUZU99', 5, '2024-01-01 00:00:00'),
-    (30, '30OFF', 1, '2024-01-01 00:00:00');
+    (10, 'ZUZU10', 100000, '2024-01-01 00:00:00'),
+    (30, 'OFF30', 5, '2024-01-01 00:00:00');
 ------------------------------------------------------------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS cart
 (
@@ -404,7 +403,7 @@ BEGIN
 
     IF NEW.id IS NOT NULL THEN
         INSERT INTO messages (user_id, created, message_info)
-        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '5 seconds', 'Спасибо за регистрацию, мы дарим вам промокод: ****');
+        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '5 seconds', 'Спасибо за регистрацию, мы дарим вам промокод: ZUZU10');
     END IF;
 
     RETURN NEW;

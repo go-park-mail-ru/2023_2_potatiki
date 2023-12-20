@@ -117,7 +117,7 @@ func (h *CommentsHandler) GetProductComments(w http.ResponseWriter, r *http.Requ
 	)
 	productIDString := r.URL.Query().Get("product")
 	productID, err := uuid.FromString(productIDString)
-	if err != nil {
+	if err != nil || len(productID) == 0 {
 		h.log.Error("productID is invalid", sl.Err(err))
 		resp.JSON(w, http.StatusBadRequest, resp.Err("invalid request"))
 

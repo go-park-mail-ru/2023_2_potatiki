@@ -720,11 +720,17 @@ const docTemplate = `{
                     "401": {
                         "description": "User unauthorized"
                     },
+                    "403": {
+                        "description": "Promocode leftout"
+                    },
                     "404": {
                         "description": "something not found error message",
                         "schema": {
                             "$ref": "#/definitions/responser.response"
                         }
+                    },
+                    "419": {
+                        "description": "Promocode expired"
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -1142,11 +1148,23 @@ const docTemplate = `{
                             "$ref": "#/definitions/responser.response"
                         }
                     },
+                    "401": {
+                        "description": "user Unauthorized"
+                    },
+                    "403": {
+                        "description": "promocode not leftout"
+                    },
                     "404": {
-                        "description": "something not found error message"
+                        "description": "promocode not found"
+                    },
+                    "410": {
+                        "description": "promocode already used"
+                    },
+                    "419": {
+                        "description": "promocode expired"
                     },
                     "429": {
-                        "description": "Too Many Requests"
+                        "description": "internal error"
                     }
                 }
             }
@@ -1188,6 +1206,157 @@ const docTemplate = `{
                     },
                     "404": {
                         "description": "something not found error message"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/recommendations/get_all": {
+            "get": {
+                "description": "Get recommendations",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recommendations"
+                ],
+                "summary": "Recommendations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product UUID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Category id",
+                        "name": "category_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Products Slice",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/models.Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/recommendations/get_anon": {
+            "get": {
+                "description": "Get recommendations for product",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recommendations"
+                ],
+                "summary": "AnonRecommendations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Product UUID",
+                        "name": "id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Category id",
+                        "name": "category_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Products Slice",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "array",
+                                "items": {
+                                    "$ref": "#/definitions/models.Product"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.response"
+                        }
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
+        "/api/recommendations/update": {
+            "post": {
+                "description": "Update user activities",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Recommendations"
+                ],
+                "summary": "UpdateUserActivity",
+                "parameters": [
+                    {
+                        "description": "User activity info",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.UserActivity"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "error message",
+                        "schema": {
+                            "$ref": "#/definitions/responser.response"
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
                     },
                     "429": {
                         "description": "Too Many Requests"
@@ -1315,14 +1484,8 @@ const docTemplate = `{
         "models.CartProduct": {
             "type": "object",
             "properties": {
-                "categoryId": {
-                    "type": "integer"
-                },
-                "categoryName": {
-                    "type": "string"
-                },
-                "categoryParent": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/models.Category"
                 },
                 "countComments": {
                     "type": "integer"
@@ -1394,6 +1557,17 @@ const docTemplate = `{
                 }
             }
         },
+        "models.CategoryStatistic": {
+            "type": "object",
+            "properties": {
+                "activityPoints": {
+                    "type": "integer"
+                },
+                "categoryId": {
+                    "type": "integer"
+                }
+            }
+        },
         "models.Comment": {
             "type": "object",
             "properties": {
@@ -1450,14 +1624,8 @@ const docTemplate = `{
         "models.Order": {
             "type": "object",
             "properties": {
-                "addressId": {
-                    "type": "string"
-                },
-                "addressIsCurrent": {
-                    "type": "boolean"
-                },
-                "city": {
-                    "type": "string"
+                "address": {
+                    "$ref": "#/definitions/models.Address"
                 },
                 "creationDate": {
                     "type": "string"
@@ -1466,12 +1634,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "deliveryTime": {
-                    "type": "string"
-                },
-                "flat": {
-                    "type": "string"
-                },
-                "house": {
                     "type": "string"
                 },
                 "id": {
@@ -1487,9 +1649,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status": {
-                    "type": "string"
-                },
-                "street": {
                     "type": "string"
                 }
             }
@@ -1511,14 +1670,8 @@ const docTemplate = `{
         "models.OrderProduct": {
             "type": "object",
             "properties": {
-                "categoryId": {
-                    "type": "integer"
-                },
-                "categoryName": {
-                    "type": "string"
-                },
-                "categoryParent": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/models.Category"
                 },
                 "countComments": {
                     "type": "integer"
@@ -1549,14 +1702,8 @@ const docTemplate = `{
         "models.Product": {
             "type": "object",
             "properties": {
-                "categoryId": {
-                    "type": "integer"
-                },
-                "categoryName": {
-                    "type": "string"
-                },
-                "categoryParent": {
-                    "type": "integer"
+                "category": {
+                    "$ref": "#/definitions/models.Category"
                 },
                 "countComments": {
                     "type": "integer"
@@ -1578,6 +1725,23 @@ const docTemplate = `{
                 },
                 "rating": {
                     "type": "number"
+                }
+            }
+        },
+        "models.ProductStatistic": {
+            "type": "object",
+            "properties": {
+                "activityPoints": {
+                    "type": "integer"
+                },
+                "isBought": {
+                    "type": "boolean"
+                },
+                "isReviewed": {
+                    "type": "boolean"
+                },
+                "productId": {
+                    "type": "string"
                 }
             }
         },
@@ -1677,6 +1841,23 @@ const docTemplate = `{
                 },
                 "phone": {
                     "type": "string"
+                }
+            }
+        },
+        "models.UserActivity": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.CategoryStatistic"
+                    }
+                },
+                "product": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.ProductStatistic"
+                    }
                 }
             }
         },

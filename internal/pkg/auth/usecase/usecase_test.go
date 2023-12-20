@@ -3,7 +3,6 @@ package usecase
 import (
 	"context"
 	"errors"
-	"reflect"
 	"testing"
 	"time"
 
@@ -139,29 +138,29 @@ func TestAuthUsecase_SigInBadRepo(t *testing.T) {
 }
 
 func TestAuthUsecase_CheckAuth(t *testing.T) {
-	type args struct {
-		ctx context.Context
-		Id  uuid.UUID
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	repo := mockProfile.NewMockProfileRepo(ctrl)
+	cfg := mockJWT.NewMockConfiger(ctrl)
+	cfg.EXPECT().GetTTL().Return(time.Second)
+	cfg.EXPECT().GetSecret().Return("time.Second")
+	cfg.EXPECT().GetIssuer().Return("time.Second")
+
+	Id := uuid.NewV4()
+
+	profile := &models.Profile{
+		Id:           uuid.NewV4(),
+		Login:        "iudsbfiwhdbfi",
+		Description:  "",
+		ImgSrc:       "default.png",
+		PasswordHash: hasher.HashPass("hafikyagdfiaysgf"),
 	}
-	tests := []struct {
-		name    string
-		uc      *AuthUsecase
-		args    args
-		want    *models.Profile
-		wantErr bool
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := tt.uc.CheckAuth(tt.args.ctx, tt.args.Id)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("AuthUsecase.CheckAuth() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("AuthUsecase.CheckAuth() = %v, want %v", got, tt.want)
-			}
-		})
-	}
+
+	repo.EXPECT().ReadProfile(gomock.Any(), Id).Return(profile, errors.New("bad"))
+	uc := NewAuthUsecase(repo, cfg)
+
+	profile, err := uc.CheckAuth(context.Background(), Id)
+	assert.NotNil(t, err)
+	assert.NotNil(t, profile)
 }

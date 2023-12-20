@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/jackc/pgx/v4"
 
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/profile"
 	"github.com/jackc/pgtype/pgxtype"
 	uuid "github.com/satori/go.uuid"
 )
@@ -19,9 +21,7 @@ const (
 	updateProfilePhoto = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
 )
 
-var (
-	ErrProfileNotFound = errors.New("profile not found")
-)
+
 
 type ProfileRepo struct {
 	db pgxtype.Querier
@@ -51,7 +51,7 @@ func (r *ProfileRepo) ReadProfile(ctx context.Context, Id uuid.UUID) (*models.Pr
 	if err := r.db.QueryRow(ctx, profileById, Id).
 		Scan(&p.Login, &p.Description, &p.ImgSrc, &p.Phone, &p.PasswordHash); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return &models.Profile{}, ErrProfileNotFound
+			return &models.Profile{}, profile.ErrProfileNotFound
 		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
@@ -65,7 +65,7 @@ func (r *ProfileRepo) GetProfileIdByLogin(ctx context.Context, login string) (uu
 	var Id uuid.UUID
 	if err := row.Scan(&Id); err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return uuid.UUID{}, ErrProfileNotFound
+			return uuid.UUID{}, profile.ErrProfileNotFound
 		}
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
