@@ -403,7 +403,7 @@ BEGIN
 
     IF NEW.id IS NOT NULL THEN
         INSERT INTO messages (user_id, created, message_info)
-        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '5 seconds', 'Спасибо за регистрацию, мы дарим вам промокод: ZUZU10');
+        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '7 seconds', 'Спасибо за регистрацию, мы дарим вам промокод: ZUZU10');
     END IF;
 
     RETURN NEW;
