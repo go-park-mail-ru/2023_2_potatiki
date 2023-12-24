@@ -7,9 +7,27 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
 	"github.com/jackc/pgx/v4"
+	uuid "github.com/satori/go.uuid"
 )
 
 const (
+	getProductsByFullName = `
+	SELECT p.id,
+	   p.name,
+	   p.description,
+	   p.price,
+	   p.imgsrc,
+	   COALESCE(AVG(cm.rating), 0),
+	   p.category_id,
+	   c.name AS category_name,
+	   p.count_comments
+	FROM product p
+		 JOIN category c ON p.category_id = c.id
+		 LEFT JOIN comment cm ON p.id = cm.productID
+	WHERE p.name = $1
+	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
+	LIMIT 10;`
+
 	getProductsByName = `
 	SELECT p.id,
 	   p.name,
@@ -44,6 +62,23 @@ func NewSearchRepo(db pgxtype.Querier) *SearchRepo {
 }
 
 func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string) ([]models.Product, error) {
+	product := models.Product{}
+	err := r.db.QueryRow(ctx, getProductsByFullName, productName).
+		Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.ImgSrc, &product.Rating,
+			&product.Category.Id, &product.Category.Name, &product.CountComments)
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return []models.Product{}, ErrProductNotFound
+		}
+		err = fmt.Errorf("error happened in row.Scan: %w", err)
+
+		return []models.Product{}, err
+	}
+
+	if product.Id != uuid.Nil {
+		return []models.Product{product}, nil
+	}
+
 	count := 10
 	productSlice := make([]models.Product, 0, count)
 	rows, err := r.db.Query(ctx, getProductsByName, productName)
@@ -55,7 +90,6 @@ func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string)
 
 		return []models.Product{}, err
 	}
-	product := models.Product{}
 	for rows.Next() {
 		err = rows.Scan(
 			&product.Id,
