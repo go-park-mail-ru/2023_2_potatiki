@@ -66,33 +66,33 @@ func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string)
 	count := 10
 	productSlice := make([]models.Product, 0, count)
 	rows, err := r.db.Query(ctx, getProductsByFullName, productName)
-	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
-		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
+	if err != nil {
+		err = fmt.Errorf("error happened in db.Query: %w", err)
 
 		return []models.Product{}, err
 	}
-	if !errors.Is(err, pgx.ErrNoRows) {
-		for rows.Next() {
-			err = rows.Scan(
-				&product.Id,
-				&product.Name,
-				&product.Description,
-				&product.Price,
-				&product.ImgSrc,
-				&product.Rating,
-				&product.Category.Id,
-				&product.Category.Name,
-				&product.CountComments,
-			)
-			if err != nil {
-				err = fmt.Errorf("error happened in rows.Scan: %w", err)
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+			&product.CountComments,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
-				return []models.Product{}, err
-			}
-			productSlice = append(productSlice, product)
+			return []models.Product{}, err
 		}
-		defer rows.Close()
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
 
+	if len(productSlice) != 0 {
 		return productSlice, nil
 	}
 
