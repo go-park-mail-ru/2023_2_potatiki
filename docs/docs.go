@@ -686,6 +686,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/notifications/get_recent": {
+            "get": {
+                "description": "Get Day Notifications",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Notifications"
+                ],
+                "summary": "GetDayNotifications",
+                "responses": {
+                    "200": {
+                        "description": "Recent today notifications",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Message"
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User unauthorized"
+                    },
+                    "404": {
+                        "description": "Notifications not found"
+                    },
+                    "429": {
+                        "description": "Too Many Requests"
+                    }
+                }
+            }
+        },
         "/api/order/create": {
             "post": {
                 "description": "Create Order using profile ID from cookies",
@@ -1618,6 +1653,20 @@ const docTemplate = `{
                 "rating": {
                     "type": "integer",
                     "minimum": 1
+                }
+            }
+        },
+        "models.Message": {
+            "type": "object",
+            "properties": {
+                "created": {
+                    "type": "string"
+                },
+                "messageInfo": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "string"
                 }
             }
         },

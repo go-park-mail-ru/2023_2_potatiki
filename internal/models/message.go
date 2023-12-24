@@ -6,7 +6,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-//go:generate easyjson -all /home/scremyda/GolandProjects/2023_2_potatiki/internal/models/message.go
+//go:generate easyjson /home/scremyda/GolandProjects/2023_2_potatiki/internal/models/message.go
 
 //easyjson:skip
 type Message struct {
@@ -14,3 +14,6 @@ type Message struct {
 	Created     time.Time
 	MessageInfo string
 }
+
+//easyjson:json
+type MessageSlice []Message

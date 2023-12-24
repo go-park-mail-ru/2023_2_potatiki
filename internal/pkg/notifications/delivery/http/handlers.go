@@ -1,7 +1,11 @@
 package http
 
 import (
+	"errors"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	userConnections "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/repo"
 	"github.com/gorilla/websocket"
 	"log/slog"
 	"net/http"
@@ -20,14 +24,14 @@ var (
 type NotificationsHandler struct {
 	hub userConnections.HubInterface
 	log *slog.Logger
-	//uc  comments.CommentsNotifications
+	uc  notifications.NotificationsUsecase
 }
 
-func NewNotificationsHandler(hub userConnections.HubInterface, log *slog.Logger) *NotificationsHandler {
+func NewNotificationsHandler(hub userConnections.HubInterface, uc notifications.NotificationsUsecase, log *slog.Logger) *NotificationsHandler {
 	return &NotificationsHandler{
 		log: log,
 		hub: hub,
-		//uc:  uc,
+		uc:  uc,
 	}
 }
 
@@ -57,33 +61,43 @@ func (h *NotificationsHandler) GetNotifications(w http.ResponseWriter, r *http.R
 	h.log.Debug("client disconnected: ", slog.Any("userID", userID))
 }
 
-//func (h *NotificationsHandler) GetOldNotifications(w http.ResponseWriter, r *http.Request) {
-//	h.log = h.log.With(
-//		slog.String("op", sl.GFN()),
-//		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
-//	)
-//
-//	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
-//	if !ok {
-//		h.log.Error("failed cast uuid from context value")
-//		resp.JSONStatus(w, http.StatusUnauthorized)
-//
-//		return
-//	}
-//
-//	comment, err := h.uc.CreateComment(r.Context(), commentPayload)
-//	if err != nil {
-//		h.log.Error("failed in uc.CreateComment", sl.Err(err))
-//		if errors.Is(err, usecase.ErrManyCommentsToProduct) {
-//			resp.JSON(w, http.StatusRequestEntityTooLarge, &comment)
-//
-//			return
-//		}
-//		resp.JSONStatus(w, http.StatusTooManyRequests)
-//
-//		return
-//	}
-//
-//	h.log.Debug("uc.CreateComment", "comment created", comment)
-//	resp.JSON(w, http.StatusOK, &comment)
-//}
+// @Summary	GetDayNotifications
+// @Tags Notifications
+// @Description Get Day Notifications
+// @Accept json
+// @Produce json
+// @Success	200	{object} models.MessageSlice "Recent today notifications"
+// @Failure	401	"User unauthorized"
+// @Failure	404	"Notifications not found"
+// @Failure	429
+// @Router	/api/notifications/get_recent [get]
+func (h *NotificationsHandler) GetDayNotifications(w http.ResponseWriter, r *http.Request) {
+	h.log = h.log.With(
+		slog.String("op", sl.GFN()),
+		slog.String("request_id", r.Header.Get(logmw.RequestIDCtx)),
+	)
+
+	userID, ok := r.Context().Value(authmw.AccessTokenCookieName).(uuid.UUID)
+	if !ok {
+		h.log.Error("failed cast uuid from context value")
+		resp.JSONStatus(w, http.StatusUnauthorized)
+
+		return
+	}
+
+	comment, err := h.uc.GetDayNotifications(r.Context(), userID)
+	if err != nil {
+		h.log.Error("failed in uc.GetDayNotifications", sl.Err(err))
+		if errors.Is(err, repo.ErrNotificationsNotFound) {
+			resp.JSONStatus(w, http.StatusNotFound)
+
+			return
+		}
+		resp.JSONStatus(w, http.StatusTooManyRequests)
+
+		return
+	}
+
+	h.log.Debug("uc.GetDayNotifications", "got notifications: ", len(comment))
+	resp.JSON(w, http.StatusOK, (*models.MessageSlice)(&comment))
+}

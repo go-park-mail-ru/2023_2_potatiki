@@ -138,6 +138,15 @@ definitions:
         minimum: 1
         type: integer
     type: object
+  models.Message:
+    properties:
+      created:
+        type: string
+      messageInfo:
+        type: string
+      userID:
+        type: string
+    type: object
   models.Order:
     properties:
       address:
@@ -747,6 +756,29 @@ paths:
       summary: GetProductComments
       tags:
       - Comments
+  /api/notifications/get_recent:
+    get:
+      consumes:
+      - application/json
+      description: Get Day Notifications
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Recent today notifications
+          schema:
+            items:
+              $ref: '#/definitions/models.Message'
+            type: array
+        "401":
+          description: User unauthorized
+        "404":
+          description: Notifications not found
+        "429":
+          description: Too Many Requests
+      summary: GetDayNotifications
+      tags:
+      - Notifications
   /api/order/create:
     post:
       consumes:
