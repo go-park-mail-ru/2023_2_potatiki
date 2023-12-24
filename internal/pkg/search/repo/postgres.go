@@ -7,7 +7,6 @@ import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/models"
 	"github.com/jackc/pgtype/pgxtype"
 	"github.com/jackc/pgx/v4"
-	uuid "github.com/satori/go.uuid"
 )
 
 const (
@@ -24,9 +23,10 @@ const (
 	FROM product p
 		 JOIN category c ON p.category_id = c.id
 		 LEFT JOIN comment cm ON p.id = cm.productID
-	WHERE p.name = $1
+	WHERE p.name LIKE '%' || $1 || '%'
 	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
-	LIMIT 10;`
+	LIMIT 10;
+	`
 
 	getProductsByName = `
 	SELECT p.id,
@@ -63,22 +63,40 @@ func NewSearchRepo(db pgxtype.Querier) *SearchRepo {
 
 func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string) ([]models.Product, error) {
 	product := models.Product{}
-	err := r.db.QueryRow(ctx, getProductsByFullName, productName).
-		Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.ImgSrc, &product.Rating,
-			&product.Category.Id, &product.Category.Name, &product.CountComments)
+	count := 10
+	productSlice := make([]models.Product, 0, count)
+	rows, err := r.db.Query(ctx, getProductsByFullName, productName)
 	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
-		err = fmt.Errorf("error happened in row.Scan: %w", err)
+		err = fmt.Errorf("error happened in db.QueryContext: %w", err)
 
 		return []models.Product{}, err
 	}
+	if !errors.Is(err, pgx.ErrNoRows) {
+		for rows.Next() {
+			err = rows.Scan(
+				&product.Id,
+				&product.Name,
+				&product.Description,
+				&product.Price,
+				&product.ImgSrc,
+				&product.Rating,
+				&product.Category.Id,
+				&product.Category.Name,
+				&product.CountComments,
+			)
+			if err != nil {
+				err = fmt.Errorf("error happened in rows.Scan: %w", err)
 
-	if product.Id != uuid.Nil {
-		return []models.Product{product}, nil
+				return []models.Product{}, err
+			}
+			productSlice = append(productSlice, product)
+		}
+		defer rows.Close()
+
+		return productSlice, nil
 	}
 
-	count := 10
-	productSlice := make([]models.Product, 0, count)
-	rows, err := r.db.Query(ctx, getProductsByName, productName)
+	rows, err = r.db.Query(ctx, getProductsByName, productName)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Product{}, ErrProductNotFound
