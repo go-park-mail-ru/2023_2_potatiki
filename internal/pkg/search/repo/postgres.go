@@ -66,10 +66,7 @@ func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string)
 	err := r.db.QueryRow(ctx, getProductsByFullName, productName).
 		Scan(&product.Id, &product.Name, &product.Description, &product.Price, &product.ImgSrc, &product.Rating,
 			&product.Category.Id, &product.Category.Name, &product.CountComments)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return []models.Product{}, ErrProductNotFound
-		}
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
 		err = fmt.Errorf("error happened in row.Scan: %w", err)
 
 		return []models.Product{}, err
