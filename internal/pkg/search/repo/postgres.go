@@ -12,18 +12,18 @@ import (
 const (
 	getProductsByFullName = `
 	SELECT p.id,
-	   p.name,
-	   p.description,
-	   p.price,
-	   p.imgsrc,
-	   COALESCE(AVG(cm.rating), 0),
-	   p.category_id,
-	   c.name AS category_name,
-	   p.count_comments
+       p.name,
+       p.description,
+       p.price,
+       p.imgsrc,
+       COALESCE(AVG(cm.rating), 0),
+       p.category_id,
+       c.name AS category_name,
+       p.count_comments
 	FROM product p
 		 JOIN category c ON p.category_id = c.id
 		 LEFT JOIN comment cm ON p.id = cm.productID
-	WHERE p.name LIKE '%' || $1 || '%'
+	WHERE LOWER(p.name) LIKE '%' || LOWER($1) || '%'
 	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
 	LIMIT 10;
 	`
