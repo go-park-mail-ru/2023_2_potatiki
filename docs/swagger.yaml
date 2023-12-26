@@ -149,6 +149,8 @@ definitions:
     type: object
   models.Order:
     properties:
+      _:
+        type: integer
       address:
         $ref: '#/definitions/models.Address'
       creationDate:

@@ -1673,6 +1673,9 @@ const docTemplate = `{
         "models.Order": {
             "type": "object",
             "properties": {
+                "_": {
+                    "type": "integer"
+                },
                 "address": {
                     "$ref": "#/definitions/models.Address"
                 },
