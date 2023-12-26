@@ -12,6 +12,7 @@ import (
 type Order struct {
 	Id           uuid.UUID `json:"id"`
 	Status       string    `json:"status"`
+	StatusId     int64     `json:"_"`
 	DeliveryDate string    `json:"deliveryDate"`
 	DeliveryTime string    `json:"deliveryTime"`
 	PomocodeName string    `json:"promocodeName"`

@@ -23,4 +23,5 @@ type OrderRepo interface {
 	ReadOrdersID(context.Context, uuid.UUID) ([]uuid.UUID, error)
 	GetUpdates(context.Context, uuid.UUID, time.Time) ([]models.Message, error)
 	SetPromoOrder(context.Context, int, uuid.UUID) error
+	SetOrderStatus(context.Context, time.Time) error
 }

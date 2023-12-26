@@ -16,10 +16,16 @@ import (
 const (
 	createOrder = `
 	INSERT INTO order_info (id, profile_id, status_id, address_id, delivery_at_time, delivery_at_date)
-	VALUES ($1, $2, $3, $4, $5, $6);
+	VALUES ($1, $2, $3, $4, $5, $6) RETURNING status_id;
 	`
 	setPromoToOrder = `
 	UPDATE order_info SET promocode_id=$1 WHERE id=$2;
+	`
+
+	setOrderStatus = `
+	UPDATE order_info
+	SET status_id = $2
+	WHERE creation_at < $1 AND status_id = $3;
 	`
 
 	createOrderItem = "INSERT INTO order_item (id, order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4, $5);"
@@ -37,7 +43,7 @@ const (
 	p.imgsrc AS product_imgsrc, p.rating AS product_rating, oi.quantity AS product_quantity, c.id AS category_id, 
 	c.name AS category_name, s.name, COALESCE(pm.name, ''), a.id AS address_id, a.city AS address_city, 
 	a.street AS address_street, a.house AS address_house, a.flat AS address_flat, a.is_current as is_current,
-	o.creation_at, o.delivery_at_time, o.delivery_at_date
+	o.creation_at, o.delivery_at_time, o.delivery_at_date, o.status_id
 	FROM order_item oi
 	JOIN product p ON oi.product_id = p.id
 	JOIN order_info o ON oi.order_id = o.id
@@ -101,6 +107,15 @@ func NewOrderRepo(db pgxtype.Querier) *OrderRepo {
 	}
 }
 
+func (r *OrderRepo) SetOrderStatus(ctx context.Context, time time.Time) error {
+	_, err := r.db.Exec(ctx, setOrderStatus, time, 2, 1)
+	if err != nil {
+		return fmt.Errorf("error happened in setOrderStatus sql exec: %w", err)
+	}
+
+	return nil
+}
+
 func (r *OrderRepo) GetUpdates(ctx context.Context, userID uuid.UUID, time time.Time) ([]models.Message, error) {
 	rows, err := r.db.Query(ctx, getUpdates, userID, time)
 	defer rows.Close()
@@ -136,19 +151,19 @@ func (r *OrderRepo) CreateOrder(ctx context.Context, cart models.Cart, addressID
 	statusID int64, deliveryTime, deliveryDate string) (models.Order, error) {
 	orderID := uuid.NewV4()
 
-	_, err := r.db.Exec(ctx, createOrder, orderID, userID,
+	row := r.db.QueryRow(ctx, createOrder, orderID, userID,
 		statusID, addressID, deliveryTime, deliveryDate)
-	if err != nil {
-		err = fmt.Errorf("error happened in db.Exec: %w", err)
-
-		return models.Order{}, err
-	}
 
 	var productsOrder []models.OrderProduct
 	order := models.Order{
 		Id:       orderID,
 		Products: productsOrder,
 	}
+	err := row.Scan(&order.StatusId)
+	if err != nil {
+		return models.Order{}, err
+	}
+
 	for _, cartProduct := range cart.Products {
 		orderProduct := models.OrderProduct{Quantity: cartProduct.Quantity, Product: models.Product{Id: cartProduct.Id}}
 		err := r.db.QueryRow(ctx, getProductInfo, cartProduct.Id).Scan(
@@ -247,6 +262,7 @@ func (r *OrderRepo) ReadOrder(ctx context.Context, orderID uuid.UUID) (models.Or
 			&order.CreationAt,
 			&order.DeliveryTime,
 			&order.DeliveryDate,
+			&order.StatusId,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)

@@ -439,6 +439,29 @@ EXECUTE FUNCTION order_created_trigger();
 
 ------------------------------------------------------------------------------------------------------------------------
 
+CREATE OR REPLACE FUNCTION order_updated_trigger()
+    RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM messages
+    WHERE created < CURRENT_TIMESTAMP - interval '1 day';
+
+    IF NEW.profile_id IS NOT NULL THEN
+        INSERT INTO messages (user_id, created, message_info)
+        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Статус заказа изменился на: "В обработке", загляните в раздел: "Заказы"');
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER order_updated_trigger
+    AFTER UPDATE
+    ON order_info
+    FOR EACH ROW
+EXECUTE FUNCTION order_updated_trigger();
+
+------------------------------------------------------------------------------------------------------------------------
+
 CREATE OR REPLACE FUNCTION profile_created_trigger()
     RETURNS TRIGGER AS $$
 BEGIN
