@@ -41,7 +41,9 @@ DROP TABLE IF EXISTS activities;
 CREATE TABLE IF NOT EXISTS messages (
     user_id uuid NOT NULL,
     created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    message_info TEXT
+    message_info TEXT,
+    type TEXT,
+    order_id uuid
 );
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -423,8 +425,8 @@ BEGIN
     WHERE created < CURRENT_TIMESTAMP - interval '1 day';
 
     IF NEW.profile_id IS NOT NULL THEN
-        INSERT INTO messages (user_id, created, message_info)
-        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Заказ создан, загляните в раздел: "Заказы"');
+        INSERT INTO messages (user_id, created, message_info, type, order_id)
+        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Заказ создан, загляните в раздел: "Заказы"', 'newOrder', '00000000-0000-0000-0000-000000000000');
     END IF;
 
     RETURN NEW;
@@ -446,8 +448,8 @@ BEGIN
     WHERE created < CURRENT_TIMESTAMP - interval '1 day';
 
     IF NEW.profile_id IS NOT NULL THEN
-        INSERT INTO messages (user_id, created, message_info)
-        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Статус заказа изменился на: "В обработке", загляните в раздел: "Заказы"');
+        INSERT INTO messages (user_id, created, message_info, type, order_id)
+        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Статус заказа изменился на: "В обработке", загляните в раздел: "Заказы"', 'updateOrderStatus', NEW.id);
     END IF;
 
     RETURN NEW;
@@ -469,8 +471,8 @@ BEGIN
     WHERE created < CURRENT_TIMESTAMP - interval '1 day';
 
     IF NEW.id IS NOT NULL THEN
-        INSERT INTO messages (user_id, created, message_info)
-        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '1 second', 'Спасибо за регистрацию, мы дарим вам промокод: ZUZU10');
+        INSERT INTO messages (user_id, created, message_info, type, order_id)
+        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '1 second', 'Спасибо за регистрацию, мы дарим вам промокод: ZUZU10','profileRegistration', '00000000-0000-0000-0000-000000000000');
     END IF;
 
     RETURN NEW;

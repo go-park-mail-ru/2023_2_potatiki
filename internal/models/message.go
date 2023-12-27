@@ -13,6 +13,8 @@ type Message struct {
 	UserID      uuid.UUID
 	Created     time.Time
 	MessageInfo string
+	Type        string
+	OrderID     uuid.UUID
 }
 
 //easyjson:json

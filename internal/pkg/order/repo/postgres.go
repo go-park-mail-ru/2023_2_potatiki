@@ -67,7 +67,7 @@ const (
 	`
 
 	getUpdates = `
-	SELECT user_id, created, message_info
+	SELECT user_id, created, message_info, type, order_id
 	FROM messages
 	WHERE user_id = $1 AND created > $2
 	ORDER BY created ASC;
@@ -132,6 +132,8 @@ func (r *OrderRepo) GetUpdates(ctx context.Context, userID uuid.UUID, time time.
 			&message.UserID,
 			&message.Created,
 			&message.MessageInfo,
+			&message.Type,
+			&message.OrderID,
 		)
 		if err != nil {
 			err = fmt.Errorf("error happened in rows.Scan: %w", err)

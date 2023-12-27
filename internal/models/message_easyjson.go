@@ -26,7 +26,7 @@ func easyjson4086215fDecodeGithubComGoParkMailRu20232PotatikiInternalModels(in *
 		in.Delim('[')
 		if *out == nil {
 			if !in.IsDelim(']') {
-				*out = make(MessageSlice, 0, 1)
+				*out = make(MessageSlice, 0, 0)
 			} else {
 				*out = MessageSlice{}
 			}
@@ -112,6 +112,12 @@ func easyjson4086215fDecodeGithubComGoParkMailRu20232PotatikiInternalModels1(in 
 			}
 		case "MessageInfo":
 			out.MessageInfo = string(in.String())
+		case "Type":
+			out.Type = string(in.String())
+		case "OrderID":
+			if data := in.UnsafeBytes(); in.Ok() {
+				in.AddError((out.OrderID).UnmarshalText(data))
+			}
 		default:
 			in.SkipRecursive()
 		}
@@ -140,6 +146,16 @@ func easyjson4086215fEncodeGithubComGoParkMailRu20232PotatikiInternalModels1(out
 		const prefix string = ",\"MessageInfo\":"
 		out.RawString(prefix)
 		out.String(string(in.MessageInfo))
+	}
+	{
+		const prefix string = ",\"Type\":"
+		out.RawString(prefix)
+		out.String(string(in.Type))
+	}
+	{
+		const prefix string = ",\"OrderID\":"
+		out.RawString(prefix)
+		out.RawText((in.OrderID).MarshalText())
 	}
 	out.RawByte('}')
 }
