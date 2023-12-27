@@ -1665,6 +1665,12 @@ const docTemplate = `{
                 "messageInfo": {
                     "type": "string"
                 },
+                "orderID": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
                 "userID": {
                     "type": "string"
                 }

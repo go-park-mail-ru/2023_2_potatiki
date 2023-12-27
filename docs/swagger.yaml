@@ -144,6 +144,10 @@ definitions:
         type: string
       messageInfo:
         type: string
+      orderID:
+        type: string
+      type:
+        type: string
       userID:
         type: string
     type: object
