@@ -75,6 +75,7 @@ func (uc *AuthUsecase) SignUp(ctx context.Context, payload *models.SignUpPayload
 		Id:           uuid.NewV4(),
 		Login:        payload.Login,
 		Description:  "",
+		ImgSrc:       "user.svg",
 		Phone:        payload.Phone,
 		PasswordHash: hasher.HashPass(payload.Password),
 	}

@@ -16,7 +16,7 @@ import (
 const (
 	profileById        = "SELECT login, description, imgsrc, phone, passwordhash FROM profile WHERE id=$1;"
 	profileIdByLogin   = "SELECT id FROM profile WHERE login=$1;"
-	addProfile         = "INSERT INTO profile(id, login, description, phone, passwordhash) VALUES($1, $2, $3, $4, $5);"
+	addProfile         = "INSERT INTO profile(id, login, description, imgsrc, phone, passwordhash) VALUES($1, $2, $3, $4, $5, $6);"
 	updateProfileInfo  = "UPDATE profile SET phone=$1, passwordhash=$2 WHERE id=$3;"
 	updateProfilePhoto = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
 )
@@ -33,7 +33,7 @@ func NewProfileRepo(db pgxtype.Querier) *ProfileRepo {
 
 func (r *ProfileRepo) CreateProfile(ctx context.Context, p *models.Profile) error {
 	_, err := r.db.Exec(ctx, addProfile,
-		p.Id, p.Login, p.Description, p.Phone, p.PasswordHash)
+		p.Id, p.Login, p.Description, p.ImgSrc, p.Phone, p.PasswordHash)
 
 	if err != nil {
 		err = fmt.Errorf("error happened in db.Exec: %w", err)
