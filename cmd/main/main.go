@@ -35,6 +35,7 @@ import (
 
 	authGrpc "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/grpc/gen"
 	authHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/auth/delivery/http"
+
 	cartHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/delivery/http"
 	cartRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/repo"
 	cartUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/cart/usecase"
@@ -77,6 +78,8 @@ import (
 	recUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/recommendations/usecase"
 
 	notificationsHandler "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/delivery/http"
+	notificationsRepo "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/repo"
+	notificationsUsecase "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/usecase"
 )
 
 // @title ZuZu Backend API
@@ -227,7 +230,9 @@ func run() (err error) {
 	recHandler := recHandler.NewRecommendationsHandler(log, recUsecase)
 
 	hub := clientHub.NewHub(orderRepo)
-	notificationsHandler := notificationsHandler.NewNotificationsHandler(hub, log)
+	notificationsRepo := notificationsRepo.NewNotificationsRepo(db)
+	notificationsUsecase := notificationsUsecase.NewNotificationsUsecase(notificationsRepo)
+	notificationsHandler := notificationsHandler.NewNotificationsHandler(hub, notificationsUsecase, log)
 
 	// ----------------------------Init layers---------------------------- //
 	//
@@ -333,6 +338,9 @@ func run() (err error) {
 
 	notifications := r.PathPrefix("/notifications").Subrouter()
 	{
+		notifications.Handle("/get_recent", authMW(http.HandlerFunc(notificationsHandler.GetDayNotifications))).
+			Methods(http.MethodGet, http.MethodOptions)
+
 		notifications.Handle("/get_all", authMW(http.HandlerFunc(notificationsHandler.GetNotifications))).
 			Methods(http.MethodGet, http.MethodOptions)
 	}

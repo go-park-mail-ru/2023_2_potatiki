@@ -81,11 +81,11 @@ func (uc *OrderUsecase) CreateOrder(
 			return models.Order{}, err
 		}
 	}
-	order.Status = "В обработке" //Status ID =1
 	order.Address = address
 	order.PomocodeName = promocodeName
 	order.DeliveryDate = deliveryDate
 	order.DeliveryTime = deliveryTime
+	order = setStatus(order)
 
 	err = uc.repoCart.DeleteCart(ctx, cart.Id)
 	if err != nil {
@@ -97,6 +97,18 @@ func (uc *OrderUsecase) CreateOrder(
 	return order, nil
 }
 
+func setStatus(order models.Order) models.Order {
+	switch order.StatusId {
+	case 1:
+		order.Status = "Создан"
+	case 2:
+		order.Status = "В обработке"
+	default:
+		order.Status = "Уточняется"
+
+	}
+	return order
+}
 func (uc *OrderUsecase) GetOrders(ctx context.Context, userID uuid.UUID) ([]models.Order, error) {
 	ordersID, err := uc.repoOrder.ReadOrdersID(ctx, userID)
 	if err != nil {
@@ -109,6 +121,7 @@ func (uc *OrderUsecase) GetOrders(ctx context.Context, userID uuid.UUID) ([]mode
 	orders := make([]models.Order, len(ordersID))
 	for i, orderID := range ordersID {
 		orders[i], err = uc.repoOrder.ReadOrder(ctx, orderID)
+		orders[i] = setStatus(orders[i])
 		if err != nil {
 			if errors.Is(err, orderRepo.ErrPoductsInOrderNotFound) {
 				return []models.Order{}, err
@@ -140,6 +153,8 @@ func (uc *OrderUsecase) GetCurrentOrder(ctx context.Context, userID uuid.UUID) (
 
 		return models.Order{}, err
 	}
+
+	order = setStatus(order)
 
 	return order, nil
 }

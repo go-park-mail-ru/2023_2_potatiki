@@ -3,7 +3,9 @@ package http
 import (
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/hub"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/middleware/authmw"
+	mock "github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/notifications/mocks"
 	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/utils/logger"
+	"github.com/golang/mock/gomock"
 	"github.com/stretchr/testify/assert"
 	"golang.org/x/net/context"
 	"net/http"
@@ -31,7 +33,12 @@ func TestGetNotifications(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
-			handler := NewNotificationsHandler(hub, logger.Set("local", os.Stdout))
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			uc := mock.NewMockNotificationsUsecase(ctrl)
+
+			handler := NewNotificationsHandler(hub, uc, logger.Set("local", os.Stdout))
 			responseRecorder := httptest.NewRecorder()
 
 			handler.GetNotifications(responseRecorder, tc.Request)

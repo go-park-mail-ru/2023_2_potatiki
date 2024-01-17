@@ -41,7 +41,9 @@ DROP TABLE IF EXISTS activities;
 CREATE TABLE IF NOT EXISTS messages (
     user_id uuid NOT NULL,
     created TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
-    message_info TEXT
+    message_info TEXT,
+    type TEXT,
+    order_id uuid
 );
 
 ------------------------------------------------------------------------------------------------------------------------
@@ -124,7 +126,7 @@ CREATE TABLE IF NOT EXISTS profile
     id uuid NOT NULL PRIMARY KEY,
     login text NOT NULL UNIQUE,
     description text,
-    imgsrc text NOT NULL DEFAULT 'default.png',
+    imgsrc text NOT NULL DEFAULT 'user.svg',
     phone text NOT NULL,
     passwordhash bytea NOT NULL
 );
@@ -140,23 +142,67 @@ CREATE TABLE IF NOT EXISTS category
 INSERT INTO category
 VALUES
     (1, 'Все товары', NULL),
-    (2, 'Ноутбуки и планшеты', 1),
-    (3, 'Планшеты', 2),
-    (4, 'Ноутбуки', 2),
-    (5, 'Бытовая техника', 1),
-    (6, 'Холодильники', 5),
-    (7, 'Стиральные машины', 5),
-    (8, 'Пылесосы', 5),
+
+    (2, 'Электроника', 1),
+    (21, 'Планшеты', 2),
+    (22, 'Ноутбуки', 2),
+    (23, 'Мониторы', 2),
+    (24, 'Наушники', 2),
+
+    (3, 'Бытовая техника', 1),
+    (31, 'Холодильники', 3),
+    (32, 'Стиральные машины', 3),
+    (33, 'Пылесосы', 3),
+
+    (4, 'Музыкальные инструменты', 1),
+    (41, 'Губные гармошки', 4),
+    (42, 'Гитары', 4),
+    (43, 'Барабаны', 4),
+    (44, 'Клавишные', 4),
+    (45, 'Смычковые музыкальные инструменты', 4),
+    (46, 'Духовые музыкальные инструменты', 4),
+    (47, 'Виниловые пластинки', 4),
+
+    (5, 'Спорт и активный отдых', 1),
+    (51, 'Велосипеды', 5),
+    (52, 'Горные лыжи', 5),
+    (53, 'Сноуборды', 5),
+    (54, 'Самокаты', 5),
+    (55, 'Веревки альпинистские', 5),
+    (56, 'Дартс', 5),
+
+    (6, 'Красота и уход', 1),
+    (61, 'Уход за лицом', 6),
+    (62, 'Средства по уходу за волосами', 6),
+    (63, 'Косметика для макияжа лица', 6),
+    (64, 'Макияж глаз', 6),
+
+    (7, 'Ювелирные изделия', 1),
+    (71, 'Кольца', 7),
+    (72, 'Серьги', 7),
+    (73, 'Браслеты', 7),
+    (74, 'Цепочки', 7),
+    (75, 'Колье', 7),
+
+    (8, 'Новогодние товары', 1),
+    (81, 'Елки искусственные', 8),
+    (82, 'Живые елки', 8),
+    (83, 'Аксессуары для елок', 8),
+    (84, 'Елочные украшения', 8),
+    (85, 'Новогодние гирлянды светодиодные', 8),
+
     (9, 'Мебель', 1),
     (91, 'Стулья', 9),
     (92, 'Рабочие столы', 9),
     (93, 'Диваны', 9),
     (94, 'Кресла', 9),
+
     (10, 'Канцелярия', 1),
     (101, 'Тетради', 10),
     (102, 'Письменные принадлежности', 10),
     (103, 'Пеналы', 10),
     (104, 'Клей', 10),
+
     (11, 'Товары для геймеров', 1),
     (111, 'Nintendo', 11),
     (112, 'Xbox', 11),
@@ -379,8 +425,8 @@ BEGIN
     WHERE created < CURRENT_TIMESTAMP - interval '1 day';
 
     IF NEW.profile_id IS NOT NULL THEN
-        INSERT INTO messages (user_id, created, message_info)
-        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Заказ создан, загляните в раздел: "Заказы"');
+        INSERT INTO messages (user_id, created, message_info, type, order_id)
+        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Заказ создан, загляните в раздел: "Заказы"', 'newOrder', '00000000-0000-0000-0000-000000000000');
     END IF;
 
     RETURN NEW;
@@ -395,6 +441,29 @@ EXECUTE FUNCTION order_created_trigger();
 
 ------------------------------------------------------------------------------------------------------------------------
 
+CREATE OR REPLACE FUNCTION order_updated_trigger()
+    RETURNS TRIGGER AS $$
+BEGIN
+    DELETE FROM messages
+    WHERE created < CURRENT_TIMESTAMP - interval '1 day';
+
+    IF NEW.profile_id IS NOT NULL THEN
+        INSERT INTO messages (user_id, created, message_info, type, order_id)
+        VALUES (NEW.profile_id, CURRENT_TIMESTAMP, 'Статус заказа изменился на: "В обработке", загляните в раздел: "Заказы"', 'updateOrderStatus', NEW.id);
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER order_updated_trigger
+    AFTER UPDATE
+    ON order_info
+    FOR EACH ROW
+EXECUTE FUNCTION order_updated_trigger();
+
+------------------------------------------------------------------------------------------------------------------------
+
 CREATE OR REPLACE FUNCTION profile_created_trigger()
     RETURNS TRIGGER AS $$
 BEGIN
@@ -402,8 +471,8 @@ BEGIN
     WHERE created < CURRENT_TIMESTAMP - interval '1 day';
 
     IF NEW.id IS NOT NULL THEN
-        INSERT INTO messages (user_id, created, message_info)
-        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '5 seconds', 'Спасибо за регистрацию, мы дарим вам промокод: ZUZU10');
+        INSERT INTO messages (user_id, created, message_info, type, order_id)
+        VALUES (NEW.id, CURRENT_TIMESTAMP + interval '1 second', 'Спасибо за регистрацию, мы дарим вам промокод: ZUZU10','profileRegistration', '00000000-0000-0000-0000-000000000000');
     END IF;
 
     RETURN NEW;

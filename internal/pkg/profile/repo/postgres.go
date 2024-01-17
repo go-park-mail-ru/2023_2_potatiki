@@ -21,8 +21,6 @@ const (
 	updateProfilePhoto = "UPDATE profile SET imgsrc=$1 WHERE id=$2;"
 )
 
-
-
 type ProfileRepo struct {
 	db pgxtype.Querier
 }

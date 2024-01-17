@@ -180,6 +180,20 @@ func (mr *MockOrderRepoMockRecorder) ReadOrdersID(arg0, arg1 interface{}) *gomoc
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ReadOrdersID", reflect.TypeOf((*MockOrderRepo)(nil).ReadOrdersID), arg0, arg1)
 }
 
+// SetOrderStatus mocks base method.
+func (m *MockOrderRepo) SetOrderStatus(arg0 context.Context, arg1 time.Time) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "SetOrderStatus", arg0, arg1)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// SetOrderStatus indicates an expected call of SetOrderStatus.
+func (mr *MockOrderRepoMockRecorder) SetOrderStatus(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "SetOrderStatus", reflect.TypeOf((*MockOrderRepo)(nil).SetOrderStatus), arg0, arg1)
+}
+
 // SetPromoOrder mocks base method.
 func (m *MockOrderRepo) SetPromoOrder(arg0 context.Context, arg1 int, arg2 uuid.UUID) error {
 	m.ctrl.T.Helper()

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/go-park-mail-ru/2023_2_potatiki/internal/pkg/ticker"
 	"log/slog"
 	"net"
 	"net/http"
@@ -83,12 +84,15 @@ func run() (err error) {
 	orderRepo := orderRepo.NewOrderRepo(db)
 	orderUsecase := orderUsecase.NewOrderUsecase(orderRepo, cartRepo, addressRepo, promoRepo)
 	orderHandler := grpcOrder.NewGrpcOrderHandler(orderUsecase, log)
+	statusTicker := ticker.NewStatusTicker(orderRepo)
 
 	grpcMetrics := metrics.NewMetricGRPC(metrics.ServiceAuthName)
 	metricsMw := metricsmw.NewGrpcMiddleware(grpcMetrics)
 	gRPCServer := grpc.NewServer(grpc.UnaryInterceptor(metricsMw.ServerMetricsInterceptor))
 
 	generatedOrder.RegisterOrderServer(gRPCServer, orderHandler)
+
+	go statusTicker.Run(context.Background())
 
 	r := mux.NewRouter().PathPrefix("/api").Subrouter()
 	r.PathPrefix("/metrics").Handler(promhttp.Handler())

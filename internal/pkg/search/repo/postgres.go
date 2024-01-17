@@ -10,6 +10,24 @@ import (
 )
 
 const (
+	getProductsByFullName = `
+	SELECT p.id,
+       p.name,
+       p.description,
+       p.price,
+       p.imgsrc,
+       COALESCE(AVG(cm.rating), 0),
+       p.category_id,
+       c.name AS category_name,
+       p.count_comments
+	FROM product p
+		 JOIN category c ON p.category_id = c.id
+		 LEFT JOIN comment cm ON p.id = cm.productID
+	WHERE LOWER(p.name) LIKE '%' || LOWER($1) || '%'
+	GROUP BY p.id, p.name, p.description, p.price, p.imgsrc, p.category_id, c.name, p.count_comments
+	LIMIT 10;
+	`
+
 	getProductsByName = `
 	SELECT p.id,
 	   p.name,
@@ -44,9 +62,41 @@ func NewSearchRepo(db pgxtype.Querier) *SearchRepo {
 }
 
 func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string) ([]models.Product, error) {
+	product := models.Product{}
 	count := 10
 	productSlice := make([]models.Product, 0, count)
-	rows, err := r.db.Query(ctx, getProductsByName, productName)
+	rows, err := r.db.Query(ctx, getProductsByFullName, productName)
+	if err != nil {
+		err = fmt.Errorf("error happened in db.Query: %w", err)
+
+		return []models.Product{}, err
+	}
+	for rows.Next() {
+		err = rows.Scan(
+			&product.Id,
+			&product.Name,
+			&product.Description,
+			&product.Price,
+			&product.ImgSrc,
+			&product.Rating,
+			&product.Category.Id,
+			&product.Category.Name,
+			&product.CountComments,
+		)
+		if err != nil {
+			err = fmt.Errorf("error happened in rows.Scan: %w", err)
+
+			return []models.Product{}, err
+		}
+		productSlice = append(productSlice, product)
+	}
+	defer rows.Close()
+
+	if len(productSlice) != 0 {
+		return productSlice, nil
+	}
+
+	rows, err = r.db.Query(ctx, getProductsByName, productName)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
 			return []models.Product{}, ErrProductNotFound
@@ -55,7 +105,6 @@ func (r *SearchRepo) ReadProductsByName(ctx context.Context, productName string)
 
 		return []models.Product{}, err
 	}
-	product := models.Product{}
 	for rows.Next() {
 		err = rows.Scan(
 			&product.Id,
